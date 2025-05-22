@@ -1,1 +1,59 @@
-node_modules
+# Directorio de dependencias de Node.js
+node_modules/
+
+# Directorios de compilación/distribución
+/build
+/dist
+
+# Archivos de log
+*.log
+npm-debug.log*
+yarn-error.log*
+
+# Archivos de entorno
+.env
+
+# Directorio de dependencias de Composer (si aplica)
+/vendor
+
+# Archivos temporales y del sistema operativo
+*.tmp
+~*
+.DS_Store
+Thumbs.db
+
+# Archivos de configuración del editor/IDE
+.vscode/
+*.sublime-project
+*.sublime-workspace
+*.komodoproject
+.idea/
+
+# Archivos de caché
+.phpunit.result.cache
+
+# Archivos empaquetados/comprimidos
+*.zip
+*.tar
+*.gz
+*.rar
+*.7z
+
+# Archivos de base de datos local
+*.sql
+*.sqlite
+
+# Archivos de claves o certificados
+*.key
+*.pem
+*.der
+
+# Ignorar archivos que empiezan con "." (excepto los esenciales)
+.#*
+.*.swp
+.DS_Store
+.env
+
+# Excepciones
+!.gitignore
+!.env.example
