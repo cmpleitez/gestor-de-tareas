@@ -1,0 +1,50 @@
+
+Creando el flujo de trabajo:
+https://miro.com/app/board/uXjVLl8VYdo=/
+
+
+Presentación del estudio:
+
+✅🧿 1. Título
+- Debe ser claro, conciso y descriptivo del contenido
+- Evitar términos ambiguos o genéricos
+- Reflejar la contribución principal del trabajo
+
+🧿 2. Introducción
+- Contexto y antecedentes del problema
+- Relevancia y motivación del estudio
+
+- Objetivos e hipótesis del trabajo
+- Breve descripción de la estructura del documento
+
+🧿 3. Resumen (Abstract)
+- Extensión: 150-250 palabras
+- Incluir: problema abordado, metodología, resultados principales y conclusiones
+- Debe ser comprensible independientemente del resto del documento
+- Sirve como resumen ejecutivo del trabajo completo
+
+🧿 4. Conceptos Clave
+- 3-5 términos relevantes
+- Facilitan la indexación y búsqueda del artículo
+- Deben representar los conceptos principales del trabajo
+
+🧿 5. Ejemplos
+
+🧿 6. Discusión
+- Interpretación de los resultados
+- Comparación con estudios previos
+- Análisis de implicaciones
+- Reconocimiento de limitaciones
+- Validación de hipótesis
+
+🧿 7. Conclusiones y Trabajo Futuro
+- Resumen de contribuciones principales
+- Implicaciones prácticas y teóricas
+- Direcciones futuras de investigación
+- Recomendaciones
+
+🧿 8. Referencias
+- Lista completa de fuentes citadas
+- Formato consistente (IEEE, APA, ACM, etc.)
+- Ordenadas según aparición en el texto
+
