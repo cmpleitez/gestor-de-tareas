@@ -48,3 +48,16 @@ Presentación del estudio:
 - Formato consistente (IEEE, APA, ACM, etc.)
 - Ordenadas según aparición en el texto
 
+vision: 
+ser un municipio modelo
+lider entransparencia
+brindar servicios de calidad
+impulsar proyectos que permitan la formacion de una sociedad moderna, competitiva y sostenible
+para lograr un nivel de vida en armonia con el entorno natural y prevencion de riesgos
+
+mision: 
+promover el desarrollo sostenible
+bienestar de sus habitantes habitantes 
+fortalecimiento de proyectos de infraestructura 
+promoviendo un entorno cultural sostenible, seguro y limpio
+
