@@ -38,82 +38,58 @@
 
 <!-- BEGIN: Body-->
 
-<body class="menu-expanded vertical-layout vertical-menu-modern boxicon-layout no-card-shadow 1-column navbar-sticky footer-static bg-full-screen-image  blank-page blank-page" data-open="click" data-menu="vertical-menu-modern" data-col="1-column">
-    <!-- BEGIN: Content-->
-    <div class="app-content content" style="display: flex; justify-content: center; align-items: center; height: 100vh;">
-        <div class="content-overlay"></div>
-        <div class="content-wrapper">
-            <div class="content-header row">
-            </div>
-            <div class="content-body">
-                <!-- login page start -->
-                        <div class="card shadow-lg">
-                            <div class="row">
-                                <div class="col-md-6"> 
-                                    <div class="card disable-rounded-right mb-0 p-2 h-100 d-flex justify-content-center">
-                                        <div class="card-header pb-1">
-                                            <div class="card-logo text-center">
-                                                <img class="fill" src="/app-assets/images/logo/logo.png" alt="Logo" style="width: 200px; height: auto;">
-                                            </div>
-                                            <div class="card-title">
-                                                <h6 class="text-center mt-2">GESTOR DE TAREAS</h6>
-                                            </div>
-                                        </div>
-                                        <div class="card-content">
-                                            <div class="card-body">
-
-
-
-                                                <form method="POST" action="{{ route('login') }}">
-                                                    @csrf
-
-                                                    <div class="form-group mb-50">
-                                                        <label class="text-bold-600" for="exampleInputEmail1">Correo electrónico</label>
-                                                        <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Email address" name="email" required autofocus autocomplete="username"></div>
-                                                    <div class="form-group">
-                                                        <label class="text-bold-600" for="exampleInputPassword1">Clave</label>
-                                                        <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password" name="password" required autocomplete="current-password">
-                                                    </div>
-                                                    <div class="form-group d-flex flex-md-row flex-column justify-content-between align-items-center">
-                                                        <div class="text-left">
-                                                            <div class="checkbox checkbox-sm">
-                                                                <input type="checkbox" class="form-check-input" id="remember_me" name="remember">
-                                                                <label class="checkboxsmall" for="exampleCheck1"><small>Manténme sesionado</small></label>
-                                                            </div>
-                                                        </div>
-                                                        <div class="text-right">
-                                                            @if (Route::has('password.request'))
-                                                                <a href="{{ route('password.request') }}" class="card-link">
-                                                                    <small>¿Olvidó su clave?</small>
-                                                                </a>
-                                                            @endif
-                                                        </div>
-                                                    </div>
-                                                    <button type="submit" class="btn btn-primary glow w-100 position-relative">Entrar<i id="icon-arrow" class="bx bx-right-arrow-alt"></i></button>
-                                                </form>
-
-
-
-
-
-                                                <div class="text-center"><small class="mr-25">¿No tienes una cuenta?</small><a href="{{ route('register') }}"><small>Registrarse</small></a></div>
-                                                
-                                            </div>
+<body>
+    
+    <div class="card shadow-lg">
+        <div class="row">
+            <div class="col-md-6"> 
+                <div class="card disable-rounded-right mb-0 p-2 h-100 d-flex justify-content-center">
+                    <div class="card-header pb-1">
+                        <div class="card-logo text-center">
+                            <img class="fill" src="/app-assets/images/logo/logo.png" alt="Logo" style="width: 200px; height: auto;">
+                        </div>
+                        <div class="card-title">
+                            <h6 class="text-center mt-2">GESTOR DE TAREAS</h6>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-body">
+                            <form method="POST" action="{{ route('login') }}">
+                                @csrf
+                                <div class="form-group mb-50">
+                                    <label class="text-bold-600" for="exampleInputEmail1">Correo electrónico</label>
+                                    <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Email address" name="email" required autofocus autocomplete="username"></div>
+                                <div class="form-group">
+                                    <label class="text-bold-600" for="exampleInputPassword1">Clave</label>
+                                    <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password" name="password" required autocomplete="current-password">
+                                </div>
+                                <div class="form-group d-flex flex-md-row flex-column justify-content-between align-items-center">
+                                    <div class="text-left">
+                                        <div class="checkbox checkbox-sm">
+                                            <input type="checkbox" class="form-check-input" id="remember_me" name="remember">
+                                            <label class="checkboxsmall" for="exampleCheck1"><small>Manténme sesionado</small></label>
                                         </div>
                                     </div>
+                                    <div class="text-right">
+                                        @if (Route::has('password.request'))
+                                            <a href="{{ route('password.request') }}" class="card-link">
+                                                <small>¿Olvidó su clave?</small>
+                                            </a>
+                                        @endif
+                                    </div>
                                 </div>
-                                <div class="col-md-6" style="height: 30vh;">
-                                    <img src="/app-assets/images/pages/login.jpg" alt="branding logo" style="width: 100%; height: 100%; object-fit: cover;">
-                                </div>
-                            </div>
+                                <button type="submit" class="btn btn-primary glow w-100 position-relative">Entrar<i id="icon-arrow" class="bx bx-right-arrow-alt"></i></button>
+                            </form>
+                            <div class="text-center"><small class="mr-25">¿No tienes una cuenta?</small><a href="{{ route('register') }}"><small>Registrarse</small></a></div>
                         </div>
-                <!-- login page ends -->
-
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <img src="/app-assets/images/pages/login.jpg" alt="branding logo">
             </div>
         </div>
     </div>
-    <!-- END: Content-->
-
 
     <!-- BEGIN: Vendor JS-->
     <script src="/app-assets/vendors/js/vendors.min.js"></script>
