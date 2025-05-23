@@ -47,9 +47,10 @@
               if ($('.main-menu-content li.sidebar-group-active').length) {
                 activeEl = document.querySelector('.main-menu-content li.sidebar-group-active');
               }
-            }else{
+            }
+            else{
               menu = document.querySelector('.main-menu-content');
-              activeEl = activeEl.getBoundingClientRect().top + menu.scrollTop;
+              // activeEl = activeEl.getBoundingClientRect().top + menu.scrollTop;
               // If active element's top position is less than 2/3 (66%) of menu height than do not scroll
               if (activeEl > parseInt((menu.clientHeight * 2) / 3)) {
                 var start = menu.scrollTop,
