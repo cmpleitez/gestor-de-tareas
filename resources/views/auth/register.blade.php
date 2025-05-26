@@ -1,7 +1,8 @@
 <x-guest-layout>
     <x-authentication-card>
-        <x-slot name="logo">
-            <img class="fill" src="/app-assets/images/logo/logo.png" alt="Logo" style="width: 200px; height: auto;">
+        
+        <x-slot name="logo" class="d-flex justify-content-center">
+            <img src="/app-assets/images/logo/logo.png" alt="Logo" style="height: 100px; width: auto; object-fit: contain;">
         </x-slot>
 
         <x-validation-errors class="mb-4" />

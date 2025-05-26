@@ -52,82 +52,63 @@
             <div class="content-body">
                 <!-- login page start -->
                 <section id="auth-login" class="row flexbox-container">
-                    <div class="col-xl-8 col-11">
-                        <div class="card bg-authentication mb-0">
-                            <div class="row m-0">
+                    <div class="col-xl-6 col-11 p-0 m-0">
+                        <div class="card bg-authentication p-0 m-0">
+                            <div class="row m-0 p-0">
                                 <!-- left section-login -->
                                 <div class="col-md-6 col-12 px-0">
-                                    <div
-                                        class="card disable-rounded-right mb-0 p-2 h-100 d-flex justify-content-center">
-                                        <div class="card-header pb-1">
-                                            <div class="card-title">
-                                                <h4 class="text-center mb-2">Welcome Back</h4>
+                                    <div class="card disable-rounded-right mb-0 p-2 h-100 d-flex justify-content-center">
+                                        <div class="d-flex justify-content-center">
+                                            <img src="/app-assets/images/logo/logo.png" alt="Logo" class="height-100" style="width: auto; object-fit: contain;">
+                                        </div>
+                                        <div class="card-header">
+                                            <div class="card-title m-0 p-0">
+                                                <h6 class="text-center">GESTOR DE TAREAS</h6>
                                             </div>
                                         </div>
-                                        <div class="card-content">
+                                        <div class="card-content m-0">
                                             <div class="card-body">
-                                                <div class="d-flex flex-md-row flex-column justify-content-around">
-                                                    <a href="#"
-                                                        class="btn btn-social btn-google btn-block font-small-3 mr-md-1 mb-md-0 mb-1">
-                                                        <i class="bx bxl-google font-medium-3"></i><span
-                                                            class="pl-50 d-block text-center">Google</span></a>
-                                                    <a href="#"
-                                                        class="btn btn-social btn-block mt-0 btn-facebook font-small-3">
-                                                        <i class="bx bxl-facebook-square font-medium-3"></i><span
-                                                            class="pl-50 d-block text-center">Facebook</span></a>
-                                                </div>
-                                                <div class="divider">
-                                                    <div class="divider-text text-uppercase text-muted"><small>or login
-                                                            with
-                                                            email</small>
-                                                    </div>
-                                                </div>
-                                                <form action="index.html">
+                                                <form method="POST" action="{{ route('login') }}">
+                                                    @csrf
                                                     <div class="form-group mb-50">
-                                                        <label class="text-bold-600" for="exampleInputEmail1">Email
-                                                            address</label>
+                                                        <label class="text-bold-600" for="exampleInputEmail1">Correo electrónico</label>
                                                         <input type="email" class="form-control" id="exampleInputEmail1"
-                                                            placeholder="Email address">
+                                                            placeholder="correo@ejemplo.com" name="email" required autofocus
+                                                            autocomplete="username">
                                                     </div>
                                                     <div class="form-group">
                                                         <label class="text-bold-600"
-                                                            for="exampleInputPassword1">Password</label>
+                                                            for="exampleInputPassword1">Clave</label>
                                                         <input type="password" class="form-control"
-                                                            id="exampleInputPassword1" placeholder="Password">
+                                                            id="exampleInputPassword1" placeholder="Clave" name="password" required autocomplete="current-password">
                                                     </div>
                                                     <div
                                                         class="form-group d-flex flex-md-row flex-column justify-content-between align-items-center">
                                                         <div class="text-left">
                                                             <div class="checkbox checkbox-sm">
                                                                 <input type="checkbox" class="form-check-input"
-                                                                    id="exampleCheck1">
+                                                                    id="exampleCheck1" name="remember">
                                                                 <label class="checkboxsmall"
-                                                                    for="exampleCheck1"><small>Keep me logged
-                                                                        in</small></label>
+                                                                    for="exampleCheck1"><small>Mantener sesión iniciada</small></label>
                                                             </div>
                                                         </div>
-                                                        <div class="text-right"><a href="auth-forgot-password.html"
-                                                                class="card-link"><small>Forgot Password?</small></a>
+                                                        <div class="text-right"><a href="{{ route('password.request') }}"
+                                                                class="card-link"><small>¿Olvidaste tu clave?</small></a>
                                                         </div>
                                                     </div>
                                                     <button type="submit"
-                                                        class="btn btn-primary glow w-100 position-relative">Login<i
+                                                        class="btn btn-primary glow w-100 position-relative">Entrar<i
                                                             id="icon-arrow" class="bx bx-right-arrow-alt"></i></button>
                                                 </form>
                                                 <hr>
-                                                <div class="text-center"><small class="mr-25">Don't have an
-                                                        account?</small><a href="auth-register.html"><small>Sign
-                                                            up</small></a></div>
+                                                <div class="text-center"><small class="mr-25">¿No tienes una cuenta de usuario?</small><a href="{{ route('register') }}"><small>Regístrate</small></a></div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <!-- right section image -->
-                                <div class="col-md-6 d-md-block d-none text-center align-self-center p-3">
-                                    <div class="card-content">
-                                        <img class="img-fluid" src="/app-assets/images/pages/login.jpg"
-                                            alt="branding logo">
-                                    </div>
+                                <div class="col-md-6 p-0 m-0">
+                                    <img src="/app-assets/images/pages/login.jpg" alt="branding logo" style="width: 100%; height: 100%; object-fit: cover;">
                                 </div>
                             </div>
                         </div>
@@ -148,18 +129,12 @@
     <script src="/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.min.js"></script>
     <!-- BEGIN Vendor JS-->
 
-    <!-- BEGIN: Page Vendor JS-->
-    <!-- END: Page Vendor JS-->
-
     <!-- BEGIN: Theme JS-->
     <script src="/app-assets/js/core/app-menu.js"></script>
     <script src="/app-assets/js/core/app.js"></script>
     <script src="/app-assets/js/scripts/components.js"></script>
     <script src="/app-assets/js/scripts/footer.js"></script>
     <!-- END: Theme JS-->
-
-    <!-- BEGIN: Page JS-->
-    <!-- END: Page JS-->
 
 </body>
 <!-- END: Body-->

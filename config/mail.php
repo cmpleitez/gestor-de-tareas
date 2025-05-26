@@ -94,6 +94,11 @@ return [
                 'postmark',
             ],
         ],
+
+        'sendgrid' => [
+            'transport' => 'sendgrid',
+            'driver' => env('MAIL_DRIVER', 'sendgrid'),
+        ],
     ],
 
     /*
