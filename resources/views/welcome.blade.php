@@ -852,11 +852,9 @@
         @endif
 
         <div class="max-w-7xl mx-auto p-6 lg:p-8">
-
-
             <div class="mt-16">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-                    <a href="https://laravel.com/docs"
+                    <a href="https://miro.com/app/board/uXjVLl8VYdo=/" target="_blank"
                         class="scale-100 p-6 bg-white from-gray-700/50 via-transparent rounded-lg shadow-2xl shadow-gray-500/20 flex motion-safe:hover:scale-[1.01] transition-all duration-250 focus:outline focus:outline-2 focus:outline-red-500">
                         <div>
                             <div class="h-16 w-16 flex items-center justify-center rounded-full"
@@ -870,93 +868,104 @@
                                         clip-rule="evenodd" />
                                 </svg>
                             </div>
-                            <h2 class="mt-6 text-xl font-semibold text-gray-900">¿Cómo funciona un gestor de tareas?</h2>
+                            <h2 class="mt-6 text-xl font-semibold text-gray-900">¿Cómo funciona un gestor de tareas?
+                            </h2>
                             <p class="mt-4 text-gray-500 text-sm leading-relaxed" style="text-align: justify;">
-                                La aplicación web como gestor de tareas ayuda al usuario a enviar sus solicitudes al área requerida, 
-                                el supervisor del área revisa y autoriza el paso de éstas hacia las zonas de procesamiento, 
-                                donde los operadores propietarios de cada tarea se encargan de procesarlas, intercambiando comentarios
+                                La aplicación web como gestor de tareas ayuda al usuario a enviar sus solicitudes al
+                                área requerida,
+                                el supervisor del área revisa y autoriza el paso de éstas hacia las zonas de
+                                procesamiento,
+                                donde los operadores propietarios de cada tarea se encargan de procesarlas,
+                                intercambiando comentarios
                                 con los participantes como retroalimentación mutua.
                             </p>
                         </div>
                     </a>
 
-                    <a href="https://laracasts.com"
+                    <a href="https://www.ibm.com/mx-es/topics/workflow" target="_blank"
                         class="scale-100 p-6 bg-white from-gray-700/50 via-transparent rounded-lg shadow-2xl shadow-gray-500/20 flex motion-safe:hover:scale-[1.01] transition-all duration-250 focus:outline focus:outline-2 focus:outline-red-500">
                         <div>
                             <div class="h-16 w-16 flex items-center justify-center rounded-full"
                                 style="background-color:rgb(90, 141, 238);">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 480" fill="#ffffff" xml:space="preserve"><path d="M240 0C107.664 0 0 107.664 0 240s107.664 240 240 240 240-107.664 240-240S372.336 0 240 0m0 460c-121.309 0-220-98.691-220-220S118.691 20 240 20s220 98.691 220 220-98.691 220-220 220"/><path d="M410 194.999h-27.058c-2.643-8.44-6-16.56-10.03-24.271l19.158-19.158a19.84 19.84 0 0 0 5.854-14.121c0-5.332-2.08-10.347-5.854-14.121l-35.399-35.399a19.84 19.84 0 0 0-14.122-5.854 19.84 19.84 0 0 0-14.121 5.854l-19.158 19.158a148 148 0 0 0-24.271-10.03V70c0-11.028-8.972-20-20-20h-50c-11.028 0-20 8.972-20 20v27.058c-8.44 2.643-16.56 6-24.271 10.03L151.57 87.93a19.84 19.84 0 0 0-14.121-5.854 19.84 19.84 0 0 0-14.121 5.854l-35.399 35.399a19.84 19.84 0 0 0-5.854 14.122 19.84 19.84 0 0 0 5.854 14.121l19.158 19.158a148 148 0 0 0-10.03 24.271H70c-11.028 0-20 8.972-20 20v50c0 11.028 8.972 20 20 20h27.057c2.643 8.44 6 16.56 10.03 24.271L87.929 328.43a19.84 19.84 0 0 0-5.854 14.121c0 5.332 2.08 10.347 5.854 14.121l35.399 35.399a19.84 19.84 0 0 0 14.122 5.854 19.84 19.84 0 0 0 14.121-5.854l19.158-19.158A148 148 0 0 0 195 382.943V410c0 11.028 8.972 20 20 20h50c11.028 0 20-8.972 20.001-20v-27.058c8.44-2.643 16.56-6 24.271-10.03l19.158 19.158a19.84 19.84 0 0 0 14.121 5.854c5.332 0 10.347-2.08 14.121-5.854l35.399-35.399a19.84 19.84 0 0 0 5.854-14.122 19.84 19.84 0 0 0-5.854-14.121l-19.158-19.158a148 148 0 0 0 10.03-24.271H410c11.028 0 20-8.972 20-20v-50c0-11.028-8.972-20-20-20m0 69.999h-34.598a10 10 0 0 0-9.684 7.503c-3.069 11.901-7.716 23.133-13.813 33.387a10 10 0 0 0 1.524 12.182l24.5 24.457-35.357 35.4-24.5-24.5a10 10 0 0 0-12.182-1.524c-10.254 6.097-21.487 10.745-33.387 13.813A10 10 0 0 0 265 375.4V410h-50v-34.599a10 10 0 0 0-7.503-9.684c-11.901-3.069-23.133-7.716-33.387-13.813a10 10 0 0 0-5.107-1.404 9.98 9.98 0 0 0-7.073 2.931l-24.457 24.5-35.4-35.357 24.5-24.5a10 10 0 0 0 1.524-12.182c-6.097-10.254-10.745-21.487-13.813-33.387a10 10 0 0 0-9.684-7.503H70v-50h34.596a10 10 0 0 0 9.684-7.503c3.069-11.901 7.716-23.133 13.813-33.387a10 10 0 0 0-1.524-12.182l-24.5-24.457 35.357-35.4 24.5 24.5a10 10 0 0 0 1.524-12.182c6.097-10.254 10.745-21.487 13.813-33.387a10 10 0 0 0 9.684-7.503H410z"/><path d="m331.585 292.475-40-35-13.17 15.051L298.386 290H240c-27.57 0-50-22.43-50-50h-20c0 38.598 31.402 70 70 70h58.386l-19.971 17.475 13.17 15.051 40-35a10 10 0 0 0 0-15.051m-130-85.002L181.614 190H240c27.57 0 50 22.43 50 50h20c0-38.598-31.402-70-70-70h-58.386l19.971-17.475-13.17-15.051-40 35a10 10 0 0 0 0 15.05l40 35z"/></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 480" fill="#ffffff"
+                                    xml:space="preserve">
+                                    <path
+                                        d="M240 0C107.664 0 0 107.664 0 240s107.664 240 240 240 240-107.664 240-240S372.336 0 240 0m0 460c-121.309 0-220-98.691-220-220S118.691 20 240 20s220 98.691 220 220-98.691 220-220 220" />
+                                    <path
+                                        d="M410 194.999h-27.058c-2.643-8.44-6-16.56-10.03-24.271l19.158-19.158a19.84 19.84 0 0 0 5.854-14.121c0-5.332-2.08-10.347-5.854-14.121l-35.399-35.399a19.84 19.84 0 0 0-14.122-5.854 19.84 19.84 0 0 0-14.121 5.854l-19.158 19.158a148 148 0 0 0-24.271-10.03V70c0-11.028-8.972-20-20-20h-50c-11.028 0-20 8.972-20 20v27.058c-8.44 2.643-16.56 6-24.271 10.03L151.57 87.93a19.84 19.84 0 0 0-14.121-5.854 19.84 19.84 0 0 0-14.121 5.854l-35.399 35.399a19.84 19.84 0 0 0-5.854 14.122 19.84 19.84 0 0 0 5.854 14.121l19.158 19.158a148 148 0 0 0-10.03 24.271H70c-11.028 0-20 8.972-20 20v50c0 11.028 8.972 20 20 20h27.057c2.643 8.44 6 16.56 10.03 24.271L87.929 328.43a19.84 19.84 0 0 0-5.854 14.121c0 5.332 2.08 10.347 5.854 14.121l35.399 35.399a19.84 19.84 0 0 0 14.122 5.854 19.84 19.84 0 0 0 14.121-5.854l19.158-19.158A148 148 0 0 0 195 382.943V410c0 11.028 8.972 20 20 20h50c11.028 0 20-8.972 20.001-20v-27.058c8.44-2.643 16.56-6 24.271-10.03l19.158 19.158a19.84 19.84 0 0 0 14.121 5.854c5.332 0 10.347-2.08 14.121-5.854l35.399-35.399a19.84 19.84 0 0 0 5.854-14.122 19.84 19.84 0 0 0-5.854-14.121l-19.158-19.158a148 148 0 0 0 10.03-24.271H410c11.028 0 20-8.972 20-20v-50c0-11.028-8.972-20-20-20m0 69.999h-34.598a10 10 0 0 0-9.684 7.503c-3.069 11.901-7.716 23.133-13.813 33.387a10 10 0 0 0 1.524 12.182l24.5 24.457-35.357 35.4-24.5-24.5a10 10 0 0 0-12.182-1.524c-10.254 6.097-21.487 10.745-33.387 13.813A10 10 0 0 0 265 375.4V410h-50v-34.599a10 10 0 0 0-7.503-9.684c-11.901-3.069-23.133-7.716-33.387-13.813a10 10 0 0 0-5.107-1.404 9.98 9.98 0 0 0-7.073 2.931l-24.457 24.5-35.4-35.357 24.5-24.5a10 10 0 0 0 1.524-12.182c-6.097-10.254-10.745-21.487-13.813-33.387a10 10 0 0 0-9.684-7.503H70v-50h34.596a10 10 0 0 0 9.684-7.503c3.069-11.901 7.716-23.133 13.813-33.387a10 10 0 0 0-1.524-12.182l-24.5-24.457 35.357-35.4 24.5 24.5a10 10 0 0 0 1.524-12.182c6.097-10.254 10.745-21.487 13.813-33.387a10 10 0 0 0 9.684-7.503H410z" />
+                                    <path
+                                        d="m331.585 292.475-40-35-13.17 15.051L298.386 290H240c-27.57 0-50-22.43-50-50h-20c0 38.598 31.402 70 70 70h58.386l-19.971 17.475 13.17 15.051 40-35a10 10 0 0 0 0-15.051m-130-85.002L181.614 190H240c27.57 0 50 22.43 50 50h20c0-38.598-31.402-70-70-70h-58.386l19.971-17.475-13.17-15.051-40 35a10 10 0 0 0 0 15.05l40 35z" />
+                                </svg>
                             </div>
                             <h2 class="mt-6 text-xl font-semibold text-gray-900">¿Qué es un flujo de trabajo?</h2>
                             <p class="mt-4 text-gray-500 text-sm leading-relaxed" style="text-align: justify;">
-                                Laracasts offers thousands of video tutorials on Laravel, PHP, and JavaScript
-                                development. Check them out, see for yourself, and massively level up your development
-                                skills in the process.
+                                Es un sistema para gestionar procesos y tareas repetitivos que ocurren en un orden
+                                particular.
+                                Es el mecanismo por el cual las personas y las organizaciones realizan su trabajo, ya
+                                sea fabricando un
+                                producto, proporcionando un servicio, procesando información o cualquier otra actividad
+                                generadora
+                                de valor. Un flujo de trabajo puede diseñarse en su modalidad secuencial o en su
+                                modalidad dinámica
+                                la cual consiste en hacer fluir tareas de una solicitud en forma simultánea, en donde
+                                los operadores
+                                las procesan sin una secuencia definida.
                             </p>
                         </div>
                     </a>
 
-                    <a href="https://laravel-news.com"
+                    <a href="https://dle.rae.es/incidencia" target="_blank"
                         class="scale-100 p-6 bg-white from-gray-700/50 via-transparent rounded-lg shadow-2xl shadow-gray-500/20 flex motion-safe:hover:scale-[1.01] transition-all duration-250 focus:outline focus:outline-2 focus:outline-red-500">
                         <div>
                             <div class="h-16 w-16 flex items-center justify-center rounded-full"
                                 style="background-color:rgb(90, 141, 238);">
-                                <svg width="800" height="800" viewBox="0 0 24 24" fill="#ffffff" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" clip-rule="evenodd" 
-                                    d="M14.94 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16m3.92 10.8-1.12 1.12a.4.4 0 0 1-.57 0l-2.73-2.73a2.77 2.77 0 0 1-3.38-3.91l1.88 1.86 1.13-1.13-1.88-1.87a2.77 2.77 0 0 1 3.93 3.37l2.73 2.77a.4.4 0 0 1 0 .52z"/>
-                                    <path d="M2.94 12a6 6 0 0 1 4-5.65V4.28a8 8 0 0 0 0 15.46v-2.09a6 6 0 0 1-2.9-2.19A6 6 0 0 1 2.94 12"/>
+                                <svg width="800" height="800" viewBox="0 0 24 24" fill="#ffffff"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                        d="M14.94 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16m3.92 10.8-1.12 1.12a.4.4 0 0 1-.57 0l-2.73-2.73a2.77 2.77 0 0 1-3.38-3.91l1.88 1.86 1.13-1.13-1.88-1.87a2.77 2.77 0 0 1 3.93 3.37l2.73 2.77a.4.4 0 0 1 0 .52z" />
+                                    <path
+                                        d="M2.94 12a6 6 0 0 1 4-5.65V4.28a8 8 0 0 0 0 15.46v-2.09a6 6 0 0 1-2.9-2.19A6 6 0 0 1 2.94 12" />
                                 </svg>
                             </div>
 
                             <h2 class="mt-6 text-xl font-semibold text-gray-900">¿Qué es una incidencia?</h2>
-
                             <p class="mt-4 text-gray-500 text-sm leading-relaxed" style="text-align: justify;">
-                                Laravel News is a community driven portal and newsletter aggregating all of the latest
-                                and most important news in the Laravel ecosystem, including new package releases and
-                                tutorials.
+                                Es el procesamiento repetitivo de una misma tarea, cada vez que dicha tarea vuelve a
+                                procesarse,
+                                se registra como incidencia. Las incidencias sirven de indicadores para los informes
+                                productividad,
+                                niveles de calidad de las tareas que circulan en el flujo de trabajo.
                             </p>
                         </div>
                     </a>
 
-                    <div
-                        class="scale-100 p-6 bg-white from-gray-700/50 via-transparent rounded-lg shadow-2xl shadow-gray-500/20 flex motion-safe:hover:scale-[1.01] transition-all duration-250 focus:outline focus:outline-2 focus:outline-red-500">
-                        <div>
-                            <div class="h-16 w-16 flex items-center justify-center rounded-full"
-                                style="background-color: rgb(90, 141, 238);">
-                                <svg style="width: 100%; height: 65%;" viewBox="0 -0.25 67 67" fill="#ffffff" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M18.947 21.394C23.18 31.567 27.575 42.131 32.035 52.852c2.968 0.698 3.622 1.375 4.037 4.703 0.197 1.573 0.305 3.155 0.326 4.739 0.035 2.874 -1.17 4.207 -4.031 4.173 -4.915 -0.058 -9.829 -0.317 -14.744 -0.431 -1.962 -0.045 -3.932 0.017 -5.892 0.128 -1.464 0.083 -2.297 -0.298 -2.415 -1.726a64.5 64.5 0 0 1 -0.28 -8.175c0.103 -2.273 1.56 -3.382 3.962 -3.538 0.762 -0.05 1.53 -0.025 2.295 -0.029 0.758 -0.004 1.517 0 2.546 0 -0.548 -1.972 -0.996 -3.793 -1.562 -5.577 -2.029 -6.394 -4.098 -12.777 -6.152 -19.163 -0.066 -0.207 -0.159 -0.408 -0.211 -0.619 -0.371 -1.481 -0.378 -3.221 -1.206 -4.37 -0.759 -1.053 -2.458 -1.387 -3.647 -2.179C-1.153 16.645 -1.546 6.707 4.286 2.029c3.703 -2.97 10.291 -2.646 14.308 0.752a10.7 10.7 0 0 1 2.106 2.271 2.11 2.11 0 0 0 2.162 1.08c6.426 -0.45 12.859 -0.817 19.279 -1.335 3.88 -0.314 3.873 -0.413 5.259 3.196 1.917 -0.221 3.851 -0.41 5.77 -0.696 0.366 -0.055 0.737 -0.447 0.998 -0.77 1.062 -1.317 2.092 -2.662 3.118 -4.009 1.335 -1.756 2.523 -2.093 4.559 -1.205a29 29 0 0 1 3.099 1.488c1.177 0.691 1.568 1.795 1.137 2.756 -0.426 0.952 -1.524 1.401 -2.809 1.042a6.75 6.75 0 0 1 -1.942 -0.844c-0.938 -0.632 -1.575 -0.406 -2.211 0.421q-0.676 0.826 -1.448 1.562c-1.691 1.713 -1.784 3.304 -0.348 5.251a122 122 0 0 1 3.019 4.285c0.508 0.755 1.078 0.92 1.947 0.637a9.8 9.8 0 0 1 2.872 -0.577c0.525 -0.005 1.409 0.479 1.494 0.877 0.115 0.538 -0.208 1.488 -0.653 1.767a33 33 0 0 1 -4.518 2.295c-1.313 0.563 -2.378 -0.099 -3.127 -1.137 -1.342 -1.858 -2.677 -3.732 -3.84 -5.702 -0.528 -0.894 -1.105 -1.221 -2.067 -1.225a20.5 20.5 0 0 1 -3.267 -0.197c-1.157 -0.193 -1.692 0.329 -2.107 1.293 -0.868 2.022 -0.939 1.956 -3.185 1.972 -3.057 0.023 -6.115 0.297 -9.17 0.263 -3.6 -0.041 -7.202 -0.253 -10.796 -0.492 -0.97 -0.066 -1.599 0.033 -2.18 0.923 -0.739 1.133 -1.711 2.116 -2.797 3.42m0.827 -9.034C19.665 7.114 15.822 3.404 10.667 3.571c-4.152 0.135 -7.098 3.413 -7.04 7.832 0.06 4.599 3.33 7.883 7.915 7.729C16.651 18.96 20.2 15.18 19.773 12.36m-7.565 10.505q0 0.362 0.075 0.717c0.85 2.416 1.742 4.816 2.568 7.24 2.372 6.955 4.707 13.922 7.102 20.868 0.164 0.471 0.664 1.113 1.069 1.161 1.271 0.15 2.571 0.055 4.011 0.055L15.626 22.23zm11.373 -8.407 20.49 -0.576c-0.146 -0.715 -0.259 -1.233 -0.358 -1.754a70.5 70.5 0 0 1 -0.32 -1.77c-0.289 -1.747 -0.286 -1.748 -2.067 -1.742l-16.205 0.059c-0.683 0.003 -1.367 0 -2.063 0 0.17 1.882 0.327 3.607 0.524 5.782m-10.725 47.554h18.791v-5.182H13.165z"/>
-                                    <path d="M11.085 15.041c-1.816 -0.025 -3.382 -0.985 -3.788 -2.325 -0.48 -1.585 0.182 -3.35 1.673 -4.454 2.685 -1.989 5.458 -1.282 6.341 1.617 0.823 2.709 -1.218 5.202 -4.228 5.16"/>
-                                </svg>
+                    <a href="https://www.ibm.com/mx-es/topics/automation" target="_blank">
+                        <div class="scale-100 p-6 bg-white from-gray-700/50 via-transparent rounded-lg shadow-2xl shadow-gray-500/20 flex motion-safe:hover:scale-[1.01] transition-all duration-250 focus:outline focus:outline-2 focus:outline-red-500">
+                            <div>
+                                <div class="h-16 w-16 flex items-center justify-center rounded-full"
+                                    style="background-color: rgb(90, 141, 238);">
+                                    <svg style="width: 100%; height: 65%;" viewBox="0 -0.25 67 67" fill="#ffffff"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="M18.947 21.394C23.18 31.567 27.575 42.131 32.035 52.852c2.968 0.698 3.622 1.375 4.037 4.703 0.197 1.573 0.305 3.155 0.326 4.739 0.035 2.874 -1.17 4.207 -4.031 4.173 -4.915 -0.058 -9.829 -0.317 -14.744 -0.431 -1.962 -0.045 -3.932 0.017 -5.892 0.128 -1.464 0.083 -2.297 -0.298 -2.415 -1.726a64.5 64.5 0 0 1 -0.28 -8.175c0.103 -2.273 1.56 -3.382 3.962 -3.538 0.762 -0.05 1.53 -0.025 2.295 -0.029 0.758 -0.004 1.517 0 2.546 0 -0.548 -1.972 -0.996 -3.793 -1.562 -5.577 -2.029 -6.394 -4.098 -12.777 -6.152 -19.163 -0.066 -0.207 -0.159 -0.408 -0.211 -0.619 -0.371 -1.481 -0.378 -3.221 -1.206 -4.37 -0.759 -1.053 -2.458 -1.387 -3.647 -2.179C-1.153 16.645 -1.546 6.707 4.286 2.029c3.703 -2.97 10.291 -2.646 14.308 0.752a10.7 10.7 0 0 1 2.106 2.271 2.11 2.11 0 0 0 2.162 1.08c6.426 -0.45 12.859 -0.817 19.279 -1.335 3.88 -0.314 3.873 -0.413 5.259 3.196 1.917 -0.221 3.851 -0.41 5.77 -0.696 0.366 -0.055 0.737 -0.447 0.998 -0.77 1.062 -1.317 2.092 -2.662 3.118 -4.009 1.335 -1.756 2.523 -2.093 4.559 -1.205a29 29 0 0 1 3.099 1.488c1.177 0.691 1.568 1.795 1.137 2.756 -0.426 0.952 -1.524 1.401 -2.809 1.042a6.75 6.75 0 0 1 -1.942 -0.844c-0.938 -0.632 -1.575 -0.406 -2.211 0.421q-0.676 0.826 -1.448 1.562c-1.691 1.713 -1.784 3.304 -0.348 5.251a122 122 0 0 1 3.019 4.285c0.508 0.755 1.078 0.92 1.947 0.637a9.8 9.8 0 0 1 2.872 -0.577c0.525 -0.005 1.409 0.479 1.494 0.877 0.115 0.538 -0.208 1.488 -0.653 1.767a33 33 0 0 1 -4.518 2.295c-1.313 0.563 -2.378 -0.099 -3.127 -1.137 -1.342 -1.858 -2.677 -3.732 -3.84 -5.702 -0.528 -0.894 -1.105 -1.221 -2.067 -1.225a20.5 20.5 0 0 1 -3.267 -0.197c-1.157 -0.193 -1.692 0.329 -2.107 1.293 -0.868 2.022 -0.939 1.956 -3.185 1.972 -3.057 0.023 -6.115 0.297 -9.17 0.263 -3.6 -0.041 -7.202 -0.253 -10.796 -0.492 -0.97 -0.066 -1.599 0.033 -2.18 0.923 -0.739 1.133 -1.711 2.116 -2.797 3.42m0.827 -9.034C19.665 7.114 15.822 3.404 10.667 3.571c-4.152 0.135 -7.098 3.413 -7.04 7.832 0.06 4.599 3.33 7.883 7.915 7.729C16.651 18.96 20.2 15.18 19.773 12.36m-7.565 10.505q0 0.362 0.075 0.717c0.85 2.416 1.742 4.816 2.568 7.24 2.372 6.955 4.707 13.922 7.102 20.868 0.164 0.471 0.664 1.113 1.069 1.161 1.271 0.15 2.571 0.055 4.011 0.055L15.626 22.23zm11.373 -8.407 20.49 -0.576c-0.146 -0.715 -0.259 -1.233 -0.358 -1.754a70.5 70.5 0 0 1 -0.32 -1.77c-0.289 -1.747 -0.286 -1.748 -2.067 -1.742l-16.205 0.059c-0.683 0.003 -1.367 0 -2.063 0 0.17 1.882 0.327 3.607 0.524 5.782m-10.725 47.554h18.791v-5.182H13.165z" />
+                                        <path
+                                            d="M11.085 15.041c-1.816 -0.025 -3.382 -0.985 -3.788 -2.325 -0.48 -1.585 0.182 -3.35 1.673 -4.454 2.685 -1.989 5.458 -1.282 6.341 1.617 0.823 2.709 -1.218 5.202 -4.228 5.16" />
+                                    </svg>
+                                </div>
+                                <h2 class="mt-6 text-xl font-semibold text-gray-900">Automatización</h2>
+                                <p class="mt-4 text-gray-500 text-sm leading-relaxed" style="text-align: justify;">
+                                    Los procesos manuales son susceptibles a errores humanos, ineficiencias e
+                                    incongruencias que pueden
+                                    interrumpir la calidad del producto y las experiencias del cliente, los sistemas
+                                    automatizados son
+                                    inherentemente eficientes, sistemáticos y escalables, y permiten a los usuarios del
+                                    sistema enfocarse
+                                    en más tareas de análisis, tácticas, estrategias de mejora, sostenibilidad y
+                                    crecimiento.
+                                </p>
                             </div>
-                            <h2 class="mt-6 text-xl font-semibold text-gray-900">Automatización</h2>
-
-                            <p class="mt-4 text-gray-500 text-sm leading-relaxed" style="text-align: justify;">
-                                Laravel's robust library of first-party tools and libraries, such as <a
-                                    href="https://forge.laravel.com"
-                                    class="underline hover:text-gray-700 focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">Forge</a>,
-                                <a href="https://vapor.laravel.com"
-                                    class="underline hover:text-gray-700 focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">Vapor</a>,
-                                <a href="https://nova.laravel.com"
-                                    class="underline hover:text-gray-700 focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">Nova</a>,
-                                and <a href="https://envoyer.io"
-                                    class="underline hover:text-gray-700 focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">Envoyer</a>
-                                help you take your projects to the next level. Pair them with powerful open source
-                                libraries like <a href="https://laravel.com/docs/billing"
-                                    class="underline hover:text-gray-700 focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">Cashier</a>,
-                                <a href="https://laravel.com/docs/dusk"
-                                    class="underline hover:text-gray-700 focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">Dusk</a>,
-                                <a href="https://laravel.com/docs/broadcasting"
-                                    class="underline hover:text-gray-700 focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">Echo</a>,
-                                <a href="https://laravel.com/docs/horizon"
-                                    class="underline hover:text-gray-700 focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">Horizon</a>,
-                                <a href="https://laravel.com/docs/sanctum"
-                                    class="underline hover:text-gray-700 focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">Sanctum</a>,
-                                <a href="https://laravel.com/docs/telescope"
-                                    class="underline hover:text-gray-700 focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">Telescope</a>,
-                                and more.
-                            </p>
                         </div>
-                    </div>
+                    </a>
                 </div>
             </div>
 

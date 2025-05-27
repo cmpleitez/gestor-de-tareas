@@ -1,5 +1,7 @@
-
-maquetar el portal 
+🟢 Preparar un sistema base prefabricado para solo replicar
+        ...diseñar logo icono
+        ...hacer menu dinámico con los roles
+        
 
 
 
