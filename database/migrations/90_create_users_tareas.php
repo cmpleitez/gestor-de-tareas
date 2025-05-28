@@ -1,0 +1,28 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('users_tareas', function (Blueprint $table) {
+            $table->char('id', 12)->primary();
+            $table->char('solicitud_tarea_id', 15)->foreignId();
+            $table->foreignId('user_id_origen');
+            $table->foreignId('user_id_destino');
+            $table->timestampsTz();
+
+            $table->foreign('user_id_origen')->references('id')->on('users');
+            $table->foreign('user_id_destino')->references('id')->on('users');
+            $table->foreign('solicitud_tarea_id')->references('id')->on('solicitudes_tareas');
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('users_tareas');
+    }
+};

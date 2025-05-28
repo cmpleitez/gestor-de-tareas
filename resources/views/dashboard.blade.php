@@ -50,7 +50,7 @@
 <!-- BEGIN: Body-->
 
 <body
-    class="menu-expanded vertical-layout vertical-menu-modern boxicon-layout no-card-shadow 2-columns  navbar-sticky footer-static  "
+    class="vertical-layout vertical-menu-modern boxicon-layout no-card-shadow 2-columns navbar-sticky footer-static"
     data-open="click" data-menu="vertical-menu-modern" data-col="2-columns">
     <!-- BEGIN: Header-->
     <div class="header-navbar-shadow"></div>
@@ -137,7 +137,7 @@
     <div class="main-menu menu-fixed menu-light menu-accordion menu-shadow" data-scroll-to-active="true">
         <div class="navbar-header">
             <ul class="nav navbar-nav flex-row">
-                <li class="nav-item mr-auto">
+                <li class="nav-item mr-auto open">
                     <a class="navbar-brand align-items-baseline" href="{{ route('dashboard') }}">
                         <div class="brand-logo">
                             <img src="{{ asset('app-assets/images/ico/logo.ico') }}" alt="logo" style="width: 2.5rem; height: 2rem; object-fit: contain;">
@@ -156,19 +156,19 @@
             <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation"
                 data-icon-style="">
                 <li class=" nav-item"><a href="#"><i class="bx bx-menu"></i><span class="menu-title"
-                            data-i18n="Menu Levels">Menu Levels</span></a>
-                    <ul class="menu-content">
+                            data-i18n="Menu Levels">Opciones</span></a>
+                    <ul class="menu-content" style="display: block;">
                         <li><a href="#"><i class="bx bx-right-arrow-alt"></i><span class="menu-item"
-                                    data-i18n="Second Level">Second Level</span></a>
+                                    data-i18n="Second Level">Mis tareas</span></a>
                         </li>
                         <li><a href="#"><i class="bx bx-right-arrow-alt"></i><span class="menu-item"
-                                    data-i18n="Second Level">Second Level</span></a>
-                            <ul class="menu-content">
+                                    data-i18n="Second Level">Administración</span></a>
+                            <ul class="menu-content" style="display: block;">
                                 <li><a href="#"><i class="bx bx-right-arrow-alt"></i><span class="menu-item"
-                                            data-i18n="Third Level">Third Level</span></a>
+                                            data-i18n="Third Level">Usuarios</span></a>
                                 </li>
                                 <li><a href="#"><i class="bx bx-right-arrow-alt"></i><span class="menu-item"
-                                            data-i18n="Third Level">Third Level</span></a>
+                                            data-i18n="Third Level">Servicios</span></a>
                                 </li>
                             </ul>
                         </li>
