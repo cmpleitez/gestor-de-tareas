@@ -40,9 +40,8 @@
     <link rel="stylesheet" type="text/css" href="/app-assets/css/pages/dashboard-analytics.css">
     <!-- END: Page CSS-->
 
-    <!-- BEGIN: Custom CSS-->
-    <link rel="stylesheet" type="text/css" href="/assets/css/style.css">
-    <!-- END: Custom CSS-->
+    @section('css')
+    @show
 
 </head>
 <!-- END: Head-->
@@ -161,17 +160,32 @@
                         <li><a href="#"><i class="bx bx-right-arrow-alt"></i><span class="menu-item"
                                     data-i18n="Second Level">Mis tareas</span></a>
                         </li>
+                        @role('Administradores')
                         <li><a href="#"><i class="bx bx-right-arrow-alt"></i><span class="menu-item"
                                     data-i18n="Second Level">Administración</span></a>
                             <ul class="menu-content" style="display: block;">
-                                <li><a href="#"><i class="bx bx-right-arrow-alt"></i><span class="menu-item"
-                                            data-i18n="Third Level">Usuarios</span></a>
+                                <li><a href="{{ Route('equipo') }}"><i class="bx bx-right-arrow-alt"></i><span class="menu-item"
+                                            data-i18n="Third Level">Equipos</span></a>
                                 </li>
                                 <li><a href="#"><i class="bx bx-right-arrow-alt"></i><span class="menu-item"
-                                            data-i18n="Third Level">Servicios</span></a>
+                                            data-i18n="Third Level">Disponible</span></a>
                                 </li>
                             </ul>
                         </li>
+                        @endrole
+                        @role('SuperAdmin')
+                        <li><a href="#"><i class="bx bx-right-arrow-alt"></i><span class="menu-item"
+                                    data-i18n="Second Level">Configuración</span></a>
+                            <ul class="menu-content" style="display: block;">
+                                <li><a href="{{ Route('user') }}"><i class="bx bx-right-arrow-alt"></i><span class="menu-item"
+                                            data-i18n="Third Level">Usuarios</span></a>
+                                </li>
+                                <li><a href="#"><i class="bx bx-right-arrow-alt"></i><span class="menu-item"
+                                            data-i18n="Third Level">Disponible</span></a>
+                                </li>
+                            </ul>
+                        </li>
+                        @endrole
                     </ul>
                 </li>
                 <li class=" navigation-header"><span>Support</span>
@@ -188,7 +202,10 @@
             <div class="content-header row">
             </div>
             <div class="content-body">
-                <h1>contenido</h1>
+
+                @section('contenedor')
+                @show
+
             </div>
         </div>
     </div>
@@ -228,6 +245,12 @@
     <!-- BEGIN: Page JS-->
     <script src="/app-assets/js/scripts/pages/dashboard-analytics.js"></script>
     <!-- END: Page JS-->
+
+    <!-- Custom js for this page -->
+    @section('js')
+    @show
+    <!-- End custom js for this page -->
+
 </body>
 <!-- END: Body-->
 

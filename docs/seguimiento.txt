@@ -1,19 +1,13 @@
 🟢 Preparar un sistema base prefabricado para solo replicar
-        
-        
-
-
-
-
-
-
-
-
-
+        ...crud de usuarios 
+            ...aplicar el formulario de la plantilla actual
+            ...aplicar las relaciones entre tablas
+        ...crud de asignacion de roles
+        ...crud de equipos
+        ...usar un componente para aplicar el logo a la app
 
 Creando el flujo de trabajo:
 https://miro.com/app/board/uXjVLl8VYdo=/
-
 
 Presentación del estudio:
 
