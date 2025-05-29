@@ -35,6 +35,7 @@
                                 <thead>
                                     <tr>
                                         <th>Area</th>
+                                        <th>Rol</th>
                                         <th>Usuario</th>
                                         <th>correo</th>
                                         <th>Creado</th>
@@ -46,16 +47,19 @@
                                     @foreach ($users as $user)
                                         <tr>
                                             <td>{{ $user->area->area }}</td>
+                                            <td>{{ $user->roles->first()->name }}</td>
                                             <td>{{ $user->name }}</td>
                                             <td>{{ $user->email }}</td>
                                             <td>{{ $user->created_at->format('d/m/Y') }}</td>
                                             <td>{{ $user->updated_at->format('d/m/Y') }}</td>
+                                            <td><!-- Aquí va la sexta celda para las acciones --></td>
                                         </tr>
                                     @endforeach
                                 </tbody>
                                 <tfoot>
                                     <tr>
                                         <th>Area</th>
+                                        <th>Rol</th>
                                         <th>Usuario</th>
                                         <th>correo</th>
                                         <th>Creado</th>
@@ -101,4 +105,13 @@
     <!-- BEGIN: Page JS-->
     <script src="/app-assets/js/scripts/datatables/datatable.js"></script>
     <!-- END: Page JS-->
+
+        <!-- ... otros scripts ... -->
+        <script>
+            $(document).ready(function() {
+                $('.zero-configuration').DataTable();
+            });
+        </script>
+        <!-- ... otros scripts ... -->
+
 @stop
