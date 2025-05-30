@@ -1,9 +1,10 @@
+🟢 me quedé maquetando la sombra del card en general
+
 🟢 Preparar un sistema base prefabricado para solo replicar
         ...crud de usuarios 
-            ...crear roles y sus permisos 
             ...automatizar tablero de control según permisos
-            ...aplicar el formulario de la plantilla actual
-            ...maquetar de una vez la primera datatable
+                ...control autorizar roles a usuarios y su respectiva vista
+                    
         ...crud de asignacion de roles
         ...crud de equipos
         ...usar un componente para aplicar el logo a la app

@@ -50,7 +50,35 @@
             </div>
         </div>
     </div>
+
+
+    <div class="row">
+        <div class="col-xl-4 col-md-6 col-sm-12">
+            <div class="card shadom-lg">
+                <div class="card-header">
+                    <h4 class="card-title">Card With Header And Footer</h4>
+                </div>
+                <div class="card-content">
+                    <div class="card-body">
+                        <p class="card-text">
+                            Gummies bonbon apple pie fruitcake icing biscuit apple pie jelly-o sweet roll. Toffee
+                            sugar plum sugar plum jelly-o jujubes bonbon dessert carrot cake.
+                        </p>
+                    </div>
+                    <img class="img-fluid" src="../../../app-assets/images/slider/11.png" alt="Card image cap">
+                </div>
+                <div class="card-footer d-flex justify-content-between">
+                    <span>Card Footer</span>
+                    <button class="btn btn-light-primary">Read More</button>
+                </div>
+            </div>
+        </div>
+    </div>    
+
 @stop
+
+
+
 
 @section('js')
 @stop

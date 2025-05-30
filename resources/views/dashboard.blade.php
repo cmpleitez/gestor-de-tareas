@@ -41,6 +41,18 @@
     <!-- END: Page CSS-->
 
     <style>
+        .card-header {
+            background-color: rgb(233, 233, 241);
+        }
+
+        .card-footer {
+            background-color: #e0e3f8;
+        }
+
+        .no-card-shadow .card {
+            box-shadow: 0 1px 1px 1px rgba(0, 0, 0, 0.5);
+        }
+
         .button_keys {
             color: #28a745 !important;
             border: 1px solid #28a745 !important;
@@ -85,7 +97,7 @@
             margin-bottom: 0.25rem !important;
         }
 
-        div.dataTables_wrapper div.dataTables_filter, 
+        div.dataTables_wrapper div.dataTables_filter,
         div.dataTables_wrapper div.dataTables_length {
             margin: 0rem 0;
         }

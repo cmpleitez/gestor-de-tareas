@@ -35,8 +35,8 @@ class UserController extends Controller
 
     public function rolesEdit(User $user)
     {
-        $roles = Role::where('name', '!=', 'SuperAdmin')->where('active', true)->get();
-        return view('modelos.user.roles-edit', compact('roles'));
+        $roles = Role::where('name', '!=', 'SuperAdmin')->get();
+        return view('modelos.user.roles-edit', ['user' => $user, 'roles' => $roles]);
     }
 
     public function update(Request $request, User $user)
