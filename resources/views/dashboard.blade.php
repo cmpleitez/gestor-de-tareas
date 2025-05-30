@@ -40,6 +40,87 @@
     <link rel="stylesheet" type="text/css" href="/app-assets/css/pages/dashboard-analytics.css">
     <!-- END: Page CSS-->
 
+    <style>
+        .button_keys {
+            color: #28a745 !important;
+            border: 1px solid #28a745 !important;
+            font-size: 1.1rem !important;
+            margin-right: 0.12rem !important;
+            padding: 0.1rem 0.35rem !important;
+            border-radius: 0.2rem !important;
+            margin-top: 0.25rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .button_show {
+            color: #0fb100 !important;
+            border: 1px solid #0fb100 !important;
+            font-size: 1.1rem !important;
+            margin-right: 0.12rem !important;
+            padding: 0.1rem 0.35rem !important;
+            border-radius: 0.2rem !important;
+            margin-top: 0.25rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .button_edit {
+            color: #ff6629 !important;
+            border: 1px solid #ff6629 !important;
+            font-size: 1.1rem !important;
+            margin-right: 0.12rem !important;
+            padding: 0.1rem 0.35rem !important;
+            border-radius: 0.2rem !important;
+            margin-top: 0.25rem !important;
+            margin-bottom: 0.25rem !important;
+        }
+
+        .button_delete {
+            color: #ff3a72 !important;
+            border: 1px solid #ff3a72 !important;
+            font-size: 1.1rem !important;
+            margin-right: 0.12rem !important;
+            padding: 0.1rem 0.35rem !important;
+            border-radius: 0.2rem !important;
+            margin-top: 0.25rem !important;
+            margin-bottom: 0.25rem !important;
+        }
+
+
+
+/* 
+        .zero-configuration {
+            font-size: 0.75rem;
+            vertical-align: middle;
+        }
+
+        .zero-configuration.table-hover tbody tr:hover {
+            background-color: rgb(233, 235, 250);
+        }
+
+        .zero-configuration td {
+            padding: 0.2rem;
+            margin: 0.2rem;
+        } */
+
+
+/*         .table thead th {
+            color: #475F7B;
+            border-top: none;
+            vertical-align: middle;
+            font-size: .7rem;
+            padding: 1rem;
+        }      */   
+
+/*         .zero-configuration thead th {
+            background-color:rgb(253, 232, 232); /* Color de fondo del encabezado */
+            color: #333; /* Color del texto del encabezado */
+            font-weight: bold; /* Grosor de la fuente */
+            padding: 10px; /* Padding interno del encabezado */
+            vertical-align: middle; /* Alineación vertical */
+            border-bottom: 2px solid #dee2e6; /* Borde inferior, opcional */
+        } */
+    </style>
+
     @section('css')
     @show
 
@@ -48,8 +129,7 @@
 
 <!-- BEGIN: Body-->
 
-<body
-    class="vertical-layout vertical-menu-modern boxicon-layout no-card-shadow 2-columns navbar-sticky footer-static"
+<body class="vertical-layout vertical-menu-modern boxicon-layout no-card-shadow 2-columns navbar-sticky footer-static"
     data-open="click" data-menu="vertical-menu-modern" data-col="2-columns">
     <!-- BEGIN: Header-->
     <div class="header-navbar-shadow"></div>
@@ -128,8 +208,10 @@
 
     <!-- Puedes ponerlo donde quieras mostrar el SVG, por ejemplo, en el header -->
     <div class="brand-logo">
-        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="37.8" height="29.8" viewBox="0 0 378 298">
-            <image id="Capa_2" data-name="Capa 2" x="14" y="14" width="352" height="262" xlink:href="data:img/png;base64,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"/>
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="37.8"
+            height="29.8" viewBox="0 0 378 298">
+            <image id="Capa_2" data-name="Capa 2" x="14" y="14" width="352" height="262"
+                xlink:href="data:img/png;base64,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" />
         </svg>
     </div>
     <!-- BEGIN: Main Menu-->
@@ -139,7 +221,8 @@
                 <li class="nav-item mr-auto open">
                     <a class="navbar-brand align-items-baseline" href="{{ route('dashboard') }}">
                         <div class="brand-logo">
-                            <img src="{{ asset('app-assets/images/ico/logo.ico') }}" alt="logo" style="width: 2.5rem; height: 2rem; object-fit: contain;">
+                            <img src="{{ asset('app-assets/images/ico/logo.ico') }}" alt="logo"
+                                style="width: 2.5rem; height: 2rem; object-fit: contain;">
                         </div>
                         <h2 class="brand-text mb-0">Tareas</h2>
                     </a>
@@ -161,30 +244,30 @@
                                     data-i18n="Second Level">Mis tareas</span></a>
                         </li>
                         @role('Administradores')
-                        <li><a href="#"><i class="bx bx-right-arrow-alt"></i><span class="menu-item"
-                                    data-i18n="Second Level">Administración</span></a>
-                            <ul class="menu-content" style="display: block;">
-                                <li><a href="{{ Route('equipo') }}"><i class="bx bx-right-arrow-alt"></i><span class="menu-item"
-                                            data-i18n="Third Level">Equipos</span></a>
-                                </li>
-                                <li><a href="#"><i class="bx bx-right-arrow-alt"></i><span class="menu-item"
-                                            data-i18n="Third Level">Disponible</span></a>
-                                </li>
-                            </ul>
-                        </li>
+                            <li><a href="#"><i class="bx bx-right-arrow-alt"></i><span class="menu-item"
+                                        data-i18n="Second Level">Administración</span></a>
+                                <ul class="menu-content" style="display: block;">
+                                    <li><a href="{{ Route('equipo') }}"><i class="bx bx-right-arrow-alt"></i><span
+                                                class="menu-item" data-i18n="Third Level">Equipos</span></a>
+                                    </li>
+                                    <li><a href="#"><i class="bx bx-right-arrow-alt"></i><span class="menu-item"
+                                                data-i18n="Third Level">Disponible</span></a>
+                                    </li>
+                                </ul>
+                            </li>
                         @endrole
                         @role('SuperAdmin')
-                        <li><a href="#"><i class="bx bx-right-arrow-alt"></i><span class="menu-item"
-                                    data-i18n="Second Level">Configuración</span></a>
-                            <ul class="menu-content" style="display: block;">
-                                <li><a href="{{ Route('user') }}"><i class="bx bx-right-arrow-alt"></i><span class="menu-item"
-                                            data-i18n="Third Level">Usuarios</span></a>
-                                </li>
-                                <li><a href="#"><i class="bx bx-right-arrow-alt"></i><span class="menu-item"
-                                            data-i18n="Third Level">Disponible</span></a>
-                                </li>
-                            </ul>
-                        </li>
+                            <li><a href="#"><i class="bx bx-right-arrow-alt"></i><span class="menu-item"
+                                        data-i18n="Second Level">Configuración</span></a>
+                                <ul class="menu-content" style="display: block;">
+                                    <li><a href="{{ Route('user') }}"><i class="bx bx-right-arrow-alt"></i><span
+                                                class="menu-item" data-i18n="Third Level">Usuarios</span></a>
+                                    </li>
+                                    <li><a href="#"><i class="bx bx-right-arrow-alt"></i><span class="menu-item"
+                                                data-i18n="Third Level">Disponible</span></a>
+                                    </li>
+                                </ul>
+                            </li>
                         @endrole
                     </ul>
                 </li>
@@ -245,6 +328,21 @@
     <!-- BEGIN: Page JS-->
     <script src="/app-assets/js/scripts/pages/dashboard-analytics.js"></script>
     <!-- END: Page JS-->
+
+
+    <!-- ... otros scripts ... -->
+    <script>
+        $(document).ready(function() {
+            var table = $('.zero-configuration').DataTable();
+            // Inicializar tooltips de Bootstrap 4
+            $('[data-toggle="tooltip"]').tooltip();
+            // Reinicializar tooltips después de cada evento de DataTables
+            table.on('draw', function() {
+                $('[data-toggle="tooltip"]').tooltip();
+            });
+        });
+    </script>
+    <!-- ... otros scripts ... -->
 
     <!-- Custom js for this page -->
     @section('js')

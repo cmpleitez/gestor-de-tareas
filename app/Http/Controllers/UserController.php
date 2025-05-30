@@ -1,8 +1,10 @@
 <?php
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
+
 use App\Models\User;
+use Spatie\Permission\Models\Role;
+
 class UserController extends Controller
 {
     public function index()
@@ -31,9 +33,15 @@ class UserController extends Controller
         //
     }
 
-    public function update(Request $request, string $id)
+    public function rolesEdit(User $user)
     {
-        //
+        $roles = Role::where('name', '!=', 'SuperAdmin')->where('active', true)->get();
+        return view('modelos.user.roles-edit', compact('roles'));
+    }
+
+    public function update(Request $request, User $user)
+    {
+        return 'update';
     }
 
     public function destroy(string $id)

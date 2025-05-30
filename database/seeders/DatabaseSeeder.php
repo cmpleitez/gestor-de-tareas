@@ -186,7 +186,7 @@ class DatabaseSeeder extends Seeder
         $role = Role::create(['name' => 'SuperAdmin']);
         $role->givePermissionTo(['ver', 'crear', 'editar', 'activar', 'eliminar', 'autorizar']);
         $role = Role::create(['name' => 'Administradores']);
-        $role->givePermissionTo(['ver', 'crear', 'editar', 'activar', 'eliminar', 'autorizar']);
+        $role->givePermissionTo(['ver', 'crear', 'editar', 'activar', 'eliminar']);
         $role = Role::create(['name' => 'Gestores de cumplimiento']);
         $role->givePermissionTo(['ver']);
         $user = User::findOrFail(1);

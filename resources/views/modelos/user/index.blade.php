@@ -2,22 +2,8 @@
 
 @section('css')
     <!-- BEGIN: Vendor CSS-->
-    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/vendors.min.css">
     <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/tables/datatable/datatables.min.css">
     <!-- END: Vendor CSS-->
-
-    <!-- BEGIN: Theme CSS-->
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/bootstrap.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/bootstrap-extended.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/colors.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/components.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/themes/dark-layout.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/themes/semi-dark-layout.css">
-    <!-- END: Theme CSS-->
-
-    <!-- BEGIN: Page CSS-->
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/core/menu/menu-types/vertical-menu.css">
-    <!-- END: Page CSS-->
 @stop
 
 @section('contenedor')
@@ -31,7 +17,7 @@
                     <div class="card-body card-dashboard">
                         <p class="card-text">Las personas autorizadas para operar el sistema desempeñando roles específicos</p>
                         <div class="table-responsive">
-                            <table class="table zero-configuration">
+                            <table id="datatable" class="table zero-configuration table-hover">
                                 <thead>
                                     <tr>
                                         <th>Area</th>
@@ -46,14 +32,59 @@
                                 <tbody>
                                     @foreach ($users as $user)
                                         <tr>
+                                            {{-- CAMPOS --}}
                                             <td>{{ $user->area->area }}</td>
                                             <td>{{ $user->roles->first()->name }}</td>
                                             <td>{{ $user->name }}</td>
                                             <td>{{ $user->email }}</td>
                                             <td>{{ $user->created_at->format('d/m/Y') }}</td>
                                             <td>{{ $user->updated_at->format('d/m/Y') }}</td>
-                                            <td><!-- Aquí va la sexta celda para las acciones --></td>
-                                        </tr>
+                                            {{-- TABLERO DE CONTROL --}}
+                                            <td class="text-end">
+                                                <div class="btn-group" role="group" aria-label="label">
+                                                    {{-- MOSTRAR AGENDA --}}
+                                                    @can('autorizar')
+                                                    <a href="{{ route('user.roles-edit', $user->id) }}" role="button"
+                                                        data-toggle="tooltip" data-placement="top"
+                                                        data-animation="false" data-trigger="hover" data-html="true"
+                                                        data-title="<i class='bx bxs-error-circle'></i> Permisos de {{ $user->name }}"
+                                                        class="button_keys">
+                                                        <i class="bx bxs-key"></i>
+                                                    </a>
+                                                    @endcan            
+                                                    {{-- MOSTRAR PRECIOS --}}
+{{--                                                     @can('ver')
+                                                        <a href="{{ route('precio', ['area' => $area->id]) }}" role="button"
+                                                            data-bs-toggle="tooltip" data-bs-placement="top"
+                                                            data-bs-animation="false" data-bs-trigger="hover" data-bs-html="true"
+                                                            data-bs-title="<i class='fa-beat-fade fa-lg'></i> Mostrar precios del area {{ $area->area }}"
+                                                            class="button_show">
+                                                            <i class="fas fa-tag"></i>
+                                                        </a>
+                                                    @endcan --}}
+                                                    {{-- CONTROL EDITAR --}}
+{{--                                                     @can('editar')
+                                                        <a href="{{ route('area.edit', ['area' => $area, 'espacio' => $espacio]) }}"
+                                                            role="button" data-bs-toggle="tooltip" data-bs-placement="top"
+                                                            data-bs-animation="false" data-bs-trigger="hover" data-bs-html="true"
+                                                            data-bs-title="<i class='fa-solid fa-triangle-exclamation fa-beat-fade fa-lg'></i> Corregir {{ $area->area }}"
+                                                            class="button_edit">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                    @endcan --}}
+                                                    {{-- CONTROL ELIMINAR --}}
+{{--                                                     @can('eliminar')
+                                                        <a href="#" role="button"
+                                                            onclick="event.preventDefault(); f_confirmar_eliminacion('{{ route('area.destroy', $area->id) }}');"
+                                                            data-bs-toggle="tooltip" data-bs-placement="top"
+                                                            data-bs-animation="false" data-bs-trigger="hover" data-bs-html="true"
+                                                            data-bs-title="<i class='fa-solid fa-bolt fa-beat-fade fa-lg'></i> Eliminar {{ $area->area }}"
+                                                            class="button_delete">
+                                                            <i class="fas fa-trash"></i>
+                                                        </a>
+                                                    @endcan --}}
+                                                </div>
+                                            </td>                                        </tr>
                                     @endforeach
                                 </tbody>
                                 <tfoot>
@@ -77,13 +108,6 @@
 @stop
 
 @section('js')
-    <!-- BEGIN: Vendor JS-->
-    <script src="/app-assets/vendors/js/vendors.min.js"></script>
-    <script src="/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.tools.js"></script>
-    <script src="/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.defaults.js"></script>
-    <script src="/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.min.js"></script>
-    <!-- BEGIN Vendor JS-->
-
     <!-- BEGIN: Page Vendor JS-->
     <script src="/app-assets/vendors/js/tables/datatable/datatables.min.js"></script>
     <script src="/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js"></script>
@@ -95,23 +119,6 @@
     <script src="/app-assets/vendors/js/tables/datatable/vfs_fonts.js"></script>
     <!-- END: Page Vendor JS-->
 
-    <!-- BEGIN: Theme JS-->
-    <script src="/app-assets/js/core/app-menu.js"></script>
-    <script src="/app-assets/js/core/app.js"></script>
-    <script src="/app-assets/js/scripts/components.js"></script>
-    <script src="/app-assets/js/scripts/footer.js"></script>
-    <!-- END: Theme JS-->
 
-    <!-- BEGIN: Page JS-->
-    <script src="/app-assets/js/scripts/datatables/datatable.js"></script>
-    <!-- END: Page JS-->
-
-        <!-- ... otros scripts ... -->
-        <script>
-            $(document).ready(function() {
-                $('.zero-configuration').DataTable();
-            });
-        </script>
-        <!-- ... otros scripts ... -->
 
 @stop

@@ -1,7 +1,9 @@
 🟢 Preparar un sistema base prefabricado para solo replicar
         ...crud de usuarios 
+            ...crear roles y sus permisos 
+            ...automatizar tablero de control según permisos
             ...aplicar el formulario de la plantilla actual
-            ...aplicar las relaciones entre tablas
+            ...maquetar de una vez la primera datatable
         ...crud de asignacion de roles
         ...crud de equipos
         ...usar un componente para aplicar el logo a la app
