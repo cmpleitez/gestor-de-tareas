@@ -85,40 +85,62 @@
             margin-bottom: 0.25rem !important;
         }
 
+        div.dataTables_wrapper div.dataTables_filter, 
+        div.dataTables_wrapper div.dataTables_length {
+            margin: 0rem 0;
+        }
 
+        .table.dataTable {
+            margin-top: 1rem !important;
+            margin-bottom: 2rem !important;
+        }
 
-/* 
-        .zero-configuration {
-            font-size: 0.75rem;
+        .table thead {
+            text-transform: uppercase;
+            font-size: .6rem;
+        }
+
+        .table thead th {
+            padding-top: 0.4rem;
+            padding-bottom: 0.3rem;
+            background-color: rgb(243, 244, 250);
+            color: #333;
             vertical-align: middle;
         }
 
-        .zero-configuration.table-hover tbody tr:hover {
-            background-color: rgb(233, 235, 250);
+        .table td {
+            vertical-align: middle;
+            padding: 0.3rem;
         }
 
-        .zero-configuration td {
-            padding: 0.2rem;
-            margin: 0.2rem;
-        } */
+        .table tfoot {
+            text-transform: uppercase;
+            font-size: .8rem;
+        }
 
-
-/*         .table thead th {
-            color: #475F7B;
-            border-top: none;
+        .zero-configuration tfoot th {
+            padding-top: 0.4rem;
+            padding-bottom: 0.3rem;
+            background-color: rgb(243, 244, 250);
+            color: #333;
             vertical-align: middle;
-            font-size: .7rem;
-            padding: 1rem;
-        }      */   
+        }
 
-/*         .zero-configuration thead th {
-            background-color:rgb(253, 232, 232); /* Color de fondo del encabezado */
-            color: #333; /* Color del texto del encabezado */
-            font-weight: bold; /* Grosor de la fuente */
-            padding: 10px; /* Padding interno del encabezado */
-            vertical-align: middle; /* Alineación vertical */
-            border-bottom: 2px solid #dee2e6; /* Borde inferior, opcional */
-        } */
+        .table.dataTable thead .sorting:before,
+        .table.dataTable thead .sorting_asc:before,
+        .table.dataTable thead .sorting_desc:before,
+        .table.dataTable thead .sorting_desc_disabled:before {
+            font-size: 1.3rem;
+            top: -3px;
+        }
+
+        .table.dataTable thead .sorting:after,
+        .table.dataTable thead .sorting_asc:after,
+        .table.dataTable thead .sorting_desc:after,
+        .table.dataTable thead .sorting_desc_disabled:after {
+            font-size: 1.3rem;
+            top: -14px;
+        }
     </style>
 
     @section('css')
