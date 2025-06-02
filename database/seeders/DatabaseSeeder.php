@@ -183,11 +183,11 @@ class DatabaseSeeder extends Seeder
 
         //ROLES Y ASIGNACIÓN DE PERMISOS
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
-        $role = Role::create(['name' => 'SuperAdmin']);
+        $role = Role::create(['name' => 'SuperAdmin', 'icon' => 'bx bxs-shield-alt-2']);
         $role->givePermissionTo(['ver', 'crear', 'editar', 'activar', 'eliminar', 'autorizar']);
-        $role = Role::create(['name' => 'Administradores']);
+        $role = Role::create(['name' => 'Administradores', 'icon' => 'bx bxs-briefcase-alt-2']);
         $role->givePermissionTo(['ver', 'crear', 'editar', 'activar', 'eliminar']);
-        $role = Role::create(['name' => 'Gestores de cumplimiento']);
+        $role = Role::create(['name' => 'Gestores de cumplimiento', 'icon' => 'bx bxs-star-half']);
         $role->givePermissionTo(['ver']);
         $user = User::findOrFail(1);
         $user->assignRole('SuperAdmin');
@@ -197,3 +197,4 @@ class DatabaseSeeder extends Seeder
         $user->assignRole('SuperAdmin');
     }
 }
+

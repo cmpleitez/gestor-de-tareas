@@ -12,11 +12,11 @@
             <div class="card">
                 <div class="card-header">
                     <h4 class="card-title">USUARIOS DEL SISTEMA</h4>
+                    <p class="card-text">Las personas autorizadas para operar el sistema desempeñando roles específicos</p>
                 </div>
                 <div class="card-content">
                     <div class="card-body card-dashboard">
-                        <p class="card-text">Las personas autorizadas para operar el sistema desempeñando roles específicos</p>
-                        <div class="table-responsive">
+                        <div class="table-responsive mt-1">
                             <table id="datatable" class="table zero-configuration table-hover">
                                 <thead>
                                     <tr>

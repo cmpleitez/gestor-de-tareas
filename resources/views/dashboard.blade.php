@@ -41,16 +41,37 @@
     <!-- END: Page CSS-->
 
     <style>
+        body {
+            margin: 0;
+            font-family: "IBM Plex Sans", Helvetica, Arial, serif;
+            font-size: 0.9rem;
+            font-weight: 400;
+            line-height: 1.4;
+            color: #727E8C;
+            text-align: left;
+            background-color: #F2F4F4;
+        }
+
+        .tarjeta {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            word-wrap: break-word;
+            background-color: #FFFFFF;
+            background-clip: border-box;
+            border-radius: 0.267rem;
+            border: 0.5px solid #dfe3e7 !important;
+            box-shadow: -0.5px -0.5px 10px 1px rgba(0, 0, 0, 0.1);
+        }
+
         .card-header {
-            background-color: rgb(233, 233, 241);
+            background-color: #f8fafc;
+            border-bottom: none;
         }
 
         .card-footer {
-            background-color: #e0e3f8;
-        }
-
-        .no-card-shadow .card {
-            box-shadow: 0 1px 1px 1px rgba(0, 0, 0, 0.5);
+            background-color: #e5edf5;
         }
 
         .button_keys {
