@@ -61,17 +61,18 @@
             background-color: #FFFFFF;
             background-clip: border-box;
             border-radius: 0.267rem;
-            border: 0.5px solid #dfe3e7 !important;
-            box-shadow: -0.5px -0.5px 10px 1px rgba(0, 0, 0, 0.1);
+            border: 0.5px solid #dadddf !important;
+            box-shadow: 0 0 0 0.2px rgba(0, 0, 0, 0.1);
         }
 
         .card-header {
             background-color: #f8fafc;
             border-bottom: none;
+            font-weight: 600;
         }
 
         .card-footer {
-            background-color: #e5edf5;
+            background-color: #f0f5f9;
         }
 
         .button_keys {
