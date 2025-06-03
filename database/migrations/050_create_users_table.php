@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('area_id');
+            $table->foreignId('oficina_id');
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('profile_photo_path', 2048)->nullable();
             $table->timestampsTz();
 
-            $table->foreign('area_id')->references('id')->on('areas');
+            $table->foreign('oficina_id')->references('id')->on('oficinas');
         });
     }
 

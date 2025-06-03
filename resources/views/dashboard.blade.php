@@ -38,6 +38,7 @@
     <!-- BEGIN: Page CSS-->
     <link rel="stylesheet" type="text/css" href="/app-assets/css/core/menu/menu-types/vertical-menu.css">
     <link rel="stylesheet" type="text/css" href="/app-assets/css/pages/dashboard-analytics.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/forms/validation/form-validation.css">
     <!-- END: Page CSS-->
 
     <style>
@@ -52,7 +53,16 @@
             background-color: #F2F4F4;
         }
 
-        .tarjeta {
+        .row {
+            margin-right: 0;
+            margin-left: 0;
+        }
+
+        p {
+            margin: 0 0 0 0;
+        }
+
+        .card {
             position: relative;
             display: flex;
             flex-direction: column;
@@ -68,55 +78,50 @@
         .card-header {
             background-color: #f8fafc;
             border-bottom: none;
+            font-size: 0.8rem;
             font-weight: 600;
+            padding: 1rem 1rem !important;
         }
 
         .card-footer {
             background-color: #f0f5f9;
+            padding: 1rem 1rem !important;
         }
 
         .button_keys {
             color: #28a745 !important;
             border: 1px solid #28a745 !important;
             font-size: 1.1rem !important;
-            margin-right: 0.12rem !important;
-            padding: 0.1rem 0.35rem !important;
             border-radius: 0.2rem !important;
-            margin-top: 0.25rem;
-            margin-bottom: 0.25rem;
+            padding: 0.3rem 0.3rem 0 0.2rem;
+            margin-right: 0.1rem;
         }
 
         .button_show {
             color: #0fb100 !important;
             border: 1px solid #0fb100 !important;
             font-size: 1.1rem !important;
-            margin-right: 0.12rem !important;
-            padding: 0.1rem 0.35rem !important;
             border-radius: 0.2rem !important;
-            margin-top: 0.25rem;
-            margin-bottom: 0.25rem;
+            padding: 0.3rem 0.3rem 0 0.3rem;
+            margin-right: 0.1rem !important;
         }
 
         .button_edit {
             color: #ff6629 !important;
             border: 1px solid #ff6629 !important;
             font-size: 1.1rem !important;
-            margin-right: 0.12rem !important;
-            padding: 0.1rem 0.35rem !important;
             border-radius: 0.2rem !important;
-            margin-top: 0.25rem !important;
-            margin-bottom: 0.25rem !important;
+            padding: 0.3rem 0.3rem 0 0.3rem;
+            margin-right: 0.1rem;
         }
 
         .button_delete {
             color: #ff3a72 !important;
             border: 1px solid #ff3a72 !important;
             font-size: 1.1rem !important;
-            margin-right: 0.12rem !important;
-            padding: 0.1rem 0.35rem !important;
             border-radius: 0.2rem !important;
-            margin-top: 0.25rem !important;
-            margin-bottom: 0.25rem !important;
+            padding: 0.3rem 0.3rem 0 0.3rem;
+            margin-right: 0.1rem;
         }
 
         div.dataTables_wrapper div.dataTables_filter,
@@ -372,6 +377,7 @@
     <!-- BEGIN: Page Vendor JS-->
     <script src="/app-assets/vendors/js/charts/apexcharts.min.js"></script>
     <script src="/app-assets/vendors/js/extensions/dragula.min.js"></script>
+    <script src="/app-assets/vendors/js/forms/validation/jqBootstrapValidation.js"></script>
     <!-- END: Page Vendor JS-->
 
     <!-- BEGIN: Theme JS-->
@@ -383,8 +389,8 @@
 
     <!-- BEGIN: Page JS-->
     <script src="/app-assets/js/scripts/pages/dashboard-analytics.js"></script>
+    <script src="/app-assets/js/scripts/forms/validation/form-validation.js"></script>
     <!-- END: Page JS-->
-
 
     <!-- ... otros scripts ... -->
     <script>

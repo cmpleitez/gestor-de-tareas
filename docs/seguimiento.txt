@@ -1,13 +1,17 @@
 🟢 me quedé maquetando la sombra del card en general
 
 🟢 Preparar un sistema base prefabricado para solo replicar
+        
+        ...incorporar oficinas entre areas y usuarios: cambiaron oficinas, user, users_tareas, incidencias
+
         ...crud de usuarios 
             ...automatizar tablero de control según permisos
-                ...control autorizar roles a usuarios y su respectiva vista
-                    
-        ...crud de asignacion de roles
+                ...card header y card footer de roles-edit
+        
         ...crud de equipos
-        ...usar un componente para aplicar el logo a la app
+        ...usar un componente para aplicar el logo a la app porque la imagen no funcionnó tampoco el svg
+        ...pasar mis tareas al perfil del usuario
+        ...tema de seguridad como es un sistema interno, se debe retirar la ruta del vendor "register", o colocarle la seguridad de @can
 
 Creando el flujo de trabajo:
 https://miro.com/app/board/uXjVLl8VYdo=/

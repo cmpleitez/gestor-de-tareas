@@ -4,18 +4,16 @@
 @stop
 
 @section('contenedor')
-    <div class="row">
-        <div class="col-md-12">
-            <div class="tarjeta">
-                <div class="card-header pt-1">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
                     <div class="row">
-                        <div class="col-md-12 d-flex justify-content-between" style="padding: 0.3rem;">
-                            <div class="col-md-11" style="padding-left: 0.5rem;">
-                                <p class="card-title">USUARIO {{ $user->name }}</p>
-                                <p class="card-subtitle mb-2 text-muted"></p>
-                                <p class="card-text"></p>
+                        <div class="col-md-12 d-flex justify-content-between" style="padding: 0;">
+                            <div class="col-md-10 align-items-center" style="padding: 0 0 0 0;">
+                                <p>USUARIO {{ $user->name }}</p>
                             </div>
-                            <div class="col-md-1 d-flex justify-content-end" style="padding: 0.1rem;">
+                            <div class="col-md-2 d-flex justify-content-end" style="padding: 0.1rem;">
                                 <a href="{!! route('user') !!}">
                                     <div class="badge badge-pill badge-primary">
                                         <i class="bx bx-arrow-back font-medium-3"></i>
@@ -78,11 +76,7 @@
             </div>
         </div>
     </div>
-
 @stop
-
-
-
 
 @section('js')
 @stop

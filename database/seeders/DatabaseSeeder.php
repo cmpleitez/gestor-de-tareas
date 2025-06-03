@@ -143,9 +143,89 @@ class DatabaseSeeder extends Seeder
             'updated_at' => Carbon::now(),
         ]);
 
+        //OFICINAS
+        DB::table('oficinas')->insert([
+            'oficina' => 'Oficina Sede',
+            'area_id' => 1,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+        DB::table('oficinas')->insert([
+            'oficina' => 'Oficina - Zona 1',
+            'area_id' => 1,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+        DB::table('oficinas')->insert([
+            'oficina' => 'Oficina - Zona 2',
+            'area_id' => 1,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+        DB::table('oficinas')->insert([
+            'oficina' => 'Oficina - Zona 3',
+            'area_id' => 1,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+        DB::table('oficinas')->insert([
+            'oficina' => 'Oficina - Zona 4',
+            'area_id' => 1,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+        DB::table('oficinas')->insert([
+            'oficina' => 'Oficina - Zona 5',
+            'area_id' => 1,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+        DB::table('oficinas')->insert([
+            'oficina' => 'Oficina - Zona 6',
+            'area_id' => 1,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+        DB::table('oficinas')->insert([
+            'oficina' => 'Oficina - Zona 7',
+            'area_id' => 1,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]); 
+        DB::table('oficinas')->insert([
+            'oficina' => 'Oficina - Zona 8',
+            'area_id' => 1,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]); 
+        DB::table('oficinas')->insert([ 
+            'oficina' => 'Oficina - Zona 9',
+            'area_id' => 1,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]); 
+        DB::table('oficinas')->insert([ 
+            'oficina' => 'Oficina - Zona 10',
+            'area_id' => 1,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]); 
+        DB::table('oficinas')->insert([     
+            'oficina' => 'Oficina - Zona 11',
+            'area_id' => 1,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]); 
+        DB::table('oficinas')->insert([     
+            'oficina' => 'Oficina - Zona 12',
+            'area_id' => 1,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]); 
+
         //USUARIOS
         DB::table('users')->insert([
-            'area_id'           => 2,
+            'oficina_id'           => 1,
             'name'              => 'hari.seldom.sv@gmail.com',
             'email'             => 'hari.seldom.sv@gmail.com',
             'email_verified_at' => null,

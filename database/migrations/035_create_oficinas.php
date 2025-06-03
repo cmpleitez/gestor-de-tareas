@@ -8,17 +8,19 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('incidencias', function (Blueprint $table) {
+        Schema::create('oficinas', function (Blueprint $table) {
             $table->id();
-            $table->char('user_tarea_id', 12)->foreignId();
+            $table->foreignId('area_id');
+            $table->string('oficina', 128)->unique();
+            $table->boolean('activo')->default(true);
             $table->timestampsTz();
 
-            $table->foreign('user_tarea_id')->references('id')->on('users_tareas');
+            $table->foreign('area_id')->references('id')->on('areas');
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('incidencias');
+        Schema::dropIfExists('oficinas');
     }
 };

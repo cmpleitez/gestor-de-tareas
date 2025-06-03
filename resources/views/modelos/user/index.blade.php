@@ -24,65 +24,44 @@
                                         <th>Rol</th>
                                         <th>Usuario</th>
                                         <th>correo</th>
-                                        <th>Creado</th>
-                                        <th>Actualizado</th>
-                                        <th>Acciones</th>
+                                        <th class="text-center">Creado</th>
+                                        <th class="text-center">Actualizado</th>
+                                        <th class="text-center">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($users as $user)
                                         <tr>
                                             {{-- CAMPOS --}}
-                                            <td>{{ $user->area->area }}</td>
+                                            <td>{{ $user->oficina->oficina }}</td>
                                             <td>{{ $user->roles->first()->name }}</td>
                                             <td>{{ $user->name }}</td>
                                             <td>{{ $user->email }}</td>
-                                            <td>{{ $user->created_at->format('d/m/Y') }}</td>
-                                            <td>{{ $user->updated_at->format('d/m/Y') }}</td>
+                                            <td class="text-center">{{ $user->created_at->format('d/m/Y') }}</td>
+                                            <td class="text-center">{{ $user->updated_at->format('d/m/Y') }}</td>
                                             {{-- TABLERO DE CONTROL --}}
-                                            <td class="text-end">
+                                            <td class="text-center">
                                                 <div class="btn-group" role="group" aria-label="label">
-                                                    {{-- MOSTRAR AGENDA --}}
+                                                    {{-- ENROLAR --}}
                                                     @can('autorizar')
                                                     <a href="{{ route('user.roles-edit', $user->id) }}" role="button"
                                                         data-toggle="tooltip" data-placement="top"
                                                         data-animation="false" data-trigger="hover" data-html="true"
-                                                        data-title="<i class='bx bxs-error-circle'></i> Permisos de {{ $user->name }}"
+                                                        data-title="<i class='bx bxs-error-circle'></i> Roles de {{ $user->name }}"
                                                         class="button_keys">
                                                         <i class="bx bxs-key"></i>
                                                     </a>
-                                                    @endcan            
-                                                    {{-- MOSTRAR PRECIOS --}}
-{{--                                                     @can('ver')
-                                                        <a href="{{ route('precio', ['area' => $area->id]) }}" role="button"
-                                                            data-bs-toggle="tooltip" data-bs-placement="top"
-                                                            data-bs-animation="false" data-bs-trigger="hover" data-bs-html="true"
-                                                            data-bs-title="<i class='fa-beat-fade fa-lg'></i> Mostrar precios del area {{ $area->area }}"
-                                                            class="button_show">
-                                                            <i class="fas fa-tag"></i>
+                                                    @endcan
+                                                    {{-- EDITAR --}}
+                                                     @can('editar')
+                                                        <a href="{{ route('user.edit', $user->id) }}" role="button"
+                                                            data-toggle="tooltip" data-placement="top"
+                                                            data-animation="false" data-trigger="hover" data-html="true"
+                                                            data-title="<i class='bx bxs-error-circle'></i> Editar generales de {{ $user->name }}"
+                                                            class="button_edit align-center">
+                                                            <i class="bx bxs-edit"></i>
                                                         </a>
-                                                    @endcan --}}
-                                                    {{-- CONTROL EDITAR --}}
-{{--                                                     @can('editar')
-                                                        <a href="{{ route('area.edit', ['area' => $area, 'espacio' => $espacio]) }}"
-                                                            role="button" data-bs-toggle="tooltip" data-bs-placement="top"
-                                                            data-bs-animation="false" data-bs-trigger="hover" data-bs-html="true"
-                                                            data-bs-title="<i class='fa-solid fa-triangle-exclamation fa-beat-fade fa-lg'></i> Corregir {{ $area->area }}"
-                                                            class="button_edit">
-                                                            <i class="fas fa-edit"></i>
-                                                        </a>
-                                                    @endcan --}}
-                                                    {{-- CONTROL ELIMINAR --}}
-{{--                                                     @can('eliminar')
-                                                        <a href="#" role="button"
-                                                            onclick="event.preventDefault(); f_confirmar_eliminacion('{{ route('area.destroy', $area->id) }}');"
-                                                            data-bs-toggle="tooltip" data-bs-placement="top"
-                                                            data-bs-animation="false" data-bs-trigger="hover" data-bs-html="true"
-                                                            data-bs-title="<i class='fa-solid fa-bolt fa-beat-fade fa-lg'></i> Eliminar {{ $area->area }}"
-                                                            class="button_delete">
-                                                            <i class="fas fa-trash"></i>
-                                                        </a>
-                                                    @endcan --}}
+                                                    @endcan
                                                 </div>
                                             </td>                                        </tr>
                                     @endforeach
@@ -118,7 +97,4 @@
     <script src="/app-assets/vendors/js/tables/datatable/pdfmake.min.js"></script>
     <script src="/app-assets/vendors/js/tables/datatable/vfs_fonts.js"></script>
     <!-- END: Page Vendor JS-->
-
-
-
 @stop
