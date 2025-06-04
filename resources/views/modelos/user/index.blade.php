@@ -11,8 +11,22 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title">USUARIOS DEL SISTEMA</h4>
-                    <p class="card-text">Las personas autorizadas para operar el sistema desempeñando roles específicos</p>
+
+                    <div class="col-md-12 d-flex justify-content-between" style="padding: 0;">
+                        <div class="col-md-11" style="padding: 0;">
+                            <h4 class="card-title">USUARIOS DEL SISTEMA</h4>
+                            <p class="card-text">Las personas autorizadas para operar el sistema desempeñando roles
+                                específicos</p>
+                        </div>
+                        <div class="col-md-1 d-flex justify-content-end" style="padding: 0;">
+                            <a href="{!! route('user.create') !!}">
+                                <div class="badge-circle badge-circle-md badge-circle-primary">
+                                    <i class="bx bx-plus-medical font-small-3"></i>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+
                 </div>
                 <div class="card-content">
                     <div class="card-body card-dashboard">
@@ -21,6 +35,7 @@
                                 <thead>
                                     <tr>
                                         <th>Area</th>
+                                        <th>Oficina</th>
                                         <th>Rol</th>
                                         <th>Usuario</th>
                                         <th>correo</th>
@@ -33,6 +48,7 @@
                                     @foreach ($users as $user)
                                         <tr>
                                             {{-- CAMPOS --}}
+                                            <td>{{ $user->oficina->area->area }}</td>
                                             <td>{{ $user->oficina->oficina }}</td>
                                             <td>{{ $user->roles->first()->name }}</td>
                                             <td>{{ $user->name }}</td>
@@ -44,37 +60,39 @@
                                                 <div class="btn-group" role="group" aria-label="label">
                                                     {{-- ENROLAR --}}
                                                     @can('autorizar')
-                                                    <a href="{{ route('user.roles-edit', $user->id) }}" role="button"
-                                                        data-toggle="tooltip" data-placement="top"
-                                                        data-animation="false" data-trigger="hover" data-html="true"
-                                                        data-title="<i class='bx bxs-error-circle'></i> Roles de {{ $user->name }}"
-                                                        class="button_keys">
-                                                        <i class="bx bxs-key"></i>
-                                                    </a>
+                                                        <a href="{{ route('user.roles-edit', $user->id) }}" role="button"
+                                                            data-toggle="tooltip" data-placement="top" data-animation="false"
+                                                            data-trigger="hover" data-html="true"
+                                                            data-title="<i class='bx bxs-error-circle'></i> Roles de {{ $user->name }}"
+                                                            class="button_keys">
+                                                            <i class="bx bxs-key"></i>
+                                                        </a>
                                                     @endcan
                                                     {{-- EDITAR --}}
-                                                     @can('editar')
+                                                    @can('editar')
                                                         <a href="{{ route('user.edit', $user->id) }}" role="button"
-                                                            data-toggle="tooltip" data-placement="top"
-                                                            data-animation="false" data-trigger="hover" data-html="true"
-                                                            data-title="<i class='bx bxs-error-circle'></i> Editar generales de {{ $user->name }}"
+                                                            data-toggle="tooltip" data-placement="top" data-animation="false"
+                                                            data-trigger="hover" data-html="true"
+                                                            data-title="<i class='bx bxs-error-circle'></i> Cambiar de oficina y/o correo a {{ $user->name }}"
                                                             class="button_edit align-center">
-                                                            <i class="bx bxs-edit"></i>
+                                                            <i class="bx bxs-bank"></i>
                                                         </a>
                                                     @endcan
                                                 </div>
-                                            </td>                                        </tr>
+                                            </td>
+                                        </tr>
                                     @endforeach
                                 </tbody>
                                 <tfoot>
                                     <tr>
                                         <th>Area</th>
+                                        <th>Oficina</th>
                                         <th>Rol</th>
                                         <th>Usuario</th>
                                         <th>correo</th>
-                                        <th>Creado</th>
-                                        <th>Actualizado</th>
-                                        <th>Acciones</th>
+                                        <th class="text-center">Creado</th>
+                                        <th class="text-center">Actualizado</th>
+                                        <th class="text-center">Acciones</th>
                                     </tr>
                                 </tfoot>
                             </table>

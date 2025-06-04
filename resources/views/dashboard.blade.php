@@ -24,6 +24,7 @@
     <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/vendors.min.css">
     <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/charts/apexcharts.css">
     <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/extensions/dragula.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/forms/select/select2.min.css">
     <!-- END: Vendor CSS-->
 
     <!-- BEGIN: Theme CSS-->
@@ -77,14 +78,15 @@
 
         .card-header {
             background-color: #f8fafc;
-            border-bottom: none;
-            font-size: 0.8rem;
+            border-bottom: 0.5px solid rgb(236, 237, 240) !important;
             font-weight: 600;
             padding: 1rem 1rem !important;
+            font-size: 0.8rem;
         }
 
         .card-footer {
             background-color: #f0f5f9;
+            border-top: 0.5px solid rgb(233, 236, 240) !important;
             padding: 1rem 1rem !important;
         }
 
@@ -378,6 +380,7 @@
     <script src="/app-assets/vendors/js/charts/apexcharts.min.js"></script>
     <script src="/app-assets/vendors/js/extensions/dragula.min.js"></script>
     <script src="/app-assets/vendors/js/forms/validation/jqBootstrapValidation.js"></script>
+    <script src="/app-assets/vendors/js/forms/select/select2.full.min.js"></script>
     <!-- END: Page Vendor JS-->
 
     <!-- BEGIN: Theme JS-->
@@ -390,6 +393,7 @@
     <!-- BEGIN: Page JS-->
     <script src="/app-assets/js/scripts/pages/dashboard-analytics.js"></script>
     <script src="/app-assets/js/scripts/forms/validation/form-validation.js"></script>
+    <script src="/app-assets/js/scripts/forms/select/form-select2.js"></script>
     <!-- END: Page JS-->
 
     <!-- ... otros scripts ... -->

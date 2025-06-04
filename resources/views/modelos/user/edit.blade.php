@@ -5,7 +5,7 @@
 
 @section('contenedor')
     <div class="row justify-content-center">
-        <div class="col-md-10">
+        <div class="col-md-6">
             <div class="card">
                 <!-- CABECERA -->
                 <div class="card-header pt-1">
@@ -31,23 +31,31 @@
                     <div class="card-content">
                         <div class="card-body">
                             <div class="row">
-                                {{-- NOMBRES Y APELLIDOS --}}
-                                <div class="col-sm-6">
+
+                                {{-- OFICINA --}}
+                                <div class="col-sm-12">
                                     <div class="form-group">
-                                        <div class="controls">
-                                            <input type="text" name="text" class="form-control" placeholder="Nombres y apellidos" 
-                                            required  data-validation-required-message="El nombre completo del usuario es requerido"
-                                            value="{{ old('name', $user->name) }}">
-                                        </div>
+                                        <label for="oficina_id">Oficina</label>
+                                        <select class="select2 form-control" id="oficina_id" name="oficina_id">
+                                            @foreach ($oficinas as $oficina)
+                                                @if ($oficina->id == $user->oficina_id)
+                                                    <option value="{{ $oficina->id }}" selected>{{ $oficina->oficina }}
+                                                    </option>
+                                                @else
+                                                    <option value="{{ $oficina->id }}">{{ $oficina->oficina }}</option>
+                                                @endif
+                                            @endforeach
+                                        </select>
                                     </div>
                                 </div>
                                 {{-- CORREO --}}
-                                <div class="col-sm-6">
+                                <div class="col-sm-12">
                                     <div class="form-group">
                                         <div class="controls">
-                                            <input type="email" name="email" class="form-control" placeholder="correo@ejemplo.com"
-                                            required data-validation-required-message="El correo electrónico es requerido"
-                                            {{ old('email', $user->email) }}>
+                                            <input type="email" name="email" class="form-control"
+                                                placeholder="correo@ejemplo.com" required
+                                                data-validation-required-message="El correo electrónico es requerido"
+                                                value="{{ old('email', $user->email) }}">
                                         </div>
                                     </div>
                                 </div>
