@@ -226,7 +226,7 @@ class DatabaseSeeder extends Seeder
         //USUARIOS
         DB::table('users')->insert([
             'oficina_id'           => 1,
-            'name'              => 'hari.seldom.sv@gmail.com',
+            'name'              => 'Hari Seldom',
             'email'             => 'hari.seldom.sv@gmail.com',
             'email_verified_at' => null,
             'password'          => bcrypt('123456789'),
