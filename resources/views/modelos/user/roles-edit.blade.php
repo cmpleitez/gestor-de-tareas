@@ -33,9 +33,9 @@
                                         <div style="background-color: #fdf7f7; border-top-left-radius: 50px; 
                                         border-bottom-left-radius: 50px; border-top-right-radius: 5px; 
                                         border-bottom-right-radius: 20px; width: 5rem; display: flex; 
-                                        align-items: center;">
+                                        align-items: center; margin-right: 2rem;">
                                             <div class="badge-circle badge-circle-md badge-circle-@php
-                                                $class = 'secondary'; // Valor por defecto
+                                                $class = 'secondary';
                                                 if ($role->id == 1) {
                                                     $class = 'danger';
                                                 } elseif ($role->id == 2) {

@@ -5,10 +5,11 @@
         ...incorporar oficinas entre areas y usuarios: cambiaron oficinas, user, users_tareas, incidencias
 
         ...crud de usuarios 
-                ...exceptuar el superadmin de los registros para quitar el riesgo de cambiarle alguno de sus atributos
                 ...automatizar tablero de control según permisos
-                        ...control "registrar nuevo (+)"
-
+                        ...control "eliminar"
+                                ...creando la integridad referencial de UserTareas y SolicitudesTareas
+                validar usuario via correo
+                configurar los mensajes al usuario
         
         ...crud de equipos
         ...usar un componente para aplicar el logo a la app porque la imagen no funcionnó tampoco el svg

@@ -73,9 +73,19 @@
                                                         <a href="{{ route('user.edit', $user->id) }}" role="button"
                                                             data-toggle="tooltip" data-placement="top" data-animation="false"
                                                             data-trigger="hover" data-html="true"
-                                                            data-title="<i class='bx bxs-error-circle'></i> Cambiar de oficina y/o correo a {{ $user->name }}"
+                                                            data-title="<i class='bx bxs-error-circle'></i> Editar datos de {{ $user->name }}"
                                                             class="button_edit align-center">
-                                                            <i class="bx bxs-bank"></i>
+                                                            <i class="bx bxs-edit-alt"></i>
+                                                        </a>
+                                                    @endcan
+                                                    {{-- ELIMINAR --}}
+                                                    @can('eliminar')
+                                                        <a href="{{ route('user.destroy', $user->id) }}" role="button"
+                                                            data-toggle="tooltip" data-placement="top" data-animation="false"
+                                                            data-trigger="hover" data-html="true"
+                                                            data-title="<i class='bx bxs-eraser'></i> Eliminar {{ $user->name }}"
+                                                            class="button_delete align-center">
+                                                            <i class="bx bxs-eraser"></i>
                                                         </a>
                                                     @endcan
                                                 </div>

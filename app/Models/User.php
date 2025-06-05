@@ -30,6 +30,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'oficina_id'
     ];
 
     /**
@@ -66,4 +67,14 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Oficina::class);
     }
+    public function users_equipos()
+    {
+        return $this->hasMany(Equipo::class);
+    }
+
+    public function users_tareas()
+    {
+        //return $this->hasMany(Tarea::class);
+    }
+
 }

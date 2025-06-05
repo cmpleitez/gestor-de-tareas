@@ -38,12 +38,12 @@ Route::middleware([
         Route::group(['prefix' => 'user'], function () {
             Route::get('/', [UserController::class, 'index'])->name('user');
             Route::get('create', [UserController::class, 'create'])->name('user.create');
-            /* Route::post('store', [UserController::class, 'store'])->name('user.store'); */
+            Route::post('store', [UserController::class, 'store'])->name('user.store');
             Route::get('edit/{user}', [UserController::class, 'edit'])->name('user.edit');
             Route::put('update/{user}', [UserController::class, 'update'])->name('user.update');
             Route::get('roles-edit/{user}', [UserController::class, 'rolesEdit'])->name('user.roles-edit');
             Route::post('roles-update/{user}', [UserController::class, 'rolesUpdate'])->name('user.roles-update');
-            /* Route::get('destroy/{user}', [UserController::class, 'destroy'])->name('user.destroy'); */
+            Route::get('destroy/{user}', [UserController::class, 'destroy'])->name('user.destroy');
             /* Route::get('activate/{user}', [UserController::class, 'activate'])->name('user.activate'); */
         });
     });

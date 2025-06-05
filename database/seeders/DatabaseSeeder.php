@@ -221,7 +221,7 @@ class DatabaseSeeder extends Seeder
             'area_id' => 1,
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
-        ]); 
+        ]);
 
         //USUARIOS
         DB::table('users')->insert([
@@ -267,8 +267,10 @@ class DatabaseSeeder extends Seeder
         $role->givePermissionTo(['ver', 'crear', 'editar', 'activar', 'eliminar', 'autorizar']);
         $role = Role::create(['name' => 'Administradores', 'icon' => 'bx bxs-briefcase-alt-2']);
         $role->givePermissionTo(['ver', 'crear', 'editar', 'activar', 'eliminar']);
-        $role = Role::create(['name' => 'Gestores de cumplimiento', 'icon' => 'bx bxs-star-half']);
+        $role = Role::create(['name' => 'Supervisores', 'icon' => 'bx bxs-star-half']);
         $role->givePermissionTo(['ver']);
+        $role = Role::create(['name' => 'Operadores', 'icon' => 'bx bxs-group']);
+        $role->givePermissionTo(['ver', 'crear', 'editar']);
         $user = User::findOrFail(1);
         $user->assignRole('SuperAdmin');
 

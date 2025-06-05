@@ -109,8 +109,8 @@
         }
 
         .button_edit {
-            color: #ff6629 !important;
-            border: 1px solid #ff6629 !important;
+            color:rgb(255, 113, 57) !important;
+            border: 1px solid rgb(255, 113, 57) !important;
             font-size: 1.1rem !important;
             border-radius: 0.2rem !important;
             padding: 0.3rem 0.3rem 0 0.3rem;
@@ -118,8 +118,8 @@
         }
 
         .button_delete {
-            color: #ff3a72 !important;
-            border: 1px solid #ff3a72 !important;
+            color:rgb(255, 58, 84) !important;
+            border: 1px solid rgb(255, 58, 84) !important;
             font-size: 1.1rem !important;
             border-radius: 0.2rem !important;
             padding: 0.3rem 0.3rem 0 0.3rem;
@@ -303,9 +303,11 @@
                 <li class=" nav-item"><a href="#"><i class="bx bx-menu"></i><span class="menu-title"
                             data-i18n="Menu Levels">Opciones</span></a>
                     <ul class="menu-content" style="display: block;">
+                        @role('Operadores')
                         <li><a href="#"><i class="bx bx-right-arrow-alt"></i><span class="menu-item"
-                                    data-i18n="Second Level">Mis tareas</span></a>
+                                    data-i18n="Second Level">Disponible</span></a>
                         </li>
+                        @endrole
                         @role('Administradores')
                             <li><a href="#"><i class="bx bx-right-arrow-alt"></i><span class="menu-item"
                                         data-i18n="Second Level">Administración</span></a>
@@ -399,7 +401,13 @@
     <!-- ... otros scripts ... -->
     <script>
         $(document).ready(function() {
-            var table = $('.zero-configuration').DataTable();
+            // Inicializar DataTable
+            var table = $('.zero-configuration').DataTable({
+                "language": {
+                    "url": "/app-assets/Spanish.json"
+                },
+            });
+
             // Inicializar tooltips de Bootstrap 4
             $('[data-toggle="tooltip"]').tooltip();
             // Reinicializar tooltips después de cada evento de DataTables
