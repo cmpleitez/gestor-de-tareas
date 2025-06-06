@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('solicitudes_tareas', function (Blueprint $table) {
+        Schema::create('solicitud_tarea', function (Blueprint $table) {
             $table->id();
             $table->foreignId('solicitud_id');
             $table->foreignId('tarea_id');

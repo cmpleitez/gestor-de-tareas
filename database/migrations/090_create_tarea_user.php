@@ -8,14 +8,14 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('users_tareas', function (Blueprint $table) {
+        Schema::create('tarea_user', function (Blueprint $table) {
             $table->char('id', 12)->primary();
             $table->foreignId('solicitud_tarea_id');
             $table->foreignId('user_id_origen');
             $table->foreignId('user_id_destino');
             $table->timestampsTz();
 
-            $table->foreign('solicitud_tarea_id')->references('id')->on('solicitudes_tareas');
+            $table->foreign('solicitud_tarea_id')->references('id')->on('solicitud_tarea');
             $table->foreign('user_id_origen')->references('id')->on('users');
             $table->foreign('user_id_destino')->references('id')->on('users');
         });
@@ -23,6 +23,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('users_tareas');
+        Schema::dropIfExists('user_tarea');
     }
 };

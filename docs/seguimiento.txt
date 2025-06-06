@@ -1,21 +1,15 @@
 🟢 me quedé maquetando la sombra del card en general
 
 🟢 Preparar un sistema base prefabricado para solo replicar
-        ...pasar al perfil mistareas y 
-        ...incorporar oficinas entre areas y usuarios: cambiaron oficinas, user, users_tareas, incidencias
-
+        pasar al perfil mis tareas 
         ...crud de usuarios 
-                ...automatizar tablero de control según permisos
-                        ...control "eliminar"
-                                ...creando la integridad referencial de UserTareas y SolicitudesTareas
                 validar usuario via correo
-                configurar los mensajes al usuario
-        
-        ...crud de equipos
-        ...usar un componente para aplicar el logo a la app porque la imagen no funcionnó tampoco el svg
-        ...pasar mis tareas al perfil del usuario
-        ...tema de seguridad como es un sistema interno, se debe retirar la ruta del vendor "register", o colocarle la seguridad de @can
-        ...debe haber un servicio especial para cambiar de correo el nombre queda protegido y el registro total se puede eliminar cuando no temnga historial
+                ...configurar los mensajes al usuario
+        crud de equipos
+        usar un componente para aplicar el logo a la app porque la imagen no funcionnó tampoco el svg
+        pasar mis tareas al perfil del usuario
+        tema de seguridad como es un sistema interno, se debe retirar la ruta del vendor "register", o colocarle la seguridad de @can
+        debe haber un servicio especial para cambiar de correo el nombre queda protegido y el registro total se puede eliminar cuando no temnga historial
 
 Creando el flujo de trabajo:
 https://miro.com/app/board/uXjVLl8VYdo=/

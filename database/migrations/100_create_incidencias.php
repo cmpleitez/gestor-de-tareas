@@ -10,10 +10,10 @@ return new class extends Migration
     {
         Schema::create('incidencias', function (Blueprint $table) {
             $table->id();
-            $table->char('user_tarea_id', 12)->foreignId();
+            $table->char('tarea_user_id', 12)->foreignId();
             $table->timestampsTz();
 
-            $table->foreign('user_tarea_id')->references('id')->on('users_tareas');
+            $table->foreign('tarea_user_id')->references('id')->on('tarea_user');
         });
     }
 

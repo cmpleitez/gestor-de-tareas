@@ -5,8 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class SolicitudTarea extends Model
+class Solicitud extends Model
 {
     use HasFactory;
-    protected $table = 'solicitud_tarea';
+    public function tareas()
+    {
+        return $this->belongsToMany(Tarea::class);
+    }
 }

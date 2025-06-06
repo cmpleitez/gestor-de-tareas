@@ -33,7 +33,7 @@
                                         <div style="background-color: #fdf7f7; border-top-left-radius: 50px; 
                                         border-bottom-left-radius: 50px; border-top-right-radius: 5px; 
                                         border-bottom-right-radius: 20px; width: 5rem; display: flex; 
-                                        align-items: center; margin-right: 2rem;">
+                                        align-items: center; margin-right: 2rem; border: 1px solid rgb(213, 216, 216);">
                                             <div class="badge-circle badge-circle-md badge-circle-@php
                                                 $class = 'secondary';
                                                 if ($role->id == 1) {

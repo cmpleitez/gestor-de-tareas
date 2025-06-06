@@ -10,7 +10,6 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
-use App\Models\Oficina;
 
 class User extends Authenticatable
 {
@@ -67,14 +66,20 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Oficina::class);
     }
-    public function users_equipos()
+
+    public function equipos()
     {
-        return $this->hasMany(Equipo::class);
+        return $this->belongsToMany(Equipo::class);
     }
 
-    public function users_tareas()
+    public function tareas_usuario_origen()
     {
-        //return $this->hasMany(Tarea::class);
+        return $this->hasMany(TareaUser::class, 'user_id_origen');
+    }
+
+    public function tareas_usuario_destino()
+    {
+        return $this->hasMany(TareaUser::class, 'user_id_destino');
     }
 
 }

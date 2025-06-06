@@ -40,7 +40,7 @@ class UserController extends Controller
         try {
             DB::beginTransaction();
             $user = User::create($validated);
-            $user->assignRole('Operadores');
+            $user->assignRole('Operador');
             DB::commit();
             return redirect()->route("user")->with('success', 'El nuevo operador ' . $user->name . ' ha sido registrado efectivamente.');
         } catch (QueryException $e) {
@@ -121,9 +121,15 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
-
-        
-
+        if ($user->equipos->count() > 0) {
+            return back()->with('error', 'El usuario no puede ser eliminado porque tiene equipos asignados.');
+        }
+        if ($user->tareas_usuario_origen->count() > 0) {
+            return back()->with('error', 'El usuario no puede ser eliminado porque ya ha delegado tareas.');
+        }
+        if ($user->tareas_usuario_destino->count() > 0) {
+            return back()->with('error', 'El usuario no puede ser eliminado porque tiene tareas asignadas.');
+        }
         try {
             $user->delete();
             return redirect()->route("user")->with('success', 'El usuario ' . $user->name . ' ha sido eliminado efectivamente.');
