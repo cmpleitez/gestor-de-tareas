@@ -42,11 +42,11 @@ class UserController extends Controller
             $user = User::create($validated);
             $user->assignRole('Operador');
             DB::commit();
-            return redirect()->route("user")->with('success', 'El nuevo operador ' . $user->name . ' ha sido registrado efectivamente.');
         } catch (QueryException $e) {
             DB::rollBack();
             return back()->withErrors(['error' => 'Error al guardar el usuario: ' . $e->getMessage()]);
         }
+        return redirect()->route('user')->with('success', 'El nuevo operador ' . $user->name . ' ha sido registrado efectivamente.');
     }
 
     public function show(string $id)
@@ -78,11 +78,9 @@ class UserController extends Controller
         //GUARDANDO
         try {
             $user->update($validated);
-            return redirect()->route("user")->with('success', 'El nuevo operador ' . $user->name . ' ha sido registrado efectivamente.');
         } catch (QueryException $e) {
             return back()->withErrors(['error' => 'Error al guardar el usuario: ' . $e->getMessage()]);
         }
-        //RESPUESTA
         return redirect()->route('user')->with('success', $mensaje);
     }
 
@@ -94,20 +92,12 @@ class UserController extends Controller
 
     public function rolesUpdate(Request $request, User $user)
     {
-        // Obtener los roles seleccionados en el formulario. Usa un array vacío si no se seleccionó ninguno.
         $submittedRoles = $request->input('roles', []);
-
-        // Si el usuario que se está actualizando es un SuperAdmin, asegurar que el rol 'SuperAdmin' esté en la lista
         if ($user->hasRole('SuperAdmin')) {
-            // Verificar si 'SuperAdmin' ya está en la lista enviada (aunque el formulario no lo envíe explícitamente,
-            // esta verificación es una buena práctica si el formulario pudiera cambiar en el futuro)
             if (!in_array('SuperAdmin', $submittedRoles)) {
-                // Si no está, añadirlo a la lista de roles a sincronizar
                 $submittedRoles[] = 'SuperAdmin';
             }
         }
-
-        // Sincronizar los roles del usuario con la lista (incluyendo 'SuperAdmin' si se agregó)
         try {
             DB::beginTransaction();
             $user->syncRoles($submittedRoles);
@@ -132,9 +122,9 @@ class UserController extends Controller
         }
         try {
             $user->delete();
-            return redirect()->route("user")->with('success', 'El usuario ' . $user->name . ' ha sido eliminado efectivamente.');
         } catch (\Exception $e) {
             return back()->with('error', 'Ocurrió un error cuando se intentaba eliminar el usuario: ' . $e->getMessage());
         }
+        return redirect()->route('user')->with('success', 'El usuario ha sido eliminado con éxito.');
     }
 }

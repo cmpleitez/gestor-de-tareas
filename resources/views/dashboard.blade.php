@@ -25,6 +25,7 @@
     <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/charts/apexcharts.css">
     <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/extensions/dragula.min.css">
     <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/forms/select/select2.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/extensions/toastr.css">
     <!-- END: Vendor CSS-->
 
     <!-- BEGIN: Theme CSS-->
@@ -40,6 +41,7 @@
     <link rel="stylesheet" type="text/css" href="/app-assets/css/core/menu/menu-types/vertical-menu.css">
     <link rel="stylesheet" type="text/css" href="/app-assets/css/pages/dashboard-analytics.css">
     <link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/forms/validation/form-validation.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/extensions/toastr.css">
     <!-- END: Page CSS-->
 
     <style>
@@ -182,6 +184,27 @@
             font-size: 1.3rem;
             top: -14px;
         }
+
+        .toast-info {
+            background-color:rgb(29, 152, 235) !important;
+            color: #fff !important; /* Texto blanco para mejor contraste */
+        }
+        .toast-success {
+            background-color:rgb(14, 155, 73) !important;
+            color: #fff !important;
+        }
+        .toast-error {
+            background-color:rgb(233, 87, 71) !important;
+            color: #fff !important;
+        }
+        .toast-warning {
+            background-color:rgb(247, 132, 66) !important;
+            color: #fff !important;
+        }
+        .toast-progress {
+            background-color: rgba(255, 255, 255, .5) !important;
+        }
+
     </style>
 
     @section('css')
@@ -383,6 +406,7 @@
     <script src="/app-assets/vendors/js/extensions/dragula.min.js"></script>
     <script src="/app-assets/vendors/js/forms/validation/jqBootstrapValidation.js"></script>
     <script src="/app-assets/vendors/js/forms/select/select2.full.min.js"></script>
+    <script src="/app-assets/vendors/js/extensions/toastr.min.js"></script>
     <!-- END: Page Vendor JS-->
 
     <!-- BEGIN: Theme JS-->
@@ -396,11 +420,29 @@
     <script src="/app-assets/js/scripts/pages/dashboard-analytics.js"></script>
     <script src="/app-assets/js/scripts/forms/validation/form-validation.js"></script>
     <script src="/app-assets/js/scripts/forms/select/form-select2.js"></script>
+    <script src="/app-assets/js/scripts/extensions/toastr.js"></script>
     <!-- END: Page JS-->
 
     <!-- ... otros scripts ... -->
     <script>
         $(document).ready(function() {
+            //Captura de alertas del backend
+            @if(Session::has('success'))
+                toastr.success("{{ Session::get('success') }}");
+            @endif
+
+            @if(Session::has('error'))
+                toastr.error("{{ Session::get('error') }}");
+            @endif
+
+            @if(Session::has('warning'))
+                toastr.warning("{{ Session::get('warning') }}");
+            @endif
+
+            @if(Session::has('info'))
+                toastr.info("{{ Session::get('info') }}");
+            @endif
+
             // Inicializar DataTable
             var table = $('.zero-configuration').DataTable({
                 "language": {
