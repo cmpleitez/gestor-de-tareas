@@ -9,7 +9,6 @@
 ==========================================================================================*/
 
 $(window).on("load", function () {
-
   var $primary = '#5A8DEE';
   var $success = '#39DA8A';
   var $danger = '#FF5B5C';
@@ -22,10 +21,9 @@ $(window).on("load", function () {
   var $sub_label_color = "#596778";
   var $radial_bg = "#e7edf3";
 
-
   // Radial-Success-chart
   // --------------------------------
-  var radialSuccessoptions = {
+  window.radialSuccessoptions = {
     chart: {
       height: 40,
       width: 40,
@@ -72,16 +70,10 @@ $(window).on("load", function () {
       lineCap: "round",
     }
   };
-  var radialSuccessChart = new ApexCharts(
-    document.querySelector("#radial-success-chart"),
-    radialSuccessoptions
-  );
-
-  radialSuccessChart.render();
 
   // Radial-Warning-chart
   // --------------------------------
-  var radialWarningoptions = {
+  window.radialWarningoptions = {
     chart: {
       height: 40,
       width: 40,
@@ -128,16 +120,10 @@ $(window).on("load", function () {
       lineCap: "round",
     }
   };
-  var radialWarningChart = new ApexCharts(
-    document.querySelector("#radial-warning-chart"),
-    radialWarningoptions
-  );
-
-  radialWarningChart.render();
 
   // Radial-Danger-chart
   // --------------------------------
-  var radialDangeroptions = {
+  window.radialDangeroptions = {
     chart: {
       height: 40,
       width: 40,
@@ -184,16 +170,10 @@ $(window).on("load", function () {
       lineCap: "round",
     }
   };
-  var radialDangerChart = new ApexCharts(
-    document.querySelector("#radial-danger-chart"),
-    radialDangeroptions
-  );
-
-  radialDangerChart.render();
 
   // Bar Chart
   // ---------
-  var analyticsBarChartOptions = {
+  window.analyticsBarChartOptions = {
     chart: {
       height: 260,
       type: 'bar',
@@ -267,20 +247,12 @@ $(window).on("load", function () {
       show: false
     },
     tooltip: {
-      y: {
-        formatter: function (val) {
-          return "$ " + val + " thousands"
-        }
+      theme: 'dark',
+      x: {
+        show: false
       }
     }
-  }
-
-  var analyticsBarChart = new ApexCharts(
-    document.querySelector("#analytics-bar-chart"),
-    analyticsBarChartOptions
-  );
-
-  analyticsBarChart.render();
+  };
 
   // Success Line Chart
   // -----------------------------

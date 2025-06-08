@@ -36,6 +36,7 @@ class UserController extends Controller
             'oficina_id' => 'required|numeric|exists:oficinas,id',
             'password' => 'required|string|min:6|max:16',
             'password_confirmation' => 'required|string|min:6|max:16|same:password',
+            'profile_photo_path' => 'nullable|image|max:1024',
         ]);
         //GUARDANDO
         unset($validated['password_confirmation']);
@@ -78,7 +79,8 @@ class UserController extends Controller
         //VALIDANDO
         $validated = $request->validate([
             'email'     => ['email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
-            'oficina_id' => 'required|numeric|exists:oficinas,id',        
+            'oficina_id' => 'required|numeric|exists:oficinas,id',
+            'profile_photo_path' => 'nullable|image|max:1024',
         ]);
         $correo_actualizado = false;
         if ($user->email != $validated['email']) {
@@ -91,7 +93,9 @@ class UserController extends Controller
         //GUARDANDO
         try {
             DB::beginTransaction();
+            
             $user->update($validated);
+
             if ($request->hasfile('profile_photo_path')) {
                 $nombre_archivo = $user->id . '.' . $request->file('profile_photo_path')->extension();
                 $ruta_destino = 'public/' . auth()->user()->oficina_id;

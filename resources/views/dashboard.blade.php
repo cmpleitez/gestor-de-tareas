@@ -413,12 +413,23 @@
     <!-- BEGIN Vendor JS-->
 
     <!-- BEGIN: Page Vendor JS-->
-    <script src="/app-assets/vendors/js/charts/apexcharts.min.js"></script>
+    <!-- <script src="/app-assets/vendors/js/charts/apexcharts.min.js"></script> -->
     <script src="/app-assets/vendors/js/extensions/dragula.min.js"></script>
     <script src="/app-assets/vendors/js/forms/validation/jqBootstrapValidation.js"></script>
     <script src="/app-assets/vendors/js/forms/select/select2.full.min.js"></script>
     <script src="/app-assets/vendors/js/extensions/toastr.min.js"></script>
     <!-- END: Page Vendor JS-->
+
+    <!-- DataTables -->
+    <script src="/app-assets/vendors/js/tables/datatable/datatables.min.js"></script>
+    <script src="/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js"></script>
+    <script src="/app-assets/vendors/js/tables/datatable/dataTables.buttons.min.js"></script>
+    <script src="/app-assets/vendors/js/tables/datatable/buttons.html5.min.js"></script>
+    <script src="/app-assets/vendors/js/tables/datatable/buttons.print.min.js"></script>
+    <script src="/app-assets/vendors/js/tables/datatable/buttons.bootstrap.min.js"></script>
+    <script src="/app-assets/vendors/js/tables/datatable/pdfmake.min.js"></script>
+    <script src="/app-assets/vendors/js/tables/datatable/vfs_fonts.js"></script>
+        
 
     <!-- BEGIN: Theme JS-->
     <script src="/app-assets/js/core/app-menu.js"></script>
@@ -428,7 +439,7 @@
     <!-- END: Theme JS-->
 
     <!-- BEGIN: Page JS-->
-    <script src="/app-assets/js/scripts/pages/dashboard-analytics.js"></script>
+    <!-- <script src="/app-assets/js/scripts/pages/dashboard-analytics.js"></script> -->
     <script src="/app-assets/js/scripts/forms/validation/form-validation.js"></script>
     <script src="/app-assets/js/scripts/forms/select/form-select2.js"></script>
     <script src="/app-assets/js/scripts/extensions/toastr.js"></script>
@@ -455,18 +466,59 @@
             @endif
 
             // Inicializar DataTable
-            var table = $('.zero-configuration').DataTable({
-                "language": {
-                    "url": "/app-assets/Spanish.json"
-                },
-            });
+            if ($.fn.DataTable) {
+                var table = $('.zero-configuration').DataTable({
+                    "language": {
+                        "url": "/app-assets/Spanish.json"
+                    },
+                    "responsive": true,
+                    "autoWidth": false
+                });
 
-            // Inicializar tooltips de Bootstrap 4
-            $('[data-toggle="tooltip"]').tooltip();
-            // Reinicializar tooltips después de cada evento de DataTables
-            table.on('draw', function () {
+                // Inicializar tooltips de Bootstrap 4
                 $('[data-toggle="tooltip"]').tooltip();
-            });
+                // Reinicializar tooltips después de cada evento de DataTables
+                table.on('draw', function () {
+                    $('[data-toggle="tooltip"]').tooltip();
+                });
+            } else {
+                console.error('DataTables no está disponible');
+            }
+
+            // Verificar y inicializar gráficos solo si existen los elementos
+            if (typeof ApexCharts !== 'undefined') {
+                try {
+                    // Radial Success Chart
+                    var el = document.querySelector("#radial-success-chart");
+                    if (el && window.radialSuccessoptions) {
+                        var radialSuccessChart = new ApexCharts(el, window.radialSuccessoptions);
+                        radialSuccessChart.render();
+                    }
+
+                    // Radial Warning Chart
+                    el = document.querySelector("#radial-warning-chart");
+                    if (el && window.radialWarningoptions) {
+                        var radialWarningChart = new ApexCharts(el, window.radialWarningoptions);
+                        radialWarningChart.render();
+                    }
+
+                    // Radial Danger Chart
+                    el = document.querySelector("#radial-danger-chart");
+                    if (el && window.radialDangeroptions) {
+                        var radialDangerChart = new ApexCharts(el, window.radialDangeroptions);
+                        radialDangerChart.render();
+                    }
+
+                    // Analytics Bar Chart
+                    el = document.querySelector("#analytics-bar-chart");
+                    if (el && window.analyticsBarChartOptions) {
+                        var analyticsBarChart = new ApexCharts(el, window.analyticsBarChartOptions);
+                        analyticsBarChart.render();
+                    }
+                } catch (error) {
+                    console.error('Error al inicializar los gráficos:', error);
+                }
+            }
         });
     </script>
     <!-- ... otros scripts ... -->
