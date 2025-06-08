@@ -4,11 +4,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\QueryException;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
+use Illuminate\Support\Facades\Storage; 
 
 use Spatie\Permission\Models\Role;
 use App\Models\User;
 use App\Models\Oficina;
 use Illuminate\Validation\Rule;
+
 class UserController extends Controller
 {
     public function index()
@@ -33,13 +37,22 @@ class UserController extends Controller
             'password' => 'required|string|min:6|max:16',
             'password_confirmation' => 'required|string|min:6|max:16|same:password',
         ]);
-
         //GUARDANDO
         unset($validated['password_confirmation']);
         $validated['password'] = Hash::make($validated['password']);
         try {
             DB::beginTransaction();
             $user = User::create($validated);
+            if ($request->hasfile('profile_photo_path')) {
+                $nombre_archivo = $user->id . '.' . $request->file('profile_photo_path')->extension();
+                $ruta_destino = 'public/' . auth()->user()->oficina_id;
+                $user->profile_photo_path = Storage::putFileAs($ruta_destino, $request->file('profile_photo_path'), $nombre_archivo);
+                $user->save();
+                $manager = new ImageManager(Driver::class);
+                $image = $manager->read(Storage::get($user->profile_photo_path));
+                $image->cover(150, 200, 'center');
+                $image->save(Storage::path($user->profile_photo_path));
+            }
             $user->assignRole('Operador');
             DB::commit();
         } catch (QueryException $e) {
@@ -77,11 +90,27 @@ class UserController extends Controller
         validación.' : 'El usuario ha sido actualizado con éxito.';        
         //GUARDANDO
         try {
+            DB::beginTransaction();
             $user->update($validated);
+            if ($request->hasfile('profile_photo_path')) {
+                $nombre_archivo = $user->id . '.' . $request->file('profile_photo_path')->extension();
+                $ruta_destino = 'public/' . auth()->user()->oficina_id;
+                $user->profile_photo_path = Storage::putFileAs($ruta_destino, $request->file('profile_photo_path'), $nombre_archivo);
+                $user->save();
+                $manager = new ImageManager(Driver::class);
+                $image = $manager->read(Storage::get($user->profile_photo_path));
+                $image->cover(150, 200, 'center');
+                $image->save(Storage::path($user->profile_photo_path));
+            }
+            DB::commit();
+            return redirect()->route('user')->with('success', $mensaje);
         } catch (QueryException $e) {
+            DB::rollBack();
             return back()->withErrors(['error' => 'Error al guardar el usuario: ' . $e->getMessage()]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['error' => 'Error al guardar la imagen: ' . $e->getMessage()]);
         }
-        return redirect()->route('user')->with('success', $mensaje);
     }
 
     public function rolesEdit(User $user)

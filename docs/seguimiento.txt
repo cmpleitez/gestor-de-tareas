@@ -4,7 +4,10 @@
         pasar al perfil mis tareas 
         ...crud de usuarios 
                 validar usuario via correo
-                ...configurar los mensajes al usuario
+                ...preestablecer el avatar del usuario si no esta disponible
+                user.store: trasladar el servicio de actualizacion de imagen avatar desde el formulario register de laravel al de la plantilla
+                        ...validar el peso del archivo
+        para los errores establecer file:///C:/laragon/www/frest-admin/html/ltr/vertical-menu-boxicons-template/component-bs-toast.html
         crud de equipos
         usar un componente para aplicar el logo a la app porque la imagen no funcionnó tampoco el svg
         pasar mis tareas al perfil del usuario

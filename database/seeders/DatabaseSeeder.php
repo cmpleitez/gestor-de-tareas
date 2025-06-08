@@ -231,7 +231,6 @@ class DatabaseSeeder extends Seeder
             'email_verified_at' => null,
             'password'          => bcrypt('123456789'),
             'remember_token'    => Str::random(10),
-            'profile_photo_path' => 'profile-photos/superadmin.png',
             'created_at'        => Carbon::now(),
             'updated_at'        => Carbon::now(),
         ]);

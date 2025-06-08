@@ -25,13 +25,19 @@
                     </div>
                 </div>
                 <!-- FORMULARIO -->
-                <form class="form-horizontal" action="{{ route('user.update', $user->id) }}" method="POST" novalidate>
+                <form class="form-horizontal" action="{{ route('user.update', $user->id) }}" method="POST" enctype="multipart/form-data" novalidate>
                     @csrf
                     @method('PUT')
                     <div class="card-content">
                         <div class="card-body">
                             <div class="row">
-
+                                {{-- IMAGEN --}}
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <label>Fotografia del Operador</label>
+                                        <input type="file" name="profile_photo_path" class="form-control">
+                                    </div>
+                                </div>
                                 {{-- OFICINA --}}
                                 <div class="col-sm-12">
                                     <div class="form-group">

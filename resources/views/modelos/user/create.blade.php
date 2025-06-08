@@ -25,7 +25,7 @@
                     </div>
                 </div>
                 <!-- FORMULARIO -->
-                <form class="form-horizontal" action="{{ route('user.store') }}" method="POST" novalidate>
+                <form class="form-horizontal" action="{{ route('user.store') }}" method="POST" enctype="multipart/form-data" novalidate>
                     @csrf
                     <div class="card-content">
                         <div class="card-body">
@@ -46,6 +46,13 @@
                                                 </div>
                                             @enderror
                                         </div>
+                                    </div>
+                                </div>
+                                {{-- IMAGEN --}}
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <label>Fotografia del Operador</label>
+                                        <input type="file" name="profile_photo_path" class="form-control">
                                     </div>
                                 </div>
                                 {{-- OFICINA --}}
