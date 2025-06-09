@@ -7,6 +7,7 @@ use Illuminate\Database\QueryException;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 use Illuminate\Support\Facades\Storage; 
+use Illuminate\Auth\Events\Registered;
 
 use Spatie\Permission\Models\Role;
 use App\Models\User;
@@ -55,12 +56,16 @@ class UserController extends Controller
                 $image->save(Storage::path($user->profile_photo_path));
             }
             $user->assignRole('Operador');
+            
+            // Enviar email de verificación directamente
+            $user->sendEmailVerificationNotification();
+            
             DB::commit();
         } catch (QueryException $e) {
             DB::rollBack();
             return back()->withErrors(['error' => 'Error al guardar el usuario: ' . $e->getMessage()]);
         }
-        return redirect()->route('user')->with('success', 'El nuevo operador ' . $user->name . ' ha sido registrado efectivamente.');
+        return redirect()->route('user')->with('success', 'El nuevo operador ' . $user->name . ' ha sido registrado efectivamente. Se ha enviado un correo de verificación.');
     }
 
     public function show(string $id)

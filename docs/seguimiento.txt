@@ -1,9 +1,9 @@
 🟢 me quedé maquetando la sombra del card en general
 
 🟢 Preparar un sistema base prefabricado para solo replicar
-        pasar al perfil mis tareas 
         ...crud de usuarios
-                maquetar el link para envio de correos de confirmacion y verificr porque no envia el correo de verif. de forma automatica                
+                el menu del sistema no debe mostrarse si el usuario aun se ha verificado
+                maquetar el contenido del correo que se envia para verificacion
 
         retirar register del welcome porque ya hay dentro del sistema una opcion para ello
         para los errores establecer file:///C:/laragon/www/frest-admin/html/ltr/vertical-menu-boxicons-template/component-bs-toast.html
