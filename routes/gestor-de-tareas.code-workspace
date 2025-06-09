@@ -10,5 +10,7 @@
 			"path": "../../espacios-municipales"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"Devdb.colorTheme": "dark"
+	}
 }

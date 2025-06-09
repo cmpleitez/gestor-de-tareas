@@ -263,29 +263,36 @@
                         <li class="nav-item d-none d-lg-block"><a class="nav-link nav-link-expand"><i
                                     class="ficon bx bx-fullscreen"></i></a></li>
                         <li class="dropdown dropdown-user nav-item">
-                            <a class="dropdown-toggle nav-link dropdown-user-link" href="#" data-toggle="dropdown">
+                            <a class="dropdown-toggle nav-link dropdown-user-link" href="#"
+                                data-toggle="dropdown">
                                 <div class="user-nav d-sm-flex d-none">
                                     <span class="user-name">{{ auth()->user()->name }}</span>
                                     <span
                                         class="user-status text-muted">{{ auth()->check() ? 'Conectado' : 'Desconectado' }}</span>
                                 </div>
-                                <span>
-                                    @php
-                                        $profilePhotoPath = auth()->user()->profile_photo_path;
-                                        $defaultSvgPath = asset('app-assets/images/pages/operador.png');
-                                    @endphp
-                                    @if (Storage::exists($profilePhotoPath))
-                                        <img class="round" src="{{ Storage::url($profilePhotoPath) }}" alt="avatar"
-                                            height="40" width="40">
+                                @php
+                                    $profilePhotoPath = auth()->user()->profile_photo_path;
+                                    $defaultSvgPath = asset('app-assets/images/pages/operador.png');
+                                @endphp
+                                @if (auth()->user()->hasVerifiedEmail())
+                                    @if ($profilePhotoPath && Storage::exists($profilePhotoPath))
+                                        <img class="round" src="{{ Storage::url($profilePhotoPath) }}"
+                                            alt="avatar" height="40" width="40">
                                     @else
-                                        <img class="round" src="{{ $defaultSvgPath }}" alt="avatar" height="40" width="40">
+                                        <img class="round" src="{{ $defaultSvgPath }}" alt="avatar"
+                                            height="40" width="40">
                                     @endif
-                                </span>
+                                @else
+                                    <img class="round" src="{{ $defaultSvgPath }}" alt="avatar" height="40"
+                                        width="40">
+                                @endif
                             </a>
                             <div class="dropdown-menu dropdown-menu-right pb-0">
-                                <a class="dropdown-item" href="page-user-profile.html"><i class="bx bx-user mr-50"></i>
+                                <a class="dropdown-item" href="page-user-profile.html"><i
+                                        class="bx bx-user mr-50"></i>
                                     Edit Profile</a>
-                                <a class="dropdown-item" href="app-todo.html"><i class="bx bx-check-square mr-50"></i>
+                                <a class="dropdown-item" href="app-todo.html"><i
+                                        class="bx bx-check-square mr-50"></i>
                                     Task</a>
                                 <div class="dropdown-divider mb-0"></div>
                                 <form method="POST" action="{{ route('logout') }}" style="display: inline;">
@@ -305,8 +312,8 @@
 
     <!-- Puedes ponerlo donde quieras mostrar el SVG, por ejemplo, en el header -->
     <div class="brand-logo">
-        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="37.8" height="29.8"
-            viewBox="0 0 378 298">
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="37.8"
+            height="29.8" viewBox="0 0 378 298">
             <image id="Capa_2" data-name="Capa 2" x="14" y="14" width="352" height="262"
                 xlink:href="data:img/png;base64,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" />
         </svg>
@@ -338,35 +345,35 @@
                             data-i18n="Menu Levels">Servicios</span></a>
                     <ul class="menu-content" style="display: block;">
                         @role('Operador')
-                        <li><a href="#"><i class="bx bx-right-arrow-alt"></i><span class="menu-item"
-                                    data-i18n="Second Level">Disponible</span></a>
-                        </li>
+                            <li><a href="#"><i class="bx bx-right-arrow-alt"></i><span class="menu-item"
+                                        data-i18n="Second Level">Disponible</span></a>
+                            </li>
                         @endrole
                         @role('Administrador')
-                        <li><a href="#"><i class="bx bx-right-arrow-alt"></i><span class="menu-item"
-                                    data-i18n="Second Level">Administración</span></a>
-                            <ul class="menu-content" style="display: block;">
-                                <li><a href="{{ Route('equipo') }}"><i class="bx bx-right-arrow-alt"></i><span
-                                            class="menu-item" data-i18n="Third Level">Equipos</span></a>
-                                </li>
-                                <li><a href="#"><i class="bx bx-right-arrow-alt"></i><span class="menu-item"
-                                            data-i18n="Third Level">Disponible</span></a>
-                                </li>
-                            </ul>
-                        </li>
+                            <li><a href="#"><i class="bx bx-right-arrow-alt"></i><span class="menu-item"
+                                        data-i18n="Second Level">Administración</span></a>
+                                <ul class="menu-content" style="display: block;">
+                                    <li><a href="{{ Route('equipo') }}"><i class="bx bx-right-arrow-alt"></i><span
+                                                class="menu-item" data-i18n="Third Level">Equipos</span></a>
+                                    </li>
+                                    <li><a href="#"><i class="bx bx-right-arrow-alt"></i><span class="menu-item"
+                                                data-i18n="Third Level">Disponible</span></a>
+                                    </li>
+                                </ul>
+                            </li>
                         @endrole
                         @role('SuperAdmin')
-                        <li><a href="#"><i class="bx bx-right-arrow-alt"></i><span class="menu-item"
-                                    data-i18n="Second Level">Configuración</span></a>
-                            <ul class="menu-content" style="display: block;">
-                                <li><a href="{{ Route('user') }}"><i class="bx bx-right-arrow-alt"></i><span
-                                            class="menu-item" data-i18n="Third Level">Usuarios</span></a>
-                                </li>
-                                <li><a href="#"><i class="bx bx-right-arrow-alt"></i><span class="menu-item"
-                                            data-i18n="Third Level">Disponible</span></a>
-                                </li>
-                            </ul>
-                        </li>
+                            <li><a href="#"><i class="bx bx-right-arrow-alt"></i><span class="menu-item"
+                                        data-i18n="Second Level">Configuración</span></a>
+                                <ul class="menu-content" style="display: block;">
+                                    <li><a href="{{ Route('user') }}"><i class="bx bx-right-arrow-alt"></i><span
+                                                class="menu-item" data-i18n="Third Level">Usuarios</span></a>
+                                    </li>
+                                    <li><a href="#"><i class="bx bx-right-arrow-alt"></i><span class="menu-item"
+                                                data-i18n="Third Level">Disponible</span></a>
+                                    </li>
+                                </ul>
+                            </li>
                         @endrole
                     </ul>
                 </li>
@@ -436,21 +443,21 @@
 
     <!-- ... otros scripts ... -->
     <script>
-        $(document).ready(function () {
+        $(document).ready(function() {
             //Captura de alertas del backend
-            @if(Session::has('success'))
+            @if (Session::has('success'))
                 toastr.success("{{ Session::get('success') }}");
             @endif
 
-            @if(Session::has('error'))
+            @if (Session::has('error'))
                 toastr.error("{{ Session::get('error') }}");
             @endif
 
-            @if(Session::has('warning'))
+            @if (Session::has('warning'))
                 toastr.warning("{{ Session::get('warning') }}");
             @endif
 
-            @if(Session::has('info'))
+            @if (Session::has('info'))
                 toastr.info("{{ Session::get('info') }}");
             @endif
 
@@ -467,7 +474,7 @@
                 // Inicializar tooltips de Bootstrap 4
                 $('[data-toggle="tooltip"]').tooltip();
                 // Reinicializar tooltips después de cada evento de DataTables
-                table.on('draw', function () {
+                table.on('draw', function() {
                     $('[data-toggle="tooltip"]').tooltip();
                 });
             } else {
