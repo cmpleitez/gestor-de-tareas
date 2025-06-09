@@ -420,17 +420,6 @@
     <script src="/app-assets/vendors/js/extensions/toastr.min.js"></script>
     <!-- END: Page Vendor JS-->
 
-    <!-- DataTables -->
-    <script src="/app-assets/vendors/js/tables/datatable/datatables.min.js"></script>
-    <script src="/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js"></script>
-    <script src="/app-assets/vendors/js/tables/datatable/dataTables.buttons.min.js"></script>
-    <script src="/app-assets/vendors/js/tables/datatable/buttons.html5.min.js"></script>
-    <script src="/app-assets/vendors/js/tables/datatable/buttons.print.min.js"></script>
-    <script src="/app-assets/vendors/js/tables/datatable/buttons.bootstrap.min.js"></script>
-    <script src="/app-assets/vendors/js/tables/datatable/pdfmake.min.js"></script>
-    <script src="/app-assets/vendors/js/tables/datatable/vfs_fonts.js"></script>
-        
-
     <!-- BEGIN: Theme JS-->
     <script src="/app-assets/js/core/app-menu.js"></script>
     <script src="/app-assets/js/core/app.js"></script>
@@ -483,41 +472,6 @@
                 });
             } else {
                 console.error('DataTables no está disponible');
-            }
-
-            // Verificar y inicializar gráficos solo si existen los elementos
-            if (typeof ApexCharts !== 'undefined') {
-                try {
-                    // Radial Success Chart
-                    var el = document.querySelector("#radial-success-chart");
-                    if (el && window.radialSuccessoptions) {
-                        var radialSuccessChart = new ApexCharts(el, window.radialSuccessoptions);
-                        radialSuccessChart.render();
-                    }
-
-                    // Radial Warning Chart
-                    el = document.querySelector("#radial-warning-chart");
-                    if (el && window.radialWarningoptions) {
-                        var radialWarningChart = new ApexCharts(el, window.radialWarningoptions);
-                        radialWarningChart.render();
-                    }
-
-                    // Radial Danger Chart
-                    el = document.querySelector("#radial-danger-chart");
-                    if (el && window.radialDangeroptions) {
-                        var radialDangerChart = new ApexCharts(el, window.radialDangeroptions);
-                        radialDangerChart.render();
-                    }
-
-                    // Analytics Bar Chart
-                    el = document.querySelector("#analytics-bar-chart");
-                    if (el && window.analyticsBarChartOptions) {
-                        var analyticsBarChart = new ApexCharts(el, window.analyticsBarChartOptions);
-                        analyticsBarChart.render();
-                    }
-                } catch (error) {
-                    console.error('Error al inicializar los gráficos:', error);
-                }
             }
         });
     </script>
