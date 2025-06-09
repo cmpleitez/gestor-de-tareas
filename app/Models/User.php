@@ -10,8 +10,11 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Auth\Authenticatable as AuthenticatableTrait;
+use Illuminate\Support\Facades\Storage;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens;
     use HasFactory;
@@ -29,7 +32,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'oficina_id'
+        'oficina_id',
+        'profile_photo_path'
     ];
 
     /**
@@ -61,6 +65,27 @@ class User extends Authenticatable
     protected $appends = [
         'profile_photo_url',
     ];
+
+    public function getProfilePhotoUrlAttribute()
+    {
+        // Si el usuario no está verificado, usar la foto por defecto de Jetstream
+        if (!$this->hasVerifiedEmail()) {
+            return $this->defaultProfilePhotoUrl();
+        }
+
+        // Si el usuario está verificado y tiene una foto de perfil
+        if ($this->profile_photo_path && Storage::exists('public/' . $this->profile_photo_path)) {
+            return asset('storage/' . $this->profile_photo_path);
+        }
+
+        // Si no tiene foto de perfil o no existe el archivo
+        return $this->defaultProfilePhotoUrl();
+    }
+
+    protected function defaultProfilePhotoUrl()
+    {
+        return asset('app-assets/images/pages/operador.png');
+    }
 
     public function oficina()
     {
