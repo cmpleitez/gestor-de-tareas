@@ -1,17 +1,8 @@
-🟢 me quedé maquetando la sombra del card en general
 
-🟢 Preparar un sistema base prefabricado para solo replicar
-        ...crud de usuarios
-                verificar pie de pagina del portal luego el idioma de los controles del portal
-                verificar el amuneto de llave que sea programatico y no automatico para que no se pierdan los correlativos
+⭐ crud de usuarios
 
-        retirar register del welcome porque ya hay dentro del sistema una opcion para ello
-        para los errores establecer file:///C:/laragon/www/frest-admin/html/ltr/vertical-menu-boxicons-template/component-bs-toast.html
-        crud de equipos
-        usar un componente para aplicar el logo a la app porque la imagen no funcionnó tampoco el svg
-        pasar mis tareas al perfil del usuario
-        tema de seguridad como es un sistema interno, se debe retirar la ruta del vendor "register", o colocarle la seguridad de @can
-        debe haber un servicio especial para cambiar de correo el nombre queda protegido y el registro total se puede eliminar cuando no temnga historial
+...🟢 crud de equipos
+        
 
 Creando el flujo de trabajo:
 https://miro.com/app/board/uXjVLl8VYdo=/

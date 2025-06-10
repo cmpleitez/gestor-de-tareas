@@ -56,10 +56,7 @@ class UserController extends Controller
                 $image->save(Storage::path($user->profile_photo_path));
             }
             $user->assignRole('Operador');
-            
-            // Enviar email de verificación directamente
-            $user->sendEmailVerificationNotification();
-            
+            $user->sendEmailVerificationNotification(); //enviar correo de verificacion
             DB::commit();
         } catch (QueryException $e) {
             DB::rollBack();
@@ -68,10 +65,6 @@ class UserController extends Controller
         return redirect()->route('user')->with('success', 'El nuevo operador ' . $user->name . ' ha sido registrado efectivamente. Se ha enviado un correo de verificación.');
     }
 
-    public function show(string $id)
-    {
-        //
-    }
 
     public function edit(User $user)
     {
@@ -98,9 +91,10 @@ class UserController extends Controller
         //GUARDANDO
         try {
             DB::beginTransaction();
-            
+            if ($correo_actualizado) {
+                $user->sendEmailVerificationNotification(); //enviar correo de verificacion
+            }
             $user->update($validated);
-
             if ($request->hasfile('profile_photo_path')) {
                 $nombre_archivo = $user->id . '.' . $request->file('profile_photo_path')->extension();
                 $ruta_destino = 'public/' . auth()->user()->oficina_id;
@@ -120,6 +114,11 @@ class UserController extends Controller
             DB::rollBack();
             return back()->withErrors(['error' => 'Error al guardar la imagen: ' . $e->getMessage()]);
         }
+    }
+
+    public function show(string $id)
+    {
+        //
     }
 
     public function rolesEdit(User $user)

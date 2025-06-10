@@ -828,6 +828,19 @@
             }
         }
     </style>
+
+    <!-- Favicon para navegadores -->
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+
+    <!-- Apple Touch Icon (para iOS) -->
+    <link rel="apple-touch-icon" href="{{ asset('app-assetsimages/icons/apple-touch-icon.png') }}">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+
 </head>
 
 <body class="antialiased">
@@ -837,16 +850,12 @@
             <div class="sm:fixed sm:top-0 sm:right-0 p-6 text-right z-10">
                 @auth
                     <a href="{{ url('/dashboard') }}"
-                        class="font-semibold text-gray-600 hover:text-gray-900 focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">Dashboard</a>
+                        class="font-semibold text-gray-600 hover:text-gray-900 focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">Dashboard
+                    </a>
                 @else
                     <a href="{{ route('login') }}"
-                        class="font-semibold text-gray-600 hover:text-gray-900 focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">Log
-                        in</a>
-
-                    @if (Route::has('register'))
-                        <a href="{{ route('register') }}"
-                            class="ml-4 font-semibold text-gray-600 hover:text-gray-900 focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">Register</a>
-                    @endif
+                        class="font-semibold text-gray-600 hover:text-gray-900 focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">Entrar
+                    </a>
                 @endauth
             </div>
         @endif
@@ -940,7 +949,8 @@
                     </a>
 
                     <a href="https://www.ibm.com/mx-es/topics/automation" target="_blank">
-                        <div class="scale-100 p-6 bg-white from-gray-700/50 via-transparent rounded-lg shadow-2xl shadow-gray-500/20 flex motion-safe:hover:scale-[1.01] transition-all duration-250 focus:outline focus:outline-2 focus:outline-red-500">
+                        <div
+                            class="scale-100 p-6 bg-white from-gray-700/50 via-transparent rounded-lg shadow-2xl shadow-gray-500/20 flex motion-safe:hover:scale-[1.01] transition-all duration-250 focus:outline focus:outline-2 focus:outline-red-500">
                             <div>
                                 <div class="h-16 w-16 flex items-center justify-center rounded-full"
                                     style="background-color: rgb(90, 141, 238);">
@@ -975,7 +985,15 @@
                 </div>
 
                 <div class="text-center text-sm text-gray-500 sm:text-right sm:ml-0">
-                <p class="text-sm text-gray-500">Versión {{ config('app.version') }}</p>
+                    <p class="text-sm text-gray-500">Gestor de Tareas {{ config('app.version') }}</p>
+                    <p class="clearfix mb-0"><span class="float-left d-inline-block"></span>
+                        <span class="float-right d-sm-inline-block d-none">
+                            <a href="#" target="_blank">San Salvador</a>
+                            <i class="bx bxl-slack pink mx-50 font-small-3"></i> 
+                            &copy; 2025
+                        </span>
+                        <button class="btn btn-primary btn-icon scroll-top" type="button"><i class="bx bx-up-arrow-alt"></i></button>
+                    </p>
                 </div>
             </div>
         </div>

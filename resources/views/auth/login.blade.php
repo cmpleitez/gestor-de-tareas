@@ -11,7 +11,7 @@
     <meta name="keywords"
         content="gestión, tareas, calidad, control, fluidez, atención al cliente">
     <meta name="author" content=".">
-    <title>Gestor de tareas</title>
+    <title>Gestor de tareas {{ config('app.version') }}</title>
     <link rel="apple-touch-icon" href="/app-assets/images/ico/apple-icon-120.png">
     <link rel="shortcut icon" type="image/x-icon" href="/app-assets/images/ico/favicon.ico">
     <link href="https://fonts.googleapis.com/css?family=Rubik:300,400,500,600%7CIBM+Plex+Sans:300,400,500,600,700"
@@ -19,6 +19,7 @@
 
     <!-- BEGIN: Vendor CSS-->
     <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/vendors.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/extensions/toastr.css">
     <!-- END: Vendor CSS-->
 
     <!-- BEGIN: Theme CSS-->
@@ -33,6 +34,7 @@
     <!-- BEGIN: Page CSS-->
     <link rel="stylesheet" type="text/css" href="/app-assets/css/core/menu/menu-types/vertical-menu.css">
     <link rel="stylesheet" type="text/css" href="/app-assets/css/pages/authentication.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/extensions/toastr.css">
     <!-- END: Page CSS-->
 
 </head>
@@ -129,12 +131,30 @@
     <script src="/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.min.js"></script>
     <!-- BEGIN Vendor JS-->
 
+    <!-- BEGIN: Page Vendor JS-->
+    <script src="/app-assets/vendors/js/extensions/toastr.min.js"></script>
+    <!-- END: Page Vendor JS-->
+
     <!-- BEGIN: Theme JS-->
     <script src="/app-assets/js/core/app-menu.js"></script>
     <script src="/app-assets/js/core/app.js"></script>
     <script src="/app-assets/js/scripts/components.js"></script>
     <script src="/app-assets/js/scripts/footer.js"></script>
     <!-- END: Theme JS-->
+
+    <!-- BEGIN: Page JS-->
+    <script src="/app-assets/js/scripts/extensions/toastr.js"></script>
+    <!-- END: Page JS-->
+
+    @if ($errors->has('email') || $errors->has('password'))
+        <script>
+            toastr.error("Las credenciales ingresadas son incorrectas", '', { 
+                timeOut: 0, 
+                extendedTimeOut: 0, 
+                closeButton: true 
+            });
+        </script>
+    @endif
 
 </body>
 <!-- END: Body-->
