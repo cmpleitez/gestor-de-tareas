@@ -2,8 +2,8 @@
 
 🟢 Preparar un sistema base prefabricado para solo replicar
         ...crud de usuarios
-                el menu del sistema no debe mostrarse si el usuario aun se ha verificado
-                maquetar el contenido del correo que se envia para verificacion
+                verificar pie de pagina del portal luego el idioma de los controles del portal
+                verificar el amuneto de llave que sea programatico y no automatico para que no se pierdan los correlativos
 
         retirar register del welcome porque ya hay dentro del sistema una opcion para ello
         para los errores establecer file:///C:/laragon/www/frest-admin/html/ltr/vertical-menu-boxicons-template/component-bs-toast.html

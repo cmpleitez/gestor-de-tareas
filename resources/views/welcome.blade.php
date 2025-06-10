@@ -975,7 +975,7 @@
                 </div>
 
                 <div class="text-center text-sm text-gray-500 sm:text-right sm:ml-0">
-                    Laravel v{{ Illuminate\Foundation\Application::VERSION }} (PHP v{{ PHP_VERSION }})
+                <p class="text-sm text-gray-500">Versión {{ config('app.version') }}</p>
                 </div>
             </div>
         </div>
