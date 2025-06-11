@@ -34,7 +34,7 @@
                             <table id="datatable" class="table zero-configuration table-hover">
                                 <thead>
                                     <tr>
-                                        <th>ID</th>
+                                        <th class="text-center">ID</th>
                                         <th>Equipo</th>
                                         <th class="text-center">Creado</th>
                                         <th class="text-center">Actualizado</th>
