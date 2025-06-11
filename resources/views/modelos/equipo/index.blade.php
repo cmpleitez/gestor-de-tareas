@@ -81,15 +81,15 @@
                                                         </a>
                                                     @endcan
                                                     {{-- ELIMINAR --}}
-{{--                                                     @can('eliminar')
+                                                    @can('eliminar')
                                                         <a href="{{ route('equipo.destroy', $equipo->id) }}" role="button"
                                                             data-toggle="tooltip" data-placement="top" data-animation="false"
                                                             data-trigger="hover" data-html="true"
-                                                            data-title="<i class='bx bxs-eraser'></i> Eliminar {{ $user->name }}"
+                                                            data-title="<i class='bx bxs-eraser'></i> Eliminar {{ $equipo->equipo }}"
                                                             class="button_delete align-center">
                                                             <i class="bx bxs-eraser"></i>
                                                         </a>
-                                                    @endcan --}}
+                                                    @endcan
                                                 </div>
                                             </td>
                                         </tr>

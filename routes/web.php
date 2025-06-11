@@ -66,10 +66,8 @@ Route::middleware([
             Route::post('store', [equipoController::class, 'store'])->name('equipo.store');
             Route::get('edit/{equipo}', [equipoController::class, 'edit'])->name('equipo.edit');
             Route::put('update/{equipo}', [equipoController::class, 'update'])->name('equipo.update');
-/*            Route::get('roles-edit/{user}', [userController::class, 'rolesEdit'])->name('user.roles-edit');
-            Route::post('roles-update/{user}', [userController::class, 'rolesUpdate'])->name('user.roles-update');
-            Route::get('destroy/{user}', [userController::class, 'destroy'])->name('user.destroy');
- */        });
+            Route::get('destroy/{equipo}', [equipoController::class, 'destroy'])->name('equipo.destroy');
+        });
 
     });
 });
