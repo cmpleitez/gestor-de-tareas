@@ -1,12 +1,8 @@
 
 🟢 crud de usuarios 
     agregar al tablero control: activo
-
-...🟢 crud de equipos
-    store: se debe crear el archivo validate request
-
-🟢 tareas
-🟢 solicitudes
+🟢 crud de tareas
+🟢 crud de solicitudes
 
 Creando el flujo de trabajo:
 https://miro.com/app/board/uXjVLl8VYdo=/
