@@ -7,57 +7,44 @@ use Illuminate\Http\Request;
 
 class EquipoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $equipos = Equipo::all();
+        return view('modelos.equipo.index', compact('equipos'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         //
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Equipo $equipo)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Equipo $equipo)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Equipo $equipo)
     {
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    public function activate(Equipo $equipo)
+    {
+        $equipo->activo = !$equipo->activo;
+        $equipo->save();
+        return redirect()->route('equipo')->with('success', 'Equipo ' . $equipo->equipo . ' ' . ($equipo->activo ? 'activado' : 'desactivado') . ' correctamente');
+    }
+
     public function destroy(Equipo $equipo)
     {
         //

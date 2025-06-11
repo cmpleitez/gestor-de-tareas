@@ -375,8 +375,8 @@
                                     <li><a href="{{ Route('user') }}"><i class="bx bx-right-arrow-alt"></i><span
                                                 class="menu-item" data-i18n="Third Level">Usuarios</span></a>
                                     </li>
-                                    <li><a href="#"><i class="bx bx-right-arrow-alt"></i><span class="menu-item"
-                                                data-i18n="Third Level">Disponible</span></a>
+                                    <li><a href="{{ Route('equipo') }}"><i class="bx bx-right-arrow-alt"></i><span class="menu-item"
+                                                data-i18n="Third Level">Equipos</span></a>
                                     </li>
                                 </ul>
                             </li>
@@ -408,8 +408,7 @@
 
     <!-- BEGIN: Footer-->
     <footer class="footer footer-static footer-light">
-                
-        <p class="clearfix mb-0"><span class="float-left d-inline-block"><i class="bx bxl-slack pink mx-50 font-small-3"></i>Gestor de Tareas versión {{ config('app.version') }}</span>
+        <p class="clearfix mb-0"><span class="float-left d-inline-block"><i class="bx bxl-slack pink mx-50 font-small-3"></i>Gestor de Tareas {{ config('app.version') }}</span>
             <span class="float-right d-sm-inline-block d-none">
                 <a href="#" target="_blank">San Salvador</a> &copy; 2025
             </span>

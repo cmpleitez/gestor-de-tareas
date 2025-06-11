@@ -1,5 +1,6 @@
 
-⭐ crud de usuarios
+🟢 crud de usuarios 
+    agregar al tablero control: activo
 
 ...🟢 crud de equipos
         

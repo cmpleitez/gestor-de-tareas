@@ -14,16 +14,16 @@
 
                     <div class="col-md-12 d-flex justify-content-between" style="padding: 0;">
                         <div class="col-md-11" style="padding: 0;">
-                            <h4 class="card-title">USUARIOS DEL SISTEMA</h4>
-                            <p class="card-text">Las personas autorizadas para operar el sistema desempeñando roles
-                                específicos</p>
+                            <h4 class="card-title">EQUIPOS DE TRABAJO</h4>
+                            <p class="card-text">Grupos de operadores con diferentes roles y de diferentes areas formados
+                                para resolver casos prederminados</p>
                         </div>
                         <div class="col-md-1 d-flex justify-content-end" style="padding: 0;">
-                            <a href="{!! route('user.create') !!}">
+                            {{--                             <a href="{!! route('equipo.create') !!}">
                                 <div class="badge-circle badge-circle-md badge-circle-primary">
                                     <i class="bx bx-plus-medical font-small-3"></i>
                                 </div>
-                            </a>
+                            </a> --}}
                         </div>
                     </div>
 
@@ -34,32 +34,44 @@
                             <table id="datatable" class="table zero-configuration table-hover">
                                 <thead>
                                     <tr>
-                                        <th>Area</th>
-                                        <th>Oficina</th>
-                                        <th>Rol</th>
-                                        <th>Usuario</th>
-                                        <th>correo</th>
+                                        <th>ID</th>
+                                        <th>Equipo</th>
                                         <th class="text-center">Creado</th>
                                         <th class="text-center">Actualizado</th>
+                                        @can('autorizar')<th class="text-center">Estado</th>@endcan
                                         <th class="text-center">Tablero de control</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($users as $user)
+                                    @foreach ($equipos as $equipo)
                                         <tr>
                                             {{-- CAMPOS --}}
-                                            <td>{{ $user->oficina->area->area }}</td>
-                                            <td>{{ $user->oficina->oficina }}</td>
-                                            <td>{{ $user->roles->first()->name }}</td>
-                                            <td>{{ $user->name }}</td>
-                                            <td>{{ $user->email }}</td>
-                                            <td class="text-center">{{ $user->created_at->format('d/m/Y') }}</td>
-                                            <td class="text-center">{{ $user->updated_at->format('d/m/Y') }}</td>
+                                            <td class="text-center">{{ $equipo->id }}</td>
+                                            <td>{{ $equipo->equipo }}</td>
+                                            <td class="text-center">{{ $equipo->created_at->format('d/m/Y') }}</td>
+                                            <td class="text-center">{{ $equipo->updated_at->format('d/m/Y') }}</td>
+                                            @can('autorizar')
+                                                <td class="text-center">
+                                                    <form action="{{ route('equipo.activate', $equipo->id) }}" method="POST" style="display: inline;">
+                                                        @csrf
+                                                        <div class="custom-control custom-switch"
+                                                            data-toggle="tooltip" data-placement="top" data-animation="false"
+                                                            data-trigger="hover" data-html="true"
+                                                            data-title="<i class='bx bxs-error-circle'></i> {{ $equipo->activo ? 'Desactivar' : 'Activar' }} {{ $equipo->equipo }}">
+                                                            <input id="activate_{{ $equipo->id }}" type="checkbox" class="custom-control-input" 
+                                                                @if($equipo->activo) checked @endif
+                                                                onchange="this.form.submit();"
+                                                            >
+                                                            <label class="custom-control-label" for="activate_{{ $equipo->id }}"></label>
+                                                        </div>
+                                                    </form>
+                                                </td>
+                                            @endcan
                                             {{-- TABLERO DE CONTROL --}}
                                             <td class="text-center">
                                                 <div class="btn-group" role="group" aria-label="label">
                                                     {{-- ENROLAR --}}
-                                                    @can('autorizar')
+                                                    {{--                                                     @can('autorizar')
                                                         <a href="{{ route('user.roles-edit', $user->id) }}" role="button"
                                                             data-toggle="tooltip" data-placement="top" data-animation="false"
                                                             data-trigger="hover" data-html="true"
@@ -67,9 +79,9 @@
                                                             class="button_keys">
                                                             <i class="bx bxs-key"></i>
                                                         </a>
-                                                    @endcan
+                                                    @endcan --}}
                                                     {{-- EDITAR --}}
-                                                    @can('editar')
+                                                    {{--                                                     @can('editar')
                                                         <a href="{{ route('user.edit', $user->id) }}" role="button"
                                                             data-toggle="tooltip" data-placement="top" data-animation="false"
                                                             data-trigger="hover" data-html="true"
@@ -77,9 +89,9 @@
                                                             class="button_edit align-center">
                                                             <i class="bx bxs-edit-alt"></i>
                                                         </a>
-                                                    @endcan
+                                                    @endcan --}}
                                                     {{-- ELIMINAR --}}
-                                                    @can('eliminar')
+                                                    {{--                                                     @can('eliminar')
                                                         <a href="{{ route('user.destroy', $user->id) }}" role="button"
                                                             data-toggle="tooltip" data-placement="top" data-animation="false"
                                                             data-trigger="hover" data-html="true"
@@ -87,7 +99,8 @@
                                                             class="button_delete align-center">
                                                             <i class="bx bxs-eraser"></i>
                                                         </a>
-                                                    @endcan
+                                                    @endcan --}}
+
                                                 </div>
                                             </td>
                                         </tr>
@@ -95,14 +108,12 @@
                                 </tbody>
                                 <tfoot>
                                     <tr>
-                                        <th>Area</th>
-                                        <th>Oficina</th>
-                                        <th>Rol</th>
-                                        <th>Usuario</th>
-                                        <th>correo</th>
+                                        <th class="text-center">ID</th>
+                                        <th>Equipo</th>
                                         <th class="text-center">Creado</th>
                                         <th class="text-center">Actualizado</th>
-                                        <th class="text-center">Acciones</th>
+                                        @can('autorizar')<th class="text-center">Estado</th>@endcan
+                                        <th class="text-center">Tablero de control</th>
                                     </tr>
                                 </tfoot>
                             </table>

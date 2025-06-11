@@ -237,12 +237,12 @@ class DatabaseSeeder extends Seeder
 
         //EQUIPOS
         DB::table('equipos')->insert([
-            'equipo'              => 'Equipo de desarrollo de sistemas informáticos y aplicaciones web',
+            'equipo'              => 'Desarrollo de sistemas informáticos y aplicaciones web',
             'created_at'        => Carbon::now(),
             'updated_at'        => Carbon::now(),
         ]);
         DB::table('equipos')->insert([
-            'equipo'              => 'Equipo de innovación',
+            'equipo'              => 'Innovación',
             'created_at'        => Carbon::now(),
             'updated_at'        => Carbon::now(),
         ]);
