@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Equipo;
 use Illuminate\Http\Request;
+use App\Http\Requests\EquipoStoreRequest;
+use App\Http\Requests\EquipoUpdateRequest;
 
 class EquipoController extends Controller
 {
@@ -15,25 +17,27 @@ class EquipoController extends Controller
 
     public function create()
     {
-        //
+        return view('modelos.equipo.create');
     }
 
-    public function store(Request $request)
+    public function store(EquipoStoreRequest $request)
     {
-        //
-    }
-
-    public function show(Equipo $equipo)
-    {
-        //
+        $equipo = Equipo::create($request->validated());
+        return redirect()->route('equipo')->with('success', 'Equipo ' . $equipo->equipo . ' creado correctamente');
     }
 
     public function edit(Equipo $equipo)
     {
-        //
+        return view('modelos.equipo.edit', compact('equipo'));
     }
 
-    public function update(Request $request, Equipo $equipo)
+    public function update(EquipoUpdateRequest $request, Equipo $equipo)
+    {
+        $equipo->update($request->validated());
+        return redirect()->route('equipo')->with('success', 'Equipo ' . $equipo->equipo . ' actualizado correctamente');
+    }
+
+    public function show(Equipo $equipo)
     {
         //
     }

@@ -62,11 +62,11 @@ Route::middleware([
         Route::group(['prefix' => 'equipo'], function () { //Equipos
             Route::get('/', [equipoController::class, 'index'])->name('equipo');
             Route::post('activate/{equipo}', [equipoController::class, 'activate'])->name('equipo.activate');
-/*             Route::get('create', [userController::class, 'create'])->name('user.create');
-            Route::post('store', [userController::class, 'store'])->name('user.store');
-            Route::get('edit/{user}', [userController::class, 'edit'])->name('user.edit');
-            Route::put('update/{user}', [userController::class, 'update'])->name('user.update');
-            Route::get('roles-edit/{user}', [userController::class, 'rolesEdit'])->name('user.roles-edit');
+            Route::get('create', [equipoController::class, 'create'])->name('equipo.create');
+            Route::post('store', [equipoController::class, 'store'])->name('equipo.store');
+            Route::get('edit/{equipo}', [equipoController::class, 'edit'])->name('equipo.edit');
+            Route::put('update/{equipo}', [equipoController::class, 'update'])->name('equipo.update');
+/*            Route::get('roles-edit/{user}', [userController::class, 'rolesEdit'])->name('user.roles-edit');
             Route::post('roles-update/{user}', [userController::class, 'rolesUpdate'])->name('user.roles-update');
             Route::get('destroy/{user}', [userController::class, 'destroy'])->name('user.destroy');
  */        });

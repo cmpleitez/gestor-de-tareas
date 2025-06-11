@@ -19,11 +19,11 @@
                                 para resolver casos prederminados</p>
                         </div>
                         <div class="col-md-1 d-flex justify-content-end" style="padding: 0;">
-                            {{--                             <a href="{!! route('equipo.create') !!}">
+                            <a href="{!! route('equipo.create') !!}">
                                 <div class="badge-circle badge-circle-md badge-circle-primary">
                                     <i class="bx bx-plus-medical font-small-3"></i>
                                 </div>
-                            </a> --}}
+                            </a>
                         </div>
                     </div>
 
@@ -70,29 +70,19 @@
                                             {{-- TABLERO DE CONTROL --}}
                                             <td class="text-center">
                                                 <div class="btn-group" role="group" aria-label="label">
-                                                    {{-- ENROLAR --}}
-                                                    {{--                                                     @can('autorizar')
-                                                        <a href="{{ route('user.roles-edit', $user->id) }}" role="button"
-                                                            data-toggle="tooltip" data-placement="top" data-animation="false"
-                                                            data-trigger="hover" data-html="true"
-                                                            data-title="<i class='bx bxs-error-circle'></i> Roles de {{ $user->name }}"
-                                                            class="button_keys">
-                                                            <i class="bx bxs-key"></i>
-                                                        </a>
-                                                    @endcan --}}
                                                     {{-- EDITAR --}}
-                                                    {{--                                                     @can('editar')
-                                                        <a href="{{ route('user.edit', $user->id) }}" role="button"
+                                                    @can('editar')
+                                                        <a href="{{ route('equipo.edit', $equipo->id) }}" role="button"
                                                             data-toggle="tooltip" data-placement="top" data-animation="false"
                                                             data-trigger="hover" data-html="true"
-                                                            data-title="<i class='bx bxs-error-circle'></i> Editar datos de {{ $user->name }}"
+                                                            data-title="<i class='bx bxs-error-circle'></i> Editar datos de {{ $equipo->equipo }}"
                                                             class="button_edit align-center">
                                                             <i class="bx bxs-edit-alt"></i>
                                                         </a>
-                                                    @endcan --}}
+                                                    @endcan
                                                     {{-- ELIMINAR --}}
-                                                    {{--                                                     @can('eliminar')
-                                                        <a href="{{ route('user.destroy', $user->id) }}" role="button"
+{{--                                                     @can('eliminar')
+                                                        <a href="{{ route('equipo.destroy', $equipo->id) }}" role="button"
                                                             data-toggle="tooltip" data-placement="top" data-animation="false"
                                                             data-trigger="hover" data-html="true"
                                                             data-title="<i class='bx bxs-eraser'></i> Eliminar {{ $user->name }}"
@@ -100,7 +90,6 @@
                                                             <i class="bx bxs-eraser"></i>
                                                         </a>
                                                     @endcan --}}
-
                                                 </div>
                                             </td>
                                         </tr>
