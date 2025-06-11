@@ -58,6 +58,16 @@
                                             {{-- TABLERO DE CONTROL --}}
                                             <td class="text-center">
                                                 <div class="btn-group" role="group" aria-label="label">
+                                                    {{-- ASIGNAR EQUIPO --}}
+                                                    @can('autorizar')
+                                                        <a href="{{ route('user.equipos-edit', $user->id) }}" role="button"
+                                                            data-toggle="tooltip" data-placement="top" data-animation="false"
+                                                            data-trigger="hover" data-html="true"
+                                                            data-title="<i class='bx bxs-group'></i> Equipos de {{ $user->name }}"
+                                                            class="button_show">
+                                                            <i class="bx bxs-group"></i>
+                                                        </a>
+                                                    @endcan                                                    
                                                     {{-- ENROLAR --}}
                                                     @can('autorizar')
                                                         <a href="{{ route('user.roles-edit', $user->id) }}" role="button"

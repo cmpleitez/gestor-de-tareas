@@ -6,13 +6,14 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\QueryException;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
-use Illuminate\Support\Facades\Storage; 
-use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Log;
 
 use Spatie\Permission\Models\Role;
 use App\Models\User;
 use App\Models\Oficina;
-use Illuminate\Validation\Rule;
+use App\Models\Equipo;
 
 class UserController extends Controller
 {
@@ -33,7 +34,7 @@ class UserController extends Controller
         //VALIDANDO
         $validated = $request->validate([
             'name' => 'required|string|max:255|regex:/^(?! )[a-zA-ZáéíóúÁÉÍÓÚ]+( [a-zA-ZáéíóúÁÉÍÓÚ]+)*$/',
-            'email'     => ['email', 'max:255', Rule::unique('users', 'email')],
+            'email' => ['email', 'max:255', Rule::unique('users', 'email')],
             'oficina_id' => 'required|numeric|exists:oficinas,id',
             'password' => 'required|string|min:6|max:16',
             'password_confirmation' => 'required|string|min:6|max:16|same:password',
@@ -65,7 +66,6 @@ class UserController extends Controller
         return redirect()->route('user')->with('success', 'El nuevo operador ' . $user->name . ' ha sido registrado efectivamente. Se ha enviado un correo de verificación.');
     }
 
-
     public function edit(User $user)
     {
         $oficinas = Oficina::where('activo', true)->get();
@@ -76,7 +76,7 @@ class UserController extends Controller
     {
         //VALIDANDO
         $validated = $request->validate([
-            'email'     => ['email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
+            'email' => ['email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
             'oficina_id' => 'required|numeric|exists:oficinas,id',
             'profile_photo_path' => 'nullable|image|max:1024',
         ]);
@@ -87,7 +87,7 @@ class UserController extends Controller
         }
         $mensaje = ($correo_actualizado) ? 'Los datos del usuario han sido actualizados con éxito. Debido a 
         que su correo ha cambiado, se le ha enviado una solicitud de verificación su nuevo correo para su respectiva
-        validación.' : 'El usuario ha sido actualizado con éxito.';        
+        validación.' : 'El usuario ha sido actualizado con éxito.';
         //GUARDANDO
         try {
             DB::beginTransaction();
@@ -144,6 +144,19 @@ class UserController extends Controller
             return back()->with('error', 'Ocurrió un error cuando se intentaba guardar los cambios: ' . $e->getMessage());
         }
         return redirect()->route("user")->with('success', 'Los roles para el usuario ' . $user->name . ' han sido actualizados efectivamente.');
+    }
+
+    public function equiposEdit(User $user)
+    {
+        $equipos = Equipo::where('activo', true)->get();
+        return view('modelos.user.equipos-edit', ['user' => $user, 'equipos' => $equipos]);
+    }
+
+    public function equiposUpdate(Request $request, User $user)
+    {
+        $equipos = $request->input('equipos', []);
+        $user->equipos()->sync($equipos);
+        return redirect()->route('user')->with('success', 'Los equipos para el usuario ' . $user->name . ' han sido actualizados efectivamente.');
     }
 
     public function destroy(User $user)

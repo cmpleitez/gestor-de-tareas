@@ -102,8 +102,8 @@
         }
 
         .button_show {
-            color: #0fb100 !important;
-            border: 1px solid #0fb100 !important;
+            color: #216cf7 !important;
+            border: 1px solid #216cf7 !important;
             font-size: 1.1rem !important;
             border-radius: 0.2rem !important;
             padding: 0.3rem 0.3rem 0 0.3rem;

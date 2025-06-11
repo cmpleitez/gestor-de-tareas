@@ -56,6 +56,8 @@ Route::middleware([
             Route::put('update/{user}', [userController::class, 'update'])->name('user.update');
             Route::get('roles-edit/{user}', [userController::class, 'rolesEdit'])->name('user.roles-edit');
             Route::post('roles-update/{user}', [userController::class, 'rolesUpdate'])->name('user.roles-update');
+            Route::get('equipos-edit/{user}', [userController::class, 'equiposEdit'])->name('user.equipos-edit');
+            Route::post('equipos-update/{user}', [userController::class, 'equiposUpdate'])->name('user.equipos-update');
             Route::get('destroy/{user}', [userController::class, 'destroy'])->name('user.destroy');
         });
 
