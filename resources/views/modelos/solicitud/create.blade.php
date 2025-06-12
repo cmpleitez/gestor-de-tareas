@@ -12,10 +12,10 @@
                 <div class="row">
                     <div class="col-md-12 d-flex justify-content-between" style="padding: 0rem;">
                         <div class="col-md-10 align-items-center" style="padding-left: 0.5rem;">
-                            <p>NUEVO EQUIPO </p>
+                            <p>NUEVA SOLICITUD</p>
                         </div>
                         <div class="col-md-2 d-flex justify-content-end" style="padding: 0.1rem;">
-                            <a href="{!! route('equipo') !!}">
+                            <a href="{!! route('solicitud') !!}">
                                 <div class="badge badge-pill badge-primary">
                                     <i class="bx bx-arrow-back font-medium-3"></i>
                                 </div>
@@ -25,25 +25,25 @@
                 </div>
             </div>
             <!-- FORMULARIO -->
-            <form class="form-horizontal" action="{{ route('equipo.store') }}" method="POST" novalidate>
+            <form class="form-horizontal" action="{{ route('solicitud.store') }}" method="POST" novalidate>
                 @csrf
                 <div class="card-content">
                     <div class="card-body">
                         <div class="row">
-                            {{-- NOMBRE --}}
+                            {{-- TAREA --}}
                             <div class="col-sm-12">
                                 <div class="form-group">
-                                    <label>Equipo</label>
+                                    <label>Solicitud</label>
                                     <div class="controls">
-                                        <input type="text" name="equipo"
-                                            class="form-control {{ $errors->has('equipo') ? 'is-invalid' : '' }}" 
-                                            data-validation-required-message="El nombre del equipo es requerido"
+                                        <input type="text" name="solicitud"
+                                            class="form-control {{ $errors->has('tarea') ? 'is-invalid' : '' }}" 
+                                            data-validation-required-message="El nombre de la tarea es requerido"
                                             data-validation-containsnumber-regex="^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$"
                                             data-validation-containsnumber-message="El nombre debe contener solo letras (incluyendo tildes), no se permiten dobles espacios entre palabras, ni espacios al principio o final de las palabras."
-                                            placeholder="Nombre del nuevo equipo" value="{{ old('equipo') }}" required>
-                                        @error('equipo')
+                                            placeholder="Nombre de la nueva solicitud" value="{{ old('solicitud') }}" required>
+                                        @error('solicitud')
                                             <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
-                                                {{ $errors->first('equipo') }}
+                                                {{ $errors->first('solicitud') }}
                                             </div>
                                         @enderror
                                     </div>

@@ -1,8 +1,20 @@
 
-🌟 crud de usuarios 
+🌟 crud de usuarios
 🌟 crud equipos
-🟢 crud de tareas
+...🟢 crud de tareas
+        ...control eliminar
+            ...crud de solicitudes
+                ...asignación de tareas y demas controles
+                    ...probar el control eliminar de crud tareas
+                        ...agregar validacion a tareas y solicitudes: si tiene transacciones
+                            ...servicio en portal: solicitud de servicios
+                                ...regresar a probar las eliminaciones de tareas y solicitudes
+                                    ...agregar dui a la tabla de usuarios
+                                        ...el publico en general debe registrarse para enviar solicitudes, por lo que debe tratarse como un operador normal
+                                        agregar y validar dui al user, el dui debe ser una llave unica a nivel de bd
 🟢 crud de solicitudes
+🟢 global cruds.edit: si hay historial no se puede editar
+🟢 global cruds.activate: cuando un registro esta desactivado no debe tener elementos, que disparen una escritura, en su tablero de control
 
 Creando el flujo de trabajo:
 https://miro.com/app/board/uXjVLl8VYdo=/

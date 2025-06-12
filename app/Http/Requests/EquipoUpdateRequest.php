@@ -16,7 +16,7 @@ class EquipoUpdateRequest extends FormRequest
     {
         $equipo = $this->route('equipo');
         return [
-            'equipo' => ['required', 'min:3', 'max:128', Rule::unique('equipos')->ignore($equipo->id)],
+            'equipo' => ['required', 'min:3', 'max:128', 'regex:/^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$/', Rule::unique('equipos')->ignore($equipo->id)],
         ];
     }
 }

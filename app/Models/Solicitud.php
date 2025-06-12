@@ -8,6 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class Solicitud extends Model
 {
     use HasFactory;
+
+    protected $table = 'solicitudes';
+
+    protected $fillable = ['solicitud'];
+
     public function tareas()
     {
         return $this->belongsToMany(Tarea::class);

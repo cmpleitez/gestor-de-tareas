@@ -962,16 +962,9 @@
                                             d="M11.085 15.041c-1.816 -0.025 -3.382 -0.985 -3.788 -2.325 -0.48 -1.585 0.182 -3.35 1.673 -4.454 2.685 -1.989 5.458 -1.282 6.341 1.617 0.823 2.709 -1.218 5.202 -4.228 5.16" />
                                     </svg>
                                 </div>
-                                <h2 class="mt-6 text-xl font-semibold text-gray-900">Automatización</h2>
+                                <h2 class="mt-6 text-xl font-semibold text-gray-900">Enviar una solicitud</h2>
                                 <p class="mt-4 text-gray-500 text-sm leading-relaxed" style="text-align: justify;">
-                                    Los procesos manuales son susceptibles a errores humanos, ineficiencias e
-                                    incongruencias que pueden
-                                    interrumpir la calidad del producto y las experiencias del cliente, los sistemas
-                                    automatizados son
-                                    inherentemente eficientes, sistemáticos y escalables, y permiten a los usuarios del
-                                    sistema enfocarse
-                                    en más tareas de análisis, tácticas, estrategias de mejora, sostenibilidad y
-                                    crecimiento.
+                                    Un solicitud está mas cerca de ser aprobada si la envía un porcentaje considerable de personas.
                                 </p>
                             </div>
                         </div>

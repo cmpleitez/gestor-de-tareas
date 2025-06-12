@@ -9,9 +9,7 @@ class Equipo extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'equipo',
-    ];
+    protected $fillable = ['equipo'];
 
     public function users()
     {

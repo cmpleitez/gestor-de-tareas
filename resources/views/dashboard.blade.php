@@ -266,9 +266,11 @@
                                 data-toggle="dropdown">
                                 <div class="user-nav d-sm-flex d-none">
                                     <span class="user-name">{{ auth()->user()->name }}</span>
-                                    <span class="user-status text-gray-600 d-flex align-items-center" onclick="copyToClipboard(event, '{{ auth()->user()->email }}')">
+                                    <span class="user-status text-gray-600 d-flex align-items-center"
+                                        onclick="copyToClipboard(event, '{{ auth()->user()->email }}')">
                                         <i class="bx bx-copy" style="cursor: pointer; padding-right: 0.5rem;"></i>
-                                        <span class="hover:text-gray-900 !important transition-colors duration-200">{{ auth()->user()->email }}</span>
+                                        <span
+                                            class="hover:text-gray-900 !important transition-colors duration-200">{{ auth()->user()->email }}</span>
                                     </span>
                                     <script>
                                         function copyToClipboard(event, text) {
@@ -282,7 +284,8 @@
                                                 });
                                         }
                                     </script>
-                                    <span class="user-status text-gray-600">{{ auth()->check() ? 'Conectado' : 'Desconectado' }}</span>
+                                    <span
+                                        class="user-status text-gray-600">{{ auth()->check() ? 'Conectado' : 'Desconectado' }}</span>
                                 </div>
                                 @php
                                     $profilePhotoPath = auth()->user()->profile_photo_path;
@@ -302,11 +305,9 @@
                                 @endif
                             </a>
                             <div class="dropdown-menu dropdown-menu-right pb-0">
-                                <a class="dropdown-item" href="#"><i
-                                        class="bx bx-user mr-50"></i>
+                                <a class="dropdown-item" href="#"><i class="bx bx-user mr-50"></i>
                                     Perfil</a>
-                                <a class="dropdown-item" href="#"><i
-                                        class="bx bx-check-square mr-50"></i>
+                                <a class="dropdown-item" href="#"><i class="bx bx-check-square mr-50"></i>
                                     Mis tareas</a>
                                 <div class="dropdown-divider mb-0"></div>
                                 <form method="POST" action="{{ route('logout') }}" style="display: inline;">
@@ -351,33 +352,51 @@
                             data-i18n="Menu Levels">Servicios</span></a>
                     <ul class="menu-content" style="display: block;">
                         @role('Operador')
-                            <li><a href="#"><i class="bx bx-right-arrow-alt"></i><span class="menu-item"
-                                        data-i18n="Second Level">Disponible</span></a>
-                            </li>
+                            <li><a href="#">
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Disponible</span>
+                                </a></li>
                         @endrole
                         @role('Administrador')
-                            <li><a href="#"><i class="bx bx-right-arrow-alt"></i><span class="menu-item"
-                                        data-i18n="Second Level">Administración</span></a>
+                            <li>
+                                <a href="#">
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Administración</span>
+                                </a>
                                 <ul class="menu-content" style="display: block;">
-                                    <li><a href="{{ Route('equipo') }}"><i class="bx bx-right-arrow-alt"></i><span
-                                                class="menu-item" data-i18n="Third Level">Equipos</span></a>
+                                    <li><a href="{{ Route('equipo') }}">
+                                        <i class="bx bx-right-arrow-alt"></i>
+                                        <span class="menu-item" data-i18n="Third Level">Equipos</span></a>
                                     </li>
-                                    <li><a href="#"><i class="bx bx-right-arrow-alt"></i><span class="menu-item"
-                                                data-i18n="Third Level">Disponible</span></a>
-                                    </li>
+                                    <li><a href="#">
+                                        <i class="bx bx-right-arrow-alt"></i>
+                                        <span class="menu-item" data-i18n="Third Level">Disponible</span>
+                                    </a></li>
                                 </ul>
                             </li>
                         @endrole
                         @role('SuperAdmin')
-                            <li><a href="#"><i class="bx bx-right-arrow-alt"></i><span class="menu-item"
-                                        data-i18n="Second Level">Configuración</span></a>
+                            <li><a href="#">
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Configuración</span>
+                                </a>
                                 <ul class="menu-content" style="display: block;">
-                                    <li><a href="{{ Route('user') }}"><i class="bx bx-right-arrow-alt"></i><span
-                                                class="menu-item" data-i18n="Third Level">Usuarios</span></a>
-                                    </li>
-                                    <li><a href="{{ Route('equipo') }}"><i class="bx bx-right-arrow-alt"></i><span class="menu-item"
-                                                data-i18n="Third Level">Equipos</span></a>
-                                    </li>
+                                    <li><a href="{{ Route('user') }}">
+                                        <i class="bx bx-right-arrow-alt"></i>
+                                        <span class="menu-item" data-i18n="Third Level">Usuarios</span>
+                                    </a></li>
+                                    <li><a href="{{ Route('equipo') }}">
+                                        <i class="bx bx-right-arrow-alt"></i>
+                                        <span class="menu-item" data-i18n="Third Level">Equipos</span>
+                                    </a></li>
+                                    <li><a href="{{ Route('tarea') }}">
+                                        <i class="bx bx-right-arrow-alt"></i>
+                                        <span class="menu-item" data-i18n="Third Level">Tareas</span>
+                                    </a></li>
+                                    <li><a href="{{ Route('solicitud') }}">
+                                        <i class="bx bx-right-arrow-alt"></i>
+                                        <span class="menu-item" data-i18n="Third Level">Solicitudes</span>
+                                    </a></li>
                                 </ul>
                             </li>
                         @endrole
@@ -408,11 +427,14 @@
 
     <!-- BEGIN: Footer-->
     <footer class="footer footer-static footer-light">
-        <p class="clearfix mb-0"><span class="float-left d-inline-block"><i class="bx bxl-slack pink mx-50 font-small-3"></i>Gestor de Tareas {{ config('app.version') }}</span>
+        <p class="clearfix mb-0"><span class="float-left d-inline-block"><i
+                    class="bx bxl-slack pink mx-50 font-small-3"></i>Gestor de Tareas
+                {{ config('app.version') }}</span>
             <span class="float-right d-sm-inline-block d-none">
                 <a href="#" target="_blank">San Salvador</a> &copy; 2025
             </span>
-            <button class="btn btn-primary btn-icon scroll-top" type="button"><i class="bx bx-up-arrow-alt"></i></button>
+            <button class="btn btn-primary btn-icon scroll-top" type="button"><i
+                    class="bx bx-up-arrow-alt"></i></button>
         </p>
     </footer>
     <!-- END: Footer-->
@@ -455,7 +477,11 @@
             @endif
 
             @if (Session::has('error'))
-                toastr.error("{{ Session::get('error') }}", '', { timeOut: 0, extendedTimeOut: 0, closeButton: true });
+                toastr.error("{{ Session::get('error') }}", '', {
+                    timeOut: 0,
+                    extendedTimeOut: 0,
+                    closeButton: true
+                });
             @endif
 
             @if (Session::has('warning'))

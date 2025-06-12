@@ -175,14 +175,14 @@ class UserController extends Controller
         } catch (\Exception $e) {
             return back()->with('error', 'Ocurrió un error cuando se intentaba eliminar el usuario: ' . $e->getMessage());
         }
-        return redirect()->route('user')->with('success', 'El usuario ha sido eliminado con éxito.');
+        return redirect()->route('user')->with('success', 'El usuario "' . $user->name . '" ha sido eliminado con éxito.');
     }
 
-    public function activate(Equipo $equipo)
+    public function activate(User $user)
     {
-        $equipo->activo = !$equipo->activo;
-        $equipo->save();
-        return redirect()->route('equipo')->with('success', 'Equipo ' . $equipo->equipo . ' ' . ($equipo->activo ? 'activado' : 'desactivado') . ' correctamente');
+        $user->activo = !$user->activo;
+        $user->save();
+        return redirect()->route('user')->with('success', 'El usuario "' . $user->name . '" ha sido ' . ($user->activo ? 'activado' : 'desactivado') . ' correctamente');
     }
 
 

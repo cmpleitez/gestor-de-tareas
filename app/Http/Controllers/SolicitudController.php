@@ -1,0 +1,72 @@
+<?php
+namespace App\Http\Controllers;
+use Illuminate\Http\Request;
+
+use App\Models\Solicitud;
+use App\Http\Requests\SolicitudStoreRequest;
+use App\Http\Requests\SolicitudUpdateRequest;
+
+class SolicitudController extends Controller
+{
+    public function index()
+    {
+        $solicitudes = Solicitud::all();
+        return view('modelos.solicitud.index', compact('solicitudes'));
+    }
+
+    public function create()
+    {
+        return view('modelos.solicitud.create');
+    }
+
+    public function store(SolicitudStoreRequest $request)
+    {
+        Solicitud::create($request->validated());
+        return redirect()->route('solicitud')->with('success', 'Solicitud creada correctamente');
+    }
+
+
+    public function edit(Solicitud $solicitud)
+    {
+        return view('modelos.solicitud.edit', compact('solicitud'));
+    }
+
+    public function update(SolicitudUpdateRequest $request, Solicitud $solicitud)
+    {
+        $solicitud->update($request->validated());
+        return redirect()->route('solicitud')->with('success', 'Solicitud actualizada correctamente');  
+    }
+
+    public function show(string $id)
+    {
+        //
+    }
+
+    public function destroy(Solicitud $solicitud)
+    {
+        if($solicitud->tareas->count() > 0) {
+            return back()->with('error', 'La solicitud "' . $solicitud->solicitud . '" no puede ser eliminada porque tiene tareas asociadas');
+        }
+
+
+return $solicitud->usuarios->count();
+
+        if($solicitud->usuarios->count() > 0) {
+            return back()->with('error', 'La solicitud "' . $solicitud->solicitud . '" no puede ser eliminada porque tiene un historial de transacciones asociado');
+        }
+
+        try {
+            $solicitud->delete();
+        } catch (\Exception $e) {
+            return back()->with('error', 'Ocurrió un error cuando se intentaba eliminar la solicitud: ' . $e->getMessage());
+        }
+        return redirect()->route('solicitud')->with('success', 'La solicitud "' . $solicitud->solicitud . '" ha sido eliminada correctamente');
+    }
+    public function activate(Solicitud $solicitud)
+    {
+        $solicitud->activo = !$solicitud->activo;
+        $solicitud->save();
+        return redirect()->route('solicitud')->with('success', 'La solicitud "' . $solicitud->solicitud . '" ha sido ' . ($solicitud->activo ? 'activada' : 'desactivada') . ' correctamente');
+    }
+
+}

@@ -52,13 +52,13 @@ class EquipoController extends Controller
         } catch (\Exception $e) {
             return back()->with('error', 'Ocurrió un error cuando se intentaba eliminar el equipo: ' . $e->getMessage());
         }
-        return redirect()->route('equipo')->with('success', 'Equipo ' . $equipo->equipo . ' eliminado correctamente');
+        return redirect()->route('equipo')->with('success', 'El equipo "' . $equipo->equipo . '" ha sido eliminado correctamente');
     }
 
     public function activate(Equipo $equipo)
     {
         $equipo->activo = !$equipo->activo;
         $equipo->save();
-        return redirect()->route('equipo')->with('success', 'Equipo ' . $equipo->equipo . ' ' . ($equipo->activo ? 'activado' : 'desactivado') . ' correctamente');
+        return redirect()->route('equipo')->with('success', 'El equipo "' . $equipo->equipo . '" ha sido ' . ($equipo->activo ? 'activado' : 'desactivado') . ' correctamente');
     }
 }

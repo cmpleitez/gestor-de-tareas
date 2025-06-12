@@ -40,7 +40,7 @@
                                             <input type="text" name="equipo"
                                                 class="form-control {{ $errors->has('equipo') ? 'is-invalid' : '' }}"
                                                 data-validation-required-message="El nombre del equipo es requerido"
-                                                data-validation-containsnumber-regex="^(?! )[a-zA-ZáéíóúÁÉÍÓÚ]+( [a-zA-ZáéíóúÁÉÍÓÚ]+)*$"
+                                                data-validation-containsnumber-regex="^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$"
                                                 data-validation-containsnumber-message="El nombre debe contener solo letras (incluyendo tildes), no se permiten dobles espacios entre palabras, ni espacios al principio o final de las palabras."
                                                 placeholder="Nombre del nuevo equipo"
                                                 value="{{ old('equipo', $equipo->equipo) }}" required>

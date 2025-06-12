@@ -1,10 +1,13 @@
 <?php
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\equipoController;
-use App\Http\Controllers\userController;
-use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
+
+use App\Http\Controllers\equipoController;
+use App\Http\Controllers\userController;
+use App\Http\Controllers\tareaController;
+use App\Http\Controllers\solicitudController;
+use App\Http\Controllers\TareaUserController;
 
 // Rutas públicas
 Route::get('/', function () {
@@ -71,6 +74,27 @@ Route::middleware([
             Route::get('destroy/{equipo}', [equipoController::class, 'destroy'])->name('equipo.destroy');
             Route::post('activate/{equipo}', [equipoController::class, 'activate'])->name('equipo.activate');
         });
+
+        Route::group(['prefix' => 'tarea'], function () { //Tareas
+            Route::get('/', [tareaController::class, 'index'])->name('tarea');
+            Route::get('create', [tareaController::class, 'create'])->name('tarea.create');
+            Route::post('store', [tareaController::class, 'store'])->name('tarea.store');
+            Route::get('edit/{tarea}', [tareaController::class, 'edit'])->name('tarea.edit');
+            Route::put('update/{tarea}', [tareaController::class, 'update'])->name('tarea.update');
+            Route::get('destroy/{tarea}', [tareaController::class, 'destroy'])->name('tarea.destroy');
+            Route::post('activate/{tarea}', [tareaController::class, 'activate'])->name('tarea.activate');
+        });
+
+        Route::group(['prefix' => 'solicitud'], function () { //Solicitudes
+            Route::get('/', [solicitudController::class, 'index'])->name('solicitud');
+            Route::get('create', [solicitudController::class, 'create'])->name('solicitud.create');
+            Route::post('store', [solicitudController::class, 'store'])->name('solicitud.store');
+            Route::get('edit/{solicitud}', [solicitudController::class, 'edit'])->name('solicitud.edit');
+            Route::put('update/{solicitud}', [solicitudController::class, 'update'])->name('solicitud.update');
+            Route::get('destroy/{solicitud}', [solicitudController::class, 'destroy'])->name('solicitud.destroy');
+            Route::post('activate/{solicitud}', [solicitudController::class, 'activate'])->name('solicitud.activate');
+        });
+
 
     });
 });

@@ -39,7 +39,7 @@
                                         <input type="text" name="name"
                                             class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}" required
                                             data-validation-required-message="El nombre es requerido"
-                                            data-validation-containsnumber-regex="^(?! )[a-zA-ZáéíóúÁÉÍÓÚ]+( [a-zA-ZáéíóúÁÉÍÓÚ]+)*$"
+                                            data-validation-containsnumber-regex="^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$"
                                             data-validation-containsnumber-message="El nombre debe contener solo letras (incluyendo tildes), no se permiten dobles espacios entre palabras, ni espacios al principio o final de las palabras."
                                             placeholder="Nombre del nuevo usuario" value="{{ old('name') }}">
                                         @error('name')
