@@ -50,11 +50,12 @@
                                             <td>{{ $equipo->equipo }}</td>
                                             <td class="text-center">{{ $equipo->created_at->format('d/m/Y') }}</td>
                                             <td class="text-center">{{ $equipo->updated_at->format('d/m/Y') }}</td>
+                                            {{-- ACTIVAR --}}
                                             @can('autorizar')
                                                 <td class="text-center">
                                                     <form action="{{ route('equipo.activate', $equipo->id) }}" method="POST" style="display: inline;">
                                                         @csrf
-                                                        <div class="custom-control custom-switch"
+                                                        <div class="custom-control custom-switch" style="transform: scale(0.6); margin: 0;"
                                                             data-toggle="tooltip" data-placement="top" data-animation="false"
                                                             data-trigger="hover" data-html="true"
                                                             data-title="<i class='bx bxs-error-circle'></i> {{ $equipo->activo ? 'Desactivar' : 'Activar' }} {{ $equipo->equipo }}">

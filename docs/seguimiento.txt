@@ -1,6 +1,6 @@
 
-🟢 crud de usuarios 
-    agregar al tablero control: activo
+🌟 crud de usuarios 
+🌟 crud equipos
 🟢 crud de tareas
 🟢 crud de solicitudes
 

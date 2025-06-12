@@ -42,16 +42,23 @@ class EquipoController extends Controller
         //
     }
 
+    public function destroy(Equipo $equipo)
+    {
+        if ($equipo->users->count() > 0) {
+            return back()->with('error', 'El equipo no puede ser eliminado porque tiene usuarios asignados.');
+        }
+        try {
+            $equipo->delete();
+        } catch (\Exception $e) {
+            return back()->with('error', 'Ocurrió un error cuando se intentaba eliminar el equipo: ' . $e->getMessage());
+        }
+        return redirect()->route('equipo')->with('success', 'Equipo ' . $equipo->equipo . ' eliminado correctamente');
+    }
+
     public function activate(Equipo $equipo)
     {
         $equipo->activo = !$equipo->activo;
         $equipo->save();
         return redirect()->route('equipo')->with('success', 'Equipo ' . $equipo->equipo . ' ' . ($equipo->activo ? 'activado' : 'desactivado') . ' correctamente');
-    }
-
-    public function destroy(Equipo $equipo)
-    {
-        $equipo->delete();
-        return redirect()->route('equipo')->with('success', 'Equipo ' . $equipo->equipo . ' eliminado correctamente');
     }
 }

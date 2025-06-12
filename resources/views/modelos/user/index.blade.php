@@ -41,6 +41,7 @@
                                         <th>correo</th>
                                         <th class="text-center">Creado</th>
                                         <th class="text-center">Actualizado</th>
+                                        @can('autorizar')<th class="text-center">Estado</th>@endcan
                                         <th class="text-center">Tablero de control</th>
                                     </tr>
                                 </thead>
@@ -55,6 +56,24 @@
                                             <td>{{ $user->email }}</td>
                                             <td class="text-center">{{ $user->created_at->format('d/m/Y') }}</td>
                                             <td class="text-center">{{ $user->updated_at->format('d/m/Y') }}</td>
+                                            {{-- ACTIVAR --}}
+                                            @can('autorizar')
+                                                <td class="text-center">
+                                                    <form action="{{ route('user.activate', $user->id) }}" method="POST" style="display: inline;">
+                                                        @csrf
+                                                        <div class="custom-control custom-switch" style="transform: scale(0.6); margin: 0;"
+                                                            data-toggle="tooltip" data-placement="top" data-animation="false"
+                                                            data-trigger="hover" data-html="true"
+                                                            data-title="<i class='bx bxs-error-circle'></i> {{ $user->activo ? 'Desactivar' : 'Activar' }} {{ $user->name }}">
+                                                            <input id="activate_{{ $user->id }}" type="checkbox" class="custom-control-input" 
+                                                                @if($user->activo) checked @endif
+                                                                onchange="this.form.submit();"
+                                                            >
+                                                            <label class="custom-control-label" for="activate_{{ $user->id }}"></label>
+                                                        </div>
+                                                    </form>
+                                                </td>
+                                            @endcan
                                             {{-- TABLERO DE CONTROL --}}
                                             <td class="text-center">
                                                 <div class="btn-group" role="group" aria-label="label">
@@ -112,7 +131,8 @@
                                         <th>correo</th>
                                         <th class="text-center">Creado</th>
                                         <th class="text-center">Actualizado</th>
-                                        <th class="text-center">Acciones</th>
+                                        @can('autorizar')<th class="text-center">Estado</th>@endcan
+                                        <th class="text-center">Tablero de control</th>
                                     </tr>
                                 </tfoot>
                             </table>

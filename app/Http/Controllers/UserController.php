@@ -177,4 +177,13 @@ class UserController extends Controller
         }
         return redirect()->route('user')->with('success', 'El usuario ha sido eliminado con éxito.');
     }
+
+    public function activate(Equipo $equipo)
+    {
+        $equipo->activo = !$equipo->activo;
+        $equipo->save();
+        return redirect()->route('equipo')->with('success', 'Equipo ' . $equipo->equipo . ' ' . ($equipo->activo ? 'activado' : 'desactivado') . ' correctamente');
+    }
+
+
 }

@@ -59,16 +59,17 @@ Route::middleware([
             Route::get('equipos-edit/{user}', [userController::class, 'equiposEdit'])->name('user.equipos-edit');
             Route::post('equipos-update/{user}', [userController::class, 'equiposUpdate'])->name('user.equipos-update');
             Route::get('destroy/{user}', [userController::class, 'destroy'])->name('user.destroy');
+            Route::post('activate/{user}', [userController::class, 'activate'])->name('user.activate');
         });
 
         Route::group(['prefix' => 'equipo'], function () { //Equipos
             Route::get('/', [equipoController::class, 'index'])->name('equipo');
-            Route::post('activate/{equipo}', [equipoController::class, 'activate'])->name('equipo.activate');
             Route::get('create', [equipoController::class, 'create'])->name('equipo.create');
             Route::post('store', [equipoController::class, 'store'])->name('equipo.store');
             Route::get('edit/{equipo}', [equipoController::class, 'edit'])->name('equipo.edit');
             Route::put('update/{equipo}', [equipoController::class, 'update'])->name('equipo.update');
             Route::get('destroy/{equipo}', [equipoController::class, 'destroy'])->name('equipo.destroy');
+            Route::post('activate/{equipo}', [equipoController::class, 'activate'])->name('equipo.activate');
         });
 
     });

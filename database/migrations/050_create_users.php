@@ -21,6 +21,7 @@ return new class extends Migration
             $table->rememberToken();
             $table->foreignId('current_team_id')->nullable();
             $table->string('profile_photo_path', 2048)->nullable();
+            $table->boolean('activo')->default(true);
             $table->timestampsTz();
 
             $table->foreign('oficina_id')->references('id')->on('oficinas');
