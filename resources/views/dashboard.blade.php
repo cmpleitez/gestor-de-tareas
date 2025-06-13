@@ -26,6 +26,7 @@
     <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/extensions/dragula.min.css">
     <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/forms/select/select2.min.css">
     <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/extensions/toastr.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/tables/datatable/datatables.min.css">
     <!-- END: Vendor CSS-->
 
     <!-- BEGIN: Theme CSS-->
@@ -365,13 +366,13 @@
                                 </a>
                                 <ul class="menu-content" style="display: block;">
                                     <li><a href="{{ Route('equipo') }}">
-                                        <i class="bx bx-right-arrow-alt"></i>
-                                        <span class="menu-item" data-i18n="Third Level">Equipos</span></a>
+                                            <i class="bx bx-right-arrow-alt"></i>
+                                            <span class="menu-item" data-i18n="Third Level">Equipos</span></a>
                                     </li>
                                     <li><a href="#">
-                                        <i class="bx bx-right-arrow-alt"></i>
-                                        <span class="menu-item" data-i18n="Third Level">Disponible</span>
-                                    </a></li>
+                                            <i class="bx bx-right-arrow-alt"></i>
+                                            <span class="menu-item" data-i18n="Third Level">Disponible</span>
+                                        </a></li>
                                 </ul>
                             </li>
                         @endrole
@@ -382,21 +383,21 @@
                                 </a>
                                 <ul class="menu-content" style="display: block;">
                                     <li><a href="{{ Route('user') }}">
-                                        <i class="bx bx-right-arrow-alt"></i>
-                                        <span class="menu-item" data-i18n="Third Level">Usuarios</span>
-                                    </a></li>
+                                            <i class="bx bx-right-arrow-alt"></i>
+                                            <span class="menu-item" data-i18n="Third Level">Usuarios</span>
+                                        </a></li>
                                     <li><a href="{{ Route('equipo') }}">
-                                        <i class="bx bx-right-arrow-alt"></i>
-                                        <span class="menu-item" data-i18n="Third Level">Equipos</span>
-                                    </a></li>
+                                            <i class="bx bx-right-arrow-alt"></i>
+                                            <span class="menu-item" data-i18n="Third Level">Equipos</span>
+                                        </a></li>
                                     <li><a href="{{ Route('tarea') }}">
-                                        <i class="bx bx-right-arrow-alt"></i>
-                                        <span class="menu-item" data-i18n="Third Level">Tareas</span>
-                                    </a></li>
+                                            <i class="bx bx-right-arrow-alt"></i>
+                                            <span class="menu-item" data-i18n="Third Level">Tareas</span>
+                                        </a></li>
                                     <li><a href="{{ Route('solicitud') }}">
-                                        <i class="bx bx-right-arrow-alt"></i>
-                                        <span class="menu-item" data-i18n="Third Level">Solicitudes</span>
-                                    </a></li>
+                                            <i class="bx bx-right-arrow-alt"></i>
+                                            <span class="menu-item" data-i18n="Third Level">Solicitudes</span>
+                                        </a></li>
                                 </ul>
                             </li>
                         @endrole
@@ -446,13 +447,27 @@
     <script src="/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.min.js"></script>
     <!-- BEGIN Vendor JS-->
 
+
+
+
+
     <!-- BEGIN: Page Vendor JS-->
     <!-- <script src="/app-assets/vendors/js/charts/apexcharts.min.js"></script> -->
     <script src="/app-assets/vendors/js/extensions/dragula.min.js"></script>
     <script src="/app-assets/vendors/js/forms/validation/jqBootstrapValidation.js"></script>
     <script src="/app-assets/vendors/js/forms/select/select2.full.min.js"></script>
     <script src="/app-assets/vendors/js/extensions/toastr.min.js"></script>
+    <script src="/app-assets/vendors/js/tables/datatable/datatables.min.js"></script>
+    <script src="/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js"></script>
+    <script src="/app-assets/vendors/js/tables/datatable/dataTables.buttons.min.js"></script>
+    <script src="/app-assets/vendors/js/tables/datatable/buttons.html5.min.js"></script>
+    <script src="/app-assets/vendors/js/tables/datatable/buttons.print.min.js"></script>
+    <script src="/app-assets/vendors/js/tables/datatable/buttons.bootstrap.min.js"></script>
+    <script src="/app-assets/vendors/js/tables/datatable/pdfmake.min.js"></script>
+    <script src="/app-assets/vendors/js/tables/datatable/vfs_fonts.js"></script>
     <!-- END: Page Vendor JS-->
+
+
 
     <!-- BEGIN: Theme JS-->
     <script src="/app-assets/js/core/app-menu.js"></script>
@@ -501,7 +516,6 @@
                     "responsive": true,
                     "autoWidth": false
                 });
-
                 // Inicializar tooltips de Bootstrap 4
                 $('[data-toggle="tooltip"]').tooltip();
                 // Reinicializar tooltips después de cada evento de DataTables
@@ -511,6 +525,7 @@
             } else {
                 console.error('DataTables no está disponible');
             }
+
         });
     </script>
     <!-- ... otros scripts ... -->

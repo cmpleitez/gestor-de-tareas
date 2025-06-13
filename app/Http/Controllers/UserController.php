@@ -9,6 +9,8 @@ use Intervention\Image\Drivers\Gd\Driver;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Exception;
 
 use Spatie\Permission\Models\Role;
 use App\Models\User;
@@ -31,21 +33,39 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
+        //PREPARANDO MASCARAS PARA VALIDACIONES
+        $duiClean = str_replace('-', '', $request->input('dui'));
+        $request->merge(['dui_clean' => $duiClean]);
         //VALIDANDO
         $validated = $request->validate([
             'name' => 'required|string|max:255|regex:/^(?! )[a-zA-ZáéíóúÁÉÍÓÚ]+( [a-zA-ZáéíóúÁÉÍÓÚ]+)*$/',
             'email' => ['email', 'max:255', Rule::unique('users', 'email')],
+            'dui' => [ // Este campo se valida con guion para formato y algoritmo
+                'required',
+                'string',
+                'regex:/^(\d{8})-(\d)$/',
+                function ($attribute, $value, $fail) {
+                    if (!$this->isValidDui($value)) {
+                        $fail('No es un DUI válido');
+                    }
+                },
+            ],
+            'dui_clean' => Rule::unique('users', 'dui'),
             'oficina_id' => 'required|numeric|exists:oficinas,id',
             'password' => 'required|string|min:6|max:16',
             'password_confirmation' => 'required|string|min:6|max:16|same:password',
             'profile_photo_path' => 'nullable|image|max:1024',
         ]);
+
         //GUARDANDO
         unset($validated['password_confirmation']);
         $validated['password'] = Hash::make($validated['password']);
+        $validated['dui'] = $validated['dui_clean']; // Asigna el DUI sin guion al campo 'dui' para la creación del modelo
+        unset($validated['dui_clean']);
         try {
             DB::beginTransaction();
             $user = User::create($validated);
+            $user->sendEmailVerificationNotification(); // enviar correo de verificacion
             if ($request->hasfile('profile_photo_path')) {
                 $nombre_archivo = $user->id . '.' . $request->file('profile_photo_path')->extension();
                 $ruta_destino = 'public/' . auth()->user()->oficina_id;
@@ -57,11 +77,19 @@ class UserController extends Controller
                 $image->save(Storage::path($user->profile_photo_path));
             }
             $user->assignRole('Operador');
-            $user->sendEmailVerificationNotification(); //enviar correo de verificacion
             DB::commit();
         } catch (QueryException $e) {
             DB::rollBack();
-            return back()->withErrors(['error' => 'Error al guardar el usuario: ' . $e->getMessage()]);
+            Log::error('Error de base de datos al guardar usuario: ' . $e->getMessage(), ['exception' => $e]);
+            return back()->withErrors(['error' => 'Error al guardar el usuario (problema de base de datos): ' . $e->getMessage()]);
+        } catch (TransportExceptionInterface $e) { // Captura errores de conexión o envío de correo para Laravel 9+
+            DB::rollBack();
+            Log::error('Error de envío de correo al guardar usuario: ' . $e->getMessage(), ['exception' => $e]);
+            return back()->withErrors(['error' => 'Error al guardar el usuario. No se pudo establecer conexión para enviar el correo de verificación. Por favor, intente nuevamente más tarde.']);
+        } catch (Exception $e) { // Captura cualquier otra excepción inesperada
+            DB::rollBack();
+            Log::error('Error inesperado al guardar usuario: ' . $e->getMessage(), ['exception' => $e]);
+            return back()->withErrors(['error' => 'Ocurrió un error inesperado al guardar el usuario: ' . $e->getMessage()]);
         }
         return redirect()->route('user')->with('success', 'El nuevo operador ' . $user->name . ' ha sido registrado efectivamente. Se ha enviado un correo de verificación.');
     }
@@ -74,9 +102,25 @@ class UserController extends Controller
 
     public function update(Request $request, User $user)
     {
+        // === PASO 1: Pre-procesar el DUI antes de la validación ===
+        $duiClean = str_replace('-', '', $request->input('dui'));
+        $request->merge(['dui_clean' => $duiClean]);
+
         //VALIDANDO
         $validated = $request->validate([
             'email' => ['email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
+            'dui' => [ // Este campo se valida con guion para formato y algoritmo
+                'required',
+                'string',
+                'regex:/^(\d{8})-(\d)$/',
+                function ($attribute, $value, $fail) {
+                    if (!$this->isValidDui($value)) {
+                        $fail('El número de D.U.I no es válido o no tiene el formato adecuado. Ejemplo de formato: 99999999-9 (Incluya el guion)');
+                    }
+                },
+            ],
+            // === PASO 2: Validar unicidad usando el campo 'dui_clean' contra la columna 'dui' de la tabla 'users' ===
+            'dui_clean' => ['required', 'string', 'digits:9', Rule::unique('users', 'dui')->ignore($user->id)], // Valida unicidad sin guion
             'oficina_id' => 'required|numeric|exists:oficinas,id',
             'profile_photo_path' => 'nullable|image|max:1024',
         ]);
@@ -88,6 +132,10 @@ class UserController extends Controller
         $mensaje = ($correo_actualizado) ? 'Los datos del usuario han sido actualizados con éxito. Debido a 
         que su correo ha cambiado, se le ha enviado una solicitud de verificación su nuevo correo para su respectiva
         validación.' : 'El usuario ha sido actualizado con éxito.';
+        // === PASO 4: Usar el 'dui_clean' validado para guardar en la base de datos ===
+        $validated['dui'] = $validated['dui_clean']; // Asigna el DUI sin guion al campo 'dui' para la actualización del modelo
+        unset($validated['dui_clean']); // Ya no necesitamos el campo temporal 'dui_clean'
+
         //GUARDANDO
         try {
             DB::beginTransaction();
@@ -185,5 +233,20 @@ class UserController extends Controller
         return redirect()->route('user')->with('success', 'El usuario "' . $user->name . '" ha sido ' . ($user->activo ? 'activado' : 'desactivado') . ' correctamente');
     }
 
-
+    private function isValidDui(string $dui): bool
+    {
+        $pattern = '/^(\d{8})-(\d)$/'; // Regex para validar formato: 8 dígitos, guión, 1 dígito
+        if (!preg_match($pattern, $dui, $matches)) {
+            return false;
+        }
+        $digits = $matches[1];
+        $checkDigit = intval($matches[2]);
+        $sum = 0;
+        for ($i = 0; $i < strlen($digits); $i++) { // Cálculo del dígito verificador
+            $digit = intval($digits[$i]);
+            $sum += (9 - $i) * $digit;
+        }
+        $calculatedCheckDigit = (10 - ($sum % 10)) % 10;
+        return $checkDigit === $calculatedCheckDigit;
+    }
 }

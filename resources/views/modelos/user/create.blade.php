@@ -37,11 +37,11 @@
                                     <label>Nombre</label>
                                     <div class="controls">
                                         <input type="text" name="name"
-                                            class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}" required
+                                            class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}"
                                             data-validation-required-message="El nombre es requerido"
                                             data-validation-containsnumber-regex="^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$"
                                             data-validation-containsnumber-message="El nombre debe contener solo letras (incluyendo tildes), no se permiten dobles espacios entre palabras, ni espacios al principio o final de las palabras."
-                                            placeholder="Nombre del nuevo usuario" value="{{ old('name') }}">
+                                            placeholder="Nombre del nuevo usuario" value="{{ old('name') }}" required>
                                         @error('name')
                                             <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
                                                 {{ $errors->first('name') }}
@@ -50,11 +50,33 @@
                                     </div>
                                 </div>
                             </div>
-                            {{-- IMAGEN --}}
+                            {{-- DUI --}}
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <label>DUI</label>
+                                    <div class="controls">
+                                        <input type="text" name="dui" maxlength="10" minlength="10"
+                                            class="form-control {{ $errors->has('dui') ? 'is-invalid' : '' }}"
+                                            data-validation-required-message="El DUI es requerido"
+                                            placeholder="Formato de DUI válido (Con el guión): 00000000-0" value="{{ old('dui') }}" required>
+                                        @error('dui')
+                                            <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                                {{ $errors->first('dui') }}
+                                            </div>
+                                        @enderror
+                                        @error('dui_clean')
+                                            <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                                {{ $errors->first('dui_clean') }}
+                                            </div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            {{-- FOTOGRAFIA --}}
                             <div class="col-sm-12">
                                 <div class="form-group">
                                     <label>Fotografia del Operador</label>
-                                    <input type="file" name="profile_photo_path" class="form-control">
+                                    <input type="file" name="profile_photo_path" class="form-control" style="padding-bottom: 35px;">
                                 </div>
                                 @error('profile_photo_path')
                                     <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
@@ -66,7 +88,8 @@
                             <div class="col-sm-12">
                                 <div class="form-group">
                                     <label for="oficina_id">Oficina</label>
-                                    <select class="select2 form-control" id="oficina_id" name="oficina_id" required>
+                                    <select class="select2 form-control" id="oficina_id" name="oficina_id" 
+                                    data-validation-required-message="La oficina es requerida" required>
                                         @foreach ($oficinas as $oficina)
                                             <option value="{{ $oficina->id }}" {{ old('oficina_id') == $oficina->id ? 'selected' : '' }}>
                                                 {{ $oficina->oficina }}
@@ -88,7 +111,7 @@
                                         <input type="email" name="email" class="form-control"
                                             placeholder="correo@ejemplo.com"
                                             data-validation-required-message="El correo electrónico es requerido"
-                                            value="{{ old('email') }}">
+                                            value="{{ old('email') }}" required>
                                     </div>
                                     @error('email')
                                         <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
@@ -108,7 +131,7 @@
                                             data-validation-required-message="La clave debe ser una cadena de 6 a 16 caracteres"
                                             minlength="6" maxlength="16"
                                             placeholder="Una contraseña de 6 a 16 caracteres"
-                                            value="{{ old('password') }}">
+                                            value="{{ old('password') }}" required>
                                     </div>
                                     @error('password')
                                         <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
@@ -126,7 +149,7 @@
                                             data-validation-match-match="password"
                                             data-validation-required-message="Se requiere una clave de confirmación"
                                             minlength="6" maxlength="16" placeholder="Clave de confirmación"
-                                            value="{{ old('password_confirmation') }}">
+                                            value="{{ old('password_confirmation') }}" required>
                                     </div>
                                     @error('password_confirmation')
                                         <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
@@ -143,6 +166,25 @@
                     <button type="submit" class="btn btn-primary">Guardar</button>
                 </div>
             </form>
+
+{{-- TEMPORAL: BLOQUE DE DEPURACIÓN PARA VER ERRORES --}}
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <h4>Errores del Backend:</h4>
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
+<pre>
+    {{ print_r(session()->get('errors'), true) }}
+</pre>
+{{-- FIN DEL BLOQUE DE DEPURACIÓN --}}
+
+
         </div>
     </div>
 </div>

@@ -59,15 +59,20 @@
                                         @endforeach
                                     </select>
                                 </div>
+                                @error('oficina_id')
+                                    <div class="col-sm-12 badge bg-danger text-wrap">
+                                        {{ $errors->first('oficina_id') }}
+                                    </div>
+                                @enderror
                             </div>
                             {{-- CORREO --}}
                             <div class="col-sm-12">
                                 <div class="form-group">
                                     <div class="controls">
                                         <input type="email" name="email" class="form-control"
-                                            placeholder="correo@ejemplo.com" required
+                                            placeholder="correo@ejemplo.com" 
                                             data-validation-required-message="El correo electrónico es requerido"
-                                            value="{{ old('email', $user->email) }}">
+                                            value="{{ old('email', $user->email) }}" required>
                                     </div>
                                 </div>
                                 @error('email')

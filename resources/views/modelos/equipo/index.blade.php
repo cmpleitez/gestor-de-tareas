@@ -1,9 +1,6 @@
 @extends('dashboard')
 
 @section('css')
-    <!-- BEGIN: Vendor CSS-->
-    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/tables/datatable/datatables.min.css">
-    <!-- END: Vendor CSS-->
 @stop
 
 @section('contenedor')
@@ -116,14 +113,5 @@
 @stop
 
 @section('js')
-    <!-- BEGIN: Page Vendor JS-->
-    <script src="/app-assets/vendors/js/tables/datatable/datatables.min.js"></script>
-    <script src="/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js"></script>
-    <script src="/app-assets/vendors/js/tables/datatable/dataTables.buttons.min.js"></script>
-    <script src="/app-assets/vendors/js/tables/datatable/buttons.html5.min.js"></script>
-    <script src="/app-assets/vendors/js/tables/datatable/buttons.print.min.js"></script>
-    <script src="/app-assets/vendors/js/tables/datatable/buttons.bootstrap.min.js"></script>
-    <script src="/app-assets/vendors/js/tables/datatable/pdfmake.min.js"></script>
-    <script src="/app-assets/vendors/js/tables/datatable/vfs_fonts.js"></script>
-    <!-- END: Page Vendor JS-->
+
 @stop

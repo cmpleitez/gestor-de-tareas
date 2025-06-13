@@ -9,7 +9,7 @@ use Carbon\Carbon;
 
 use App\Models\User;
 use Spatie\Permission\Models\Role;
-use App\Models\Zona;
+
 
 class DatabaseSeeder extends Seeder
 {
@@ -227,8 +227,9 @@ class DatabaseSeeder extends Seeder
         DB::table('users')->insert([
             'oficina_id'           => 1,
             'name'              => 'Hari Seldom',
+            'dui'               => '012345678',
             'email'             => 'hari.seldom.sv@gmail.com',
-            'email_verified_at' => null,
+            'email_verified_at' => Carbon::now(),
             'password'          => bcrypt('123456789'),
             'remember_token'    => Str::random(10),
             'created_at'        => Carbon::now(),
