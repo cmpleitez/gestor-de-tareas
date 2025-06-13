@@ -352,6 +352,12 @@
                 <li class=" nav-item"><a href="#"><i class="bx bx-menu"></i><span class="menu-title"
                             data-i18n="Menu Levels">Servicios</span></a>
                     <ul class="menu-content" style="display: block;">
+                        @role('Beneficiario')
+                            <li><a href="#">
+                                <i class="bx bx-right-arrow-alt"></i>
+                                <span class="menu-item" data-i18n="Second Level">Disponible</span>
+                            </a></li>
+                        @endrole
                         @role('Operador')
                             <li><a href="#">
                                     <i class="bx bx-right-arrow-alt"></i>
@@ -403,7 +409,7 @@
                         @endrole
                     </ul>
                 </li>
-                <li class=" navigation-header"><span>Support</span>
+                <li class=" navigation-header"><span>Soporte</span>
                 </li>
             </ul>
         </div>

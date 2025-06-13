@@ -76,7 +76,7 @@ class UserController extends Controller
                 $image->cover(150, 200, 'center');
                 $image->save(Storage::path($user->profile_photo_path));
             }
-            $user->assignRole('Operador');
+            $user->assignRole('Beneficiario');
             DB::commit();
         } catch (QueryException $e) {
             DB::rollBack();

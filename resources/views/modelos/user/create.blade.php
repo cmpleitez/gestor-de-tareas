@@ -166,25 +166,6 @@
                     <button type="submit" class="btn btn-primary">Guardar</button>
                 </div>
             </form>
-
-{{-- TEMPORAL: BLOQUE DE DEPURACIÓN PARA VER ERRORES --}}
-@if ($errors->any())
-    <div class="alert alert-danger">
-        <h4>Errores del Backend:</h4>
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
-
-<pre>
-    {{ print_r(session()->get('errors'), true) }}
-</pre>
-{{-- FIN DEL BLOQUE DE DEPURACIÓN --}}
-
-
         </div>
     </div>
 </div>
