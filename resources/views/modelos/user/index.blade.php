@@ -18,13 +18,6 @@
                             <p class="card-text">Las personas autorizadas para operar el sistema desempeñando roles
                                 específicos</p>
                         </div>
-                        <div class="col-md-1 d-flex justify-content-end" style="padding: 0;">
-                            <a href="{!! route('user.create') !!}">
-                                <div class="badge-circle badge-circle-md badge-circle-primary">
-                                    <i class="bx bx-plus-medical font-small-3"></i>
-                                </div>
-                            </a>
-                        </div>
                     </div>
 
                 </div>
@@ -36,7 +29,6 @@
                                     <tr>
                                         <th>Area</th>
                                         <th>Oficina</th>
-                                        <th>Rol</th>
                                         <th>Usuario</th>
                                         <th>correo</th>
                                         <th class="text-center">Creado</th>
@@ -51,7 +43,6 @@
                                             {{-- CAMPOS --}}
                                             <td>{{ $user->oficina->area->area }}</td>
                                             <td>{{ $user->oficina->oficina }}</td>
-                                            <td>{{ $user->roles->first()->name }}</td>
                                             <td>{{ $user->name }}</td>
                                             <td>{{ $user->email }}</td>
                                             <td class="text-center">{{ $user->created_at->format('d/m/Y') }}</td>
@@ -126,7 +117,6 @@
                                     <tr>
                                         <th>Area</th>
                                         <th>Oficina</th>
-                                        <th>Rol</th>
                                         <th>Usuario</th>
                                         <th>correo</th>
                                         <th class="text-center">Creado</th>

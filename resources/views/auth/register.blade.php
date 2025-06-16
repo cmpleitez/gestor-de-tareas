@@ -1,233 +1,444 @@
-<x-guest-layout>
+<!DOCTYPE html>
+<html class="loading" lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-textdirection="ltr">
+<!-- BEGIN: Head-->
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    <meta name="description" content="Gestor de tareas">
+    <meta name="keywords" content="gestor, gestión, tareas, actividades, proyectos">
+    <meta name="author" content="">
 
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card">
-            <!-- CABECERA -->
-            <div class="card-header pt-1">
-                <div class="row">
-                    <div class="col-md-12 d-flex justify-content-between" style="padding: 0rem;">
-                        <div class="col-md-10 align-items-center" style="padding-left: 0.5rem;">
-                            <p>NUEVO USUARIO </p>
-                        </div>
-                        <div class="col-md-2 d-flex justify-content-end" style="padding: 0.1rem;">
-                            <a href="{!! route('user') !!}">
-                                <div class="badge badge-pill badge-primary">
-                                    <i class="bx bx-arrow-back font-medium-3"></i>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- FORMULARIO -->
-            <form class="form-horizontal" action="{{ route('register.store') }}" method="POST" enctype="multipart/form-data"
-                novalidate>
-                @csrf
-                <div class="card-content">
-                    <div class="card-body">
-                        <div class="row">
-                            {{-- NOMBRE --}}
-                            <div class="col-sm-12">
-                                <div class="form-group">
-                                    <label>Nombre</label>
-                                    <div class="controls">
-                                        <input type="text" name="name"
-                                            class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}"
-                                            data-validation-required-message="El nombre es requerido"
-                                            data-validation-containsnumber-regex="^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$"
-                                            data-validation-containsnumber-message="El nombre debe contener solo letras (incluyendo tildes), no se permiten dobles espacios entre palabras, ni espacios al principio o final de las palabras."
-                                            placeholder="Nombre del nuevo usuario" value="{{ old('name') }}" required>
-                                        @error('name')
-                                            <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
-                                                {{ $errors->first('name') }}
-                                            </div>
-                                        @enderror
-                                    </div>
-                                </div>
-                            </div>
-                            {{-- DUI --}}
-                            <div class="col-sm-12">
-                                <div class="form-group">
-                                    <label>DUI</label>
-                                    <div class="controls">
-                                        <input type="text" name="dui" maxlength="10" minlength="10"
-                                            class="form-control {{ $errors->has('dui') ? 'is-invalid' : '' }}"
-                                            data-validation-required-message="El DUI es requerido"
-                                            placeholder="Formato de DUI válido (Con el guión): 00000000-0" value="{{ old('dui') }}" required>
-                                        @error('dui')
-                                            <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
-                                                {{ $errors->first('dui') }}
-                                            </div>
-                                        @enderror
-                                        @error('dui_clean')
-                                            <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
-                                                {{ $errors->first('dui_clean') }}
-                                            </div>
-                                        @enderror
-                                    </div>
-                                </div>
-                            </div>
-                            {{-- FOTOGRAFIA --}}
-                            <div class="col-sm-12">
-                                <div class="form-group">
-                                    <label>Fotografia del Operador</label>
-                                    <input type="file" name="profile_photo_path" class="form-control" style="padding-bottom: 35px;">
-                                </div>
-                                @error('profile_photo_path')
-                                    <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
-                                        {{ $errors->first('profile_photo_path') }}
-                                    </div>
-                                @enderror
-                            </div>
-                            {{-- OFICINA --}}
-                            <div class="col-sm-12">
-                                <div class="form-group">
-                                    <label for="oficina_id">Oficina</label>
-                                    <select class="select2 form-control" id="oficina_id" name="oficina_id" 
-                                    data-validation-required-message="La oficina es requerida" required>
-                                        @foreach ($oficinas as $oficina)
-                                            <option value="{{ $oficina->id }}" {{ old('oficina_id') == $oficina->id ? 'selected' : '' }}>
-                                                {{ $oficina->oficina }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('oficina_id')
-                                        <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
-                                            {{ $errors->first('oficina_id') }}
-                                        </div>
-                                    @enderror
-                                </div>
-                            </div>
-                            {{-- CORREO --}}
-                            <div class="col-sm-12">
-                                <div class="form-group">
-                                    <label>Correo electrónico</label>
-                                    <div class="controls">
-                                        <input type="email" name="email" class="form-control"
-                                            placeholder="correo@ejemplo.com"
-                                            data-validation-required-message="El correo electrónico es requerido"
-                                            value="{{ old('email') }}" required>
-                                    </div>
-                                    @error('email')
-                                        <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
-                                            {{ $errors->first('email') }}
-                                        </div>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            {{-- CLAVE --}}
-                            <div class="col-sm-6">
-                                <div class="form-group">
-                                    <label>Clave</label>
-                                    <div class="controls">
-                                        <input type="password" name="password" class="form-control"
-                                            data-validation-required-message="La clave debe ser una cadena de 6 a 16 caracteres"
-                                            minlength="6" maxlength="16"
-                                            placeholder="Una contraseña de 6 a 16 caracteres"
-                                            value="{{ old('password') }}" required>
-                                    </div>
-                                    @error('password')
-                                        <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
-                                            {{ $errors->first('password') }}
-                                        </div>
-                                    @enderror
-                                </div>
-                            </div>
-                            {{-- CONFIRMAR CLAVE --}}
-                            <div class="col-sm-6">
-                                <div class="form-group">
-                                    <label>Confirmar clave</label>
-                                    <div class="controls">
-                                        <input type="password" name="password_confirmation" class="form-control"
-                                            data-validation-match-match="password"
-                                            data-validation-required-message="Se requiere una clave de confirmación"
-                                            minlength="6" maxlength="16" placeholder="Clave de confirmación"
-                                            value="{{ old('password_confirmation') }}" required>
-                                    </div>
-                                    @error('password_confirmation')
-                                        <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
-                                            {{ $errors->first('password_confirmation') }}
-                                        </div>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {{-- GUARDAR --}}
-                <div class="card-footer d-flex justify-content-end">
-                    <button type="submit" class="btn btn-primary">Guardar</button>
-                </div>
-            </form>
+    <title>Gestor de tareas {{ config('app.version') }}</title>
+
+    <link rel="apple-touch-icon" href="/app-assets/images/ico/apple-icon-120.png">
+
+    <link rel="shortcut icon" type="image/svg+xml" href="/app-assets/images/ico/favicon.svg">
+
+
+    <link href="https://fonts.googleapis.com/css?family=Rubik:300,400,500,600%7CIBM+Plex+Sans:300,400,500,600,700"
+        rel="stylesheet">
+
+    <!-- BEGIN: Vendor CSS-->
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/vendors.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/charts/apexcharts.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/extensions/dragula.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/forms/select/select2.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/extensions/toastr.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/tables/datatable/datatables.min.css">
+    <!-- END: Vendor CSS-->
+
+    <!-- BEGIN: Theme CSS-->
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/bootstrap-extended.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/colors.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/components.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/themes/dark-layout.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/themes/semi-dark-layout.css">
+    <!-- END: Theme CSS-->
+
+    <!-- BEGIN: Page CSS-->
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/core/menu/menu-types/vertical-menu.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/pages/dashboard-analytics.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/forms/validation/form-validation.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/extensions/toastr.css">
+    <!-- END: Page CSS-->
+
+    <style>
+        body {
+            margin: 0;
+            font-family: "IBM Plex Sans", Helvetica, Arial, serif;
+            font-size: 0.9rem;
+            font-weight: 400;
+            line-height: 1.4;
+            color: #727E8C;
+            text-align: left;
+            background-color: #F2F4F4;
+        }
+
+        .row {
+            margin-right: 0;
+            margin-left: 0;
+        }
+
+        p {
+            margin: 0 0 0 0;
+        }
+
+        .card {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            word-wrap: break-word;
+            background-color: #FFFFFF;
+            background-clip: border-box;
+            border-radius: 0.267rem;
+            border: 0.5px solid #dadddf !important;
+            box-shadow: 0 0 0 0.2px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background-color: #f8fafc;
+            border-bottom: 0.5px solid rgb(236, 237, 240) !important;
+            font-weight: 600;
+            padding: 1rem 1rem !important;
+            font-size: 0.8rem;
+        }
+
+        .card-footer {
+            background-color: #f0f5f9;
+            border-top: 0.5px solid rgb(233, 236, 240) !important;
+            padding: 1rem 1rem !important;
+        }
+
+        .button_keys {
+            color: #28a745 !important;
+            border: 1px solid #28a745 !important;
+            font-size: 1.1rem !important;
+            border-radius: 0.2rem !important;
+            padding: 0.3rem 0.3rem 0 0.2rem;
+            margin-right: 0.1rem;
+        }
+
+        .button_show {
+            color: #216cf7 !important;
+            border: 1px solid #216cf7 !important;
+            font-size: 1.1rem !important;
+            border-radius: 0.2rem !important;
+            padding: 0.3rem 0.3rem 0 0.3rem;
+            margin-right: 0.1rem !important;
+        }
+
+        .button_edit {
+            color: rgb(255, 113, 57) !important;
+            border: 1px solid rgb(255, 113, 57) !important;
+            font-size: 1.1rem !important;
+            border-radius: 0.2rem !important;
+            padding: 0.3rem 0.3rem 0 0.3rem;
+            margin-right: 0.1rem;
+        }
+
+        .button_delete {
+            color: rgb(255, 58, 84) !important;
+            border: 1px solid rgb(255, 58, 84) !important;
+            font-size: 1.1rem !important;
+            border-radius: 0.2rem !important;
+            padding: 0.3rem 0.3rem 0 0.3rem;
+            margin-right: 0.1rem;
+        }
+
+        div.dataTables_wrapper div.dataTables_filter,
+        div.dataTables_wrapper div.dataTables_length {
+            margin: 0rem 0;
+        }
+
+        .table.dataTable {
+            margin-top: 1rem !important;
+            margin-bottom: 2rem !important;
+        }
+
+        .table thead {
+            text-transform: uppercase;
+            font-size: .6rem;
+        }
+
+        .table thead th {
+            padding-top: 0.4rem;
+            padding-bottom: 0.3rem;
+            background-color: rgb(243, 244, 250);
+            color: #333;
+            vertical-align: middle;
+        }
+
+        .table td {
+            vertical-align: middle;
+            padding: 0.3rem;
+        }
+
+        .table tfoot {
+            text-transform: uppercase;
+            font-size: .8rem;
+        }
+
+        .zero-configuration tfoot th {
+            padding-top: 0.4rem;
+            padding-bottom: 0.3rem;
+            background-color: rgb(243, 244, 250);
+            color: #333;
+            vertical-align: middle;
+        }
+
+        .table.dataTable thead .sorting:before,
+        .table.dataTable thead .sorting_asc:before,
+        .table.dataTable thead .sorting_desc:before,
+        .table.dataTable thead .sorting_desc_disabled:before {
+            font-size: 1.3rem;
+            top: -3px;
+        }
+
+        .table.dataTable thead .sorting:after,
+        .table.dataTable thead .sorting_asc:after,
+        .table.dataTable thead .sorting_desc:after,
+        .table.dataTable thead .sorting_desc_disabled:after {
+            font-size: 1.3rem;
+            top: -14px;
+        }
+
+        .toast-info {
+            background-color: rgb(29, 152, 235) !important;
+            color: #fff !important;
+            /* Texto blanco para mejor contraste */
+        }
+
+        .toast-success {
+            background-color: rgb(14, 155, 73) !important;
+            color: #fff !important;
+        }
+
+        .toast-error {
+            background-color: rgb(233, 87, 71) !important;
+            color: #fff !important;
+        }
+
+        .toast-warning {
+            background-color: rgb(247, 132, 66) !important;
+            color: #fff !important;
+        }
+
+        .toast-progress {
+            background-color: rgba(255, 255, 255, .5) !important;
+        }
+    </style>
+
+    @section('css')
+    @show
+</head>
+<!-- END: Head-->
+<body class="vertical-layout boxicon-layout no-card-shadow footer-static">
+
+    <!-- LOGO -->
+    <div class="row justify-content-center mb-3 mt-3">
+        <div class="col-auto">
+            <img src="/app-assets/images/logo/logo.png" alt="Logo" style="height: 100px; width: auto; object-fit: contain;">
         </div>
     </div>
-</div>
-
-    <x-authentication-card>
-        
-        <x-slot name="logo" class="d-flex justify-content-center">
-            <img src="/app-assets/images/logo/logo.png" alt="Logo" style="height: 100px; width: auto; object-fit: contain;">
-        </x-slot>
-
-        <x-validation-errors class="mb-4" />
-
-        <form method="POST" action="{{ route('register') }}" enctype="multipart/form-data">
-            @csrf
-
-            <div>
-                <x-label for="name" value="Nombre" />
-                <x-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-            </div>
-
-            <div class="mt-4">
-                <x-label for="email" value="{{ __('Correo electrónico') }}" />
-                <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
-            </div>
-
-            <div class="mt-4">
-                <x-label for="password" value="{{ __('Clave') }}" />
-                <x-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" />
-            </div>
-
-            <div class="mt-4">
-                <x-label for="password_confirmation" value="{{ __('Confirmación de clave') }}" />
-                <x-input id="password_confirmation" class="block mt-1 w-full" type="password" name="password_confirmation" required autocomplete="new-password" />
-            </div>
-
-            <div class="mt-4">
-                <x-label for="image" value="{{ __('Imagen de perfil') }}" />
-                <x-input id="image" class="block mt-1 w-full" type="file" name="image" />
-            </div>
-
-            @if (Laravel\Jetstream\Jetstream::hasTermsAndPrivacyPolicyFeature())
-                <div class="mt-4">
-                    <x-label for="terms">
-                        <div class="flex items-center">
-                            <x-checkbox name="terms" id="terms" required />
-
-                            <div class="ms-2">
-                                {!! __('I agree to the :terms_of_service and :privacy_policy', [
-                                        'terms_of_service' => '<a target="_blank" href="'.route('terms.show').'" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">'.__('Terms of Service').'</a>',
-                                        'privacy_policy' => '<a target="_blank" href="'.route('policy.show').'" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">'.__('Privacy Policy').'</a>',
-                                ]) !!}
+    <!-- FORMULARIO -->
+    <div class="row d-flex justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header pt-1"> {{-- Cabecera --}}
+                    <div class="row">
+                        <div class="col-md-12 d-flex justify-content-between" style="padding: 0rem;">
+                            <div class="col-md-10 align-items-center" style="padding-left: 0.5rem;">
+                                <p>NUEVO USUARIO </p>
+                            </div>
+                            <div class="col-md-2 d-flex justify-content-end" style="padding: 0.1rem;">
+                                <a href="{!! route('user') !!}">
+                                    <div class="badge badge-pill badge-primary">
+                                        <i class="bx bx-arrow-back font-medium-3"></i>
+                                    </div>
+                                </a>
                             </div>
                         </div>
-                    </x-label>
+                    </div>
                 </div>
-            @endif
-
-            <div class="flex items-center justify-end mt-4">
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">
-                    ¿Ya estoy registrado?
-                </a>
-
-                <x-button class="ms-4">
-                    {{ __('Register') }}
-                </x-button>
+                <form class="form-horizontal" action="{{ route('register') }}" method="POST" enctype="multipart/form-data" novalidate> {{-- Contenido --}}
+                    @csrf
+                    <div class="card-content"> 
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-sm-12"> {{-- Nombre --}}
+                                    <div class="form-group">
+                                        <label>Nombre</label>
+                                        <div class="controls">
+                                            <input type="text" name="name"
+                                                class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}"
+                                                data-validation-required-message="El nombre es requerido"
+                                                data-validation-containsnumber-regex="^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$"
+                                                data-validation-containsnumber-message="El nombre debe contener solo letras (incluyendo tildes), no se permiten dobles espacios entre palabras, ni espacios al principio o final de las palabras."
+                                                placeholder="Nombre del nuevo usuario" value="{{ old('name') }}" required>
+                                            @error('name')
+                                                <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                                    {{ $errors->first('name') }}
+                                                </div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12"> {{-- DUI --}}
+                                    <div class="form-group">
+                                        <label>DUI</label>
+                                        <div class="controls">
+                                            <input type="text" name="dui" maxlength="9" minlength="9"
+                                                class="form-control {{ $errors->has('dui') ? 'is-invalid' : '' }}"
+                                                data-validation-required-message="El DUI es requerido"
+                                                data-validation-regex-regex="^[0-9]{9}$"
+                                                data-validation-regex-message="El DUI debe contener exactamente 9 dígitos numéricos, sin guión"
+                                                placeholder="Ingrese los 9 dígitos del DUI sin guión" 
+                                                value="{{ old('dui') }}" 
+                                                required>
+                                            @error('dui')
+                                                <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                                    {{ $errors->first('dui') }}
+                                                </div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12"> {{-- Fotografia --}}
+                                    <div class="form-group">
+                                        <label>Fotografia del Operador</label>
+                                        <input type="file" name="profile_photo_path" class="form-control" style="padding-bottom: 35px;">
+                                    </div>
+                                    @error('profile_photo_path')
+                                        <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                            {{ $errors->first('profile_photo_path') }}
+                                        </div>
+                                    @enderror
+                                </div>
+                                <div class="col-sm-12"> {{-- Oficina --}}
+                                    <div class="form-group">
+                                        <label for="oficina_id">Oficina</label>
+                                        <select class="select2 form-control" id="oficina_id" name="oficina_id" 
+                                        data-validation-required-message="La oficina es requerida" required>
+                                            @foreach ($oficinas as $oficina)
+                                                <option value="{{ $oficina->id }}" {{ old('oficina_id') == $oficina->id ? 'selected' : '' }}>
+                                                    {{ $oficina->oficina }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('oficina_id')
+                                            <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                                {{ $errors->first('oficina_id') }}
+                                            </div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-sm-12"> {{-- Correo --}}
+                                    <div class="form-group">
+                                        <label>Correo electrónico</label>
+                                        <div class="controls">
+                                            <input type="email" name="email" class="form-control"
+                                                placeholder="correo@ejemplo.com"
+                                                data-validation-required-message="El correo electrónico es requerido"
+                                                value="{{ old('email') }}" required>
+                                        </div>
+                                        @error('email')
+                                            <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                                {{ $errors->first('email') }}
+                                            </div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-6"> {{-- Clave --}}
+                                    <div class="form-group">
+                                        <label>Clave</label>
+                                        <div class="controls">
+                                            <input type="password" name="password" class="form-control"
+                                                data-validation-required-message="La clave debe ser una cadena de 6 a 16 caracteres"
+                                                minlength="6" maxlength="16"
+                                                placeholder="Una contraseña de 6 a 16 caracteres"
+                                                value="{{ old('password') }}" required>
+                                        </div>
+                                        @error('password')
+                                            <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                                {{ $errors->first('password') }}
+                                            </div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-sm-6"> {{-- Confirmar clave --}}
+                                    <div class="form-group">
+                                        <label>Confirmar clave</label>
+                                        <div class="controls">
+                                            <input type="password" name="password_confirmation" class="form-control"
+                                                data-validation-match-match="password"
+                                                data-validation-required-message="Se requiere una clave de confirmación"
+                                                minlength="6" maxlength="16" placeholder="Clave de confirmación"
+                                                value="{{ old('password_confirmation') }}" required>
+                                        </div>
+                                        @error('password_confirmation')
+                                            <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                                {{ $errors->first('password_confirmation') }}
+                                            </div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer d-flex justify-content-end"> {{-- Guardar --}}
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                </form>
             </div>
-        </form>
-    </x-authentication-card>
-</x-guest-layout>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer footer-static footer-light">
+        <p class="clearfix mb-0"><span class="float-left d-inline-block"><i
+                    class="bx bxl-slack pink mx-50 font-small-3"></i>Gestor de Tareas
+                {{ config('app.version') }}</span>
+            <span class="float-right d-sm-inline-block d-none">
+                <a href="#" target="_blank">San Salvador</a> &copy; 2025
+            </span>
+            <button class="btn btn-primary btn-icon scroll-top" type="button"><i
+                    class="bx bx-up-arrow-alt"></i></button>
+        </p>
+    </footer>
+    <!-- END: Footer-->
+
+    <!-- BEGIN: Vendor JS-->
+    <script src="/app-assets/vendors/js/vendors.min.js"></script>
+    <script src="/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.tools.js"></script>
+    <script src="/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.defaults.js"></script>
+    <script src="/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.min.js"></script>
+    <!-- BEGIN Vendor JS-->
+
+    <!-- BEGIN: Page Vendor JS-->
+    <script src="/app-assets/vendors/js/forms/validation/jqBootstrapValidation.js"></script>
+    <script src="/app-assets/vendors/js/forms/select/select2.full.min.js"></script>
+    <!-- END: Page Vendor JS-->
+
+    <!-- BEGIN: Theme JS-->
+    <script src="/app-assets/js/scripts/configs/vertical-menu-light.js"></script>
+    <script src="/app-assets/js/core/app-menu.js"></script>
+    <script src="/app-assets/js/core/app.js"></script>
+    <script src="/app-assets/js/scripts/components.js"></script>
+    <script src="/app-assets/js/scripts/footer.js"></script>
+    <!-- END: Theme JS-->
+
+    <!-- BEGIN: Page JS-->
+    <script>
+        $(document).ready(function() {
+            // Inicializar Select2
+            $('.select2').select2();
+
+            // Inicializar validación del formulario
+            $("input,select,textarea").not("[type=submit]").jqBootstrapValidation({
+                preventSubmit: true,
+                submitError: function($form, event, errors) {
+                    // Manejar errores de envío aquí
+                    console.log(errors);
+                },
+                submitSuccess: function($form, event) {
+                    // No usar event.preventDefault() aquí para permitir el envío normal
+                    // El formulario se enviará automáticamente si pasa la validación
+                },
+                filter: function() {
+                    return $(this).is(":visible");
+                }
+            });
+        });
+    </script>
+    <!-- END: Page JS-->
+</body>
+<!-- END: Body-->
+</html>
+
+
+

@@ -453,10 +453,6 @@
     <script src="/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.min.js"></script>
     <!-- BEGIN Vendor JS-->
 
-
-
-
-
     <!-- BEGIN: Page Vendor JS-->
     <!-- <script src="/app-assets/vendors/js/charts/apexcharts.min.js"></script> -->
     <script src="/app-assets/vendors/js/extensions/dragula.min.js"></script>
@@ -472,8 +468,6 @@
     <script src="/app-assets/vendors/js/tables/datatable/pdfmake.min.js"></script>
     <script src="/app-assets/vendors/js/tables/datatable/vfs_fonts.js"></script>
     <!-- END: Page Vendor JS-->
-
-
 
     <!-- BEGIN: Theme JS-->
     <script src="/app-assets/js/core/app-menu.js"></script>

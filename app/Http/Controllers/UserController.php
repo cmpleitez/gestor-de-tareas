@@ -235,17 +235,22 @@ class UserController extends Controller
 
     private function isValidDui(string $dui): bool
     {
-        $pattern = '/^(\d{8})-(\d)$/'; // Regex para validar formato: 8 dígitos, guión, 1 dígito
-        if (!preg_match($pattern, $dui, $matches)) {
+        // Validar que sean exactamente 9 dígitos
+        if (!preg_match('/^\d{9}$/', $dui)) {
             return false;
         }
-        $digits = $matches[1];
-        $checkDigit = intval($matches[2]);
+
+        // Extraer los primeros 8 dígitos y el dígito verificador
+        $digits = substr($dui, 0, 8);
+        $checkDigit = intval(substr($dui, -1));
+
+        // Cálculo del dígito verificador
         $sum = 0;
-        for ($i = 0; $i < strlen($digits); $i++) { // Cálculo del dígito verificador
+        for ($i = 0; $i < strlen($digits); $i++) {
             $digit = intval($digits[$i]);
             $sum += (9 - $i) * $digit;
         }
+        
         $calculatedCheckDigit = (10 - ($sum % 10)) % 10;
         return $checkDigit === $calculatedCheckDigit;
     }
