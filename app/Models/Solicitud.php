@@ -13,8 +13,14 @@ class Solicitud extends Model
 
     protected $fillable = ['solicitud'];
 
-    public function tareas()
+    public function tareas_asociadas()
     {
         return $this->belongsToMany(Tarea::class);
     }
+
+    public function conceptos()
+    {
+        return $this->hasMany(SolicitudTarea::class);
+    }
+
 }

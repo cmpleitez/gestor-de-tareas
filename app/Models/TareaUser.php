@@ -9,4 +9,10 @@ class TareaUser extends Model
 {
     use HasFactory;
     protected $table = 'tarea_user';
+
+    public function concepto()
+    {
+        return $this->belongsTo(SolicitudTarea::class);
+    }
+
 }

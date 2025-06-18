@@ -336,7 +336,7 @@
                             <img src="{{ asset('app-assets/images/icons/favicon-32x32.png') }}" alt="logo"
                                 style="width: 2.5rem; height: 2rem; object-fit: contain;">
                         </div>
-                        <h2 class="brand-text mb-0">Tareas</h2>
+                        <h2 class="brand-text mb-0"></h2>
                     </a>
                 </li>
                 <li class="nav-item nav-toggle"><a class="nav-link modern-nav-toggle pr-0" data-toggle="collapse"><i
@@ -354,9 +354,9 @@
                             data-i18n="Menu Levels">Servicios</span></a>
                     <ul class="menu-content" style="display: block;">
                         @role('Beneficiario')
-                            <li><a href="#">
+                            <li><a href="{{ Route('tarea') }}">
                                 <i class="bx bx-right-arrow-alt"></i>
-                                <span class="menu-item" data-i18n="Second Level">Disponible</span>
+                                <span class="menu-item" data-i18n="Second Level">Solicitudes</span>
                             </a></li>
                         @endrole
                         @role('Operador')

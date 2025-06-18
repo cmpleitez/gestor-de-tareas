@@ -47,6 +47,14 @@ class SolicitudController extends Controller
 
     public function actualizarTareas(Solicitud $solicitud, Request $request)
     {
+
+        return $solicitud->tareas_asociadas()->first()->procesos()->count();
+
+        //validar aquí si la tarea tiene procesos pendientes para permitir desasociarla de su solicitud
+        if ($solicitud->tareas_asociadas()->first()->procesos()->count() > 0) {
+            return back()->with('error', 'La solicitud "' . $solicitud->solicitud . '" no puede ser actualizada porque tiene procesos pendientes');
+        }
+        
         $solicitud->tareas()->sync($request->tareas);
         return redirect()->route('solicitud')->with('success', 'Tareas actualizadas correctamente');
     }
@@ -59,15 +67,16 @@ class SolicitudController extends Controller
 
     public function destroy(Solicitud $solicitud)
     {
+
+
         if($solicitud->tareas->count() > 0) {
             return back()->with('error', 'La solicitud "' . $solicitud->solicitud . '" no puede ser eliminada porque tiene tareas asociadas');
         }
 
-
-return $solicitud->usuarios->count();
+        
 
         if($solicitud->usuarios->count() > 0) {
-            return back()->with('error', 'La solicitud "' . $solicitud->solicitud . '" no puede ser eliminada porque tiene un historial de transacciones asociado');
+            return back()->with('error', 'La solicitud "' . $solicitud->solicitud . '" no puede ser eliminada porque tiene transacciones asociadas');
         }
 
         try {

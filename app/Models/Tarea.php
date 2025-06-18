@@ -11,9 +11,14 @@ class Tarea extends Model
 
     protected $fillable = ['tarea'];
 
-    public function solicitudes()
+    public function solicitudes_asociadas()
     {
         return $this->belongsToMany(Solicitud::class);
+    }
+
+    public function conceptos()
+    {
+        return $this->hasMany(SolicitudTarea::class);
     }
 
 }

@@ -9,6 +9,11 @@
                         ...agregar validacion a tareas y solicitudes: si tiene transacciones
                             ...servicio en portal: solicitud de servicios
                                 ...regresar a probar las eliminaciones de tareas y solicitudes
+                                    ...crear envio de solicitudes por parte del usuario final
+                                        ... lo anterior para probar desasignar tareas a solicitudes las cuales tengan procesos pendientes 
+                                            ... solicitud.actualizar-tareas; agregar validacion para que no se permita desasociar tareas que tengan procesos pendientes
+                                                ...crear el envío de solicitudes para poder validar las asociaciones entre solicitudes y tareas
+                                                    ...crear asignacion de solicitudes a operadores para poder delegar las tareas que dependan de las solicitudes asignadas al usuario
                                                     
 🟢 perfil del usuario: servicio de cambio de clave adaptar a fortify
 🟢 en el perfil del usuario: agregar un servicio de edicion del perfil del usuario para actualizar la oficina de atención, su correo y su fotografía
@@ -18,10 +23,18 @@
 🟢 global cruds.activate: cuando un registro esta desactivado no debe tener elementos, que disparen una escritura, en su tablero de control
 🟢 crear servicio controlado para cambiar el dui a una persona por motivos de error involuntario a la hora de registrar ese dui en el formulario de registro de usuarios
 🟢 register: asegurar el id del usuario con un aumento no automático sino programatico
+🟢 solicitud.asignar-tareas: maquetar
+🟢 los usuario con rol de operador deben tener asignado el catalogo de solicitudes para las cuales tienen capacidad de atender, de tal manera que el supervisor del area pueda asirbarle las tareas segun ese catalogo de solicitudes.
+🟢 funcionalidad para que las soicitudes dejen de estar disponibles en el sistema si no hay operadores delegados para ellas
+
 Creando el flujo de trabajo:
 https://miro.com/app/board/uXjVLl8VYdo=/
 
 Presentación del estudio:
+
+Relaciones complejas:
+
+▫️solicitud->tareas_asociadas()->procesos()->incidencias()->count();
 
 ✅🧿 1. Título
 - Debe ser claro, conciso y descriptivo del contenido

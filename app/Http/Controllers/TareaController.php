@@ -44,7 +44,7 @@ class TareaController extends Controller
 
     public function destroy(Tarea $tarea)
     {
-        if ($tarea->solicitud->count() > 0) {
+        if ($tarea->solicitudes->count() > 0) {
             return back()->with('error', 'La tarea no puede ser eliminada porque tiene solicitudes asignadas.');
         }
         try {

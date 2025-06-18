@@ -94,13 +94,35 @@ Route::middleware([
             Route::post('store', [solicitudController::class, 'store'])->name('solicitud.store');
             Route::get('edit/{solicitud}', [solicitudController::class, 'edit'])->name('solicitud.edit');
             Route::put('update/{solicitud}', [solicitudController::class, 'update'])->name('solicitud.update');
-            
             Route::get('asignar-tareas/{solicitud}', [solicitudController::class, 'asignarTareas'])->name('solicitud.asignar-tareas');
             Route::put('actualizar-tareas/{solicitud}', [solicitudController::class, 'actualizarTareas'])->name('solicitud.actualizar-tareas');
-            
             Route::get('destroy/{solicitud}', [solicitudController::class, 'destroy'])->name('solicitud.destroy');
             Route::post('activate/{solicitud}', [solicitudController::class, 'activate'])->name('solicitud.activate');
         });
 
+
+
     });
+
+    //BENEFICIARIOS
+    Route::group(['middleware' => ['role:Beneficiario|Operador']], function () {
+
+        Route::group(['prefix' => 'envio'], function () { //Asignación de tareas
+            Route::get('/', [TareaUserController::class, 'index'])->name('envio');
+            Route::get('create', [TareaUserController::class, 'create'])->name('envio.create');
+            Route::post('store', [TareaUserController::class, 'store'])->name('envio.store');
+        }); 
+
+    });
+
+
+    //OPERADORES
+    Route::group(['middleware' => ['role:Operador']], function () {
+/*         Route::group(['prefix' => 'tarea'], function () { //Asignación de tareas
+            Route::get('/', [TareaUserController::class, 'index'])->name('tarea');
+        });    
+ */    });
+
+
+
 });
