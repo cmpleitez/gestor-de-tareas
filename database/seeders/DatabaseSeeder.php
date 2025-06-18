@@ -279,6 +279,67 @@ class DatabaseSeeder extends Seeder
         //ENROLANDO AL ADMINISTRADOR
         $user = User::findOrFail(1);
         $user->assignRole('SuperAdmin');
+
+        //CREACION DE TAREAS
+        DB::table('tareas')->insert([
+            'tarea' => 'Sopesar la cantidad y el nivel de necesidad de las solicitudes versus la cantidad de población de la zona',
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+        DB::table('tareas')->insert([
+            'tarea' => 'Inspección de campo para evaluar la viabilidad de la obra',
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+        DB::table('tareas')->insert([
+            'tarea' => 'Planeación y diseño de la obra',
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+        DB::table('tareas')->insert([
+            'tarea' => 'Autorización de la obra y reservación de dinero del presupuesto municipal',
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+        DB::table('tareas')->insert([
+            'tarea' => 'Inicio de los trabajos',
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+        DB::table('tareas')->insert([
+            'tarea' => 'Supervisión de la calidad de los trabajos, verificación de comprobantes y facturas de gastos versus los avances de la obra',
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+        DB::table('tareas')->insert([
+            'tarea' => 'Finalización y entrega pública de la obra',
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+
+
+        //CREACION DE SOLICITUDES
+        DB::table('solicitudes')->insert([
+            'solicitud' => 'Creación y mantenimiento de espacio público',
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+        DB::table('solicitudes')->insert([
+            'solicitud' => 'Reparación de espacio público',
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+        DB::table('solicitudes')->insert([
+            'solicitud' => 'Construcción de muro de contención',
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+        DB::table('solicitudes')->insert([
+            'solicitud' => 'Construcción de red de vigilancia para la seguridad civil',
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+
     }
 }
 

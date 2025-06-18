@@ -94,6 +94,10 @@ Route::middleware([
             Route::post('store', [solicitudController::class, 'store'])->name('solicitud.store');
             Route::get('edit/{solicitud}', [solicitudController::class, 'edit'])->name('solicitud.edit');
             Route::put('update/{solicitud}', [solicitudController::class, 'update'])->name('solicitud.update');
+            
+            Route::get('asignar-tareas/{solicitud}', [solicitudController::class, 'asignarTareas'])->name('solicitud.asignar-tareas');
+            Route::put('actualizar-tareas/{solicitud}', [solicitudController::class, 'actualizarTareas'])->name('solicitud.actualizar-tareas');
+            
             Route::get('destroy/{solicitud}', [solicitudController::class, 'destroy'])->name('solicitud.destroy');
             Route::post('activate/{solicitud}', [solicitudController::class, 'activate'])->name('solicitud.activate');
         });

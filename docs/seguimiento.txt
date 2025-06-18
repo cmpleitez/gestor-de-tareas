@@ -9,10 +9,6 @@
                         ...agregar validacion a tareas y solicitudes: si tiene transacciones
                             ...servicio en portal: solicitud de servicios
                                 ...regresar a probar las eliminaciones de tareas y solicitudes
-                                    ...agregar dui a la tabla de usuarios
-                                        ...el publico en general debe registrarse para enviar solicitudes, por lo que debe tratarse como un operador normal
-                                            ... para registrar usuarios debo ocupar la ruta fortificada "register"
-                                                ...agregar el usuario con rol de beneficiario tambien crear ese rol
                                                     
 🟢 perfil del usuario: servicio de cambio de clave adaptar a fortify
 🟢 en el perfil del usuario: agregar un servicio de edicion del perfil del usuario para actualizar la oficina de atención, su correo y su fotografía

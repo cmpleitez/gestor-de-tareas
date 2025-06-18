@@ -30,7 +30,7 @@ class CreateNewUser implements CreatesNewUsers
 
         try {
             DB::beginTransaction();
-            $user = User::create([
+            $user = User::create([ //Crear el usuario
                 'name' => $input['name'],
                 'email' => $input['email'],
                 'dui' => $input['dui'],
@@ -38,18 +38,18 @@ class CreateNewUser implements CreatesNewUsers
                 'password' => Hash::make($input['password']),
             ]);
             if (isset($input['profile_photo_path']) && $input['profile_photo_path']->isValid()) {
-                ini_set('max_execution_time', 60); // Aumentar límites de tiempo y memoria
+                ini_set('max_execution_time', 60);
                 ini_set('memory_limit', '256M');
                 $imageFile = $input['profile_photo_path'];
-                if ($imageFile->getSize() > 5 * 1024 * 1024) { // Validar tamaño del archivo (máximo 5MB)
+                if ($imageFile->getSize() > 5 * 1024 * 1024) {
                     throw new \Exception('El archivo de imagen es demasiado grande. Máximo 5MB permitido.');
                 }
                 $imageName = $user->id . '.' . $imageFile->getClientOriginalExtension();
-                if (!Storage::disk('public')->exists('profile-photos')) { // Crear directorio si no existe
+                if (!Storage::disk('public')->exists('profile-photos')) { 
                     Storage::disk('public')->makeDirectory('profile-photos');
                 }
                 $path = Storage::disk('public')->putFileAs('profile-photos', $input['profile_photo_path'], $imageName); // Guardar la imagen en el repositorio
-                try { // Procesar la imagen
+                try { //Adaptación de la imagen al perfil del usuario
                     $fullPath = Storage::disk('public')->path($path);
                     $manager = new ImageManager(Driver::class);
                     $image = $manager->read($fullPath);
@@ -62,6 +62,7 @@ class CreateNewUser implements CreatesNewUsers
                 $user->profile_photo_path = $path;
                 $user->save(); // Guardar el usuario en la base de datos
             }
+            $user->assignRole('Beneficiario'); //Asignar el rol de Beneficiario
             DB::commit();
             return $user;
         } catch (\Exception $e) {

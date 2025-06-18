@@ -72,6 +72,13 @@
                                                 <div class="btn-group" role="group" aria-label="label">
                                                     {{-- EDITAR --}}
                                                     @can('editar')
+                                                        <a href="{{ route('solicitud.asignar-tareas', $solicitud->id) }}" role="button"
+                                                            data-toggle="tooltip" data-placement="top" data-animation="false"
+                                                            data-trigger="hover" data-html="true"
+                                                            data-title="<i class='bx bxs-cog'></i> Asignar tareas a {{ $solicitud->solicitud }}"
+                                                            class="button_edit align-center">
+                                                            <i class="bx bxs-cog"></i>
+                                                        </a>
                                                         <a href="{{ route('solicitud.edit', $solicitud->id) }}" role="button"
                                                             data-toggle="tooltip" data-placement="top" data-animation="false"
                                                             data-trigger="hover" data-html="true"

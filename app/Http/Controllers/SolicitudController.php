@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use App\Models\Solicitud;
 use App\Http\Requests\SolicitudStoreRequest;
 use App\Http\Requests\SolicitudUpdateRequest;
+use App\Models\Tarea;
 
 class SolicitudController extends Controller
 {
@@ -36,6 +37,20 @@ class SolicitudController extends Controller
         $solicitud->update($request->validated());
         return redirect()->route('solicitud')->with('success', 'Solicitud actualizada correctamente');  
     }
+
+
+    public function asignarTareas(Solicitud $solicitud)
+    {
+        $tareas = Tarea::where('activo', true)->get();
+        return view('modelos.solicitud.asignar-tareas', compact('solicitud', 'tareas'));
+    }
+
+    public function actualizarTareas(Solicitud $solicitud, Request $request)
+    {
+        $solicitud->tareas()->sync($request->tareas);
+        return redirect()->route('solicitud')->with('success', 'Tareas actualizadas correctamente');
+    }
+
 
     public function show(string $id)
     {
