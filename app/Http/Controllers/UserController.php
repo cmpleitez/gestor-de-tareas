@@ -16,6 +16,7 @@ use Spatie\Permission\Models\Role;
 use App\Models\User;
 use App\Models\Oficina;
 use App\Models\Equipo;
+use App\Models\Solicitud;
 
 class UserController extends Controller
 {
@@ -205,6 +206,20 @@ class UserController extends Controller
         $equipos = $request->input('equipos', []);
         $user->equipos()->sync($equipos);
         return redirect()->route('user')->with('success', 'Los equipos para el usuario ' . $user->name . ' han sido actualizados efectivamente.');
+    }
+
+
+    public function solicitudesEdit(User $user)
+    {
+        $solicitudes = Solicitud::where('activo', true)->get();
+        return view('modelos.user.solicitudes-edit', ['user' => $user, 'solicitudes' => $solicitudes]);
+    }
+
+    public function solicitudesUpdate(Request $request, User $user)
+    {
+        $solicitudes = $request->input('solicitudes', []);
+        $user->solicitudes()->sync($solicitudes);
+        return redirect()->route('user')->with('success', 'Las habilidades de ' . $user->name . ' han sido actualizadas efectivamente.');
     }
 
     public function destroy(User $user)

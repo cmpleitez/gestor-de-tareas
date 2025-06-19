@@ -317,7 +317,6 @@ class DatabaseSeeder extends Seeder
             'updated_at' => Carbon::now(),
         ]);
 
-
         //CREACION DE SOLICITUDES
         DB::table('solicitudes')->insert([
             'solicitud' => 'Creación y mantenimiento de espacio público',

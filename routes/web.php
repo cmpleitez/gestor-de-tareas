@@ -64,6 +64,8 @@ Route::middleware([
             Route::post('roles-update/{user}', [userController::class, 'rolesUpdate'])->name('user.roles-update');
             Route::get('equipos-edit/{user}', [userController::class, 'equiposEdit'])->name('user.equipos-edit');
             Route::post('equipos-update/{user}', [userController::class, 'equiposUpdate'])->name('user.equipos-update');
+            Route::get('solicitudes-edit/{user}', [userController::class, 'solicitudesEdit'])->name('user.solicitudes-edit');
+            Route::post('solicitudes-update/{user}', [userController::class, 'solicitudesUpdate'])->name('user.solicitudes-update');
             Route::get('destroy/{user}', [userController::class, 'destroy'])->name('user.destroy');
             Route::post('activate/{user}', [userController::class, 'activate'])->name('user.activate');
         });
@@ -99,9 +101,6 @@ Route::middleware([
             Route::get('destroy/{solicitud}', [solicitudController::class, 'destroy'])->name('solicitud.destroy');
             Route::post('activate/{solicitud}', [solicitudController::class, 'activate'])->name('solicitud.activate');
         });
-
-
-
     });
 
     //BENEFICIARIOS

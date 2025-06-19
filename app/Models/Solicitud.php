@@ -23,4 +23,9 @@ class Solicitud extends Model
         return $this->hasMany(SolicitudTarea::class);
     }
 
+    public function users()
+    {
+        return $this->belongsToMany(User::class);
+    }
+
 }
