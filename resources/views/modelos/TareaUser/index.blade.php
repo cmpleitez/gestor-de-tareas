@@ -18,7 +18,7 @@
                             <p class="card-text">Aquí podrás ver las solicitudes que has enviado y las que te han sido asignadas</p>
                         </div>
                         <div class="col-md-1 d-flex justify-content-end" style="padding: 0;">
-                            <a href="{{ route('tarea.create') }}">
+                            <a href="{{ route('envio.create') }}">
                                 <div class="badge-circle badge-circle-md badge-circle-primary">
                                     <i class="bx bx-plus-medical font-small-3"></i>
                                 </div>

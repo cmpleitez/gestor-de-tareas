@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Incidencia extends Model
 {
     use HasFactory;
+
+    public function tarea_user()
+    {
+        return $this->belongsTo(TareaUser::class);
+    }
 }

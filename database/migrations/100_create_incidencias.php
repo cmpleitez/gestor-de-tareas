@@ -9,8 +9,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('incidencias', function (Blueprint $table) {
-            $table->id();
+            $table->char('id', 16)->primary();
             $table->char('tarea_user_id', 12)->foreignId();
+            $table->string('observacion')->nullable();
             $table->timestampsTz();
 
             $table->foreign('tarea_user_id')->references('id')->on('tarea_user');

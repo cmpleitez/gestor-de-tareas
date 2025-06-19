@@ -10,9 +10,8 @@ class TareaUser extends Model
     use HasFactory;
     protected $table = 'tarea_user';
 
-    public function concepto()
+    public function incidencias()
     {
-        return $this->belongsTo(SolicitudTarea::class);
+        return $this->hasMany(Incidencia::class);
     }
-
 }

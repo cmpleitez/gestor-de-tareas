@@ -14,6 +14,7 @@
                                             ... solicitud.actualizar-tareas; agregar validacion para que no se permita desasociar tareas que tengan procesos pendientes
                                                 ...crear el envío de solicitudes para poder validar las asociaciones entre solicitudes y tareas
                                                     ...crear asignacion de solicitudes a operadores para poder delegar las tareas que dependan de las solicitudes asignadas al usuario
+                                                        ...crear servicio de envio de solicitudes: las recibe el recepcionista asignado a la oficina a la cual se envia la solicitud, si no hay usuario con rol de recepcionista el servicio en dicha oficina se declararía suspendido hasta que haya un recepcionista asignado
                                                     
 🟢 perfil del usuario: servicio de cambio de clave adaptar a fortify
 🟢 en el perfil del usuario: agregar un servicio de edicion del perfil del usuario para actualizar la oficina de atención, su correo y su fotografía

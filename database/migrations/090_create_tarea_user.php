@@ -10,12 +10,14 @@ return new class extends Migration
     {
         Schema::create('tarea_user', function (Blueprint $table) {
             $table->char('id', 12)->primary();
-            $table->foreignId('solicitud_tarea_id');
+            $table->foreignId('tarea_id');
             $table->foreignId('user_id_origen');
             $table->foreignId('user_id_destino');
+            $table->string('detalles')->nullable();
+            $table->string('observacion')->nullable();
             $table->timestampsTz();
 
-            $table->foreign('solicitud_tarea_id')->references('id')->on('solicitud_tarea');
+            $table->foreign('tarea_id')->references('id')->on('tareas');
             $table->foreign('user_id_origen')->references('id')->on('users');
             $table->foreign('user_id_destino')->references('id')->on('users');
         });

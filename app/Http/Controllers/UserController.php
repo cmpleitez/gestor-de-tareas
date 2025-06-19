@@ -34,35 +34,36 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        //PREPARANDO MASCARAS PARA VALIDACIONES
-        $duiClean = str_replace('-', '', $request->input('dui'));
-        $request->merge(['dui_clean' => $duiClean]);
+
+        return $request->all();
+
         //VALIDANDO
         $validated = $request->validate([
             'name' => 'required|string|max:255|regex:/^(?! )[a-zA-ZáéíóúÁÉÍÓÚ]+( [a-zA-ZáéíóúÁÉÍÓÚ]+)*$/',
             'email' => ['email', 'max:255', Rule::unique('users', 'email')],
-            'dui' => [ // Este campo se valida con guion para formato y algoritmo
+            'dui' => [ // Este campo se valida sin guion para formato y algoritmo
                 'required',
                 'string',
-                'regex:/^(\d{8})-(\d)$/',
+                'regex:/^\d{9}$/',
+                Rule::unique('users', 'dui'),
                 function ($attribute, $value, $fail) {
                     if (!$this->isValidDui($value)) {
                         $fail('No es un DUI válido');
                     }
                 },
             ],
-            'dui_clean' => Rule::unique('users', 'dui'),
             'oficina_id' => 'required|numeric|exists:oficinas,id',
             'password' => 'required|string|min:6|max:16',
             'password_confirmation' => 'required|string|min:6|max:16|same:password',
             'profile_photo_path' => 'nullable|image|max:1024',
         ]);
 
+
+        return $validated;
+
         //GUARDANDO
         unset($validated['password_confirmation']);
         $validated['password'] = Hash::make($validated['password']);
-        $validated['dui'] = $validated['dui_clean']; // Asigna el DUI sin guion al campo 'dui' para la creación del modelo
-        unset($validated['dui_clean']);
         try {
             DB::beginTransaction();
             $user = User::create($validated);

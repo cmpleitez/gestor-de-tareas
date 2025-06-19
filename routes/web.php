@@ -103,18 +103,6 @@ Route::middleware([
         });
     });
 
-    //BENEFICIARIOS
-    Route::group(['middleware' => ['role:Beneficiario|Operador']], function () {
-
-        Route::group(['prefix' => 'envio'], function () { //Asignación de tareas
-            Route::get('/', [TareaUserController::class, 'index'])->name('envio');
-            Route::get('create', [TareaUserController::class, 'create'])->name('envio.create');
-            Route::post('store', [TareaUserController::class, 'store'])->name('envio.store');
-        }); 
-
-    });
-
-
     //OPERADORES
     Route::group(['middleware' => ['role:Operador']], function () {
 /*         Route::group(['prefix' => 'tarea'], function () { //Asignación de tareas
@@ -122,6 +110,21 @@ Route::middleware([
         });    
  */    });
 
+    //RECEPCIONISTAS
+/*     Route::group(['middleware' => ['role:Recepcionista']], function () {
+        Route::group(['prefix' => 'envio'], function () { //Asignación de tareas
+            Route::get('activar/{tarea_user}', [TareaUserController::class, 'activar'])->name('envio.activar');
+        });    
+    });
+ */
 
+    //BENEFICIARIOS
+    Route::group(['middleware' => ['role:Beneficiario|Recepcionista']], function () {
+        Route::group(['prefix' => 'envio'], function () { //Asignación de tareas
+            Route::get('/', [TareaUserController::class, 'index'])->name('envio');
+            Route::get('create', [TareaUserController::class, 'create'])->name('envio.create');
+            Route::post('store', [TareaUserController::class, 'store'])->name('envio.store');
+        });
+    });
 
 });

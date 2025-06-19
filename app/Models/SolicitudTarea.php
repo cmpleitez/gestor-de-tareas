@@ -10,11 +10,6 @@ class SolicitudTarea extends Model
     use HasFactory;
     protected $table = 'solicitud_tarea';
 
-    public function procesos()
-    {
-        return $this->hasMany(TareaUser::class);
-    }
-
     public function tarea()
     {
         return $this->belongsTo(Tarea::class);

@@ -269,6 +269,8 @@ class DatabaseSeeder extends Seeder
         $role->givePermissionTo(['ver', 'crear', 'editar', 'activar', 'eliminar']);
         $role = Role::create(['name' => 'Supervisor', 'icon' => 'bx bxs-star-half']);
         $role->givePermissionTo(['ver']);
+        $role = Role::create(['name' => 'Recepcionista', 'icon' => 'bx bxs-star-half']);
+        $role->givePermissionTo(['ver', 'crear', 'editar', 'activar']);
         $role = Role::create(['name' => 'Operador', 'icon' => 'bx bxs-group']);
         $role->givePermissionTo(['ver', 'crear', 'editar']);
         $role = Role::create(['name' => 'Beneficiario', 'icon' => 'bx bxs-user']);
