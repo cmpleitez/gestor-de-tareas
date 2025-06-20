@@ -5,11 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class TareaUser extends Model
+class Actividad extends Model
 {
     use HasFactory;
-    protected $table = 'tarea_user';
-
+    protected $table = 'actividades';
     public function incidencias()
     {
         return $this->hasMany(Incidencia::class);

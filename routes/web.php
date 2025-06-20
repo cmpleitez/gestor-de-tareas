@@ -3,11 +3,11 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 
-use App\Http\Controllers\equipoController;
-use App\Http\Controllers\userController;
-use App\Http\Controllers\tareaController;
-use App\Http\Controllers\solicitudController;
-use App\Http\Controllers\TareaUserController;
+use App\Http\Controllers\EquipoController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\TareaController;
+use App\Http\Controllers\SolicitudController;
+use App\Http\Controllers\RecepcionController;
 
 // Rutas públicas
 Route::get('/', function () {
@@ -121,9 +121,9 @@ Route::middleware([
     //BENEFICIARIOS
     Route::group(['middleware' => ['role:Beneficiario|Recepcionista']], function () {
         Route::group(['prefix' => 'envio'], function () { //Asignación de tareas
-            Route::get('/', [TareaUserController::class, 'index'])->name('envio');
-            Route::get('create', [TareaUserController::class, 'create'])->name('envio.create');
-            Route::post('store', [TareaUserController::class, 'store'])->name('envio.store');
+            Route::get('/', [RecepcionController::class, 'index'])->name('envio');
+            Route::get('create', [RecepcionController::class, 'create'])->name('envio.create');
+            Route::post('store', [RecepcionController::class, 'store'])->name('envio.store');
         });
     });
 

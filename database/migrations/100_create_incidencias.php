@@ -10,11 +10,11 @@ return new class extends Migration
     {
         Schema::create('incidencias', function (Blueprint $table) {
             $table->char('id', 16)->primary();
-            $table->char('tarea_user_id', 12)->foreignId();
+            $table->char('actividad_id', 12)->foreignId();
             $table->string('observacion')->nullable();
             $table->timestampsTz();
 
-            $table->foreign('tarea_user_id')->references('id')->on('tarea_user');
+            $table->foreign('actividad_id')->references('id')->on('actividades');
         });
     }
 

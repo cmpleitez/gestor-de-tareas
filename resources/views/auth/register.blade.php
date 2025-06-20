@@ -276,7 +276,7 @@
                                                 data-validation-regex-regex="^[0-9]{9}$"
                                                 data-validation-regex-message="El DUI debe contener exactamente 9 dígitos numéricos, sin guión"
                                                 placeholder="Ingrese los 9 dígitos del DUI sin guión" 
-                                                value="{{ old('dui') }}" 
+                                                value="{{ old('dui') }}"
                                                 required>
                                             @error('dui')
                                                 <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
@@ -289,7 +289,7 @@
                                 <div class="col-sm-12"> {{-- Fotografia --}}
                                     <div class="form-group">
                                         <label>Fotografia del Operador</label>
-                                        <input type="file" name="profile_photo_path" class="form-control" style="padding-bottom: 35px;">
+                                        <input type="file" name="profile_photo_path" class="form-control" style="padding-bottom: 35px;" accept="image/*">
                                     </div>
                                     @error('profile_photo_path')
                                         <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">

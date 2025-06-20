@@ -17,6 +17,7 @@
                             <h4 class="card-title">MIS SOLICITUDES ENVIADAS</h4>
                             <p class="card-text">Aquí podrás ver las solicitudes que has enviado y las que te han sido asignadas</p>
                         </div>
+                        @can('crear')
                         <div class="col-md-1 d-flex justify-content-end" style="padding: 0;">
                             <a href="{{ route('envio.create') }}">
                                 <div class="badge-circle badge-circle-md badge-circle-primary">
@@ -24,8 +25,9 @@
                                 </div>
                             </a>
                         </div>
+                        @endcan
                     </div>
-
+                    
                 </div>
                 <div class="card-content">
                     <div class="card-body card-dashboard">
