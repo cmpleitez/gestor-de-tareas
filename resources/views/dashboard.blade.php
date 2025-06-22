@@ -354,7 +354,7 @@
                             data-i18n="Menu Levels">Servicios</span></a>
                     <ul class="menu-content" style="display: block;">
                         @role('Beneficiario')
-                            <li><a href="{{ Route('envio.create') }}">
+                            <li><a href="{{ Route('recepcion.create') }}">
                                 <i class="bx bx-right-arrow-alt"></i>
                                 <span class="menu-item" data-i18n="Second Level">Solicitudes</span>
                             </a></li>

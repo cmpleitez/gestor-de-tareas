@@ -15,7 +15,7 @@
                                 <p>NUEVA SOLICITUD</p>
                             </div>
                             <div class="col-md-2 d-flex justify-content-end" style="padding: 0.1rem;">
-                                <a href="{!! route('envio') !!}">
+                                <a href="{!! route('recepcion') !!}">
                                     <div class="badge badge-pill badge-primary">
                                         <i class="bx bx-arrow-back font-medium-3"></i>
                                     </div>
@@ -25,33 +25,10 @@
                     </div>
                 </div>
                 <!-- FORMULARIO -->
-                <form class="form-horizontal" action="{{ route('envio.store') }}" method="POST" novalidate>
+                <form class="form-horizontal" action="{{ route('recepcion.store') }}" method="POST" novalidate>
                     @csrf
                     <div class="card-content">
                         <div class="card-body">
-                            
-                            <div class="row"> {{-- Oficina de Destino --}}
-                                <div class="col-sm-12"> 
-                                    <div class="form-group">
-                                        <label for="oficina_id">Oficina de Destino</label>
-                                        <select class="select2 form-control" id="oficina_id" name="oficina_id"
-                                            data-validation-required-message="La oficina es requerida" required>
-                                            @foreach ($oficinas as $oficina)
-                                                <option value="{{ $oficina->id }}"
-                                                    {{ old('oficina_id') == $oficina->id ? 'selected' : '' }}>
-                                                    {{ $oficina->oficina }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('oficina_id')
-                                            <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
-                                                {{ $errors->first('oficina_id') }}
-                                            </div>
-                                        @enderror
-                                    </div>
-                                </div>
-                            </div>
-
 
                             <div class="row"> {{-- Solicitud --}}
                                 <div class="col-sm-12">

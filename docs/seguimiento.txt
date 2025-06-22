@@ -16,6 +16,7 @@
                                                     ...crear asignacion de solicitudes a operadores para poder delegar las tareas que dependan de las solicitudes asignadas al usuario
                                                         ...crear servicio de envio de solicitudes: las recibe el recepcionista asignado a la oficina a la cual se envia la solicitud, si no hay usuario con rol de recepcionista el servicio en dicha oficina se declararía suspendido hasta que haya un recepcionista asignado
                                                             ...validar que la sede del usuario sea la misma que la sede destino
+                                                                ...la solicitud ya se registra pero faltan detalles
                                                     
 🟢 perfil del usuario: servicio de cambio de clave adaptar a fortify
 🟢 en el perfil del usuario: agregar un servicio de edicion del perfil del usuario para actualizar la oficina de atención, su correo y su fotografía

@@ -14,12 +14,12 @@
 
                     <div class="col-md-12 d-flex justify-content-between" style="padding: 0;">
                         <div class="col-md-11" style="padding: 0;">
-                            <h4 class="card-title">MIS SOLICITUDES ENVIADAS</h4>
-                            <p class="card-text">Aquí podrás ver las solicitudes que has enviado y las que te han sido asignadas</p>
+                            <h4 class="card-title">SOLICITUDES RECIBIDAS</h4>
+                            <p class="card-text">Aquí podrás ver las solicitudes que han sido recibidas</p>
                         </div>
                         @can('crear')
                         <div class="col-md-1 d-flex justify-content-end" style="padding: 0;">
-                            <a href="{{ route('envio.create') }}">
+                            <a href="{{ route('recepcion.create') }}">
                                 <div class="badge-circle badge-circle-md badge-circle-primary">
                                     <i class="bx bx-plus-medical font-small-3"></i>
                                 </div>
@@ -36,18 +36,18 @@
                                 <thead>
                                     <tr>
                                         <th class="text-center">ID</th>
-                                        <th>Envio</th>
+                                        <th>recepcion</th>
                                         <th class="text-center">Creado</th>
                                         @can('autorizar')<th class="text-center">Autorizado</th>@endcan
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($envios as $envio)
+                                    @foreach ($recepciones as $recepcion)
                                         <tr>
                                             {{-- CAMPOS --}}
-                                            <td class="text-center">{{ $envio->id }}</td>
-                                            <td>{{ $envio->concepto->solicitud->solicitud }}</td>
-                                            <td class="text-center">{{ $envio->created_at->format('d/m/Y') }}</td>
+                                            <td class="text-center">{{ $recepcion->id }}</td>
+                                            <td>{{-- $recepcion->concepto->solicitud->solicitud --}}</td>
+                                            <td class="text-center">{{ $recepcion->created_at->format('d/m/Y') }}</td>
                                             {{-- ACTIVAR --}}
                                             @can('autorizar')
                                                 <td class="text-center">
@@ -72,7 +72,7 @@
                                 <tfoot>
                                     <tr>
                                         <th class="text-center">ID</th>
-                                        <th>Envio</th>
+                                        <th>recepcion</th>
                                         <th class="text-center">Creado</th>
                                         @can('autorizar')<th class="text-center">Autorizado</th>@endcan
                                     </tr>

@@ -120,10 +120,10 @@ Route::middleware([
 
     //BENEFICIARIOS
     Route::group(['middleware' => ['role:Beneficiario|Recepcionista']], function () {
-        Route::group(['prefix' => 'envio'], function () { //Asignación de tareas
-            Route::get('/', [RecepcionController::class, 'index'])->name('envio');
-            Route::get('create', [RecepcionController::class, 'create'])->name('envio.create');
-            Route::post('store', [RecepcionController::class, 'store'])->name('envio.store');
+        Route::group(['prefix' => 'recepcion'], function () { //Asignación de tareas
+            Route::get('/', [RecepcionController::class, 'index'])->name('recepcion');
+            Route::get('create', [RecepcionController::class, 'create'])->name('recepcion.create');
+            Route::post('store', [RecepcionController::class, 'store'])->name('recepcion.store');
         });
     });
 

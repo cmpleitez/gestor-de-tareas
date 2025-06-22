@@ -2,6 +2,9 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Recepcion;
+use App\Models\Solicitud;
+use App\Models\Oficina;
+use App\Models\User;
 
 class RecepcionController extends Controller
 {
@@ -9,40 +12,46 @@ class RecepcionController extends Controller
     public function index()
     {
         $recepciones = Recepcion::orWhere('user_id_origen', auth()->user()->id)->orWhere('user_id_destino', auth()->user()->id)->get();
-        return view('modelos.Recepcion.index', compact( 'recepciones'));
+        return view('modelos.recepcion.index', compact( 'recepciones'));
     }
 
 
     public function create()
     {
         $solicitudes = Solicitud::where('activo', true)->get();
-        $oficinas = Oficina::where('activo', true)->get();
-        return view('modelos.TareaUser.create', compact('solicitudes', 'oficinas'));
+        return view('modelos.recepcion.create', compact('solicitudes'));
     }
 
 
     public function store(Request $request)
     {
-        $recepcionistas = User::role('Recepcionista')->where('oficina_id', $request->oficina_id)->get();
-        $recepcionista = $recepcionistas->random();
-        if ($recepcionista) {
+        $recepcionistas = User::role('Recepcionista')->where('oficina_id', auth()->user()->oficina_id)->get();
+
+        $maxCorrelativo = Recepcion::max('id');
+        $maxCorrelativo = $maxCorrelativo ? substr($maxCorrelativo, -5) : null;
+        $correlativo = $maxCorrelativo ? str_pad($maxCorrelativo + 1, 5, '0', STR_PAD_LEFT) : '00001';
+        $anio_actual = date('Y');
+        $id = $anio_actual . $correlativo;
+
+        if ($recepcionistas->isEmpty()) {
             return back()->with('error', 'La funcionalidad se encuentra inhabilitada, consulte con el administrador del sistema');
         }
-        
-        //registrar el envio
-
+        $recepcionista = $recepcionistas->random();
         try {
-            $recepcion = Recepcion::create([
+            $recepcion = new Recepcion([
+                'id' => $id,
                 'user_id_origen' => auth()->user()->id, //beneficiario
                 'user_id_destino' => $recepcionista->id, //Recepcionista
                 'solicitud_id' => $request->solicitud_id,
                 'oficina_id' => auth()->user()->oficina_id,
                 'detalles' => $request->detalles,
             ]);
+            $recepcion->save();
         } catch (\Exception $e) {
             return back()->with('error', 'Ocurrió un error cuando se intentaba enviar la solicitud' . $e->getMessage());
         }
-        return redirect()->route('envio')->with('success', 'La solicitud número "' . $recepcion->id . '" ha sido recibida');
+
+        return redirect()->route('recepcion')->with('success', 'La solicitud número "' . $id . '" ha sido recibida en ' . auth()->user()->oficina->oficina);
     }
 
 
