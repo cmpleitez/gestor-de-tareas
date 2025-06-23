@@ -13,19 +13,19 @@ class Solicitud extends Model
 
     protected $fillable = ['solicitud'];
 
-    public function tareas_asociadas()
+    public function tareas()
     {
         return $this->belongsToMany(Tarea::class);
     }
 
-    public function conceptos()
+    public function usuario_origen()
     {
-        return $this->hasMany(SolicitudTarea::class);
+        return $this->belongsToMany(User::class, 'recepciones', 'solicitud_id', 'user_id_origen');
     }
 
-    public function users()
+    public function usuario_destino()
     {
-        return $this->belongsToMany(User::class);
+        return $this->belongsToMany(User::class, 'recepciones', 'solicitud_id', 'user_id_destino');
     }
 
 }

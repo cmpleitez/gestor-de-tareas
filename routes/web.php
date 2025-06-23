@@ -111,12 +111,11 @@ Route::middleware([
  */    });
 
     //RECEPCIONISTAS
-/*     Route::group(['middleware' => ['role:Recepcionista']], function () {
-        Route::group(['prefix' => 'envio'], function () { //Asignación de tareas
-            Route::get('activar/{tarea_user}', [TareaUserController::class, 'activar'])->name('envio.activar');
+     Route::group(['middleware' => ['role:Recepcionista']], function () {
+        Route::group(['prefix' => 'recepcion'], function () { //Asignación de tareas
+            Route::post('activate/{recepcion}', [RecepcionController::class, 'activate'])->name('recepcion.activate');
         });    
     });
- */
 
     //BENEFICIARIOS
     Route::group(['middleware' => ['role:Beneficiario|Recepcionista']], function () {

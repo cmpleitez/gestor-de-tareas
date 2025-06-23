@@ -36,9 +36,10 @@
                                 <thead>
                                     <tr>
                                         <th class="text-center">ID</th>
-                                        <th>recepcion</th>
+                                        <th>solicitud</th>
+                                        <th>detalles</th>
                                         <th class="text-center">Creado</th>
-                                        @can('autorizar')<th class="text-center">Autorizado</th>@endcan
+                                        @can('activar')<th class="text-center">Validar</th>@endcan
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -46,22 +47,23 @@
                                         <tr>
                                             {{-- CAMPOS --}}
                                             <td class="text-center">{{ $recepcion->id }}</td>
-                                            <td>{{-- $recepcion->concepto->solicitud->solicitud --}}</td>
+                                            <td>{{ $recepcion->solicitud->solicitud }}</td>
+                                            <td>{{ $recepcion->detalles }}</td>
                                             <td class="text-center">{{ $recepcion->created_at->format('d/m/Y') }}</td>
                                             {{-- ACTIVAR --}}
-                                            @can('autorizar')
+                                            @can('activar')
                                                 <td class="text-center">
-                                                    <form action="{{ route('solicitud.activate', $solicitud->id) }}" method="POST" style="display: inline;">
+                                                    <form action="{{ route('recepcion.activate', $recepcion->id) }}" method="POST" style="display: inline;">
                                                         @csrf
                                                         <div class="custom-control custom-switch" style="transform: scale(0.6); margin: 0;"
                                                             data-toggle="tooltip" data-placement="top" data-animation="false"
                                                             data-trigger="hover" data-html="true"
-                                                            data-title="<i class='bx bxs-error-circle'></i> {{ $solicitud->activo ? 'Desactivar' : 'Activar' }} {{ $solicitud->solicitud }}">
-                                                            <input id="activate_{{ $solicitud->id }}" type="checkbox" class="custom-control-input" 
-                                                                @if($solicitud->activo) checked @endif
+                                                            data-title="<i class='bx bxs-error-circle'></i> {{ $recepcion->activo ? 'Invalidar' : 'Validar' }} {{ $recepcion->solicitud->solicitud }}">
+                                                            <input id="activate_{{ $recepcion->id }}" type="checkbox" class="custom-control-input" 
+                                                                @if($recepcion->activo) checked @endif
                                                                 onchange="this.form.submit();"
                                                             >
-                                                            <label class="custom-control-label" for="activate_{{ $solicitud->id }}"></label>
+                                                            <label class="custom-control-label" for="activate_{{ $recepcion->id }}"></label>
                                                         </div>
                                                     </form>
                                                 </td>
@@ -72,9 +74,10 @@
                                 <tfoot>
                                     <tr>
                                         <th class="text-center">ID</th>
-                                        <th>recepcion</th>
+                                        <th>solicitud</th>
+                                        <th>detalles</th>
                                         <th class="text-center">Creado</th>
-                                        @can('autorizar')<th class="text-center">Autorizado</th>@endcan
+                                        @can('activar')<th class="text-center">Validar</th>@endcan
                                     </tr>
                                 </tfoot>
                             </table>

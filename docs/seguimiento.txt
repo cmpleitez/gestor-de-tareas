@@ -1,22 +1,14 @@
 
 🌟 crud de usuarios
 🌟 crud equipos
-...🟢 crud de tareas
-        ...control eliminar
-            ...crud de solicitudes
-                ...asignación de tareas y demas controles
-                    ...probar el control eliminar de crud tareas
-                        ...agregar validacion a tareas y solicitudes: si tiene transacciones
-                            ...servicio en portal: solicitud de servicios
-                                ...regresar a probar las eliminaciones de tareas y solicitudes
-                                    ...crear envio de solicitudes por parte del usuario final
-                                        ... lo anterior para probar desasignar tareas a solicitudes las cuales tengan procesos pendientes 
-                                            ... solicitud.actualizar-tareas; agregar validacion para que no se permita desasociar tareas que tengan procesos pendientes
-                                                ...crear el envío de solicitudes para poder validar las asociaciones entre solicitudes y tareas
-                                                    ...crear asignacion de solicitudes a operadores para poder delegar las tareas que dependan de las solicitudes asignadas al usuario
-                                                        ...crear servicio de envio de solicitudes: las recibe el recepcionista asignado a la oficina a la cual se envia la solicitud, si no hay usuario con rol de recepcionista el servicio en dicha oficina se declararía suspendido hasta que haya un recepcionista asignado
-                                                            ...validar que la sede del usuario sea la misma que la sede destino
-                                                                ...la solicitud ya se registra pero faltan detalles
+🌟 crud de tareas
+🌟 crud de solicitudes
+
+...recepcion.store: registra con activo=1 y debe ser activo=0
+
+🟢 crear la delegacion de tareas
+    probar las eliminaciones de tareas que se encuentren ya delegadas en el historial
+    probar la asignacion de tareas a solicitudes
                                                     
 🟢 perfil del usuario: servicio de cambio de clave adaptar a fortify
 🟢 en el perfil del usuario: agregar un servicio de edicion del perfil del usuario para actualizar la oficina de atención, su correo y su fotografía
@@ -31,6 +23,11 @@
 🟢 funcionalidad para que las soicitudes dejen de estar disponibles en el sistema si no hay operadores delegados para ellas
 🟢 userController: revisar lo quedó en desuso debido al uso del fortify y register
 🟢 usuario_tarea: agregar el campo oficina_id y el campo solicitud_id y el tarea_id
+
+
+🟢 rage agains the machine & limp bizkit & korn...
+    ....rage agains the machine: living it up
+
 
 Creando el flujo de trabajo:
 https://miro.com/app/board/uXjVLl8VYdo=/

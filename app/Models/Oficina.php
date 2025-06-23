@@ -4,8 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Area;
-use App\Models\User;
 
 class Oficina extends Model
 {
@@ -19,5 +17,15 @@ class Oficina extends Model
     public function users()
     {
         return $this->hasMany(User::class);
+    }
+
+    public function recepciones()
+    {
+        return $this->hasMany(Recepcion::class);
+    }
+
+    public function actividades()
+    {
+        return $this->hasMany(Actividad::class);
     }
 }

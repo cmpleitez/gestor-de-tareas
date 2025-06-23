@@ -9,9 +9,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('incidencias', function (Blueprint $table) {
-            $table->char('id', 12)->primary();
-            $table->char('actividad_id', 9)->foreignId();
+            $table->char('id', 14)->primary();
+            $table->char('actividad_id', 12)->foreignId();
             $table->string('observacion')->nullable();
+            $table->boolean('activo')->default(true);
             $table->timestampsTz();
 
             $table->foreign('actividad_id')->references('id')->on('actividades');
