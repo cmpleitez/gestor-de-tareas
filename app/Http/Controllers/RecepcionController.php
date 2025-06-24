@@ -5,6 +5,8 @@ use App\Models\Recepcion;
 use App\Models\Solicitud;
 use App\Models\User;
 use App\Services\IdGenerator;
+use Spatie\Permission\Models\Role;
+use App\Models\Area;
 
 class RecepcionController extends Controller
 {
@@ -14,7 +16,7 @@ class RecepcionController extends Controller
         $recepciones = Recepcion::orWhere('user_id_origen', auth()->user()->id)
         ->orWhere('user_id_destino', auth()->user()->id)
         ->with('solicitud')->get();
-        return view('modelos.recepcion.index', compact( 'recepciones'));
+        return view('modelos.recepcion.index', compact('recepciones'));
     }
 
 
@@ -33,15 +35,18 @@ class RecepcionController extends Controller
         $recepcionista = $recepcionistas->random();
         try {
             $id = (new IdGenerator())->generate();
-            $recepcion = new Recepcion([
-                'id' => $id,
-                'user_id_origen' => auth()->user()->id, //beneficiario
-                'user_id_destino' => $recepcionista->id, //Recepcionista
-                'solicitud_id' => $request->solicitud_id,
-                'oficina_id' => auth()->user()->oficina_id, //Oficina destino
-                'detalles' => $request->detalles,
-                'activo' => false, //Por defecto invalidada, se valida al recibir la solicitud
-            ]);
+            $recepcion = new Recepcion();
+            $recepcion->id = $id;
+            $recepcion->solicitud_id = $request->solicitud_id;
+            $recepcion->oficina_id = $recepcionista->oficina_id; //Oficina destino
+            $recepcion->area_id = $recepcionista->oficina->area_id; //Area destino
+            $recepcion->zona_id = $recepcionista->oficina->area->zona_id; //Zona destino
+            $recepcion->distrito_id = $recepcionista->oficina->area->zona->distrito_id; //Distrito destino
+            $recepcion->user_id_origen = auth()->user()->id; //Beneficiario
+            $recepcion->user_id_destino = $recepcionista->id; //Recepcionista de la oficina destino
+            $recepcion->role_id = Role::where('name', 'Recepcionista')->first()->id;
+            $recepcion->detalles = $request->detalles;
+            $recepcion->activo = false; //Por defecto invalidada, se valida al recibir la solicitud
             $recepcion->save();
         } catch (\Exception $e) {
             return back()->with('error', 'Ocurrió un error cuando se intentaba enviar la solicitud' . $e->getMessage());

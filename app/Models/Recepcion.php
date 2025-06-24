@@ -4,12 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Permission\Models\Role;
 
 class Recepcion extends Model
 {
     use HasFactory;
     protected $table = 'recepciones';
-    protected $fillable = ['id', 'user_id_origen', 'user_id_destino', 'solicitud_id', 'oficina_id', 'detalles', 'observacion'];
+    protected $fillable = ['solicitud_id', 'detalles', 'observacion'];
 
     public function solicitud()
     {
@@ -20,4 +21,10 @@ class Recepcion extends Model
     {
         return $this->belongsTo(Oficina::class);
     }
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
+
 }

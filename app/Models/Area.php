@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Oficina;
 
 class Area extends Model
 {
@@ -13,5 +12,10 @@ class Area extends Model
     public function oficinas()
     {
         return $this->hasMany(Oficina::class);
+    }
+
+    public function zona()
+    {
+        return $this->belongsTo(Zona::class);
     }
 }

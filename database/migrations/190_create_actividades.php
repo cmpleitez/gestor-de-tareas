@@ -12,7 +12,7 @@ return new class extends Migration
             $table->char('id', 12)->primary();
             $table->char('recepcion_id', 10)->foreignId();
             $table->foreignId('tarea_id');
-            $table->foreignId('oficina_id');
+            $table->foreignId('role_id');
             $table->foreignId('user_id_origen');
             $table->foreignId('user_id_destino');
             $table->string('observacion')->nullable();
@@ -21,7 +21,7 @@ return new class extends Migration
             
             $table->foreign('recepcion_id')->references('id')->on('recepciones');
             $table->foreign('tarea_id')->references('id')->on('tareas');
-            $table->foreign('oficina_id')->references('id')->on('oficinas');
+            $table->foreign('role_id')->references('id')->on('roles');
             $table->foreign('user_id_origen')->references('id')->on('users');
             $table->foreign('user_id_destino')->references('id')->on('users');
         });

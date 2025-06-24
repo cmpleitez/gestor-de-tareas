@@ -4,12 +4,12 @@
 🌟 crud de tareas
 🌟 crud de solicitudes
 
-...recepcion.store: registra con activo=1 y debe ser activo=0
+🟢 probar las eliminaciones de tareas que se encuentren ya delegadas en el historial
+🟢 probar la asociacion de tareas a solicitudes y cuando se desasocien validar si tienen o no historial
+    ...crear la derivación de tareas
+        ...modal con las areas con al menos 1 operador que tenga asignado ese tipo se solicitud
+            
 
-🟢 crear la delegacion de tareas
-    probar las eliminaciones de tareas que se encuentren ya delegadas en el historial
-    probar la asignacion de tareas a solicitudes
-                                                    
 🟢 perfil del usuario: servicio de cambio de clave adaptar a fortify
 🟢 en el perfil del usuario: agregar un servicio de edicion del perfil del usuario para actualizar la oficina de atención, su correo y su fotografía
         proteger campos para que solo pueda modificarlos el super-administrador
@@ -26,7 +26,7 @@
 
 
 🟢 rage agains the machine & limp bizkit & korn...
-    ....rage agains the machine: living it up
+    ...limp bizkit: im broke
 
 
 Creando el flujo de trabajo:

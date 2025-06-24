@@ -18,12 +18,12 @@ class Solicitud extends Model
         return $this->belongsToMany(Tarea::class);
     }
 
-    public function usuario_origen()
+    public function usuariosOrigenes()
     {
         return $this->belongsToMany(User::class, 'recepciones', 'solicitud_id', 'user_id_origen');
     }
 
-    public function usuario_destino()
+    public function usuariosDestinos()
     {
         return $this->belongsToMany(User::class, 'recepciones', 'solicitud_id', 'user_id_destino');
     }
