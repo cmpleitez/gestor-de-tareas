@@ -15,6 +15,7 @@ class SolicitudController extends Controller
         return view('modelos.solicitud.index', compact('solicitudes'));
     }
 
+
     public function create()
     {
         return view('modelos.solicitud.create');

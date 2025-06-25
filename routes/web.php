@@ -104,18 +104,20 @@ Route::middleware([
     });
 
     //OPERADORES
-    Route::group(['middleware' => ['role:Operador']], function () {
-/*         Route::group(['prefix' => 'tarea'], function () { //Asignación de tareas
-            Route::get('/', [TareaUserController::class, 'index'])->name('tarea');
-        });    
- */    });
-
+/*     Route::group(['middleware' => ['role:Operador']], function () {
+        Route::group(['prefix' => 'recepcion'], function () { //Asignación de tareas
+            
+        });
+    });
+ */
     //BENEFICIARIOS
     Route::group(['middleware' => ['role:Beneficiario|Recepcionista']], function () {
         Route::group(['prefix' => 'recepcion'], function () { //Asignación de tareas
             Route::get('/', [RecepcionController::class, 'index'])->name('recepcion');
+            Route::get('area/{solicitud}', [recepcionController::class, 'area'])->name('recepcion.area');
             Route::get('create', [RecepcionController::class, 'create'])->name('recepcion.create');
             Route::post('store', [RecepcionController::class, 'store'])->name('recepcion.store');
+            Route::post('activate/{recepcion}', [RecepcionController::class, 'activate'])->name('recepcion.activate');
         });
     });
 
