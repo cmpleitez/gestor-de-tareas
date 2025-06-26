@@ -42,11 +42,11 @@ class RecepcionController extends Controller
 
     public function store(Request $request)
     {
-        $recepcionistas = User::role('Recepcionista')->where('oficina_id', auth()->user()->oficina_id)->get();
-        if ($recepcionistas->isEmpty()) {
+        $supervisores = User::role('Recepcionista')->where('oficina_id', auth()->user()->oficina_id)->get();
+        if ($supervisores->isEmpty()) {
             return back()->with('error', 'La funcionalidad se encuentra inhabilitada, consulte con el administrador del sistema');
         }
-        $recepcionista = $recepcionistas->random();
+        $recepcionista = $supervisores->random();
         try {
             $recepcion = new Recepcion();
             $recepcion->id = (new IdGenerator())->generate();
@@ -85,25 +85,27 @@ class RecepcionController extends Controller
 
     public function derivar(Recepcion $recepcion, Area $area)
     {
-        $recepcionistas = User::role('Recepcionista')->whereHas('oficina.area', function($query) use ($area){
+        //si el numero de atencion ya lo tiene un supervisor se debe rechazar esta transacion: atencion_id + user_id_destino / o el role_id = "supervisor"
+        
+        $supervisores = User::role('Supervisor')->whereHas('oficina.area', function($query) use ($area){
             $query->where('area_id', $area->id);
         })->get();
-        if ($recepcionistas->isEmpty()) {
+        if ($supervisores->isEmpty()) {
             return back()->with('error', 'La funcionalidad se encuentra inhabilitada, consulte con el administrador del sistema');
         }
-        $recepcionista = $recepcionistas->random();
+        $supervisor = $supervisores->random();
  
         DB::beginTransaction();
         try {
             $new_recepcion = new Recepcion();
             $new_recepcion->id = (new IdGenerator())->generate();
             $new_recepcion->solicitud_id = $recepcion->solicitud_id;
-            $new_recepcion->oficina_id = $recepcionista->oficina_id;
-            $new_recepcion->area_id = $recepcionista->oficina->area_id;
-            $new_recepcion->zona_id = $recepcionista->oficina->area->zona_id;
-            $new_recepcion->distrito_id = $recepcionista->oficina->area->zona->distrito_id;
+            $new_recepcion->oficina_id = $supervisor->oficina_id;
+            $new_recepcion->area_id = $supervisor->oficina->area_id;
+            $new_recepcion->zona_id = $supervisor->oficina->area->zona_id;
+            $new_recepcion->distrito_id = $supervisor->oficina->area->zona->distrito_id;
             $new_recepcion->user_id_origen = auth()->user()->id;
-            $new_recepcion->user_id_destino = $recepcionista->id;
+            $new_recepcion->user_id_destino = $supervisor->id;
             $new_recepcion->role_id = Role::where('name', 'Recepcionista')->first()->id;
             $new_recepcion->atencion_id = $recepcion->atencion_id;
             $new_recepcion->detalles = $recepcion->detalles;
