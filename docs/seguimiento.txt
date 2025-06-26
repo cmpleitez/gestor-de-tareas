@@ -8,7 +8,12 @@
 🟢 probar la asociacion de tareas a solicitudes y cuando se desasocien validar si tienen o no historial
     ...crear la derivación de tareas
         ...modal con las areas con al menos 1 operador que tenga asignado ese tipo se solicitud
-            
+            ... metodo de distribución de solicitudes:
+                
+                beneficiario/recepcionista-> crear en base a oficina y rol=recepcionista
+                recepcionista-> derivar en base a area y rol=supervisor
+                supervisor-> asignar en base a equipo y rol=gestor
+                gestor-> delegar en base a usuario y rol=operador
 
 🟢 perfil del usuario: servicio de cambio de clave adaptar a fortify
 🟢 en el perfil del usuario: agregar un servicio de edicion del perfil del usuario para actualizar la oficina de atención, su correo y su fotografía

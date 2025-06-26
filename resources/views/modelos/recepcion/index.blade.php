@@ -23,6 +23,7 @@
         </div>
     </div>
 
+
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -30,8 +31,8 @@
 
                     <div class="col-md-12 d-flex justify-content-between" style="padding: 0;">
                         <div class="col-md-11" style="padding: 0;">
-                            <h4 class="card-title">SOLICITUDES RECIBIDAS</h4>
-                            <p class="card-text">Aquí podrás ver las solicitudes que han sido recibidas</p>
+                            <h4 class="card-title">RECEPCIONES</h4>
+                            <p class="card-text">Aquí podrás ver las solicitudes que has recibido en tu oficina y las que han sido derivadas a ti</p>
                         </div>
                         @can('crear')
                             <div class="col-md-1 d-flex justify-content-end" style="padding: 0;">
@@ -55,9 +56,6 @@
                                         <th>solicitud</th>
                                         <th>detalles</th>
                                         <th class="text-center">Creado</th>
-                                        @can('activar')
-                                            <th class="text-center">Validar</th>
-                                        @endcan
                                         <th class="text-center">tablero de control</th>
                                     </tr>
                                 </thead>
@@ -65,34 +63,14 @@
                                     @foreach ($recepciones as $recepcion)
                                         <tr>
                                             {{-- CAMPOS --}}
-                                            <td class="text-center">{{ $recepcion->id }}</td>
+                                            <td class="text-center">{{ $recepcion->atencion_id }}</td>
                                             <td>{{ $recepcion->solicitud->solicitud }}</td>
                                             <td>{{ $recepcion->detalles }}</td>
                                             <td class="text-center">{{ $recepcion->created_at->format('d/m/Y') }}</td>
-                                            {{-- ACTIVAR --}}
-                                            @can('activar')
-                                                <td class="text-center">
-                                                    <form action="{{ route('recepcion.activate', $recepcion->id) }}"
-                                                        method="POST" style="display: inline;">
-                                                        @csrf
-                                                        <div class="custom-control custom-switch"
-                                                            style="transform: scale(0.6); margin: 0;" data-toggle="tooltip"
-                                                            data-placement="top" data-animation="false" data-trigger="hover"
-                                                            data-html="true"
-                                                            data-title="<i class='bx bxs-error-circle'></i> {{ $recepcion->activo ? 'Invalidar' : 'Validar' }} {{ $recepcion->solicitud->solicitud }}">
-                                                            <input id="activate_{{ $recepcion->id }}" type="checkbox"
-                                                                class="custom-control-input"
-                                                                @if ($recepcion->activo) checked @endif
-                                                                onchange="this.form.submit();">
-                                                            <label class="custom-control-label"
-                                                                for="activate_{{ $recepcion->id }}"></label>
-                                                        </div>
-                                                    </form>
-                                                </td>
-                                            @endcan
                                             <td class="text-center">
+
                                                 <div class="btn-group" role="group" aria-label="label">
-                                                    @can('activar')
+                                                    @can('derivar')
                                                         <button type="button" 
                                                             class="btn btn-link button_show"
                                                             data-toggle="modal" 
@@ -102,11 +80,54 @@
                                                             data-trigger="hover" 
                                                             data-html="true"
                                                             data-title="<i class='bx bxs-share-alt'></i> Compartir solicitud con el area respectiva"
-                                                            data-solicitud-id="{{ $recepcion->solicitud_id }}">
+                                                            data-solicitud-id="{{ $recepcion->solicitud_id }}"
+                                                            data-recepcion-id="{{ $recepcion->id }}">
                                                             <i class="bx bxs-share-alt"></i>
                                                         </button>
                                                     @endcan
                                                 </div>
+
+
+                                                <div class="btn-group" role="group" aria-label="label">
+                                                    @can('asignar')
+                                                        <button type="button" 
+                                                            class="btn btn-link button_show"
+                                                            data-toggle="modal" 
+                                                            data-target="#derivar"
+                                                            data-placement="top" 
+                                                            data-animation="false"
+                                                            data-trigger="hover" 
+                                                            data-html="true"
+                                                            data-title="<i class='bx bxs-share-alt'></i> Compartir solicitud con el area respectiva"
+                                                            data-solicitud-id="{{ $recepcion->solicitud_id }}"
+                                                            data-recepcion-id="{{ $recepcion->id }}">
+                                                            <i class="bx bxs-share-alt"></i>
+                                                        </button>
+                                                    @endcan
+                                                </div>
+
+
+
+                                                <div class="btn-group" role="group" aria-label="label">
+                                                    @can('delegar')
+                                                        <button type="button" 
+                                                            class="btn btn-link button_show"
+                                                            data-toggle="modal" 
+                                                            data-target="#derivar"
+                                                            data-placement="top" 
+                                                            data-animation="false"
+                                                            data-trigger="hover" 
+                                                            data-html="true"
+                                                            data-title="<i class='bx bxs-share-alt'></i> Compartir solicitud con el area respectiva"
+                                                            data-solicitud-id="{{ $recepcion->solicitud_id }}"
+                                                            data-recepcion-id="{{ $recepcion->id }}">
+                                                            <i class="bx bxs-share-alt"></i>
+                                                        </button>
+                                                    @endcan
+                                                </div>
+
+
+                                                
                                             </td>
                                         </tr>
                                     @endforeach
@@ -117,10 +138,7 @@
                                         <th>solicitud</th>
                                         <th>detalles</th>
                                         <th class="text-center">Creado</th>
-                                        @can('activar')
-                                            <th class="text-center">Validar</th>
-                                        @endcan
-                                        <th class="text-center">derivar</th>
+                                        <th class="text-center">Tablero de control</th>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -168,6 +186,7 @@
                     return; // Evitar múltiples llamadas mientras se carga
                 }
                 var solicitudId = $(this).data('solicitud-id');
+                var recepcionId = $(this).data('recepcion-id');
                 mostrarCargando(); // Mostrar indicador de carga
                 isLoading = true;
                 $.ajax({
@@ -176,7 +195,7 @@
                     timeout: 10000, // 10 segundos de timeout
                     success: function(data) {
                         console.log('Datos recibidos:', data);
-                        actualizarModal(data);
+                        actualizarModal(data, recepcionId);
                         abrirModal();
                     },
                     error: function(xhr, status, error) {
@@ -217,7 +236,7 @@
                 });
             }
             
-            function actualizarModal(data) {
+            function actualizarModal(data, recepcionId) {
                 var modalBody = $('#derivar .modal-body');
                 modalBody.empty();
                 
@@ -227,16 +246,22 @@
                 if (areas.length > 0) {
                     var html = '';
                     areas.forEach(function(area) {
+                        var url = '{{ route('recepcion.derivar', ['recepcion' => ':recepcionId', 'area' => ':areaId']) }}'
+                            .replace(':recepcionId', recepcionId)
+                            .replace(':areaId', area.id);
+                        
                         html += '<div class="row">'+
                         '<div class="col-xl-2 col-sm-6 col-12">'+
-                            '<div class="card text-center bg-primary bg-lighten-2" style="margin-bottom: 0.2rem;">'+
-                                '<div class="card-content text-white">'+
-                                    '<div class="card-body">'+
-                                        '<h4 class="card-title white">'+area.area+'</h4>'+
-                                        '<p class="card-text">'+cantidad_operadores+' Operador(es) activo(s)</p>'+
+                            '<a href="' + url + '">'+
+                                '<div class="card text-center bg-primary bg-lighten-2" style="margin-bottom: 0.2rem;">'+
+                                    '<div class="card-content text-white">'+
+                                        '<div class="card-body">'+
+                                            '<h4 class="card-title white">'+area.area+'</h4>'+
+                                            '<p class="card-text">'+cantidad_operadores+' Operador(es) activo(s)</p>'+
+                                        '</div>'+
                                     '</div>'+
                                 '</div>'+
-                            '</div>'+
+                            '</a>'+
                         '</div>';
                     });
                     modalBody.html(html);

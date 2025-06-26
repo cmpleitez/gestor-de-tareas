@@ -253,6 +253,9 @@ class DatabaseSeeder extends Seeder
             'ver',
             'crear',
             'editar',
+            'derivar',
+            'asignar',
+            'delegar',
             'eliminar',
             'activar',
             'autorizar',
@@ -265,16 +268,25 @@ class DatabaseSeeder extends Seeder
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
         $role = Role::create(['name' => 'SuperAdmin', 'icon' => 'bx bxs-shield-alt-2']);
         $role->givePermissionTo(['ver', 'crear', 'editar', 'activar', 'eliminar', 'autorizar']);
+        
         $role = Role::create(['name' => 'Administrador', 'icon' => 'bx bxs-briefcase-alt-2']);
         $role->givePermissionTo(['ver', 'crear', 'editar', 'activar', 'eliminar']);
-        $role = Role::create(['name' => 'Supervisor', 'icon' => 'bx bxs-star-half']);
-        $role->givePermissionTo(['ver']);
+        
         $role = Role::create(['name' => 'Recepcionista', 'icon' => 'bx bxs-star-half']);
-        $role->givePermissionTo(['ver', 'crear', 'editar', 'activar']);
+        $role->givePermissionTo(['ver', 'crear', 'editar', 'activar', 'derivar']);
+
+        $role = Role::create(['name' => 'Supervisor', 'icon' => 'bx bxs-star-half']);
+        $role->givePermissionTo(['ver', 'asignar']);
+
+        $role = Role::create(['name' => 'Gestor', 'icon' => 'bx bxs-star-half']);
+        $role->givePermissionTo(['ver', 'delegar']);
+        
         $role = Role::create(['name' => 'Operador', 'icon' => 'bx bxs-group']);
         $role->givePermissionTo(['ver', 'crear', 'editar']);
+
         $role = Role::create(['name' => 'Beneficiario', 'icon' => 'bx bxs-user']);
         $role->givePermissionTo(['ver', 'crear', 'editar']);
+
         $user = User::findOrFail(1);
         $user->assignRole('SuperAdmin');
 

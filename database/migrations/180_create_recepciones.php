@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('distrito_id');
             $table->foreignId('user_id_origen');
             $table->foreignId('user_id_destino');
+            $table->char('atencion_id', 14);
             $table->string('detalles');
             $table->string('observacion')->nullable();
             $table->boolean('activo')->default(true);

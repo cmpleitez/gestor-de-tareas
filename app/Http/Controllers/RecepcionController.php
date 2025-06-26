@@ -5,8 +5,10 @@ use App\Models\Recepcion;
 use App\Models\Solicitud;
 use App\Models\User;
 use App\Services\IdGenerator;
+use App\Services\AtencionIdGenerator;
 use Spatie\Permission\Models\Role;
 use App\Models\Area;
+use Illuminate\Support\Facades\DB;
 
 
 class RecepcionController extends Controller
@@ -56,13 +58,14 @@ class RecepcionController extends Controller
             $recepcion->user_id_origen = auth()->user()->id; //Beneficiario
             $recepcion->user_id_destino = $recepcionista->id; //Recepcionista de la oficina destino
             $recepcion->role_id = Role::where('name', 'Recepcionista')->first()->id;
+            $recepcion->atencion_id = (new AtencionIdGenerator())->generate(auth()->user()->id, $request->solicitud_id);
             $recepcion->detalles = $request->detalles;
-            $recepcion->activo = false; //Por defecto invalidada, se valida al recibir la solicitud
+            $recepcion->activo = false; //Por defecto invalidada, se valida al derivar la solicitud
             $recepcion->save();
         } catch (\Exception $e) {
-            return back()->with('error', 'Ocurrió un error cuando se intentaba enviar la solicitud' . $e->getMessage());
+            return back()->with('error', 'Ocurrió un error cuando se intentaba enviar la solicitud número "' . $request->solicitud_id . '":' . $e->getMessage());
         }
-        return redirect()->route('recepcion')->with('success', 'La solicitud número "' . $id . '" ha sido recibida en ' . auth()->user()->oficina->oficina);
+        return redirect()->route('recepcion')->with('success', 'La solicitud número "' . $recepcion->id . '" ha sido recibida en el area ' . auth()->user()->oficina->area->area);
     }
 
     public function show(string $id)
@@ -80,28 +83,44 @@ class RecepcionController extends Controller
         //
     }
 
-    public function derivar(Recepcion $recepcion)
+    public function derivar(Recepcion $recepcion, Area $area)
     {
-
-/*         $recepcionistas = User::role('Recepcionista')->where('oficina_id', $recepcion->oficina_id)->get();
+        $recepcionistas = User::role('Recepcionista')->whereHas('oficina.area', function($query) use ($area){
+            $query->where('area_id', $area->id);
+        })->get();
         if ($recepcionistas->isEmpty()) {
             return back()->with('error', 'La funcionalidad se encuentra inhabilitada, consulte con el administrador del sistema');
         }
         $recepcionista = $recepcionistas->random();
- */
-        $new_recepcion = new Recepcion();
-        $new_recepcion->id = (new IdGenerator())->generate();
-        $new_recepcion->solicitud_id = $recepcion->solicitud_id;
-        $new_recepcion->oficina_id = $recepcion->oficina_id;
-        $new_recepcion->area_id = $recepcion->area_id;
-        $new_recepcion->zona_id = $recepcion->zona_id;
-        $new_recepcion->distrito_id = $recepcion->distrito_id;
-        $new_recepcion->user_id_origen = auth()->user()->id;
-        //$new_recepcion->user_id_destino = $recepcion->user_id_destino;
-/*         $new_recepcion->role_id = Role::where('name', 'Recepcionista')->first()->id;
-        $new_recepcion->detalles = $recepcion->detalles;
-        $new_recepcion->activo = false;
- */        $new_recepcion->save();
+ 
+        DB::beginTransaction();
+        try {
+            $new_recepcion = new Recepcion();
+            $new_recepcion->id = (new IdGenerator())->generate();
+            $new_recepcion->solicitud_id = $recepcion->solicitud_id;
+            $new_recepcion->oficina_id = $recepcionista->oficina_id;
+            $new_recepcion->area_id = $recepcionista->oficina->area_id;
+            $new_recepcion->zona_id = $recepcionista->oficina->area->zona_id;
+            $new_recepcion->distrito_id = $recepcionista->oficina->area->zona->distrito_id;
+            $new_recepcion->user_id_origen = auth()->user()->id;
+            $new_recepcion->user_id_destino = $recepcionista->id;
+            $new_recepcion->role_id = Role::where('name', 'Recepcionista')->first()->id;
+            $new_recepcion->atencion_id = $recepcion->atencion_id;
+            $new_recepcion->detalles = $recepcion->detalles;
+            $new_recepcion->activo = false;
+            $new_recepcion->save();
+
+            $recepcion->activo = true; //Se valida al derivar la solicitud
+            $recepcion->save();
+
+            DB::commit();
+
+            return redirect()->route('recepcion')->with('success', 'La solicitud "' . $recepcion->solicitud->solicitud . '" ha sido derivada a ' . $recepcionista->name . ' del area ' . $recepcionista->oficina->area->area);
+            
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Ocurrió un error al derivar la solicitud número "' . $recepcion->id . '":' . $e->getMessage());
+        }
     }
 
 
@@ -112,9 +131,6 @@ class RecepcionController extends Controller
 
     public function activate(Recepcion $recepcion)
     {
-        $recepcion->activo = !$recepcion->activo;
-        $recepcion->save();
-        return redirect()->route('recepcion')->with('success', 'La solicitud "' . $recepcion->solicitud->solicitud . '" ha sido ' . ($recepcion->activo ? 'validada' : 'invalidada'));
     }
 
 

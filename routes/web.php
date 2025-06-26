@@ -118,6 +118,7 @@ Route::middleware([
             Route::get('create', [RecepcionController::class, 'create'])->name('recepcion.create');
             Route::post('store', [RecepcionController::class, 'store'])->name('recepcion.store');
             Route::post('activate/{recepcion}', [RecepcionController::class, 'activate'])->name('recepcion.activate');
+            Route::get('derivar/{recepcion}/{area}', [RecepcionController::class, 'derivar'])->name('recepcion.derivar');
         });
     });
 
