@@ -13,7 +13,7 @@
                 recepcionista-> derivar en base a area y rol=supervisor
                 supervisor-> asignar en base a equipo y rol=gestor
                 gestor-> delegar en base a usuario y rol=operador
-                    ... perfeccionar el proceso de derivación
+                    perfeccionar el proceso de derivación
                     ... se inicio la asignacion a equipos y la delegación a operadores
 
 🟢 perfil del usuario: servicio de cambio de clave adaptar a fortify
