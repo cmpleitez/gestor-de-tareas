@@ -22,9 +22,24 @@ class Recepcion extends Model
         return $this->belongsTo(Oficina::class);
     }
 
+    public function area()
+    {
+        return $this->belongsTo(Area::class);
+    }
+
     public function role()
     {
         return $this->belongsTo(Role::class);
+    }
+
+    public function usuario_origen()
+    {
+        return $this->belongsTo(User::class, 'user_id_origen');
+    }
+
+    public function usuario_destino()
+    {
+        return $this->belongsTo(User::class, 'user_id_destino');
     }
 
 }

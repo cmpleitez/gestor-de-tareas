@@ -9,21 +9,6 @@
 @stop
 
 @section('contenedor')
-
-    <div class="row">
-        <div class="col-xl-2 col-sm-6 col-12">
-            <div class="card text-center bg-primary bg-lighten-3">
-                <div class="card-content text-white">
-                    <div class="card-body">
-                        <h4 class="card-title white">Storage Device</h4>
-                        <p class="card-text">945 items</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -55,8 +40,10 @@
                                         <th class="text-center">ID</th>
                                         <th>solicitud</th>
                                         <th>detalles</th>
+                                        <th>role</th>
+                                        <th>area</th>
                                         <th class="text-center">Creado</th>
-                                        <th class="text-center">tablero de control</th>
+                                        <th class="text-center">Tablero de control</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -66,68 +53,49 @@
                                             <td class="text-center">{{ $recepcion->atencion_id }}</td>
                                             <td>{{ $recepcion->solicitud->solicitud }}</td>
                                             <td>{{ $recepcion->detalles }}</td>
+                                            <td>{{ $recepcion->role->name }}</td>
+                                            <td>{{ $recepcion->area->area }}</td>
                                             <td class="text-center">{{ $recepcion->created_at->format('d/m/Y') }}</td>
                                             <td class="text-center">
-
                                                 <div class="btn-group" role="group" aria-label="label">
                                                     @can('derivar')
-                                                        <button type="button" 
+                                                        <button type="button"
                                                             class="btn btn-link button_show"
-                                                            data-toggle="modal" 
-                                                            data-target="#derivar"
-                                                            data-placement="top" 
-                                                            data-animation="false"
-                                                            data-trigger="hover" 
-                                                            data-html="true"
-                                                            data-title="<i class='bx bxs-share-alt'></i> Compartir solicitud con el area respectiva"
+                                                            data-toggle="modal"
+                                                            data-target="#distribuir"
+                                                            data-action="areas"
                                                             data-solicitud-id="{{ $recepcion->solicitud_id }}"
                                                             data-recepcion-id="{{ $recepcion->id }}">
-                                                            <i class="bx bxs-share-alt"></i>
+                                                            <i class="bx bxs-landmark"></i>
                                                         </button>
                                                     @endcan
                                                 </div>
-
-
                                                 <div class="btn-group" role="group" aria-label="label">
                                                     @can('asignar')
                                                         <button type="button" 
                                                             class="btn btn-link button_show"
-                                                            data-toggle="modal" 
-                                                            data-target="#derivar"
-                                                            data-placement="top" 
-                                                            data-animation="false"
-                                                            data-trigger="hover" 
-                                                            data-html="true"
-                                                            data-title="<i class='bx bxs-share-alt'></i> Compartir solicitud con el area respectiva"
+                                                            data-toggle="modal"
+                                                            data-target="#distribuir"
+                                                            data-action="equipos"
                                                             data-solicitud-id="{{ $recepcion->solicitud_id }}"
                                                             data-recepcion-id="{{ $recepcion->id }}">
-                                                            <i class="bx bxs-share-alt"></i>
+                                                            <i class="bx bxs-group"></i>
                                                         </button>
                                                     @endcan
                                                 </div>
-
-
-
                                                 <div class="btn-group" role="group" aria-label="label">
                                                     @can('delegar')
-                                                        <button type="button" 
+                                                        <button type="button"
                                                             class="btn btn-link button_show"
                                                             data-toggle="modal" 
-                                                            data-target="#derivar"
-                                                            data-placement="top" 
-                                                            data-animation="false"
-                                                            data-trigger="hover" 
-                                                            data-html="true"
-                                                            data-title="<i class='bx bxs-share-alt'></i> Compartir solicitud con el area respectiva"
+                                                            data-target="#distribuir"
+                                                            data-action="operadores"
                                                             data-solicitud-id="{{ $recepcion->solicitud_id }}"
                                                             data-recepcion-id="{{ $recepcion->id }}">
-                                                            <i class="bx bxs-share-alt"></i>
+                                                            <i class="bx bxs-user"></i>
                                                         </button>
                                                     @endcan
                                                 </div>
-
-
-                                                
                                             </td>
                                         </tr>
                                     @endforeach
@@ -137,6 +105,8 @@
                                         <th class="text-center">ID</th>
                                         <th>solicitud</th>
                                         <th>detalles</th>
+                                        <th>role</th>
+                                        <th>area</th>
                                         <th class="text-center">Creado</th>
                                         <th class="text-center">Tablero de control</th>
                                     </tr>
@@ -148,7 +118,7 @@
             </div>
         </div>
     </div>
-    @include('modelos.recepcion.derivar')
+    @include('modelos.recepcion.distribuir')
 @stop
 
 @section('js')
@@ -164,22 +134,19 @@
     <script>
         $(document).ready(function() {
             $('[data-toggle="tooltip"]').tooltip();  // Inicializa tooltips
-            
-            // Manejar correctamente la accesibilidad del modal
-            $('#derivar').on('show.bs.modal', function() {
+            $('#distribuir').on('show.bs.modal', function() { // Manejar correctamente la accesibilidad del modal
                 $(this).removeAttr('inert');
                 $('body').addClass('modal-open');
             });
-            $('#derivar').on('hide.bs.modal', function() {
+            $('#distribuir').on('hide.bs.modal', function() {
                 $(this).attr('inert', true);
                 $('body').removeClass('modal-open');
             });
-            $('#derivar').on('hidden.bs.modal', function() {
+            $('#distribuir').on('hidden.bs.modal', function() { // Limpiar contenido de la modal cuando se cierre completamente
                 $(this).find('.modal-body').empty();
             });
-            
             var isLoading = false;
-            $(document).on('click', '[data-toggle="modal"][data-target="#derivar"]', function(e) {
+            $(document).on('click', '[data-toggle="modal"][data-target="#distribuir"]', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 if (isLoading) {
@@ -187,25 +154,43 @@
                 }
                 var solicitudId = $(this).data('solicitud-id');
                 var recepcionId = $(this).data('recepcion-id');
-                mostrarCargando(); // Mostrar indicador de carga
+                var action = $(this).data('action'); // Obtener el tipo de acción
+                
+                mostrarCargando(); // Mostrar indicador de carga en momento de lentitud de la red
                 isLoading = true;
+                
+                
+                var ajaxUrl = ''; // Determinar la URL según la acción
+                var errorContext = '';
+                switch(action) {
+                    case 'areas':
+                        ajaxUrl = '{{ route('recepcion.areas', ['solicitud' => ':solicitudId']) }}'.replace(':solicitudId', solicitudId);
+                        errorContext = 'áreas';
+                        break;
+                    case 'equipos':
+                        ajaxUrl = '{{ route('recepcion.equipos', ['solicitud' => ':solicitudId']) }}'.replace(':solicitudId', solicitudId);
+                        errorContext = 'equipos';
+                        break;
+                    case 'operadores':
+                        ajaxUrl = '{{ route('recepcion.operadores', ['solicitud' => ':solicitudId']) }}'.replace(':solicitudId', solicitudId);
+                        errorContext = 'operadores';
+                        break;
+                    default:
+                        ajaxUrl = '{{ route('recepcion.areas', ['solicitud' => ':solicitudId']) }}'.replace(':solicitudId', solicitudId);
+                        errorContext = 'datos';
+                }
+                
+                //Dibujando datos del modal de distribución
                 $.ajax({
-                    url: '{{ route('recepcion.area', ['solicitud' => ':solicitudId']) }}'.replace(':solicitudId', solicitudId),
+                    url: ajaxUrl,
                     method: 'GET',
-                    timeout: 10000, // 10 segundos de timeout
+                    timeout: 10000, 
                     success: function(data) {
-                        console.log('Datos recibidos:', data);
-                        actualizarModal(data, recepcionId);
+                        actualizarModal(data, recepcionId, action);
                         abrirModal();
                     },
                     error: function(xhr, status, error) {
-                        console.error('Error AJAX:', {
-                            status: status,
-                            error: error,
-                            response: xhr.responseText
-                        });
-                        
-                        var errorMsg = 'Error al cargar las áreas';
+                        var errorMsg = 'Error al cargar los ' + errorContext;
                         if (status === 'timeout') {
                             errorMsg = 'La solicitud tardó demasiado tiempo. Intente nuevamente.';
                         } else if (xhr.status === 404) {
@@ -213,9 +198,8 @@
                         } else if (xhr.status === 500) {
                             errorMsg = 'Error interno del servidor.';
                         }
-                        
-                        actualizarModal([]);
-                        $('#derivar .modal-body').html('<div class="alert alert-danger">' + errorMsg + '</div>');
+                        actualizarModal([], recepcionId, action);
+                        $('#distribuir .modal-body').html('<div class="alert alert-danger">' + errorMsg + '</div>');
                         abrirModal();
                     },
                     complete: function() {
@@ -223,50 +207,125 @@
                     }
                 });
             });
-            
             function mostrarCargando() {
-                $('#derivar .modal-body').html('<div class="text-center"><i class="fas fa-spinner fa-spin"></i> Cargando...</div>');
+                $('#distribuir .modal-body').html('<div class="text-center"><i class="fas fa-spinner fa-spin"></i> Cargando...</div>');
             }
-            
             function abrirModal() {
-                $('#derivar').modal({
+                $('#distribuir').modal({
                     backdrop: 'static',
                     keyboard: true,
                     focus: true
                 });
             }
-            
-            function actualizarModal(data, recepcionId) {
-                var modalBody = $('#derivar .modal-body');
+            function actualizarModal(data, recepcionId, action) {
+                var modalBody = $('#distribuir .modal-body');
                 modalBody.empty();
-                
+
+                switch(action) {
+                    case 'areas':
+                        renderAreas(data, recepcionId, modalBody);
+                        break;
+                    case 'equipos':
+                        renderEquipos(data, recepcionId, modalBody);
+                        break;
+                    case 'operadores':
+                        renderOperadores(data, recepcionId, modalBody);
+                        break;
+                    default:
+                        renderAreas(data, recepcionId, modalBody);
+                }
+            }
+
+            function renderAreas(data, recepcionId, modalBody) {
                 var areas = data.areas;
                 var cantidad_operadores = data.cantidad_operadores;
                 
-                if (areas.length > 0) {
+                if (areas && areas.length > 0) {
                     var html = '';
                     areas.forEach(function(area) {
                         var url = '{{ route('recepcion.derivar', ['recepcion' => ':recepcionId', 'area' => ':areaId']) }}'
                             .replace(':recepcionId', recepcionId)
                             .replace(':areaId', area.id);
                         
-                        html += '<div class="row">'+
-                        '<div class="col-xl-2 col-sm-6 col-12">'+
-                            '<a href="' + url + '">'+
-                                '<div class="card text-center bg-primary bg-lighten-2" style="margin-bottom: 0.2rem;">'+
+                        html += '<div class="col-xl-3 col-sm-6 col-12" style="margin-bottom: 0.5rem;">'+
+                            '<a href="' + url + '" class="text-decoration-none">'+
+                                '<div class="card text-center bg-primary bg-lighten-2 h-100">'+
                                     '<div class="card-content text-white">'+
                                         '<div class="card-body">'+
-                                            '<h4 class="card-title white">'+area.area+'</h4>'+
-                                            '<p class="card-text">'+cantidad_operadores+' Operador(es) activo(s)</p>'+
+                                            '<i class="bx bxs-buildings font-large-2 mb-1"></i>'+
+                                            '<h5 class="card-title white mb-1">'+area.area+'</h5>'+
+                                            '<p class="card-text small">'+cantidad_operadores+' Operador(es) activo(s)</p>'+
                                         '</div>'+
                                     '</div>'+
                                 '</div>'+
                             '</a>'+
                         '</div>';
                     });
-                    modalBody.html(html);
+                    modalBody.html('<div class="row">' + html + '</div>');
                 } else {
-                    modalBody.html('<div>No se encontraron áreas para esta solicitud.</div>');
+                    modalBody.html('<div class="alert alert-info">No se encontraron áreas disponibles para esta solicitud.</div>');
+                }
+            }
+
+            function renderEquipos(data, recepcionId, modalBody) {
+                var equipos = data.equipos;
+                
+                if (equipos && equipos.length > 0) {
+                    var html = '';
+                    equipos.forEach(function(equipo) {
+                        var url = '{{ route('recepcion.asignar', ['recepcion' => ':recepcionId', 'equipo' => ':equipoId']) }}'
+                            .replace(':recepcionId', recepcionId)
+                            .replace(':equipoId', equipo.id);
+                        
+                        html += '<div class="col-xl-3 col-sm-6 col-12" style="margin-bottom: 0.5rem;">'+
+                            '<a href="' + url + '" class="text-decoration-none">'+
+                                '<div class="card text-center bg-success bg-lighten-2 h-100">'+
+                                    '<div class="card-content text-white">'+
+                                        '<div class="card-body">'+
+                                            '<i class="bx bxs-group font-large-2 mb-1"></i>'+
+                                            '<h5 class="card-title white mb-1">'+equipo.nombre+'</h5>'+
+                                            '<p class="card-text small">'+equipo.miembros_count+' Miembro(s)</p>'+
+                                            '<p class="card-text small">'+equipo.descripcion+'</p>'+
+                                        '</div>'+
+                                    '</div>'+
+                                '</div>'+
+                            '</a>'+
+                        '</div>';
+                    });
+                    modalBody.html('<div class="row">' + html + '</div>');
+                } else {
+                    modalBody.html('<div class="alert alert-info">No se encontraron equipos disponibles en tu área.</div>');
+                }
+            }
+
+            function renderOperadores(data, recepcionId, modalBody) {
+                var operadores = data.operadores;
+                
+                if (operadores && operadores.length > 0) {
+                    var html = '';
+                    operadores.forEach(function(operador) {
+                        var url = '{{ route('recepcion.delegar', ['recepcion' => ':recepcionId', 'operador' => ':operadorId']) }}'
+                            .replace(':recepcionId', recepcionId)
+                            .replace(':operadorId', operador.id);
+                        
+                        html += '<div class="col-xl-3 col-sm-6 col-12" style="margin-bottom: 0.5rem;">'+
+                            '<a href="' + url + '" class="text-decoration-none">'+
+                                '<div class="card text-center bg-warning bg-lighten-2 h-100">'+
+                                    '<div class="card-content text-white">'+
+                                        '<div class="card-body">'+
+                                            '<i class="bx bxs-user font-large-2 mb-1"></i>'+
+                                            '<h5 class="card-title white mb-1">'+operador.name+'</h5>'+
+                                            '<p class="card-text small">'+operador.email+'</p>'+
+                                            '<p class="card-text small">'+operador.cargo+'</p>'+
+                                        '</div>'+
+                                    '</div>'+
+                                '</div>'+
+                            '</a>'+
+                        '</div>';
+                    });
+                    modalBody.html('<div class="row">' + html + '</div>');
+                } else {
+                    modalBody.html('<div class="alert alert-info">No se encontraron operadores disponibles en tu equipo.</div>');
                 }
             }
         });

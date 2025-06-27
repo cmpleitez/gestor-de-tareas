@@ -9,7 +9,7 @@ use App\Services\AtencionIdGenerator;
 use Spatie\Permission\Models\Role;
 use App\Models\Area;
 use Illuminate\Support\Facades\DB;
-
+use App\Models\Equipo;
 
 class RecepcionController extends Controller
 {
@@ -22,7 +22,7 @@ class RecepcionController extends Controller
         return view('modelos.recepcion.index', compact('recepciones'));
     }
 
-    public function area(Solicitud $solicitud)
+    public function areas(Solicitud $solicitud)
     {
         $areas = Area::where('zona_id', auth()->user()->oficina->area->zona_id)
         ->whereHas('oficinas.users.solicitudes', function($query) use ($solicitud){
@@ -32,7 +32,26 @@ class RecepcionController extends Controller
             'areas' => $areas,
             'cantidad_operadores' => $areas->count()
         ]);
-    }    
+    }
+    public function equipos(Solicitud $solicitud)
+    {
+        $equipos = Equipo::whereHas('usuarios')->get();
+
+
+/*         , function($query) use ($solicitud){
+            $query->where('area_id', auth()->user()->oficina->area_id);
+        }
+ */
+        //->whereHas('user.solicitudes', function($query) use ($solicitud){
+        //    $query->where('solicitudes.id', $solicitud->id);
+        //})
+
+
+        return response()->json([
+            'equipos' => $equipos,
+            'cantidad_operadores' => $equipos->count()
+        ]);
+    }
 
     public function create()
     {
@@ -85,8 +104,14 @@ class RecepcionController extends Controller
 
     public function derivar(Recepcion $recepcion, Area $area)
     {
-        //si el numero de atencion ya lo tiene un supervisor se debe rechazar esta transacion: atencion_id + user_id_destino / o el role_id = "supervisor"
-        
+        //Validando el número de atención
+        $role_id = Role::where('name', 'Supervisor')->first()->id;
+        $recepcion = Recepcion::where('atencion_id', $recepcion->atencion_id)->where('role_id', $role_id)->first();
+        if ($recepcion) {
+            return back()->with('error', 'La solicitud con número de atención ' . $recepcion->atencion_id . ' ya ha sido derivada a ' . $recepcion->usuario_destino->name . ' en el área ' . $recepcion->area->area);
+        }
+
+        //Seleccionando el supervisor
         $supervisores = User::role('Supervisor')->whereHas('oficina.area', function($query) use ($area){
             $query->where('area_id', $area->id);
         })->get();
@@ -94,7 +119,8 @@ class RecepcionController extends Controller
             return back()->with('error', 'La funcionalidad se encuentra inhabilitada, consulte con el administrador del sistema');
         }
         $supervisor = $supervisores->random();
- 
+
+        //Derivando la solicitud
         DB::beginTransaction();
         try {
             $new_recepcion = new Recepcion();
@@ -106,19 +132,18 @@ class RecepcionController extends Controller
             $new_recepcion->distrito_id = $supervisor->oficina->area->zona->distrito_id;
             $new_recepcion->user_id_origen = auth()->user()->id;
             $new_recepcion->user_id_destino = $supervisor->id;
-            $new_recepcion->role_id = Role::where('name', 'Recepcionista')->first()->id;
+            $new_recepcion->role_id = $role_id;
             $new_recepcion->atencion_id = $recepcion->atencion_id;
             $new_recepcion->detalles = $recepcion->detalles;
             $new_recepcion->activo = false;
             $new_recepcion->save();
 
-            $recepcion->activo = true; //Se valida al derivar la solicitud
+            $recepcion->activo = true; //Se transforma en una solicitud válida al ser derivada a un área
             $recepcion->save();
 
             DB::commit();
 
-            return redirect()->route('recepcion')->with('success', 'La solicitud "' . $recepcion->solicitud->solicitud . '" ha sido derivada a ' . $recepcionista->name . ' del area ' . $recepcionista->oficina->area->area);
-            
+            return redirect()->route('recepcion')->with('success', 'La solicitud "' . $recepcion->solicitud->solicitud . '" ha sido derivada a ' . $recepcion->usuario_destino->name . ' del area ' . $recepcion->area->area);
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Ocurrió un error al derivar la solicitud número "' . $recepcion->id . '":' . $e->getMessage());

@@ -1,8 +1,8 @@
-<div class="modal fade text-left w-100" id="derivar" tabindex="-1" role="dialog" aria-labelledby="myModalLabel20" inert>
+<div class="modal fade text-left w-100" id="distribuir" tabindex="-1" role="dialog" aria-labelledby="myModalLabel20" inert>
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-full" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" id="myModalLabel20">DERIVANDO</h4>
+                <h4 class="modal-title" id="myModalLabel20">DISTRIBUYENDO</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <i class="bx bx-x"></i>
                 </button>
