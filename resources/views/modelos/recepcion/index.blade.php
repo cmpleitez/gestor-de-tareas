@@ -240,7 +240,7 @@
                 var areas = data.areas;
                 var cantidad_operadores = data.cantidad_operadores;
                 
-                if (areas && areas.length > 0) {
+                if (areas.length > 0) {
                     var html = '';
                     areas.forEach(function(area) {
                         var url = '{{ route('recepcion.derivar', ['recepcion' => ':recepcionId', 'area' => ':areaId']) }}'
@@ -269,8 +269,8 @@
 
             function renderEquipos(data, recepcionId, modalBody) {
                 var equipos = data.equipos;
-                
-                if (equipos && equipos.length > 0) {
+                var cantidad_operadores = data.cantidad_operadores;
+                if (equipos.length > 0) {
                     var html = '';
                     equipos.forEach(function(equipo) {
                         var url = '{{ route('recepcion.asignar', ['recepcion' => ':recepcionId', 'equipo' => ':equipoId']) }}'
@@ -283,9 +283,8 @@
                                     '<div class="card-content text-white">'+
                                         '<div class="card-body">'+
                                             '<i class="bx bxs-group font-large-2 mb-1"></i>'+
-                                            '<h5 class="card-title white mb-1">'+equipo.nombre+'</h5>'+
-                                            '<p class="card-text small">'+equipo.miembros_count+' Miembro(s)</p>'+
-                                            '<p class="card-text small">'+equipo.descripcion+'</p>'+
+                                            '<h5 class="card-title white mb-1">'+equipo.equipo+'</h5>'+
+                                            '<p class="card-text small">'+cantidad_operadores+' Operador(es) activo(s)</p>'+
                                         '</div>'+
                                     '</div>'+
                                 '</div>'+
@@ -300,8 +299,9 @@
 
             function renderOperadores(data, recepcionId, modalBody) {
                 var operadores = data.operadores;
+                var cantidad_operadores = data.cantidad_operadores;
                 
-                if (operadores && operadores.length > 0) {
+                if (operadores.length > 0) {
                     var html = '';
                     operadores.forEach(function(operador) {
                         var url = '{{ route('recepcion.delegar', ['recepcion' => ':recepcionId', 'operador' => ':operadorId']) }}'
@@ -315,8 +315,7 @@
                                         '<div class="card-body">'+
                                             '<i class="bx bxs-user font-large-2 mb-1"></i>'+
                                             '<h5 class="card-title white mb-1">'+operador.name+'</h5>'+
-                                            '<p class="card-text small">'+operador.email+'</p>'+
-                                            '<p class="card-text small">'+operador.cargo+'</p>'+
+                                            '<p class="card-text small">'+operador.cantidad_operadores+'</p>'+
                                         '</div>'+
                                     '</div>'+
                                 '</div>'+

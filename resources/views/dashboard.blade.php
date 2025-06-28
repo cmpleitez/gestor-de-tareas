@@ -356,7 +356,7 @@
                         @role('Beneficiario')
                             <li><a href="{{ Route('recepcion.create') }}">
                                 <i class="bx bx-right-arrow-alt"></i>
-                                <span class="menu-item" data-i18n="Second Level">Solicitudes</span>
+                                <span class="menu-item" data-i18n="Second Level">Recepciones</span>
                             </a></li>
                         @endrole
                         @role('Operador')
