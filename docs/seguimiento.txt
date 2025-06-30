@@ -4,6 +4,8 @@
 🌟 crud de tareas
 🌟 crud de solicitudes
 
+🟢 agregar un digito indicador en el numero de atencion de manera que facilite su lectura ya que tiene muchos digitos
+🟢 revisar las cantidades en los subtitulos de los menus de seleccion: areas, equipos y operadores
 🟢 probar las eliminaciones de tareas que se encuentren ya delegadas en el historial
 🟢 probar la asociacion de tareas a solicitudes y cuando se desasocien validar si tienen o no historial
     ...crear la delegacion de tareas
@@ -17,7 +19,7 @@
                     ... se inicio la asignacion a equipos
                         ... recepcion.asignar: pendiente crear la proceso asignar
                     delegación a operadores
-
+🟢 analizar que orden por defecto va tener la bandeja de recepción del operador/gestor/supervisor/recepcionista
 🟢 perfil del usuario: servicio de cambio de clave adaptar a fortify
 🟢 en el perfil del usuario: agregar un servicio de edicion del perfil del usuario para actualizar la oficina de atención, su correo y su fotografía
         proteger campos para que solo pueda modificarlos el super-administrador

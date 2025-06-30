@@ -276,34 +276,52 @@
                                     <script>
                                         function copyToClipboard(event, text) {
                                             event.stopPropagation();
+                                            if (!navigator.clipboard) { // Verificar si la API del portapapeles está disponible
+                                                fallbackCopyTextToClipboard(text); // Fallback para navegadores que no soportan clipboard API
+                                                return;
+                                            }
                                             navigator.clipboard.writeText(text)
                                                 .then(() => {
                                                     toastr.success('Correo copiado al portapapeles');
                                                 })
                                                 .catch(err => {
-                                                    toastr.error('Error al copiar el correo', 'Error');
+                                                    toastr.error('Error al copiar el correo: ' + err.message, 'Error');
+                                                    fallbackCopyTextToClipboard(text);
                                                 });
+                                        }
+                                        
+                                        function fallbackCopyTextToClipboard(text) {
+                                            const textArea = document.createElement("textarea");
+                                            textArea.value = text;
+                                            textArea.style.top = "0";
+                                            textArea.style.left = "0";
+                                            textArea.style.position = "fixed";
+                                            document.body.appendChild(textArea);
+                                            textArea.focus();
+                                            textArea.select();
+                                            try {
+                                                const successful = document.execCommand('copy');
+                                                if (successful) {
+                                                    toastr.success('Correo copiado al portapapeles', '', {positionClass: 'toast-top-center'});
+                                                } else {
+                                                    toastr.error('No se pudo copiar el correo', 'Error', {positionClass: 'toast-top-center'});
+                                                }
+                                            } catch (err) {
+                                                toastr.error('No se pudo copiar el correo', 'Error', {positionClass: 'toast-top-center'});
+                                            }
+                                            document.body.removeChild(textArea);
                                         }
                                     </script>
                                     <span
                                         class="user-status text-gray-600">{{ auth()->check() ? 'Conectado' : 'Desconectado' }}</span>
                                 </div>
-                                @php
-                                    $profilePhotoPath = auth()->user()->profile_photo_path;
-                                    $defaultSvgPath = asset('app-assets/images/pages/operador.png');
-                                @endphp
-                                @if (auth()->user()->hasVerifiedEmail())
-                                    @if ($profilePhotoPath && Storage::exists($profilePhotoPath))
-                                        <img class="round" src="{{ Storage::url($profilePhotoPath) }}"
-                                            alt="avatar" height="40" width="40">
+                                <div class="avatar">
+                                    @if (Storage::disk('public')->exists(auth()->user()->profile_photo_path))
+                                        <img src="{{ Storage::url(auth()->user()->profile_photo_path) }}" alt="avatar" style="height: 45px; width: 45px; object-fit: cover;">
                                     @else
-                                        <img class="round" src="{{ $defaultSvgPath }}" alt="avatar"
-                                            height="40" width="40">
+                                        <img src="{{ asset('app-assets/images/pages/operador.png') }}" alt="avatar" style="height: 45px; width: 45px; object-fit: cover;">
                                     @endif
-                                @else
-                                    <img class="round" src="{{ $defaultSvgPath }}" alt="avatar" height="40"
-                                        width="40">
-                                @endif
+                                </div>
                             </a>
                             <div class="dropdown-menu dropdown-menu-right pb-0">
                                 <a class="dropdown-item" href="#"><i class="bx bx-user mr-50"></i>
@@ -515,7 +533,10 @@
                         "url": "/app-assets/Spanish.json"
                     },
                     "responsive": true,
-                    "autoWidth": false
+                    "autoWidth": false,
+                    "order": [[0, 'asc'], [1, 'asc'], [2, 'asc']],
+                    "pageLength": 50, // Mostrar 50 registros por defecto
+                    "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Todos"]] // Opciones de paginación
                 });
                 // Inicializar tooltips de Bootstrap 4
                 $('[data-toggle="tooltip"]').tooltip();

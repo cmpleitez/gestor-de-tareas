@@ -46,6 +46,20 @@ class RecepcionController extends Controller
         ]);
     }
 
+    public function operadores(Solicitud $solicitud)
+    {
+        $operadores = User::role('Operador')->whereHas('oficina.area', function($query) use ($solicitud){
+            $query->where('area_id', auth()->user()->oficina->area_id);
+        })->whereHas('solicitudes', function($query) use ($solicitud){
+            $query->where('solicitudes.id', $solicitud->id);
+        })->get();
+        $operadores_activos = User::role('Operador')->where('activo', true)->get();
+        return response()->json([
+            'operadores' => $operadores,
+            'operadores_activos' => $operadores_activos
+        ]);
+    }
+
     public function create()
     {
         $solicitudes = Solicitud::where('activo', true)->get();
@@ -137,6 +151,50 @@ class RecepcionController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Ocurrió un error al derivar la solicitud:' . $e->getMessage());
+        }
+    }
+
+    public function asignar(Recepcion $recepcion)
+    {
+        //Validando el número de atención
+        $role_id = Role::where('name', 'Gestor')->first()->id;
+        $asignada = Recepcion::where('atencion_id', $recepcion->atencion_id)->where('role_id', $role_id)->first();
+        if ($asignada) {
+            return back()->with('error', 'La solicitud con número de atención ' . $asignada->atencion_id . ' ya ha sido asignada a ' . $asignada->usuario_destino->name . ' en el área ' . $asignada->area->area);
+        }
+        //Seleccionando el gestor
+        $gestores = User::role('Gestor')->whereHas('oficina.area', function($query) use ($recepcion){
+            $query->where('area_id', $recepcion->area_id);
+        })->get();
+        if ($gestores->isEmpty()) {
+            return back()->with('error', 'La funcionalidad se encuentra inhabilitada, consulte con el administrador del sistema');
+        }
+        $gestor = $gestores->random();
+        //Asignando la solicitud
+        DB::beginTransaction();
+        try {
+            $new_recepcion = new Recepcion(); //Creando una nueva recepción para el gestor
+            $new_recepcion->id = (new IdGenerator())->generate();
+            $new_recepcion->solicitud_id = $recepcion->solicitud_id;
+            $new_recepcion->oficina_id = $gestor->oficina_id;
+            $new_recepcion->area_id = $gestor->oficina->area_id;
+            $new_recepcion->zona_id = $gestor->oficina->area->zona_id;
+            $new_recepcion->distrito_id = $gestor->oficina->area->zona->distrito_id;
+            $new_recepcion->user_id_origen = auth()->user()->id;
+            $new_recepcion->user_id_destino = $gestor->id;
+            $new_recepcion->role_id = $role_id;
+            $new_recepcion->atencion_id = $recepcion->atencion_id;
+            $new_recepcion->detalles = $recepcion->detalles;
+            $new_recepcion->activo = false;
+            $new_recepcion->save();
+
+            $recepcion->activo = true; //Se transforma en una solicitud válida al ser asignada a un gestor
+            $recepcion->save();
+            DB::commit();
+            return redirect()->route('recepcion')->with('success', 'La solicitud "' . $recepcion->solicitud->solicitud . '" ha sido asignada a ' . $recepcion->usuario_destino->name . ' del area ' . $recepcion->area->area);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Ocurrió un error al asignar la solicitud:' . $e->getMessage());
         }
     }
 

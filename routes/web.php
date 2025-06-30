@@ -122,7 +122,7 @@ Route::middleware([
             Route::post('activate/{recepcion}', [RecepcionController::class, 'activate'])->name('recepcion.activate');
             Route::get('derivar/{recepcion}/{area}', [RecepcionController::class, 'derivar'])->name('recepcion.derivar');
             Route::get('asignar/{recepcion}/{equipo}', [RecepcionController::class, 'asignar'])->name('recepcion.asignar');
-            Route::get('delegar/{recepcion}/{operador}', [RecepcionController::class, 'delegar'])->name('recepcion.delegar');
+            Route::get('delegar/{recepcion}/{user}', [RecepcionController::class, 'delegar'])->name('recepcion.delegar');
         });
     });
 

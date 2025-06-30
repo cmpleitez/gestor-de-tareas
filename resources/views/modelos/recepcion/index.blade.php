@@ -13,11 +13,11 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-
                     <div class="col-md-12 d-flex justify-content-between" style="padding: 0;">
                         <div class="col-md-11" style="padding: 0;">
                             <h4 class="card-title">RECEPCIONES</h4>
-                            <p class="card-text">Aquí podrás ver las solicitudes que has recibido en tu oficina y las que han sido derivadas a ti</p>
+                            <p class="card-text">Aquí podrás ver las solicitudes que has recibido en tu oficina y las que
+                                han sido derivadas a ti</p>
                         </div>
                         @can('crear')
                             <div class="col-md-1 d-flex justify-content-end" style="padding: 0;">
@@ -29,7 +29,6 @@
                             </div>
                         @endcan
                     </div>
-
                 </div>
                 <div class="card-content">
                     <div class="card-body card-dashboard">
@@ -37,12 +36,12 @@
                             <table id="datatable" class="table zero-configuration table-hover">
                                 <thead>
                                     <tr>
+                                        <th>area</th>
                                         <th class="text-center">ID</th>
+                                        <th class="text-center">Fecha de recepción</th>
+                                        <th>rol</th>
                                         <th>solicitud</th>
                                         <th>detalles</th>
-                                        <th>role</th>
-                                        <th>area</th>
-                                        <th class="text-center">Creado</th>
                                         <th class="text-center">Tablero de control</th>
                                     </tr>
                                 </thead>
@@ -50,20 +49,38 @@
                                     @foreach ($recepciones as $recepcion)
                                         <tr>
                                             {{-- CAMPOS --}}
+                                            <td>{{ $recepcion->area->area }}</td>
                                             <td class="text-center">{{ $recepcion->atencion_id }}</td>
+                                            <td class="text-center">{{ $recepcion->created_at->format('d/m/Y h:i A') }}</td>
+                                            <td>
+                                                <div class="widget-todo-item-action d-flex align-items-center">
+                                                    <div class="avatar">
+                                                        @if (Storage::disk('public')->exists($recepcion->usuario_destino->profile_photo_path))
+                                                            <img src="{{ Storage::url($recepcion->usuario_destino->profile_photo_path) }}" alt="avatar" style="height: 32px; width: 32px; object-fit: cover;">
+                                                        @else
+                                                            <img src="{{ asset('app-assets/images/pages/operador.png') }}" alt="avatar" style="height: 28px; width: 28px; object-fit: cover;">
+                                                        @endif
+                                                    </div>
+                                                    @if($recepcion->role->name == 'Recepcionista')
+                                                        <div class="badge badge-pill badge-light-danger">{{ $recepcion->role->name }}</div>
+                                                    @elseif($recepcion->role->name == 'Supervisor')
+                                                        <div class="badge badge-pill badge-light-warning">{{ $recepcion->role->name }}</div>
+                                                    @elseif($recepcion->role->name == 'Gestor')
+                                                        <div class="badge badge-pill badge-light-primary">{{ $recepcion->role->name }}</div>
+                                                    @elseif($recepcion->role->name == 'Operador')
+                                                        <div class="badge badge-pill badge-light-info">{{ $recepcion->role->name }}</div>
+                                                    @else
+                                                        <div class="badge badge-pill badge-light-secondary">{{ $recepcion->role->name }}</div>
+                                                    @endif
+                                                </div>
+                                            </td>
                                             <td>{{ $recepcion->solicitud->solicitud }}</td>
                                             <td>{{ $recepcion->detalles }}</td>
-                                            <td>{{ $recepcion->role->name }}</td>
-                                            <td>{{ $recepcion->area->area }}</td>
-                                            <td class="text-center">{{ $recepcion->created_at->format('d/m/Y') }}</td>
                                             <td class="text-center">
                                                 <div class="btn-group" role="group" aria-label="label">
                                                     @can('derivar')
-                                                        <button type="button"
-                                                            class="btn btn-link button_show"
-                                                            data-toggle="modal"
-                                                            data-target="#distribuir"
-                                                            data-action="areas"
+                                                        <button type="button" class="btn btn-link button_show"
+                                                            data-toggle="modal" data-target="#distribuir" data-action="areas"
                                                             data-solicitud-id="{{ $recepcion->solicitud_id }}"
                                                             data-recepcion-id="{{ $recepcion->id }}">
                                                             <i class="bx bxs-landmark"></i>
@@ -72,11 +89,8 @@
                                                 </div>
                                                 <div class="btn-group" role="group" aria-label="label">
                                                     @can('asignar')
-                                                        <button type="button" 
-                                                            class="btn btn-link button_show"
-                                                            data-toggle="modal"
-                                                            data-target="#distribuir"
-                                                            data-action="equipos"
+                                                        <button type="button" class="btn btn-link button_show"
+                                                            data-toggle="modal" data-target="#distribuir" data-action="equipos"
                                                             data-solicitud-id="{{ $recepcion->solicitud_id }}"
                                                             data-recepcion-id="{{ $recepcion->id }}">
                                                             <i class="bx bxs-group"></i>
@@ -85,10 +99,8 @@
                                                 </div>
                                                 <div class="btn-group" role="group" aria-label="label">
                                                     @can('delegar')
-                                                        <button type="button"
-                                                            class="btn btn-link button_show"
-                                                            data-toggle="modal" 
-                                                            data-target="#distribuir"
+                                                        <button type="button" class="btn btn-link button_show"
+                                                            data-toggle="modal" data-target="#distribuir"
                                                             data-action="operadores"
                                                             data-solicitud-id="{{ $recepcion->solicitud_id }}"
                                                             data-recepcion-id="{{ $recepcion->id }}">
@@ -102,12 +114,12 @@
                                 </tbody>
                                 <tfoot>
                                     <tr>
+                                        <th>area</th>
                                         <th class="text-center">ID</th>
+                                        <th class="text-center">Fecha de recepción</th>
+                                        <th>rol</th>
                                         <th>solicitud</th>
                                         <th>detalles</th>
-                                        <th>role</th>
-                                        <th>area</th>
-                                        <th class="text-center">Creado</th>
                                         <th class="text-center">Tablero de control</th>
                                     </tr>
                                 </tfoot>
@@ -133,7 +145,7 @@
     <script src="/app-assets/vendors/js/tables/datatable/vfs_fonts.js"></script>
     <script>
         $(document).ready(function() {
-            $('[data-toggle="tooltip"]').tooltip();  // Inicializa tooltips
+            $('[data-toggle="tooltip"]').tooltip(); // Inicializa tooltips
             $('#distribuir').on('show.bs.modal', function() { // Manejar correctamente la accesibilidad del modal
                 $(this).removeAttr('inert');
                 $('body').addClass('modal-open');
@@ -142,9 +154,10 @@
                 $(this).attr('inert', true);
                 $('body').removeClass('modal-open');
             });
-            $('#distribuir').on('hidden.bs.modal', function() { // Limpiar contenido de la modal cuando se cierre completamente
-                $(this).find('.modal-body').empty();
-            });
+            $('#distribuir').on('hidden.bs.modal',
+                function() { // Limpiar contenido de la modal cuando se cierre completamente
+                    $(this).find('.modal-body').empty();
+                });
             var isLoading = false;
             $(document).on('click', '[data-toggle="modal"][data-target="#distribuir"]', function(e) {
                 e.preventDefault();
@@ -155,36 +168,40 @@
                 var solicitudId = $(this).data('solicitud-id');
                 var recepcionId = $(this).data('recepcion-id');
                 var action = $(this).data('action'); // Obtener el tipo de acción
-                
+
                 mostrarCargando(); // Mostrar indicador de carga en momento de lentitud de la red
                 isLoading = true;
-                
-                
+
+
                 var ajaxUrl = ''; // Determinar la URL según la acción
                 var errorContext = '';
-                switch(action) {
+                switch (action) {
                     case 'areas':
-                        ajaxUrl = '{{ route('recepcion.areas', ['solicitud' => ':solicitudId']) }}'.replace(':solicitudId', solicitudId);
+                        ajaxUrl = '{{ route('recepcion.areas', ['solicitud' => ':solicitudId']) }}'
+                            .replace(':solicitudId', solicitudId);
                         errorContext = 'áreas';
                         break;
                     case 'equipos':
-                        ajaxUrl = '{{ route('recepcion.equipos', ['solicitud' => ':solicitudId']) }}'.replace(':solicitudId', solicitudId);
+                        ajaxUrl = '{{ route('recepcion.equipos', ['solicitud' => ':solicitudId']) }}'
+                            .replace(':solicitudId', solicitudId);
                         errorContext = 'equipos';
                         break;
                     case 'operadores':
-                        ajaxUrl = '{{ route('recepcion.operadores', ['solicitud' => ':solicitudId']) }}'.replace(':solicitudId', solicitudId);
+                        ajaxUrl = '{{ route('recepcion.operadores', ['solicitud' => ':solicitudId']) }}'
+                            .replace(':solicitudId', solicitudId);
                         errorContext = 'operadores';
                         break;
                     default:
-                        ajaxUrl = '{{ route('recepcion.areas', ['solicitud' => ':solicitudId']) }}'.replace(':solicitudId', solicitudId);
+                        ajaxUrl = '{{ route('recepcion.areas', ['solicitud' => ':solicitudId']) }}'
+                            .replace(':solicitudId', solicitudId);
                         errorContext = 'datos';
                 }
-                
+
                 //Dibujando datos del modal de distribución
                 $.ajax({
                     url: ajaxUrl,
                     method: 'GET',
-                    timeout: 10000, 
+                    timeout: 10000,
                     success: function(data) {
                         actualizarModal(data, recepcionId, action);
                         abrirModal();
@@ -192,14 +209,16 @@
                     error: function(xhr, status, error) {
                         var errorMsg = 'Error al cargar los ' + errorContext;
                         if (status === 'timeout') {
-                            errorMsg = 'La solicitud tardó demasiado tiempo. Intente nuevamente.';
+                            errorMsg =
+                                'La solicitud tardó demasiado tiempo. Intente nuevamente.';
                         } else if (xhr.status === 404) {
                             errorMsg = 'No se encontró la información solicitada.';
                         } else if (xhr.status === 500) {
                             errorMsg = 'Error interno del servidor.';
                         }
                         actualizarModal([], recepcionId, action);
-                        $('#distribuir .modal-body').html('<div class="alert alert-danger">' + errorMsg + '</div>');
+                        $('#distribuir .modal-body').html('<div class="alert alert-danger">' +
+                            errorMsg + '</div>');
                         abrirModal();
                     },
                     complete: function() {
@@ -207,9 +226,12 @@
                     }
                 });
             });
+
             function mostrarCargando() {
-                $('#distribuir .modal-body').html('<div class="text-center"><i class="fas fa-spinner fa-spin"></i> Cargando...</div>');
+                $('#distribuir .modal-body').html(
+                    '<div class="text-center"><i class="fas fa-spinner fa-spin"></i> Cargando...</div>');
             }
+
             function abrirModal() {
                 $('#distribuir').modal({
                     backdrop: 'static',
@@ -217,11 +239,12 @@
                     focus: true
                 });
             }
+
             function actualizarModal(data, recepcionId, action) {
                 var modalBody = $('#distribuir .modal-body');
                 modalBody.empty();
 
-                switch(action) {
+                switch (action) {
                     case 'areas':
                         renderAreas(data, recepcionId, modalBody);
                         break;
@@ -239,31 +262,35 @@
             function renderAreas(data, recepcionId, modalBody) {
                 var areas = data.areas;
                 var cantidad_operadores = data.cantidad_operadores;
-                
+
                 if (areas.length > 0) {
                     var html = '';
                     areas.forEach(function(area) {
-                        var url = '{{ route('recepcion.derivar', ['recepcion' => ':recepcionId', 'area' => ':areaId']) }}'
+                        var url =
+                            '{{ route('recepcion.derivar', ['recepcion' => ':recepcionId', 'area' => ':areaId']) }}'
                             .replace(':recepcionId', recepcionId)
                             .replace(':areaId', area.id);
-                        
-                        html += '<div class="col-xl-3 col-sm-6 col-12" style="margin-bottom: 0.5rem;">'+
-                            '<a href="' + url + '" class="text-decoration-none">'+
-                                '<div class="card text-center bg-primary bg-lighten-2 h-100">'+
-                                    '<div class="card-content text-white">'+
-                                        '<div class="card-body">'+
-                                            '<i class="bx bxs-buildings font-large-2 mb-1"></i>'+
-                                            '<h5 class="card-title white mb-1">'+area.area+'</h5>'+
-                                            '<p class="card-text small">'+cantidad_operadores+' Operador(es) activo(s)</p>'+
-                                        '</div>'+
-                                    '</div>'+
-                                '</div>'+
-                            '</a>'+
-                        '</div>';
+
+                        html += '<div class="col-xl-3 col-sm-6 col-12" style="margin-bottom: 0.5rem;">' +
+                            '<a href="' + url + '" class="text-decoration-none">' +
+                            '<div class="card text-center bg-primary bg-lighten-2 h-100">' +
+                            '<div class="card-content text-white">' +
+                            '<div class="card-body">' +
+                            '<i class="bx bxs-buildings font-large-2 mb-1"></i>' +
+                            '<h5 class="card-title white mb-1">' + area.area + '</h5>' +
+                            '<p class="card-text small">' + cantidad_operadores +
+                            ' Operador(es) activo(s)</p>' +
+                            '</div>' +
+                            '</div>' +
+                            '</div>' +
+                            '</a>' +
+                            '</div>';
                     });
                     modalBody.html('<div class="row">' + html + '</div>');
                 } else {
-                    modalBody.html('<div class="alert alert-info">No se encontraron áreas disponibles para esta solicitud.</div>');
+                    modalBody.html(
+                        '<div class="alert alert-info">No se encontraron áreas disponibles para esta solicitud.</div>'
+                    );
                 }
             }
 
@@ -273,58 +300,61 @@
                 if (equipos.length > 0) {
                     var html = '';
                     equipos.forEach(function(equipo) {
-                        var url = '{{ route('recepcion.asignar', ['recepcion' => ':recepcionId', 'equipo' => ':equipoId']) }}'
+                        var url =
+                            '{{ route('recepcion.asignar', ['recepcion' => ':recepcionId', 'equipo' => ':equipoId']) }}'
                             .replace(':recepcionId', recepcionId)
                             .replace(':equipoId', equipo.id);
-                        
-                        html += '<div class="col-xl-3 col-sm-6 col-12" style="margin-bottom: 0.5rem;">'+
-                            '<a href="' + url + '" class="text-decoration-none">'+
-                                '<div class="card text-center bg-success bg-lighten-2 h-100">'+
-                                    '<div class="card-content text-white">'+
-                                        '<div class="card-body">'+
-                                            '<i class="bx bxs-group font-large-2 mb-1"></i>'+
-                                            '<h5 class="card-title white mb-1">'+equipo.equipo+'</h5>'+
-                                            '<p class="card-text small">'+cantidad_operadores+' Operador(es) activo(s)</p>'+
-                                        '</div>'+
-                                    '</div>'+
-                                '</div>'+
-                            '</a>'+
-                        '</div>';
+
+                        html += '<div class="col-xl-3 col-sm-6 col-12" style="margin-bottom: 0.5rem;">' +
+                            '<a href="' + url + '" class="text-decoration-none">' +
+                            '<div class="card text-center bg-success bg-lighten-2 h-100">' +
+                            '<div class="card-content text-white">' +
+                            '<div class="card-body">' +
+                            '<i class="bx bxs-group font-large-2 mb-1"></i>' +
+                            '<h5 class="card-title white mb-1">' + equipo.equipo + '</h5>' +
+                            '<p class="card-text small">' + cantidad_operadores +
+                            ' Operador(es) activo(s)</p>' +
+                            '</div>' +
+                            '</div>' +
+                            '</div>' +
+                            '</a>' +
+                            '</div>';
                     });
                     modalBody.html('<div class="row">' + html + '</div>');
                 } else {
-                    modalBody.html('<div class="alert alert-info">No se encontraron equipos disponibles en tu área.</div>');
+                    modalBody.html(
+                        '<div class="alert alert-info">No se encontraron equipos disponibles en tu área.</div>');
                 }
             }
 
             function renderOperadores(data, recepcionId, modalBody) {
                 var operadores = data.operadores;
-                var cantidad_operadores = data.cantidad_operadores;
-                
                 if (operadores.length > 0) {
                     var html = '';
                     operadores.forEach(function(operador) {
-                        var url = '{{ route('recepcion.delegar', ['recepcion' => ':recepcionId', 'operador' => ':operadorId']) }}'
+                        var url =
+                            '{{ route('recepcion.delegar', ['recepcion' => ':recepcionId', 'user' => ':userId']) }}'
                             .replace(':recepcionId', recepcionId)
-                            .replace(':operadorId', operador.id);
-                        
-                        html += '<div class="col-xl-3 col-sm-6 col-12" style="margin-bottom: 0.5rem;">'+
-                            '<a href="' + url + '" class="text-decoration-none">'+
-                                '<div class="card text-center bg-warning bg-lighten-2 h-100">'+
-                                    '<div class="card-content text-white">'+
-                                        '<div class="card-body">'+
-                                            '<i class="bx bxs-user font-large-2 mb-1"></i>'+
-                                            '<h5 class="card-title white mb-1">'+operador.name+'</h5>'+
-                                            '<p class="card-text small">'+operador.cantidad_operadores+'</p>'+
-                                        '</div>'+
-                                    '</div>'+
-                                '</div>'+
-                            '</a>'+
-                        '</div>';
+                            .replace(':userId', operador.id);
+
+                        html += '<div class="col-xl-3 col-sm-6 col-12" style="margin-bottom: 0.5rem;">' +
+                            '<a href="' + url + '" class="text-decoration-none">' +
+                            '<div class="card text-center bg-warning bg-lighten-2 h-100">' +
+                            '<div class="card-content text-white">' +
+                            '<div class="card-body">' +
+                            '<i class="bx bxs-user font-large-2 mb-1"></i>' +
+                            '<h5 class="card-title white mb-1">' + operador.name + '</h5>' +
+                            '</div>' +
+                            '</div>' +
+                            '</div>' +
+                            '</a>' +
+                            '</div>';
                     });
                     modalBody.html('<div class="row">' + html + '</div>');
                 } else {
-                    modalBody.html('<div class="alert alert-info">No se encontraron operadores disponibles en tu equipo.</div>');
+                    modalBody.html(
+                        '<div class="alert alert-info">No se encontraron operadores disponibles en tu equipo.</div>'
+                    );
                 }
             }
         });
