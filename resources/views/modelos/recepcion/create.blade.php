@@ -8,8 +8,8 @@
         <div class="col-md-6">
             <div class="card">
                 <!-- CABECERA -->
-                <div class="card-header pt-1">
-                    <div class="row">
+                <div class="card-header">
+                    <div class="row mt-1">
                         <div class="col-md-12 d-flex justify-content-between" style="padding: 0rem;">
                             <div class="col-md-10 align-items-center" style="padding-left: 0.5rem;">
                                 <p>NUEVA SOLICITUD</p>

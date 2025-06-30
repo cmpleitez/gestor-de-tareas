@@ -4,6 +4,8 @@
 🌟 crud de tareas
 🌟 crud de solicitudes
 
+🟢 agregar un tooltip sobre la foto y mostrar el nombre del usuario o el correo
+🟢 en la mayoria de las vistas se debe agregar un margen arriba de 1 o 2 porque todo esta muy pegado al techo
 🟢 agregar un digito indicador en el numero de atencion de manera que facilite su lectura ya que tiene muchos digitos
 🟢 revisar las cantidades en los subtitulos de los menus de seleccion: areas, equipos y operadores
 🟢 probar las eliminaciones de tareas que se encuentren ya delegadas en el historial

@@ -13,7 +13,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <div class="col-md-12 d-flex justify-content-between" style="padding: 0;">
+                    <div class="col-md-12 d-flex justify-content-between mt-1" style="padding: 0;">
                         <div class="col-md-11" style="padding: 0;">
                             <h4 class="card-title">RECEPCIONES</h4>
                             <p class="card-text">Aquí podrás ver las solicitudes que has recibido en tu oficina y las que
@@ -55,7 +55,7 @@
                                             <td>
                                                 <div class="widget-todo-item-action d-flex align-items-center">
                                                     <div class="avatar">
-                                                        @if (Storage::disk('public')->exists($recepcion->usuario_destino->profile_photo_path))
+                                                        @if ($recepcion->usuario_destino->profile_photo_path && Storage::disk('public')->exists($recepcion->usuario_destino->profile_photo_path))
                                                             <img src="{{ Storage::url($recepcion->usuario_destino->profile_photo_path) }}" alt="avatar" style="height: 32px; width: 32px; object-fit: cover;">
                                                         @else
                                                             <img src="{{ asset('app-assets/images/pages/operador.png') }}" alt="avatar" style="height: 28px; width: 28px; object-fit: cover;">

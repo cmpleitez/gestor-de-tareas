@@ -316,10 +316,13 @@
                                         class="user-status text-gray-600">{{ auth()->check() ? 'Conectado' : 'Desconectado' }}</span>
                                 </div>
                                 <div class="avatar">
-                                    @if (Storage::disk('public')->exists(auth()->user()->profile_photo_path))
-                                        <img src="{{ Storage::url(auth()->user()->profile_photo_path) }}" alt="avatar" style="height: 45px; width: 45px; object-fit: cover;">
-                                    @else
-                                        <img src="{{ asset('app-assets/images/pages/operador.png') }}" alt="avatar" style="height: 45px; width: 45px; object-fit: cover;">
+                                    @if(auth()->check())
+                                        @php $photoPath = auth()->user()->profile_photo_path; @endphp
+                                        @if ($photoPath && Storage::disk('public')->exists($photoPath))
+                                            <img src="{{ Storage::url($photoPath) }}" alt="avatar" style="height: 45px; width: 45px; object-fit: cover;">
+                                        @else
+                                            <img src="{{ asset('app-assets/images/pages/operador.png') }}" alt="avatar" style="height: 45px; width: 45px; object-fit: cover;">
+                                        @endif
                                     @endif
                                 </div>
                             </a>
