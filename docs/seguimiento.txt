@@ -4,6 +4,7 @@
 🌟 crud de tareas
 🌟 crud de solicitudes
 
+...🟢 Completando delegación de tareas: agregando actividades...
 ...🟢 Crear "la delegación automatizada de tareas"
 
 🟢 TABLERO KANBAN para recepcionistas, supervisores, gestores y operadores

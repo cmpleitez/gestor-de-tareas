@@ -10,6 +10,7 @@ use Spatie\Permission\Models\Role;
 use App\Models\Area;
 use Illuminate\Support\Facades\DB;
 use App\Models\Equipo;
+use App\Models\Actividad;
 
 class RecepcionController extends Controller
 {
@@ -225,16 +226,29 @@ class RecepcionController extends Controller
             $new_recepcion->detalles = $recepcion->detalles;
             $new_recepcion->activo = false;
             $new_recepcion->save();
-
-            $recepcion->activo = true; //Se transforma en una solicitud válida al ser delegada a un operador
+            //Se transforma en una solicitud válida al ser delegada a un operador
+            $recepcion->activo = true; 
             $recepcion->save();
+            //Delegando las actividades
+            foreach ($recepcion->solicitud->tareas as $tarea) {
+                $actividad = new Actividad();
+                //$actividad->id = (new IdGenerator())->generate();
+                $actividad->recepcion_id = $new_recepcion->id;
+                $actividad->tarea_id = $tarea->id;
+                $actividad->role_id = $role_id;
+                $actividad->user_id_origen = auth()->user()->id;
+                $actividad->user_id_destino = $user->id;
+                $actividad->activo = false;
+                $actividad->save();
+            }
             DB::commit();
-            return redirect()->route('recepcion')->with('success', 'La solicitud "' . $recepcion->solicitud->solicitud . '" ha sido delegada a ' . $recepcion->usuarioDestino->name . ' del area ' . $recepcion->area->area);
+            return redirect()->route('recepcion')->with('success', 'La solicitud "' . $recepcion->solicitud->solicitud . '" ha sido delegada a ' . $user->name . ' del área ' . $recepcion->area->area);
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Ocurrió un error al delegar la solicitud:' . $e->getMessage());
         }
     }
+
     public function destroy(string $id)
     {
         //
