@@ -68,11 +68,11 @@ class RecepcionController extends Controller
 
     public function store(Request $request)
     {
-        $supervisores = User::role('Recepcionista')->where('oficina_id', auth()->user()->oficina_id)->get();
-        if ($supervisores->isEmpty()) {
+        $recepcionistas = User::role('Recepcionista')->where('oficina_id', auth()->user()->oficina_id)->get();
+        if ($recepcionistas->isEmpty()) {
             return back()->with('error', 'La funcionalidad se encuentra inhabilitada, consulte con el administrador del sistema');
         }
-        $recepcionista = $supervisores->random();
+        $recepcionista = $recepcionistas->random();
         try {
             $recepcion = new Recepcion();
             $recepcion->id = (new IdGenerator())->generate();
@@ -131,10 +131,10 @@ class RecepcionController extends Controller
             $new_recepcion = new Recepcion();
             $new_recepcion->id = (new IdGenerator())->generate();
             $new_recepcion->solicitud_id = $recepcion->solicitud_id;
-            $new_recepcion->oficina_id = $supervisor->oficina_id;
-            $new_recepcion->area_id = $supervisor->oficina->area_id;
-            $new_recepcion->zona_id = $supervisor->oficina->area->zona_id;
-            $new_recepcion->distrito_id = $supervisor->oficina->area->zona->distrito_id;
+            $new_recepcion->oficina_id = $recepcion->oficina_id;
+            $new_recepcion->area_id = $area->id;
+            $new_recepcion->zona_id = $area->zona_id;
+            $new_recepcion->distrito_id = $area->zona->distrito_id;
             $new_recepcion->user_id_origen = auth()->user()->id;
             $new_recepcion->user_id_destino = $supervisor->id;
             $new_recepcion->role_id = $role_id;
@@ -154,7 +154,7 @@ class RecepcionController extends Controller
         }
     }
 
-    public function asignar(Recepcion $recepcion)
+    public function asignar(Recepcion $recepcion, Equipo $equipo)
     {
         //Validando el número de atención
         $role_id = Role::where('name', 'Gestor')->first()->id;
@@ -165,6 +165,8 @@ class RecepcionController extends Controller
         //Seleccionando el gestor
         $gestores = User::role('Gestor')->whereHas('oficina.area', function($query) use ($recepcion){
             $query->where('area_id', $recepcion->area_id);
+        })->whereHas('equipos', function($query) use ($equipo){
+            $query->where('equipos.id', $equipo->id);
         })->get();
         if ($gestores->isEmpty()) {
             return back()->with('error', 'La funcionalidad se encuentra inhabilitada, consulte con el administrador del sistema');
@@ -176,10 +178,10 @@ class RecepcionController extends Controller
             $new_recepcion = new Recepcion(); //Creando una nueva recepción para el gestor
             $new_recepcion->id = (new IdGenerator())->generate();
             $new_recepcion->solicitud_id = $recepcion->solicitud_id;
-            $new_recepcion->oficina_id = $gestor->oficina_id;
-            $new_recepcion->area_id = $gestor->oficina->area_id;
-            $new_recepcion->zona_id = $gestor->oficina->area->zona_id;
-            $new_recepcion->distrito_id = $gestor->oficina->area->zona->distrito_id;
+            $new_recepcion->oficina_id = $recepcion->oficina_id;
+            $new_recepcion->area_id = $recepcion->area_id;
+            $new_recepcion->zona_id = $recepcion->zona_id;
+            $new_recepcion->distrito_id = $recepcion->distrito_id;
             $new_recepcion->user_id_origen = auth()->user()->id;
             $new_recepcion->user_id_destino = $gestor->id;
             $new_recepcion->role_id = $role_id;
@@ -198,6 +200,41 @@ class RecepcionController extends Controller
         }
     }
 
+    public function delegar(Recepcion $recepcion, User $user)
+    {
+        //Validando el número de atención
+        $role_id = Role::where('name', 'Operador')->first()->id;
+        $delegada = Recepcion::where('atencion_id', $recepcion->atencion_id)->where('role_id', $role_id)->first();
+        if ($delegada) {
+            return back()->with('error', 'La solicitud con número de atención ' . $delegada->atencion_id . ' ya ha sido delegada a ' . $delegada->usuario_destino->name . ' en el área ' . $delegada->area->area);
+        }
+        //Delegando la solicitud
+        DB::beginTransaction();
+        try {
+            $new_recepcion = new Recepcion();
+            $new_recepcion->id = (new IdGenerator())->generate();
+            $new_recepcion->solicitud_id = $recepcion->solicitud_id;
+            $new_recepcion->oficina_id = $recepcion->oficina_id;
+            $new_recepcion->area_id = $recepcion->area_id;
+            $new_recepcion->zona_id = $recepcion->zona_id;
+            $new_recepcion->distrito_id = $recepcion->distrito_id;
+            $new_recepcion->user_id_origen = auth()->user()->id;
+            $new_recepcion->user_id_destino = $user->id;
+            $new_recepcion->role_id = $role_id;
+            $new_recepcion->atencion_id = $recepcion->atencion_id;
+            $new_recepcion->detalles = $recepcion->detalles;
+            $new_recepcion->activo = false;
+            $new_recepcion->save();
+
+            $recepcion->activo = true; //Se transforma en una solicitud válida al ser delegada a un operador
+            $recepcion->save();
+            DB::commit();
+            return redirect()->route('recepcion')->with('success', 'La solicitud "' . $recepcion->solicitud->solicitud . '" ha sido delegada a ' . $recepcion->usuario_destino->name . ' del area ' . $recepcion->area->area);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Ocurrió un error al delegar la solicitud:' . $e->getMessage());
+        }
+    }
     public function destroy(string $id)
     {
         //
