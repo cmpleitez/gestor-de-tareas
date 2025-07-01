@@ -20,12 +20,12 @@ class Solicitud extends Model
 
     public function usuariosOrigenes()
     {
-        return $this->belongsToMany(User::class, 'recepciones', 'solicitud_id', 'user_id_origen');
+        return $this->belongsToMany(User::class, 'recepciones', 'solicitud_id', relatedPivotKey: 'user_id_origen');
     }
 
     public function usuariosDestinos()
     {
-        return $this->belongsToMany(User::class, 'recepciones', 'solicitud_id', 'user_id_destino');
+        return $this->belongsToMany(User::class, 'recepciones', 'solicitud_id', relatedPivotKey: 'user_id_destino');
     }
 
 }

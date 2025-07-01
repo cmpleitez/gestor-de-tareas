@@ -121,7 +121,7 @@
         }
 
         .button_delete {
-            color: rgb(255, 58, 84) !important;
+            color: rgb(250, 99, 120) !important;
             border: 1px solid rgb(255, 58, 84) !important;
             font-size: 1.1rem !important;
             border-radius: 0.2rem !important;

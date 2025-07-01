@@ -63,7 +63,7 @@ class SolicitudController extends Controller
         if($solicitud->tareas->count() > 0) {
             return back()->with('error', 'La solicitud "' . $solicitud->solicitud . '" no puede ser eliminada porque tiene tareas asociadas');
         }
-        if($solicitud->usuario_origen->count() > 0 || $solicitud->usuario_destino->count() > 0) {
+        if($solicitud->usuariosOrigenes->count() > 0 || $solicitud->usuariosDestinos->count() > 0) {
             return back()->with('error', 'La solicitud "' . $solicitud->solicitud . '" no puede ser eliminada porque tiene transacciones asociadas');
         }
         try {

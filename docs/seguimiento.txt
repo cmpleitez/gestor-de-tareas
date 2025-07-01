@@ -4,23 +4,13 @@
 🌟 crud de tareas
 🌟 crud de solicitudes
 
-🟢 agregar un tooltip sobre la foto y mostrar el nombre del usuario o el correo
 🟢 en la mayoria de las vistas se debe agregar un margen arriba de 1 o 2 porque todo esta muy pegado al techo
 🟢 agregar un digito indicador en el numero de atencion de manera que facilite su lectura ya que tiene muchos digitos
 🟢 revisar las cantidades en los subtitulos de los menus de seleccion: areas, equipos y operadores
 🟢 probar las eliminaciones de tareas que se encuentren ya delegadas en el historial
-🟢 probar la asociacion de tareas a solicitudes y cuando se desasocien validar si tienen o no historial
-    ...crear la delegacion de tareas
-        ...modal con las areas con al menos 1 operador que tenga asignado ese tipo se solicitud
-            ... metodo de distribución de solicitudes:
-                beneficiario/recepcionista-> crear en base a oficina y rol=recepcionista
-                recepcionista-> derivar en base a area y rol=supervisor
-                supervisor-> asignar en base a equipo y rol=gestor
-                gestor-> delegar en base a usuario y rol=operador
-                    perfeccionar el proceso de derivación
-                    ... se inicio la asignacion a equipos
-                        ... recepcion.asignar: pendiente crear la proceso asignar
-                    delegación a operadores
+
+🟢 recepcion.index: verificar la asignacion de las ubicaciones para la solicitud en la distribución
+🟢 recepcion.index: establece unidades de capacidad tecnica en el subtitulo de las tres ventanas de distribucion de solicitudes: derivacion, asignacion y delegación
 🟢 analizar que orden por defecto va tener la bandeja de recepción del operador/gestor/supervisor/recepcionista
 🟢 perfil del usuario: servicio de cambio de clave adaptar a fortify
 🟢 en el perfil del usuario: agregar un servicio de edicion del perfil del usuario para actualizar la oficina de atención, su correo y su fotografía

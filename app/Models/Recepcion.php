@@ -32,12 +32,12 @@ class Recepcion extends Model
         return $this->belongsTo(Role::class);
     }
 
-    public function usuario_origen()
+    public function usuarioOrigen()
     {
         return $this->belongsTo(User::class, 'user_id_origen');
     }
 
-    public function usuario_destino()
+    public function usuarioDestino()
     {
         return $this->belongsTo(User::class, 'user_id_destino');
     }

@@ -37,8 +37,8 @@
                                 <thead>
                                     <tr>
                                         <th>area</th>
-                                        <th class="text-center">ID</th>
                                         <th class="text-center">Fecha de recepción</th>
+                                        <th class="text-center">ID</th>
                                         <th>rol</th>
                                         <th>solicitud</th>
                                         <th>detalles</th>
@@ -50,15 +50,15 @@
                                         <tr>
                                             {{-- CAMPOS --}}
                                             <td>{{ $recepcion->area->area }}</td>
-                                            <td class="text-center">{{ $recepcion->atencion_id }}</td>
                                             <td class="text-center">{{ $recepcion->created_at->format('d/m/Y h:i A') }}</td>
+                                            <td class="text-center">{{ $recepcion->atencion_id }}</td>
                                             <td>
                                                 <div class="widget-todo-item-action d-flex align-items-center">
                                                     <div class="avatar">
-                                                        @if ($recepcion->usuario_destino->profile_photo_path && Storage::disk('public')->exists($recepcion->usuario_destino->profile_photo_path))
-                                                            <img src="{{ Storage::url($recepcion->usuario_destino->profile_photo_path) }}" alt="avatar" style="height: 32px; width: 32px; object-fit: cover;">
+                                                        @if ($recepcion->usuarioDestino->profile_photo_path && Storage::disk('public')->exists($recepcion->usuarioDestino->profile_photo_path))
+                                                            <img src="{{ Storage::url($recepcion->usuarioDestino->profile_photo_path) }}" alt="avatar" style="height: 32px; width: 32px; object-fit: cover;" data-toggle="tooltip" data-placement="top" title="{{ $recepcion->usuarioDestino->name }}">
                                                         @else
-                                                            <img src="{{ asset('app-assets/images/pages/operador.png') }}" alt="avatar" style="height: 28px; width: 28px; object-fit: cover;">
+                                                            <img src="{{ asset('app-assets/images/pages/operador.png') }}" alt="avatar" style="height: 28px; width: 28px; object-fit: cover;" data-toggle="tooltip" data-placement="top" title="{{ $recepcion->usuarioDestino->name }}">
                                                         @endif
                                                     </div>
                                                     @if($recepcion->role->name == 'Recepcionista')
@@ -76,13 +76,14 @@
                                             </td>
                                             <td>{{ $recepcion->solicitud->solicitud }}</td>
                                             <td>{{ $recepcion->detalles }}</td>
+                                            {{-- TABLERO DE CONTROL --}}
                                             <td class="text-center">
                                                 <div class="btn-group" role="group" aria-label="label">
                                                     @can('derivar')
                                                         <button type="button" class="btn btn-link button_show"
                                                             data-toggle="modal" data-target="#distribuir" data-action="areas"
                                                             data-solicitud-id="{{ $recepcion->solicitud_id }}"
-                                                            data-recepcion-id="{{ $recepcion->id }}">
+                                                            data-recepcion-id="{{ $recepcion->id }}" title="Derivar a las áreas de trabajo">
                                                             <i class="bx bxs-landmark"></i>
                                                         </button>
                                                     @endcan
@@ -92,7 +93,7 @@
                                                         <button type="button" class="btn btn-link button_show"
                                                             data-toggle="modal" data-target="#distribuir" data-action="equipos"
                                                             data-solicitud-id="{{ $recepcion->solicitud_id }}"
-                                                            data-recepcion-id="{{ $recepcion->id }}">
+                                                            data-recepcion-id="{{ $recepcion->id }}" title="Asignar a equipos de trabajo">
                                                             <i class="bx bxs-group"></i>
                                                         </button>
                                                     @endcan
@@ -103,7 +104,7 @@
                                                             data-toggle="modal" data-target="#distribuir"
                                                             data-action="operadores"
                                                             data-solicitud-id="{{ $recepcion->solicitud_id }}"
-                                                            data-recepcion-id="{{ $recepcion->id }}">
+                                                            data-recepcion-id="{{ $recepcion->id }}" title="Delegar a operadores">
                                                             <i class="bx bxs-user"></i>
                                                         </button>
                                                     @endcan
@@ -115,8 +116,8 @@
                                 <tfoot>
                                     <tr>
                                         <th>area</th>
-                                        <th class="text-center">ID</th>
                                         <th class="text-center">Fecha de recepción</th>
+                                        <th class="text-center">ID</th>
                                         <th>rol</th>
                                         <th>solicitud</th>
                                         <th>detalles</th>
@@ -146,6 +147,7 @@
     <script>
         $(document).ready(function() {
             $('[data-toggle="tooltip"]').tooltip(); // Inicializa tooltips
+            $('.button_show').tooltip({ container: 'body', placement: 'top' }); // Tooltips para los botones de acción
             $('#distribuir').on('show.bs.modal', function() { // Manejar correctamente la accesibilidad del modal
                 $(this).removeAttr('inert');
                 $('body').addClass('modal-open');
@@ -296,7 +298,7 @@
 
             function renderEquipos(data, recepcionId, modalBody) {
                 var equipos = data.equipos;
-                var cantidad_operadores = data.cantidad_operadores;
+                var unidades = data.unidades;
                 if (equipos.length > 0) {
                     var html = '';
                     equipos.forEach(function(equipo) {
@@ -312,8 +314,8 @@
                             '<div class="card-body">' +
                             '<i class="bx bxs-group font-large-2 mb-1"></i>' +
                             '<h5 class="card-title white mb-1">' + equipo.equipo + '</h5>' +
-                            '<p class="card-text small">' + cantidad_operadores +
-                            ' Operador(es) activo(s)</p>' +
+                            '<p class="card-text small">' + unidades +
+                            ' unidades de capacidad técnica</p>' +
                             '</div>' +
                             '</div>' +
                             '</div>' +

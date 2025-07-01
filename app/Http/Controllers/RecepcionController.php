@@ -42,7 +42,7 @@ class RecepcionController extends Controller
         })->get();
         return response()->json([
             'equipos' => $equipos,
-            'cantidad_operadores' => $equipos->count()
+            'unidades' => $equipos->count()
         ]);
     }
 
@@ -84,14 +84,14 @@ class RecepcionController extends Controller
             $recepcion->user_id_origen = auth()->user()->id; //Beneficiario
             $recepcion->user_id_destino = $recepcionista->id; //Recepcionista de la oficina destino
             $recepcion->role_id = Role::where('name', 'Recepcionista')->first()->id;
-            $recepcion->atencion_id = (new AtencionIdGenerator())->generate(auth()->user()->id, $request->solicitud_id);
+            $recepcion->atencion_id = (new AtencionIdGenerator())->generate($request->solicitud_id);
             $recepcion->detalles = $request->detalles;
             $recepcion->activo = false; //Por defecto invalidada, se valida al derivar la solicitud
             $recepcion->save();
         } catch (\Exception $e) {
             return back()->with('error', 'Ocurrió un error cuando se intentaba enviar la solicitud número "' . $request->solicitud_id . '":' . $e->getMessage());
         }
-        return redirect()->route('recepcion')->with('success', 'La solicitud número "' . $recepcion->id . '" ha sido recibida en el area ' . auth()->user()->oficina->area->area);
+        return redirect()->route('recepcion')->with('success', 'La solicitud número "' . $recepcion->atencion_id . '" ha sido recibida en el area ' . auth()->user()->oficina->area->area);
     }
 
     public function show(string $id)
@@ -115,7 +115,7 @@ class RecepcionController extends Controller
         $role_id = Role::where('name', 'Supervisor')->first()->id;
         $derivada = Recepcion::where('atencion_id', $recepcion->atencion_id)->where('role_id', $role_id)->first();
         if ($derivada) {
-            return back()->with('error', 'La solicitud con número de atención ' . $derivada->atencion_id . ' ya ha sido derivada a ' . $derivada->usuario_destino->name . ' en el área ' . $derivada->area->area);
+            return back()->with('error', 'La solicitud con número de atención ' . $derivada->atencion_id . ' ya ha sido derivada a ' . $derivada->usuarioDestino->name . ' en el área ' . $derivada->area->area);
         }
         //Seleccionando el supervisor
         $supervisores = User::role('Supervisor')->whereHas('oficina.area', function($query) use ($area){
@@ -147,7 +147,7 @@ class RecepcionController extends Controller
             $recepcion->save();
 
             DB::commit();
-            return redirect()->route('recepcion')->with('success', 'La solicitud "' . $recepcion->solicitud->solicitud . '" ha sido derivada a ' . $recepcion->usuario_destino->name . ' del area ' . $recepcion->area->area);
+            return redirect()->route('recepcion')->with('success', 'La solicitud "' . $recepcion->solicitud->solicitud . '" ha sido derivada a ' . $recepcion->usuarioDestino->name . ' del area ' . $recepcion->area->area);
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Ocurrió un error al derivar la solicitud:' . $e->getMessage());
@@ -160,7 +160,7 @@ class RecepcionController extends Controller
         $role_id = Role::where('name', 'Gestor')->first()->id;
         $asignada = Recepcion::where('atencion_id', $recepcion->atencion_id)->where('role_id', $role_id)->first();
         if ($asignada) {
-            return back()->with('error', 'La solicitud con número de atención ' . $asignada->atencion_id . ' ya ha sido asignada a ' . $asignada->usuario_destino->name . ' en el área ' . $asignada->area->area);
+            return back()->with('error', 'La solicitud con número de atención ' . $asignada->atencion_id . ' ya ha sido asignada a ' . $asignada->usuarioDestino->name . ' en el área ' . $asignada->area->area);
         }
         //Seleccionando el gestor
         $gestores = User::role('Gestor')->whereHas('oficina.area', function($query) use ($recepcion){
@@ -193,7 +193,7 @@ class RecepcionController extends Controller
             $recepcion->activo = true; //Se transforma en una solicitud válida al ser asignada a un gestor
             $recepcion->save();
             DB::commit();
-            return redirect()->route('recepcion')->with('success', 'La solicitud "' . $recepcion->solicitud->solicitud . '" ha sido asignada a ' . $recepcion->usuario_destino->name . ' del area ' . $recepcion->area->area);
+            return redirect()->route('recepcion')->with('success', 'La solicitud "' . $recepcion->solicitud->solicitud . '" ha sido asignada a ' . $recepcion->usuarioDestino->name . ' del area ' . $recepcion->area->area);
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Ocurrió un error al asignar la solicitud:' . $e->getMessage());
@@ -206,7 +206,7 @@ class RecepcionController extends Controller
         $role_id = Role::where('name', 'Operador')->first()->id;
         $delegada = Recepcion::where('atencion_id', $recepcion->atencion_id)->where('role_id', $role_id)->first();
         if ($delegada) {
-            return back()->with('error', 'La solicitud con número de atención ' . $delegada->atencion_id . ' ya ha sido delegada a ' . $delegada->usuario_destino->name . ' en el área ' . $delegada->area->area);
+            return back()->with('error', 'La solicitud con número de atención ' . $delegada->atencion_id . ' ya ha sido delegada a ' . $delegada->usuarioDestino->name . ' en el área ' . $delegada->area->area);
         }
         //Delegando la solicitud
         DB::beginTransaction();
@@ -229,7 +229,7 @@ class RecepcionController extends Controller
             $recepcion->activo = true; //Se transforma en una solicitud válida al ser delegada a un operador
             $recepcion->save();
             DB::commit();
-            return redirect()->route('recepcion')->with('success', 'La solicitud "' . $recepcion->solicitud->solicitud . '" ha sido delegada a ' . $recepcion->usuario_destino->name . ' del area ' . $recepcion->area->area);
+            return redirect()->route('recepcion')->with('success', 'La solicitud "' . $recepcion->solicitud->solicitud . '" ha sido delegada a ' . $recepcion->usuarioDestino->name . ' del area ' . $recepcion->area->area);
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Ocurrió un error al delegar la solicitud:' . $e->getMessage());

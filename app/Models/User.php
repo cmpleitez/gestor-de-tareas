@@ -103,22 +103,22 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsToMany(Solicitud::class);
     }
 
-    public function solicitudes_recibidas()
+    public function solicitudesRecibidas()
     {
         return $this->belongsToMany(Solicitud::class, 'recepciones', 'user_id_origen');
     }
 
-    public function solicitudes_enviadas()
+    public function solicitudesEnviadas()
     {
         return $this->belongsToMany(Solicitud::class, 'recepciones', 'user_id_destino');
     }
 
-    public function actividades_recibidas()
+    public function actividadesRecibidas()
     {   
         return $this->belongsToMany(Tarea::class, 'actividades', 'user_id_origen');
     }
 
-    public function actividades_enviadas()
+    public function actividadesEnviadas()
     {
         return $this->belongsToMany(Tarea::class, 'actividades', 'user_id_destino');
     }
