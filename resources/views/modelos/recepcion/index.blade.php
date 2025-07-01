@@ -38,11 +38,11 @@
                                     <tr>
                                         <th>area</th>
                                         <th class="text-center">Fecha de recepción</th>
-                                        <th class="text-center">ID</th>
+                                        <th class="text-center">N° de atención</th>
                                         <th>rol</th>
                                         <th>solicitud</th>
                                         <th>detalles</th>
-                                        <th class="text-center">Tablero de control</th>
+                                        <th class="text-center">Distribución</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -117,11 +117,11 @@
                                     <tr>
                                         <th>area</th>
                                         <th class="text-center">Fecha de recepción</th>
-                                        <th class="text-center">ID</th>
+                                        <th class="text-center">N° de atención</th>
                                         <th>rol</th>
                                         <th>solicitud</th>
                                         <th>detalles</th>
-                                        <th class="text-center">Tablero de control</th>
+                                        <th class="text-center">Distribución</th>
                                     </tr>
                                 </tfoot>
                             </table>

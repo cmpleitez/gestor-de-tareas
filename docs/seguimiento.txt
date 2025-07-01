@@ -4,11 +4,10 @@
 🌟 crud de tareas
 🌟 crud de solicitudes
 
-🟢 en la mayoria de las vistas se debe agregar un margen arriba de 1 o 2 porque todo esta muy pegado al techo
-🟢 agregar un digito indicador en el numero de atencion de manera que facilite su lectura ya que tiene muchos digitos
-🟢 revisar las cantidades en los subtitulos de los menus de seleccion: areas, equipos y operadores
-🟢 probar las eliminaciones de tareas que se encuentren ya delegadas en el historial
+...🟢 Crear "la delegación automatizada de tareas"
 
+🟢 en la mayoria de las vistas se debe agregar un margen arriba de 1 o 2 porque todo esta muy pegado al techo
+🟢 revisar las cantidades en los subtitulos de los menus de seleccion: areas, equipos y operadores
 🟢 recepcion.index: verificar la asignacion de las ubicaciones para la solicitud en la distribución
 🟢 recepcion.index: establece unidades de capacidad tecnica en el subtitulo de las tres ventanas de distribucion de solicitudes: derivacion, asignacion y delegación
 🟢 analizar que orden por defecto va tener la bandeja de recepción del operador/gestor/supervisor/recepcionista
@@ -27,7 +26,7 @@
 🟢 usuario_tarea: agregar el campo oficina_id y el campo solicitud_id y el tarea_id
 
 
-🟢 rage agains the machine & limp bizkit & korn...
+🟠 rage agains the machine & limp bizkit & korn...
     ...limp bizkit: im broke
 
 

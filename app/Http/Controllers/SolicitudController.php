@@ -60,6 +60,10 @@ class SolicitudController extends Controller
 
     public function destroy(Solicitud $solicitud)
     {
+        if ($solicitud->usuarios->count() > 0) {
+            return back()->with('error', 'La solicitud "' . $solicitud->solicitud . '" no puede ser eliminada porque tiene usuarios asociados');
+        }
+        
         if($solicitud->tareas->count() > 0) {
             return back()->with('error', 'La solicitud "' . $solicitud->solicitud . '" no puede ser eliminada porque tiene tareas asociadas');
         }
