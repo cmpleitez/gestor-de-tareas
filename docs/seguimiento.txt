@@ -1,8 +1,3 @@
-🌟 crud de usuarios
-🌟 crud equipos
-🌟 crud de tareas
-🌟 crud de solicitudes
-
 ...🟢 TABLERO KANBAN para recepcionistas, supervisores, gestores y operadores
         agregar acceso en el perfil del usuario en el menu del sistema
 
