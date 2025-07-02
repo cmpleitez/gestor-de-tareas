@@ -75,16 +75,10 @@ class RegisterController extends Controller
     public function register(Request $request)
     {
         $this->validator($request->all())->validate();
-
         $user = $this->create($request->all());
-        
-        // Enviar el email de verificación inmediatamente
-        $user->sendEmailVerificationNotification();
-        
+        $user->sendEmailVerificationNotification(); // Enviar el email de verificación inmediatamente
         event(new Registered($user));
-
         $this->guard()->login($user);
-
         return $this->registered($request, $user)
             ?: redirect($this->redirectPath());
     }

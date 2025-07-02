@@ -27,7 +27,6 @@ class CreateNewUser implements CreatesNewUsers
             'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
             'profile_photo_path' => ['nullable', 'image', 'max:10240'],
         ])->validate();
-
         try {
             DB::beginTransaction();
             $user = User::create([ //Crear el usuario

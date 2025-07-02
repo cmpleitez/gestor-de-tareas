@@ -69,7 +69,7 @@ Route::middleware([
             Route::get('destroy/{user}', [userController::class, 'destroy'])->name('user.destroy');
             Route::post('activate/{user}', [userController::class, 'activate'])->name('user.activate');
         });
-
+        
         Route::group(['prefix' => 'equipo'], function () { //Equipos
             Route::get('/', [equipoController::class, 'index'])->name('equipo');
             Route::get('create', [equipoController::class, 'create'])->name('equipo.create');

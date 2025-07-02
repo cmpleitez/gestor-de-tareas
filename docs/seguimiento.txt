@@ -1,11 +1,7 @@
-
 🌟 crud de usuarios
 🌟 crud equipos
 🌟 crud de tareas
 🌟 crud de solicitudes
-
-...🟢 Completando delegación de tareas: agregando actividades...
-...🟢 Crear "la delegación automatizada de tareas"
 
 🟢 TABLERO KANBAN para recepcionistas, supervisores, gestores y operadores
 
@@ -17,19 +13,14 @@
 🟢 perfil del usuario: servicio de cambio de clave adaptar a fortify
 🟢 en el perfil del usuario: agregar un servicio de edicion del perfil del usuario para actualizar la oficina de atención, su correo y su fotografía
         proteger campos para que solo pueda modificarlos el super-administrador
-🟢 crud de solicitudes
+
 🟢 global cruds.edit: si hay historial no se puede editar
-🟢 global cruds.activate: cuando un registro esta desactivado no debe tener elementos, que disparen una escritura, en su tablero de control
 🟢 crear servicio controlado para cambiar el dui a una persona por motivos de error involuntario a la hora de registrar ese dui en el formulario de registro de usuarios
 🟢 register: asegurar el id del usuario con un aumento no automático sino programatico
 🟢 solicitud.asignar-tareas: maquetar
-🟢 los usuario con rol de operador deben tener asignado el catalogo de solicitudes para las cuales tienen capacidad de atender, de tal manera que el supervisor del area pueda asirbarle las tareas segun ese catalogo de solicitudes.
-🟢 funcionalidad para que las soicitudes dejen de estar disponibles en el sistema si no hay operadores delegados para ellas
-🟢 userController: revisar lo quedó en desuso debido al uso del fortify y register
-🟢 usuario_tarea: agregar el campo oficina_id y el campo solicitud_id y el tarea_id
 
 
-🟠 rage agains the machine & limp bizkit & korn...
+🟠 rage agains the machine & limp bizkit & korn & alice in chains
     ...limp bizkit: im broke
 
 
