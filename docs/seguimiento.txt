@@ -1,6 +1,8 @@
-...🟢 TABLERO KANBAN para recepcionistas, supervisores, gestores y operadores
-        agregar acceso en el perfil del usuario en el menu del sistema
 
+...🟢 Recepcion.delegar: Completar el proceso de delegación de tareas
+
+🟢 TABLERO KANBAN para recepcionistas, supervisores, gestores y operadores
+        agregar acceso en el perfil del usuario en el menu del sistema
 🟢 en la mayoria de las vistas se debe agregar un margen arriba de 1 o 2 porque todo esta muy pegado al techo
 🟢 recepcion.index: establece unidades de capacidad tecnica en el subtitulo de las tres ventanas de distribucion de solicitudes: derivacion, asignacion y delegación
 🟢 global cruds.edit: si hay historial no se puede editar

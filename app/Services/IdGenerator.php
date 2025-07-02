@@ -13,4 +13,4 @@ class IdGenerator {
         $id = $anio_actual . $correlativo;
         return $id;
     }
-} 
+}
