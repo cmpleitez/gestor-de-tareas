@@ -56,26 +56,32 @@ class UserController extends Controller
         //GUARDANDO
         try {
             DB::beginTransaction();
-            if ($correo_actualizado) {
-                $user->sendEmailVerificationNotification(); //enviar correo de verificacion
-            }
-            $user->update($validated);
-            if ($request->hasfile('profile_photo_path')) {
-                $nombre_archivo = $user->id . '.' . $request->file('profile_photo_path')->extension();
-                $ruta_destino = 'public/' . auth()->user()->oficina_id;
-                $user->profile_photo_path = Storage::putFileAs($ruta_destino, $request->file('profile_photo_path'), $nombre_archivo);
-                $user->save();
-                $manager = new ImageManager(Driver::class);
-                $image = $manager->read(Storage::get($user->profile_photo_path));
-                $image->cover(150, 200, 'center');
-                $image->save(Storage::path($user->profile_photo_path));
-            }
+                $user->update($validated); //Crear el registro en la base de datos
+                ini_set('max_execution_time', 60);
+                ini_set('memory_limit', '256M');
+                if (isset($request['profile_photo_path']) && $request['profile_photo_path']->isValid()) {
+                    $imageFile = $request['profile_photo_path'];
+                    $imageName = $user->id . '.' . $imageFile->getClientOriginalExtension();
+                    $path = Storage::disk('public')->putFileAs('profile-photos', $request['profile_photo_path'], $imageName);
+                    $user->profile_photo_path = $path;
+                    $user->save(); //Actualizar el link en base de datos
+                    try { 
+                        $fullPath = Storage::disk('public')->path($path); //Adaptación de la imagen al perfil del usuario
+                        $manager = new ImageManager(Driver::class);
+                        $image = $manager->read($fullPath);
+                        $image->scale(width: 64, height: 96);
+                        $image->save($fullPath);
+                    } catch (Exception $e) {
+                        Storage::disk('public')->delete($path);
+                        throw new Exception('Error al procesar la imagen: ' . $e->getMessage());
+                    }
+                }
             DB::commit();
             return redirect()->route('user')->with('success', $mensaje);
         } catch (QueryException $e) {
             DB::rollBack();
             return back()->withErrors(['error' => 'Error al guardar el usuario: ' . $e->getMessage()]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             return back()->withErrors(['error' => 'Error al guardar la imagen: ' . $e->getMessage()]);
         }
@@ -104,7 +110,7 @@ class UserController extends Controller
             DB::beginTransaction();
             $user->syncRoles($submittedRoles);
             DB::commit();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollback();
             return back()->with('error', 'Ocurrió un error cuando se intentaba guardar los cambios: ' . $e->getMessage());
         }
@@ -143,15 +149,19 @@ class UserController extends Controller
         if ($user->equipos->count() > 0) {
             return back()->with('error', 'El usuario no puede ser eliminado porque tiene equipos asignados.');
         }
-        if ($user->tareas_usuario_origen->count() > 0) {
-            return back()->with('error', 'El usuario no puede ser eliminado porque ya ha delegado tareas.');
+        if ($user->solicitudesRecibidas->count() > 0) {
+            return back()->with('error', 'El usuario no puede ser eliminado porque tiene solicitudes recibidas.');
         }
-        if ($user->tareas_usuario_destino->count() > 0) {
-            return back()->with('error', 'El usuario no puede ser eliminado porque tiene tareas asignadas.');
+        if ($user->solicitudesEnviadas->count() > 0) {
+            return back()->with('error', 'El usuario no puede ser eliminado porque tiene solicitudes enviadas.');
         }
         try {
-            $user->delete();
-        } catch (\Exception $e) {
+            DB::beginTransaction();
+                $user->delete();
+                Storage::disk('public')->delete($user->profile_photo_path);
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
             return back()->with('error', 'Ocurrió un error cuando se intentaba eliminar el usuario: ' . $e->getMessage());
         }
         return redirect()->route('user')->with('success', 'El usuario "' . $user->name . '" ha sido eliminado con éxito.');

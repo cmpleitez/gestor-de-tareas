@@ -5,6 +5,7 @@
 <Workspace>
 	<Local Expanded="Yes">
 		<Model Expanded="Yes" ID="{0C9B0E49-EC8C-4B6A-8454-4F9620AAEA74}" Loaded="No" Name="PhysicalDataModel_1" Type="{CDE44E21-9669-11D1-9914-006097355D9B}" URL="gestor-de-tareas.pdm"/>
+		<Model Expanded="Yes" ID="{2F2258FC-821D-4BD7-9CAA-06FE7F319DFC}" Name="PhysicalDataModel_4" Selected="Yes" Type="{CDE44E21-9669-11D1-9914-006097355D9B}" URL="gestor-de-tareas.pdm"/>
 	</Local>
 	<BrowserModule Name="Repository"/>
 </Workspace>

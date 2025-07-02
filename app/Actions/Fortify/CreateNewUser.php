@@ -9,6 +9,7 @@ use Illuminate\Validation\Rule;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 use Illuminate\Support\Facades\DB;
+use Exception;
 
 use App\Models\User;
 use App\Rules\ValidDui;
@@ -18,7 +19,8 @@ class CreateNewUser implements CreatesNewUsers
 
     public function create(array $input): User
     {
-        Validator::make($input, [
+        //VALIDANDO
+        $validated =Validator::make($input, [
             'name' => ['required', 'string', 'max:255', 'regex:/^(?! )[a-zA-ZáéíóúÁÉÍÓÚ]+( [a-zA-ZáéíóúÁÉÍÓÚ]+)*$/'],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')],
             'dui' => ['required', 'string', Rule::unique('users', 'dui'), new ValidDui],
@@ -27,49 +29,38 @@ class CreateNewUser implements CreatesNewUsers
             'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
             'profile_photo_path' => ['nullable', 'image', 'max:10240'],
         ])->validate();
+        //GUARDANDO
         try {
             DB::beginTransaction();
-            $user = User::create([ //Crear el usuario
-                'name' => $input['name'],
-                'email' => $input['email'],
-                'dui' => $input['dui'],
-                'oficina_id' => $input['oficina_id'],
-                'password' => Hash::make($input['password']),
-            ]);
-            if (isset($input['profile_photo_path']) && $input['profile_photo_path']->isValid()) {
+                $user = User::create($validated); //Crear el registro en la base de datos
                 ini_set('max_execution_time', 60);
                 ini_set('memory_limit', '256M');
-                $imageFile = $input['profile_photo_path'];
-                if ($imageFile->getSize() > 5 * 1024 * 1024) {
-                    throw new \Exception('El archivo de imagen es demasiado grande. Máximo 5MB permitido.');
+                if (isset($input['profile_photo_path']) && $input['profile_photo_path']->isValid()) {
+                    $imageFile = $input['profile_photo_path'];
+                    $imageName = $user->id . '.' . $imageFile->getClientOriginalExtension();
+                    $path = Storage::disk('public')->putFileAs('profile-photos', $input['profile_photo_path'], $imageName);
+                    $user->profile_photo_path = $path;
+                    $user->save(); //Actualizar el link en base de datos
+                    try { 
+                        $fullPath = Storage::disk('public')->path($path); //Adaptación de la imagen al perfil del usuario
+                        $manager = new ImageManager(Driver::class);
+                        $image = $manager->read($fullPath);
+                        $image->scale(width: 64, height: 96);
+                        $image->save($fullPath);
+                    } catch (Exception $e) {
+                        Storage::disk('public')->delete($path);
+                        throw new Exception('Error al procesar la imagen: ' . $e->getMessage());
+                    }
                 }
-                $imageName = $user->id . '.' . $imageFile->getClientOriginalExtension();
-                if (!Storage::disk('public')->exists('profile-photos')) { 
-                    Storage::disk('public')->makeDirectory('profile-photos');
-                }
-                $path = Storage::disk('public')->putFileAs('profile-photos', $input['profile_photo_path'], $imageName); // Guardar la imagen en el repositorio
-                try { //Adaptación de la imagen al perfil del usuario
-                    $fullPath = Storage::disk('public')->path($path);
-                    $manager = new ImageManager(Driver::class);
-                    $image = $manager->read($fullPath);
-                    $image->scale(width: 150, height: 200);
-                    $image->save($fullPath);
-                } catch (\Exception $e) {
-                    Storage::disk('public')->delete($path);
-                    throw new \Exception('Error al procesar la imagen: ' . $e->getMessage());
-                }
-                $user->profile_photo_path = $path;
-                $user->save(); // Guardar el usuario en la base de datos
-            }
-            $user->assignRole('Beneficiario'); //Asignar el rol de Beneficiario
+                $user->assignRole('Beneficiario'); //Asignar el rol de Beneficiario
             DB::commit();
             return $user;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             if (strpos($e->getMessage(), 'NotReadable') !== false) {
                 Storage::delete($path);
-                throw new \Exception('Error: La imagen no es válida o no se puede decodificar. ' . $e->getMessage());
+                throw new Exception('Error: La imagen no es válida o no se puede decodificar. ' . $e->getMessage());
             }            
-            throw new \Exception('Error al crear el usuario: ' . $e->getMessage());
+            throw new Exception('Error al crear el usuario: ' . $e->getMessage());
         }
     }
 }
