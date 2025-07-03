@@ -76,7 +76,7 @@ class RecepcionController extends Controller
         $recepcionista = $recepcionistas->random();
         try {
             $recepcion = new Recepcion();
-            $recepcion->id = (new IdGenerator())->generate();
+            $recepcion->id = (new IdGenerator())->generate(new Recepcion());
             $recepcion->solicitud_id = $request->solicitud_id;
             $recepcion->oficina_id = $recepcionista->oficina_id; //Oficina destino
             $recepcion->area_id = $recepcionista->oficina->area_id; //Area destino
@@ -130,7 +130,7 @@ class RecepcionController extends Controller
         DB::beginTransaction();
         try {
             $new_recepcion = new Recepcion();
-            $new_recepcion->id = (new IdGenerator())->generate();
+            $new_recepcion->id = (new IdGenerator())->generate(new Recepcion());
             $new_recepcion->solicitud_id = $recepcion->solicitud_id;
             $new_recepcion->oficina_id = $recepcion->oficina_id;
             $new_recepcion->area_id = $area->id;
@@ -177,7 +177,7 @@ class RecepcionController extends Controller
         DB::beginTransaction();
         try {
             $new_recepcion = new Recepcion(); //Creando una nueva recepción para el gestor
-            $new_recepcion->id = (new IdGenerator())->generate();
+            $new_recepcion->id = (new IdGenerator())->generate(new Recepcion());
             $new_recepcion->solicitud_id = $recepcion->solicitud_id;
             $new_recepcion->oficina_id = $recepcion->oficina_id;
             $new_recepcion->area_id = $recepcion->area_id;
@@ -212,8 +212,9 @@ class RecepcionController extends Controller
         //Delegando la solicitud
         DB::beginTransaction();
         try {
+            $recepcion_nueva_llave = (new IdGenerator())->generate(new Recepcion());
             $new_recepcion = new Recepcion();
-            $new_recepcion->id = (new IdGenerator())->generate();
+            $new_recepcion->id = $recepcion_nueva_llave;
             $new_recepcion->solicitud_id = $recepcion->solicitud_id;
             $new_recepcion->oficina_id = $recepcion->oficina_id;
             $new_recepcion->area_id = $recepcion->area_id;
@@ -226,14 +227,16 @@ class RecepcionController extends Controller
             $new_recepcion->detalles = $recepcion->detalles;
             $new_recepcion->activo = false;
             $new_recepcion->save();
-            //Se transforma en una solicitud válida al ser delegada a un operador
+
+            //Validando la solicitud delegada
             $recepcion->activo = true; 
             $recepcion->save();
+
             //Delegando las actividades
             foreach ($recepcion->solicitud->tareas as $tarea) {
                 $actividad = new Actividad();
-                //$actividad->id = (new IdGenerator())->generate();
-                $actividad->recepcion_id = $new_recepcion->id;
+                $actividad->id = (new IdGenerator())->generate(new Actividad());
+                $actividad->recepcion_id = $recepcion_nueva_llave;
                 $actividad->tarea_id = $tarea->id;
                 $actividad->role_id = $role_id;
                 $actividad->user_id_origen = auth()->user()->id;
