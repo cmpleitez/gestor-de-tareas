@@ -123,6 +123,7 @@ Route::middleware([
             Route::get('derivar/{recepcion}/{area}', [RecepcionController::class, 'derivar'])->name('recepcion.derivar');
             Route::get('asignar/{recepcion}/{equipo}', [RecepcionController::class, 'asignar'])->name('recepcion.asignar');
             Route::get('delegar/{recepcion}/{user}', [RecepcionController::class, 'delegar'])->name('recepcion.delegar');
+            Route::get('mis-tareas', [RecepcionController::class, 'misTareas'])->name('recepcion.mis-tareas');
         });
     });
 

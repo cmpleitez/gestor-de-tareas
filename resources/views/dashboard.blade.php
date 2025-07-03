@@ -329,7 +329,7 @@
                             <div class="dropdown-menu dropdown-menu-right pb-0">
                                 <a class="dropdown-item" href="#"><i class="bx bx-user mr-50"></i>
                                     Perfil</a>
-                                <a class="dropdown-item" href="#"><i class="bx bx-check-square mr-50"></i>
+                                <a class="dropdown-item" href="{{ route('recepcion.mis-tareas') }}"><i class="bx bx-check-square mr-50"></i>
                                     Mis tareas</a>
                                 <div class="dropdown-divider mb-0"></div>
                                 <form method="POST" action="{{ route('logout') }}" style="display: inline;">

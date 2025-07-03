@@ -260,4 +260,11 @@ class RecepcionController extends Controller
     public function activate(Recepcion $recepcion)
     {
     }
+
+    public function misTareas()
+    {
+        $recepciones = Recepcion::where('user_id_destino', auth()->user()->id)->get();
+        return view('modelos.recepcion.mis-tareas', compact('recepciones'));
+    }
+
 }
