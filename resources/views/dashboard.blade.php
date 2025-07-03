@@ -11,38 +11,34 @@
     <meta name="author" content="">
 
     <title>Gestor de tareas {{ config('app.version') }}</title>
-
-    <link rel="apple-touch-icon" href="/app-assets/images/ico/apple-icon-120.png">
-
-    <link rel="shortcut icon" type="image/svg+xml" href="/app-assets/images/ico/favicon.svg">
-
-
+    <link rel="apple-touch-icon" href="{{ asset('app-assets/images/ico/apple-icon-120.png') }}">
+    <link rel="shortcut icon" type="image/svg+xml" href="{{ asset('app-assets/images/ico/favicon.svg') }}">
     <link href="https://fonts.googleapis.com/css?family=Rubik:300,400,500,600%7CIBM+Plex+Sans:300,400,500,600,700"
         rel="stylesheet">
 
     <!-- BEGIN: Vendor CSS-->
-    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/vendors.min.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/charts/apexcharts.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/extensions/dragula.min.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/forms/select/select2.min.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/extensions/toastr.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/tables/datatable/datatables.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/vendors/css/vendors.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/vendors/css/charts/apexcharts.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/vendors/css/extensions/dragula.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/vendors/css/forms/select/select2.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/vendors/css/extensions/toastr.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/vendors/css/tables/datatable/datatables.min.css') }}">
     <!-- END: Vendor CSS-->
 
     <!-- BEGIN: Theme CSS-->
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/bootstrap.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/bootstrap-extended.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/colors.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/components.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/themes/dark-layout.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/themes/semi-dark-layout.css">
+    <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/bootstrap.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/bootstrap-extended.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/colors.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/components.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/themes/dark-layout.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/themes/semi-dark-layout.css') }}">
     <!-- END: Theme CSS-->
 
     <!-- BEGIN: Page CSS-->
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/core/menu/menu-types/vertical-menu.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/pages/dashboard-analytics.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/forms/validation/form-validation.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/extensions/toastr.css">
+    <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/core/menu/menu-types/vertical-menu.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/pages/dashboard-analytics.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/plugins/forms/validation/form-validation.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/plugins/extensions/toastr.css') }}">
     <!-- END: Page CSS-->
 
     <style>
@@ -469,40 +465,40 @@
     <!-- END: Footer-->
 
     <!-- BEGIN: Vendor JS-->
-    <script src="/app-assets/vendors/js/vendors.min.js"></script>
-    <script src="/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.tools.js"></script>
-    <script src="/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.defaults.js"></script>
-    <script src="/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.min.js"></script>
+    <script src="{{ asset('app-assets/vendors/js/vendors.min.js') }}"></script>
+    <script src="{{ asset('app-assets/fonts/LivIconsEvo/js/LivIconsEvo.tools.js') }}"></script>
+    <script src="{{ asset('app-assets/fonts/LivIconsEvo/js/LivIconsEvo.defaults.js') }}"></script>
+    <script src="{{ asset('app-assets/fonts/LivIconsEvo/js/LivIconsEvo.min.js') }}"></script>
     <!-- BEGIN Vendor JS-->
 
     <!-- BEGIN: Page Vendor JS-->
     <!-- <script src="/app-assets/vendors/js/charts/apexcharts.min.js"></script> -->
-    <script src="/app-assets/vendors/js/extensions/dragula.min.js"></script>
-    <script src="/app-assets/vendors/js/forms/validation/jqBootstrapValidation.js"></script>
-    <script src="/app-assets/vendors/js/forms/select/select2.full.min.js"></script>
-    <script src="/app-assets/vendors/js/extensions/toastr.min.js"></script>
-    <script src="/app-assets/vendors/js/tables/datatable/datatables.min.js"></script>
-    <script src="/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js"></script>
-    <script src="/app-assets/vendors/js/tables/datatable/dataTables.buttons.min.js"></script>
-    <script src="/app-assets/vendors/js/tables/datatable/buttons.html5.min.js"></script>
-    <script src="/app-assets/vendors/js/tables/datatable/buttons.print.min.js"></script>
-    <script src="/app-assets/vendors/js/tables/datatable/buttons.bootstrap.min.js"></script>
-    <script src="/app-assets/vendors/js/tables/datatable/pdfmake.min.js"></script>
+    <script src="{{ asset('app-assets/vendors/js/extensions/dragula.min.js') }}"></script>
+    <script src="{{ asset('app-assets/vendors/js/forms/validation/jqBootstrapValidation.js') }}"></script>
+    <script src="{{ asset('app-assets/vendors/js/forms/select/select2.full.min.js') }}"></script>
+    <script src="{{ asset('app-assets/vendors/js/extensions/toastr.min.js') }}"></script>
+    <script src="{{ asset('app-assets/vendors/js/tables/datatable/datatables.min.js') }}"></script>
+    <script src="{{ asset('app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('app-assets/vendors/js/tables/datatable/dataTables.buttons.min.js') }}"></script>
+    <script src="{{ asset('app-assets/vendors/js/tables/datatable/buttons.html5.min.js') }}"></script>
+    <script src="{{ asset('app-assets/vendors/js/tables/datatable/buttons.print.min.js') }}"></script>
+    <script src="{{ asset('app-assets/vendors/js/tables/datatable/buttons.bootstrap.min.js') }}"></script>
+    <script src="{{ asset('app-assets/vendors/js/tables/datatable/pdfmake.min.js') }}"></script>
     <script src="/app-assets/vendors/js/tables/datatable/vfs_fonts.js"></script>
     <!-- END: Page Vendor JS-->
 
     <!-- BEGIN: Theme JS-->
-    <script src="/app-assets/js/core/app-menu.js"></script>
-    <script src="/app-assets/js/core/app.js"></script>
-    <script src="/app-assets/js/scripts/components.js"></script>
-    <script src="/app-assets/js/scripts/footer.js"></script>
+    <script src="{{ asset('app-assets/js/core/app-menu.js') }}"></script>
+    <script src="{{ asset('app-assets/js/core/app.js') }}"></script>
+    <script src="{{ asset('app-assets/js/scripts/components.js') }}"></script>
+    <script src="{{ asset('app-assets/js/scripts/footer.js') }}"></script>
     <!-- END: Theme JS-->
 
     <!-- BEGIN: Page JS-->
     <!-- <script src="/app-assets/js/scripts/pages/dashboard-analytics.js"></script> -->
-    <script src="/app-assets/js/scripts/forms/validation/form-validation.js"></script>
-    <script src="/app-assets/js/scripts/forms/select/form-select2.js"></script>
-    <script src="/app-assets/js/scripts/extensions/toastr.js"></script>
+    <script src="{{ asset('app-assets/js/scripts/forms/validation/form-validation.js') }}"></script>
+    <script src="{{ asset('app-assets/js/scripts/forms/select/form-select2.js') }}"></script>
+    <script src="{{ asset('app-assets/js/scripts/extensions/toastr.js') }}"></script>
     <!-- END: Page JS-->
 
     <!-- ... otros scripts ... -->
