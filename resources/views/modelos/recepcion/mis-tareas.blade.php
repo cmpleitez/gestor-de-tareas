@@ -360,9 +360,6 @@ $(document).ready(function() {
             }
         }
     }
-
-    // No se necesita código para agregar columnas
-
     // Cerrar sidebar
     $(".kanban-sidebar .close-icon, .kanban-overlay").on("click", function() {
         $(".kanban-overlay").removeClass("show");
