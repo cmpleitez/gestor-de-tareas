@@ -4,13 +4,14 @@ use Illuminate\Http\Request;
 use App\Models\Recepcion;
 use App\Models\Solicitud;
 use App\Models\User;
-use App\Services\IdGenerator;
-use App\Services\AtencionIdGenerator;
+use App\Services\KeyMaker;
 use Spatie\Permission\Models\Role;
 use App\Models\Area;
 use Illuminate\Support\Facades\DB;
 use App\Models\Equipo;
 use App\Models\Actividad;
+use App\Models\Atencion;
+use App\Models\Estado;
 
 class RecepcionController extends Controller
 {
@@ -75,8 +76,15 @@ class RecepcionController extends Controller
         }
         $recepcionista = $recepcionistas->random();
         try {
+
+            $atencion = new Atencion();
+            $atencion->id = (new KeyMaker())->generate('Atencion', $request->solicitud_id);
+            $atencion->solicitud_id = $request->solicitud_id;
+            $atencion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
+            $atencion->save();
+
             $recepcion = new Recepcion();
-            $recepcion->id = (new IdGenerator())->generate(new Recepcion());
+            $recepcion->id = (new KeyMaker())->generate('Recepcion', $request->solicitud_id);
             $recepcion->solicitud_id = $request->solicitud_id;
             $recepcion->oficina_id = $recepcionista->oficina_id; //Oficina destino
             $recepcion->area_id = $recepcionista->oficina->area_id; //Area destino
@@ -85,7 +93,7 @@ class RecepcionController extends Controller
             $recepcion->user_id_origen = auth()->user()->id; //Beneficiario
             $recepcion->user_id_destino = $recepcionista->id; //Recepcionista de la oficina destino
             $recepcion->role_id = Role::where('name', 'Recepcionista')->first()->id;
-            $recepcion->atencion_id = (new AtencionIdGenerator())->generate($request->solicitud_id);
+            //$recepcion->atencion_id = (new AtencionIdGenerator())->generate($request->solicitud_id);
             $recepcion->detalles = $request->detalles;
             $recepcion->activo = false; //Por defecto invalidada, se valida al derivar la solicitud
             $recepcion->save();
@@ -130,7 +138,7 @@ class RecepcionController extends Controller
         DB::beginTransaction();
         try {
             $new_recepcion = new Recepcion();
-            $new_recepcion->id = (new IdGenerator())->generate(new Recepcion());
+            $new_recepcion->id = (new KeyMaker())->generate('Recepcion', $recepcion->solicitud_id);
             $new_recepcion->solicitud_id = $recepcion->solicitud_id;
             $new_recepcion->oficina_id = $recepcion->oficina_id;
             $new_recepcion->area_id = $area->id;
@@ -177,7 +185,7 @@ class RecepcionController extends Controller
         DB::beginTransaction();
         try {
             $new_recepcion = new Recepcion(); //Creando una nueva recepción para el gestor
-            $new_recepcion->id = (new IdGenerator())->generate(new Recepcion());
+            $new_recepcion->id = (new KeyMaker())->generate('Recepcion', $recepcion->solicitud_id);
             $new_recepcion->solicitud_id = $recepcion->solicitud_id;
             $new_recepcion->oficina_id = $recepcion->oficina_id;
             $new_recepcion->area_id = $recepcion->area_id;
@@ -212,7 +220,7 @@ class RecepcionController extends Controller
         //Delegando la solicitud
         DB::beginTransaction();
         try {
-            $recepcion_nueva_llave = (new IdGenerator())->generate(new Recepcion());
+            $recepcion_nueva_llave = (new KeyMaker())->generate('Recepcion', $recepcion->solicitud_id);
             $new_recepcion = new Recepcion();
             $new_recepcion->id = $recepcion_nueva_llave;
             $new_recepcion->solicitud_id = $recepcion->solicitud_id;
@@ -235,7 +243,7 @@ class RecepcionController extends Controller
             //Delegando las actividades
             foreach ($recepcion->solicitud->tareas as $tarea) {
                 $actividad = new Actividad();
-                $actividad->id = (new IdGenerator())->generate(new Actividad());
+                $actividad->id = (new KeyMaker())->generate('Actividad', $recepcion->solicitud_id);
                 $actividad->recepcion_id = $recepcion_nueva_llave;
                 $actividad->tarea_id = $tarea->id;
                 $actividad->role_id = $role_id;
