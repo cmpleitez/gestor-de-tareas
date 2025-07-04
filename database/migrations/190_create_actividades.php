@@ -15,6 +15,7 @@ return new class extends Migration
             $table->foreignId('role_id');
             $table->foreignId('user_id_origen');
             $table->foreignId('user_id_destino');
+            $table->foreignId('estado_id');
             $table->string('observacion')->nullable();
             $table->boolean('activo')->default(true);
             $table->timestampsTz();
@@ -24,6 +25,7 @@ return new class extends Migration
             $table->foreign('role_id')->references('id')->on('roles');
             $table->foreign('user_id_origen')->references('id')->on('users');
             $table->foreign('user_id_destino')->references('id')->on('users');
+            $table->foreign('estado_id')->references('id')->on('estados');
         });
     }
 

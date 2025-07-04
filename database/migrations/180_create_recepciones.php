@@ -18,7 +18,8 @@ return new class extends Migration
             $table->foreignId('distrito_id');
             $table->foreignId('user_id_origen');
             $table->foreignId('user_id_destino');
-            $table->char('atencion_id', 14);
+            $table->foreignId('estado_id');
+            $table->char('atencion_id', 12)->foreignId();
             $table->string('detalles');
             $table->string('observacion')->nullable();
             $table->boolean('activo')->default(true);
@@ -32,6 +33,8 @@ return new class extends Migration
             $table->foreign('distrito_id')->references('id')->on('distritos');
             $table->foreign('user_id_origen')->references('id')->on('users');
             $table->foreign('user_id_destino')->references('id')->on('users');
+            $table->foreign('atencion_id')->references('id')->on('atenciones');
+            $table->foreign('estado_id')->references('id')->on('estados');
         });
     }
 

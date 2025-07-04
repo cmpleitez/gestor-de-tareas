@@ -333,22 +333,44 @@ class DatabaseSeeder extends Seeder
 
         //CREACION DE SOLICITUDES
         DB::table('solicitudes')->insert([
-            'solicitud' => 'Creación y mantenimiento de espacio público',
+            'solicitud' => 'Demo uno',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
         DB::table('solicitudes')->insert([
-            'solicitud' => 'Reparación de espacio público',
+            'solicitud' => 'Demo dos',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
-        DB::table('solicitudes')->insert([
-            'solicitud' => 'Construcción de muro de contención',
+
+        //CREACION DE ESTADOS
+        DB::table('estados')->insert([
+            'estado' => 'Recibida',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
-        DB::table('solicitudes')->insert([
-            'solicitud' => 'Construcción de red de vigilancia para la seguridad civil',
+        DB::table('estados')->insert([
+            'estado' => 'En progreso',
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+        DB::table('estados')->insert([
+            'estado' => 'Resuelta',
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+        DB::table('estados')->insert([
+            'estado' => 'Rechazada',
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+        DB::table('estados')->insert([
+            'estado' => 'Retrasada',
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+        DB::table('estados')->insert([
+            'estado' => 'Priorizada',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
