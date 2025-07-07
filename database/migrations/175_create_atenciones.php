@@ -6,23 +6,19 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('atenciones', function (Blueprint $table) {
             $table->char('id', 12)->primary();
             $table->foreignId('estado_id');
+            $table->foreignId('solicitud_id');
             $table->timestampsTz();
 
             $table->foreign('estado_id')->references('id')->on('estados');
+            $table->foreign('solicitud_id')->references('id')->on('solicitudes');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('atenciones');

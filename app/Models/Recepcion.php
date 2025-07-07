@@ -11,6 +11,10 @@ class Recepcion extends Model
     use HasFactory;
     protected $table = 'recepciones';
     protected $fillable = ['solicitud_id', 'detalles', 'observacion'];
+    
+    protected $casts = [
+        'activo' => 'boolean',
+    ];
 
     public function solicitud()
     {
@@ -42,4 +46,18 @@ class Recepcion extends Model
         return $this->belongsTo(User::class, 'user_id_destino');
     }
 
+    public function estado()
+    {
+        return $this->belongsTo(Estado::class);
+    }
+
+    public function atencion()
+    {
+        return $this->hasOne(Atencion::class);
+    }
+
+    public function actividades()
+    {
+        return $this->hasMany(Actividad::class);
+    }
 }

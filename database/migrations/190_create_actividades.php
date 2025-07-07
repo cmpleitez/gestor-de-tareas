@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('actividades', function (Blueprint $table) {
             $table->char('id', 12)->primary();
-            $table->char('recepcion_id', 10)->foreignId();
+            $table->char('recepcion_id', 12)->foreignId();
             $table->foreignId('tarea_id');
             $table->foreignId('role_id');
             $table->foreignId('user_id_origen');

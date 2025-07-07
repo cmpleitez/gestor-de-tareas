@@ -1,8 +1,6 @@
 
 ...🟢 TABLERO KANBAN para recepcionistas, supervisores, gestores y operadores
-    ... ajustar las clases creadoras de llaves, definir estructura de llaves a utilizar llaves a utilizar: año+ tipoSolicitud+ correlativo sumando 12 digitos
-    ... actualizar relaciones para las tablas color naranja del diagrama de datos
-    ✅Se incoporporaron los estados en dos niveles: general(atenciones), gestion individual(recepciones) y operativo individual(actividades)
+    ✅Se incoporporaron los estados en tres niveles: general(atenciones), gestion individual(recepciones) y operativo individual(actividades)
 
 🟢 en la mayoria de las vistas se debe agregar un margen arriba de 1 o 2 porque todo esta muy pegado al techo
 🟢 recepcion.index: establece unidades de capacidad tecnica en el subtitulo de las tres ventanas de distribucion de solicitudes: derivacion, asignacion y delegación

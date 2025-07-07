@@ -10,6 +10,16 @@ class Actividad extends Model
 {
     use HasFactory;
     protected $table = 'actividades';
+    
+    protected $casts = [
+        'activo' => 'boolean',
+    ];
+    
+    public function recepcion()
+    {
+        return $this->belongsTo(Recepcion::class);
+    }
+
     public function incidencias()
     {
         return $this->hasMany(Incidencia::class);
