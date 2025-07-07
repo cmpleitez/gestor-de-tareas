@@ -62,6 +62,31 @@ class RecepcionController extends Controller
         ]);
     }
 
+    public function recibidas()
+    {
+        // Consulta optimizada - Solo campos necesarios
+        $recepciones = Recepcion::where('user_id_destino', auth()->user()->id)
+            ->with([
+                'solicitud:id,solicitud',  // Solo campos necesarios
+                'estado:id,estado'
+            ])
+            ->select('id', 'detalles', 'solicitud_id', 'estado_id', 'created_at')
+            ->orderBy('created_at', 'desc')
+            ->limit(50)  // Limitar resultados
+            ->get();
+
+        // Mapeo eficiente sin bucles anidados
+        $datos = $recepciones->map(function($r) {
+            return [
+                'id' => $r->id,
+                'titulo' => $r->solicitud?->solicitud,
+                'detalles' => $r->detalles,
+                'estado_slug' => $r->estado ? strtolower(str_replace(' ', '_', $r->estado->estado)) : 'recibidas'
+            ];
+        });
+        return response()->json(['recepciones' => $datos]);
+    }
+
     public function create()
     {
         $solicitudes = Solicitud::where('activo', true)->get();
@@ -142,12 +167,6 @@ class RecepcionController extends Controller
         //Derivando la solicitud
         DB::beginTransaction();
         try {
-            $atencion = new Atencion(); //Creando el número de atención
-            $atencion->id = (new KeyMaker())->generate('Atencion', $recepcion->solicitud_id);
-            $atencion->solicitud_id = $recepcion->solicitud_id;
-            $atencion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
-            $atencion_id = $atencion->id;
-            $atencion->save();
             $new_recepcion = new Recepcion(); //Creando la nueva recepción
             $new_recepcion->id = (new KeyMaker())->generate('Recepcion', $recepcion->solicitud_id);
             $new_recepcion->solicitud_id = $recepcion->solicitud_id;
@@ -159,14 +178,14 @@ class RecepcionController extends Controller
             $new_recepcion->user_id_destino = $supervisor->id;
             $new_recepcion->role_id = $role_id;
             $new_recepcion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
-            $new_recepcion->atencion_id = $atencion_id;
+            $new_recepcion->atencion_id = $recepcion->atencion_id;
             $new_recepcion->detalles = $recepcion->detalles;
             $new_recepcion->activo = false;
             $new_recepcion->save();
             $recepcion->activo = true; //Se transforma en una solicitud válida al ser derivada a un área
             $recepcion->save();
             DB::commit(); //Finalizando la transacción
-            return redirect()->route('recepcion')->with('success', 'La solicitud "' . $atencion_id . '" ha sido derivada a ' . $recepcion->usuarioDestino->name . ' del area ' . $recepcion->area->area);
+            return redirect()->route('recepcion')->with('success', 'La solicitud "' . $recepcion->atencion_id . '" ha sido derivada a ' . $recepcion->usuarioDestino->name . ' del area ' . $recepcion->area->area);
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Ocurrió un error al derivar la solicitud:' . $e->getMessage());
@@ -194,12 +213,6 @@ class RecepcionController extends Controller
         //Asignando la solicitud
         DB::beginTransaction();
         try {
-            $atencion = new Atencion(); //Creando el número de atención
-            $atencion->id = (new KeyMaker())->generate('Atencion', $recepcion->solicitud_id);
-            $atencion->solicitud_id = $recepcion->solicitud_id;
-            $atencion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
-            $atencion_id = $atencion->id;
-            $atencion->save();
             $new_recepcion = new Recepcion(); //Creando una nueva recepción para el gestor
             $new_recepcion->id = (new KeyMaker())->generate('Recepcion', $recepcion->solicitud_id);
             $new_recepcion->solicitud_id = $recepcion->solicitud_id;
@@ -211,14 +224,14 @@ class RecepcionController extends Controller
             $new_recepcion->user_id_destino = $gestor->id;
             $new_recepcion->role_id = $role_id;
             $new_recepcion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
-            $new_recepcion->atencion_id = $atencion_id;
+            $new_recepcion->atencion_id = $recepcion->atencion_id;
             $new_recepcion->detalles = $recepcion->detalles;
             $new_recepcion->activo = false;
             $new_recepcion->save();
             $recepcion->activo = true; //Se transforma en una solicitud válida al ser asignada a un gestor
             $recepcion->save();
             DB::commit(); //Finalizando la transacción
-            return redirect()->route('recepcion')->with('success', 'La solicitud "' . $atencion_id . '" ha sido asignada a ' . $recepcion->usuarioDestino->name . ' del area ' . $recepcion->area->area);
+            return redirect()->route('recepcion')->with('success', 'La solicitud "' . $recepcion->atencion_id . '" ha sido asignada a ' . $recepcion->usuarioDestino->name . ' del area ' . $recepcion->area->area);
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Ocurrió un error al asignar la solicitud:' . $e->getMessage());
@@ -236,12 +249,6 @@ class RecepcionController extends Controller
         //Delegando la solicitud
         DB::beginTransaction();
         try {
-            $atencion = new Atencion(); //Creando el número de atención
-            $atencion->id = (new KeyMaker())->generate('Atencion', $recepcion->solicitud_id);
-            $atencion->solicitud_id = $recepcion->solicitud_id;
-            $atencion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
-            $atencion_id = $atencion->id;
-            $atencion->save();
             $new_recepcion = new Recepcion(); //Creando la nueva recepción
             $new_recepcion->id = (new KeyMaker())->generate('Recepcion', $recepcion->solicitud_id);
             $new_recepcion->solicitud_id = $recepcion->solicitud_id;
@@ -253,7 +260,7 @@ class RecepcionController extends Controller
             $new_recepcion->user_id_destino = $user->id;
             $new_recepcion->role_id = $role_id;
             $new_recepcion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
-            $new_recepcion->atencion_id = $atencion_id;
+            $new_recepcion->atencion_id = $recepcion->atencion_id;
             $new_recepcion->detalles = $recepcion->detalles;
             $new_recepcion->activo = false;
             $new_recepcion_id = $new_recepcion->id;
@@ -272,7 +279,7 @@ class RecepcionController extends Controller
                 $actividad->save();
             }
             DB::commit();
-            return redirect()->route('recepcion')->with('success', 'La solicitud "' . $atencion_id . '" ha sido delegada a ' . $user->name . ' del área ' . $recepcion->area->area);
+            return redirect()->route('recepcion')->with('success', 'La solicitud "' . $recepcion->atencion_id . '" ha sido delegada a ' . $user->name . ' del área ' . $recepcion->area->area);
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Ocurrió un error al delegar la solicitud:' . $e->getMessage());

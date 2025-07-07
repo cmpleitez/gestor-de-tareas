@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('distrito', 128)->unique();
             $table->boolean('activo')->default(true);
-            $table->timestampsTz();
+            $table->timestamps();
         });
     }
 

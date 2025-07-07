@@ -112,8 +112,11 @@ Route::middleware([
  */
     //BENEFICIARIOS
     Route::group(['middleware' => ['role:Beneficiario|Recepcionista']], function () {
-        Route::group(['prefix' => 'recepcion'], function () { //Asignación de tareas
+        Route::group(['prefix' => 'recepcion'], function () {
             Route::get('/', [RecepcionController::class, 'index'])->name('recepcion');
+            
+            Route::get('recibidas', [recepcionController::class, 'recibidas'])->name('recepcion.recibidas');
+
             Route::get('areas/{solicitud}', [recepcionController::class, 'areas'])->name('recepcion.areas');
             Route::get('equipos/{solicitud}', [recepcionController::class, 'equipos'])->name('recepcion.equipos');
             Route::get('operadores/{solicitud}', [recepcionController::class, 'operadores'])->name('recepcion.operadores');

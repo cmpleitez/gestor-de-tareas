@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('solicitud_id');
             $table->foreignId('user_id');
-            $table->timestampsTz();
+            $table->timestamps();
 
             $table->foreign('solicitud_id')->references('id')->on('solicitudes');
             $table->foreign('user_id')->references('id')->on('users');

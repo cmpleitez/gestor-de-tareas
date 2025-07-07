@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('distrito_id');
             $table->string('zona', 96)->unique();
             $table->boolean('activo')->default(true);
-            $table->timestampsTz();
+            $table->timestamps();
 
             $table->foreign('distrito_id')->references('id')->on('distritos');
         });

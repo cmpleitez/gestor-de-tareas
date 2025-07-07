@@ -13,7 +13,7 @@ return new class extends Migration
             $table->char('actividad_id', 12)->foreignId();
             $table->string('observacion')->nullable();
             $table->boolean('activo')->default(true);
-            $table->timestampsTz();
+            $table->timestamps();
 
             $table->foreign('actividad_id')->references('id')->on('actividades');
         });

@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('detalles');
             $table->string('observacion')->nullable();
             $table->boolean('activo')->default(true);
-            $table->timestampsTz();
+            $table->timestamps();
             
             $table->foreign('solicitud_id')->references('id')->on('solicitudes');
             $table->foreign('oficina_id')->references('id')->on('oficinas');

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('estado_id');
             $table->string('observacion')->nullable();
             $table->boolean('activo')->default(true);
-            $table->timestampsTz();
+            $table->timestamps();
             
             $table->foreign('recepcion_id')->references('id')->on('recepciones');
             $table->foreign('tarea_id')->references('id')->on('tareas');

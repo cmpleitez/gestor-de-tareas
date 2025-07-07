@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('zona_id');
             $table->string('area', 128)->unique();
             $table->boolean('activo')->default(true);
-            $table->timestampsTz();
+            $table->timestamps();
 
             $table->foreign('zona_id')->references('id')->on('zonas');
         });

@@ -36,10 +36,9 @@
                             <table id="datatable" class="table zero-configuration table-hover">
                                 <thead>
                                     <tr>
-                                        <th>area</th>
                                         <th class="text-center">Fecha de recepción</th>
                                         <th class="text-center">N° de atención</th>
-                                        <th>rol</th>
+                                        <th>Participantes</th>
                                         <th>solicitud</th>
                                         <th>detalles</th>
                                         <th class="text-center">Distribución</th>
@@ -49,29 +48,18 @@
                                     @foreach ($recepciones as $recepcion)
                                         <tr>
                                             {{-- CAMPOS --}}
-                                            <td>{{ $recepcion->area->area }}</td>
-                                            <td class="text-center">{{ $recepcion->created_at->format('d/m/Y h:i A') }}</td>
+                                            <td class="text-center">{{ $recepcion->created_at->diffForHumans() }}</td>
                                             <td class="text-center">{{ $recepcion->atencion_id }}</td>
                                             <td>
                                                 <div class="widget-todo-item-action d-flex align-items-center">
                                                     <div class="avatar">
                                                         @if ($recepcion->usuarioDestino->profile_photo_path && Storage::disk('public')->exists($recepcion->usuarioDestino->profile_photo_path))
-                                                            <img src="{{ Storage::url($recepcion->usuarioDestino->profile_photo_path) }}" alt="avatar" style="height: 32px; width: 32px; object-fit: cover;" data-toggle="tooltip" data-placement="top" title="{{ $recepcion->usuarioDestino->name }}">
+                                                            <img src="{{ Storage::url($recepcion->usuarioDestino->profile_photo_path) }}" alt="avatar" style="height: 32px; width: 32px; object-fit: cover;" data-toggle="tooltip" data-placement="top" title="{{ $recepcion->usuarioDestino->name }} -> {{$recepcion->role->name}}">
                                                         @else
-                                                            <img src="{{ asset('app-assets/images/pages/operador.png') }}" alt="avatar" style="height: 28px; width: 28px; object-fit: cover;" data-toggle="tooltip" data-placement="top" title="{{ $recepcion->usuarioDestino->name }}">
+                                                            <img src="{{ asset('app-assets/images/pages/operador.png') }}" alt="avatar" style="height: 28px; width: 28px; object-fit: cover;" data-toggle="tooltip" data-placement="top" title="{{ $recepcion->usuarioDestino->name }} -> {{$recepcion->role->name}}">
                                                         @endif
                                                     </div>
-                                                    @if($recepcion->role->name == 'Recepcionista')
-                                                        <div class="badge badge-pill badge-light-danger">{{ $recepcion->role->name }}</div>
-                                                    @elseif($recepcion->role->name == 'Supervisor')
-                                                        <div class="badge badge-pill badge-light-warning">{{ $recepcion->role->name }}</div>
-                                                    @elseif($recepcion->role->name == 'Gestor')
-                                                        <div class="badge badge-pill badge-light-primary">{{ $recepcion->role->name }}</div>
-                                                    @elseif($recepcion->role->name == 'Operador')
-                                                        <div class="badge badge-pill badge-light-info">{{ $recepcion->role->name }}</div>
-                                                    @else
-                                                        <div class="badge badge-pill badge-light-secondary">{{ $recepcion->role->name }}</div>
-                                                    @endif
+                                                    <div class="badge badge-pill badge-light-primary">{{ $recepcion->area->area }}</div>
                                                 </div>
                                             </td>
                                             <td>{{ $recepcion->solicitud->solicitud }}</td>
@@ -115,10 +103,9 @@
                                 </tbody>
                                 <tfoot>
                                     <tr>
-                                        <th>area</th>
                                         <th class="text-center">Fecha de recepción</th>
                                         <th class="text-center">N° de atención</th>
-                                        <th>rol</th>
+                                        <th>Participantes</th>
                                         <th>solicitud</th>
                                         <th>detalles</th>
                                         <th class="text-center">Distribución</th>

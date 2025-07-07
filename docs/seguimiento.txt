@@ -1,6 +1,6 @@
 
 ...🟢 TABLERO KANBAN para recepcionistas, supervisores, gestores y operadores
-    ✅Se incoporporaron los estados en tres niveles: general(atenciones), gestion individual(recepciones) y operativo individual(actividades)
+    ... colocar las solicitudes recibidas en los canvan de cada quien
 
 🟢 en la mayoria de las vistas se debe agregar un margen arriba de 1 o 2 porque todo esta muy pegado al techo
 🟢 recepcion.index: establece unidades de capacidad tecnica en el subtitulo de las tres ventanas de distribucion de solicitudes: derivacion, asignacion y delegación

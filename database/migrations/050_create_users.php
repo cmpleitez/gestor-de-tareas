@@ -20,7 +20,7 @@ return new class extends Migration
             $table->foreignId('current_team_id')->nullable();
             $table->string('profile_photo_path', 2048)->nullable();
             $table->boolean('activo')->default(true);
-            $table->timestampsTz();
+            $table->timestamps();
 
             $table->foreign('oficina_id')->references('id')->on('oficinas');
         });
