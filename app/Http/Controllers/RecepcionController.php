@@ -102,7 +102,7 @@ class RecepcionController extends Controller
             $recepcion->save();
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Ocurrió un error cuando se intentaba enviar la solicitud número "' . $request->solicitud_id . '":' . $e->getMessage());
+            return back()->with('error', 'Ocurrió un error cuando se intentaba enviar la solicitud:' . $e->getMessage());
         }
         DB::commit(); //Finalizando la transacción
         return redirect()->route('recepcion')->with('success', 'La solicitud número "' . $atencion_id . '" ha sido recibida en el area ' . auth()->user()->oficina->area->area);
@@ -166,7 +166,7 @@ class RecepcionController extends Controller
             $recepcion->activo = true; //Se transforma en una solicitud válida al ser derivada a un área
             $recepcion->save();
             DB::commit(); //Finalizando la transacción
-            return redirect()->route('recepcion')->with('success', 'La solicitud "' . $recepcion->solicitud->solicitud . '" ha sido derivada a ' . $recepcion->usuarioDestino->name . ' del area ' . $recepcion->area->area);
+            return redirect()->route('recepcion')->with('success', 'La solicitud "' . $atencion_id . '" ha sido derivada a ' . $recepcion->usuarioDestino->name . ' del area ' . $recepcion->area->area);
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Ocurrió un error al derivar la solicitud:' . $e->getMessage());
@@ -215,11 +215,10 @@ class RecepcionController extends Controller
             $new_recepcion->detalles = $recepcion->detalles;
             $new_recepcion->activo = false;
             $new_recepcion->save();
-            
             $recepcion->activo = true; //Se transforma en una solicitud válida al ser asignada a un gestor
             $recepcion->save();
             DB::commit(); //Finalizando la transacción
-            return redirect()->route('recepcion')->with('success', 'La solicitud "' . $recepcion->solicitud->solicitud . '" ha sido asignada a ' . $recepcion->usuarioDestino->name . ' del area ' . $recepcion->area->area);
+            return redirect()->route('recepcion')->with('success', 'La solicitud "' . $atencion_id . '" ha sido asignada a ' . $recepcion->usuarioDestino->name . ' del area ' . $recepcion->area->area);
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Ocurrió un error al asignar la solicitud:' . $e->getMessage());
@@ -273,7 +272,7 @@ class RecepcionController extends Controller
                 $actividad->save();
             }
             DB::commit();
-            return redirect()->route('recepcion')->with('success', 'La solicitud "' . $new_recepcion_id . '" ha sido delegada a ' . $user->name . ' del área ' . $recepcion->area->area);
+            return redirect()->route('recepcion')->with('success', 'La solicitud "' . $atencion_id . '" ha sido delegada a ' . $user->name . ' del área ' . $recepcion->area->area);
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Ocurrió un error al delegar la solicitud:' . $e->getMessage());
