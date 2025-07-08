@@ -1,317 +1,252 @@
 @extends('dashboard')
 
 @section('contenedor')
-    <!-- Kanban Overlay -->
-    <div class="kanban-overlay"></div>
-    <!-- Kanban Section -->
-    <section id="kanban-wrapper">
-        <div class="row">
-            <div class="col-12">
-                <div id="kanban-app"></div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Mis Tareas - Versión Simple</h4>
             </div>
-        </div>
-
-        <!-- Sidebar para ver las tareas de cada solicitud -->
-        <div class="kanban-sidebar">
-            <div class="card shadow-none">
-                <div class="card-header d-flex justify-content-between align-items-center border-bottom px-2 py-1">
-                    <h3 class="card-title">Detalles de la Tarea</h3>
-                    <button type="button" class="close close-icon">
-                        <i class="bx bx-x"></i>
-                    </button>
+            <div class="card-body">
+                <!-- Debug: Mostrar datos crudos -->
+                <div id="debug-info" style="background: #f8f9fa; padding: 10px; margin-bottom: 20px; border-radius: 4px;">
+                    <strong>Datos del servidor:</strong>
+                    <pre id="datos-raw"></pre>
                 </div>
-                <!-- Información de la tarea -->
-                <div class="card-content">
-                    <div class="card-body">
-                        <div class="form-group">
-                            <label><strong>Título:</strong></label>
-                            <p class="edit-kanban-item-title">-</p>
+
+                <!-- Tablero Kanban básico -->
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header bg-warning text-white">
+                                <h5 class="mb-0">📥 Recibidas</h5>
+                            </div>
+                            <div class="card-body kanban-columna">
+                                <div id="columna-recibidas" class="sortable-column">
+                                    <div class="text-center text-muted">
+                                        <i class="bx bx-loader-alt bx-spin"></i> Cargando...
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label><strong>Estado:</strong></label>
-                            <p class="task-status">-</p>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="mb-0">⚡ En Progreso</h5>
+                            </div>
+                            <div class="card-body kanban-columna">
+                                <div id="columna-progreso" class="sortable-column">
+                                    <div class="text-center text-muted">Vacío por ahora</div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label><strong>Fecha de Vencimiento:</strong></label>
-                            <p class="task-due-date">-</p>
-                        </div>
-                        <div class="form-group">
-                            <label><strong>Comentarios:</strong></label>
-                            <p class="task-comments">-</p>
-                        </div>
-                        <div class="form-group">
-                            <label><strong>Usuarios Asignados:</strong></label>
-                            <div class="task-users">-</div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0">✅ Completadas</h5>
+                            </div>
+                            <div class="card-body kanban-columna">
+                                <div id="columna-completadas" class="sortable-column">
+                                    <div class="text-center text-muted">Vacío por ahora</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</div>
+@endsection
 
 @section('js')
-    <!-- Kanban CSS -->
-    <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/vendors/css/jkanban/jkanban.min.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/pages/app-kanban.css') }}">
+<!-- Incluir SortableJS para drag & drop -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
-    <!-- CSS Responsivo personalizado -->
-    <style>
-        /* Estilos responsivos para el Kanban */
-        .kanban-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            justify-content: center;
-        }
+<style>
+.tarea-card {
+    background: white;
+    border: 1px solid #e3e6f0;
+    border-radius: 6px;
+    padding: 12px;
+    margin-bottom: 10px;
+    cursor: move;
+    transition: all 0.2s;
+    border-left: 4px solid #007bff;
+}
+.tarea-card:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transform: translateY(-1px);
+}
+.tarea-titulo {
+    font-weight: 600;
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+.tarea-id {
+    font-size: 11px;
+    color: #6c757d;
+    background: #f8f9fa;
+    padding: 2px 6px;
+    border-radius: 3px;
+    display: inline-block;
+}
 
-        .kanban-board {
-            flex: 1;
-            min-width: 280px;
-            max-width: 350px;
-            margin: 0 !important;
-        }
+/* Estilos para drag & drop */
+.kanban-columna {
+    min-height: 400px;
+    padding: 10px;
+}
+.sortable-column {
+    min-height: 380px; /* Área de drop fija y grande */
+    border: 2px dashed transparent;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+.sortable-column:empty {
+    border-color: #e9ecef; /* Borde visible cuando está vacía */
+    background: #f8f9fa;
+}
+.sortable-ghost {
+    opacity: 0.4;
+    background: #f0f0f0;
+}
+.sortable-drag {
+    opacity: 1;
+    background: white;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    transform: rotate(5deg);
+}
+</style>
 
-        /* Tablet */
-        @media (max-width: 768px) {
-            .kanban-board {
-                min-width: 250px;
-                max-width: 100%;
+<script>
+$(document).ready(function() {
+    console.log('🚀 Iniciando carga de tareas...');
+    
+    // Hacer petición AJAX súper simple
+    $.ajax({
+        url: '{{ route('recepcion.recibidas') }}',
+        type: 'GET',
+        timeout: 10000,
+        success: function(response) {
+            console.log('✅ Respuesta del servidor:', response);
+            
+            // Mostrar datos crudos para debug
+            $('#datos-raw').text(JSON.stringify(response, null, 2));
+            
+            // Procesar recepciones
+            const recepciones = response.recepciones || [];
+            console.log('📋 Total recepciones:', recepciones.length);
+            
+            if (recepciones.length === 0) {
+                $('#columna-recibidas').html('<div class="text-center text-muted">No hay tareas recibidas</div>');
+                return;
             }
-
-            .kanban-container {
-                gap: 10px;
-            }
-
-            #kanban-wrapper {
-                padding: 0 10px;
-            }
-        }
-
-        /* Móvil */
-        @media (max-width: 576px) {
-            .kanban-board {
-                min-width: 100%;
-                max-width: 100%;
-                margin-bottom: 20px;
-            }
-
-            .kanban-container {
-                flex-direction: column;
-                gap: 0;
-            }
-
-            #kanban-wrapper {
-                padding: 0 5px;
-            }
-
-            .kanban-sidebar {
-                width: 100% !important;
-                right: 0 !important;
-            }
-        }
-
-        /* Mejorar el aspecto visual */
-        .kanban-board-header {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border-radius: 8px 8px 0 0;
-            padding: 15px;
-            font-weight: 600;
-            text-align: center;
-            border-bottom: 2px solid #dee2e6;
-        }
-
-        .kanban-item {
-            margin-bottom: 10px;
-            padding: 12px;
-            background: white;
-            border-radius: 6px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            border-left: 4px solid #007bff;
-            transition: all 0.3s ease;
-        }
-
-        .kanban-item:hover {
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-            transform: translateY(-2px);
-        }
-
-        .kanban-item[data-border="info"] {
-            border-left-color: #17a2b8;
-        }
-
-        .kanban-item[data-border="warning"] {
-            border-left-color: #ffc107;
-        }
-
-        .kanban-item[data-border="success"] {
-            border-left-color: #28a745;
-        }
-
-        .kanban-item[data-border="danger"] {
-            border-left-color: #dc3545;
-        }
-
-        .kanban-item[data-border="primary"] {
-            border-left-color: #007bff;
-        }
-
-        .kanban-drag {
-            min-height: 200px;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 0 0 8px 8px;
-        }
-
-        /* Estilos para el footer de las tareas */
-        .kanban-footer {
-            margin-top: 8px;
-            padding-top: 8px;
-            border-top: 1px solid #e9ecef;
-            font-size: 0.75rem;
-            color: #6c757d;
-        }
-
-        .kanban-due-date,
-        .kanban-comment {
-            display: flex;
-            align-items: center;
-            margin-right: 10px;
-        }
-
-        .kanban-users .avatar {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            margin-left: -8px;
-            border: 2px solid white;
-        }
-
-        .kanban-users .avatar:first-child {
-            margin-left: 0;
-        }
-    </style>
-
-    <!-- Kanban JS -->
-    <script src="{{ asset('app-assets/vendors/js/jkanban/jkanban.min.js') }}"></script>
-    <script>
-        $(document).ready(function () {
-
-            /* ======================================================
-               1)  FUNCIONES DE APOYO
-            ====================================================== */
-
-            // Construir la estructura que jKanban necesita a partir del JSON
-            function buildKanbanData(recepciones) {
-                // Tableros base ─­­ajusta colores/títulos a tu gusto
-                const boards = {
-                    recibidas:  { id: 'kanban-board-1', title: 'Recibidas',  class: 'bg-light-warning',  item: [] },
-                    en_progreso:{ id: 'kanban-board-2', title: 'En Progreso', class: 'bg-light-warning',  item: [] },
-                    resueltas:  { id: 'kanban-board-3', title: 'Resueltas',  class: 'bg-light-success',  item: [] },
-                };
-
-                recepciones.forEach(r => {
-                    // Ajusta los nombres de campos según lo que devuelva tu API
-                    const estado = (r.estado_slug || 'recibidas').toLowerCase();
-                    if (!boards[estado]) return;                // si llega un estado que no existe, lo ignoro
-
-                    boards[estado].item.push({
-                        id      : r.id,                          // id único (string o número)
-                        title   : r.titulo || r.detalles || '-', // texto de la tarjeta
-                        border  : r.color || 'primary',          // opcional – define color del borde
-                        dueDate : r.fecha_limite,                // opcional – fecha de venc.
-                        comment : r.total_comentarios,           // opcional – n.º de comentarios
-                        users   : r.avatars                      // opcional – array de URLs de avatares
-                    });
-                });
-
-                // jKanban espera un ARRAY, no un objeto
-                return Object.values(boards);
-            }
-
-            // Crear el tablero y añadir avatares/fecha/comentarios al pie de cada tarjeta
-            function initKanban(boardData) {
-
-                const kanban = new jKanban({
-                    element             : '#kanban-app',
-                    gutter              : '15px',
-                    responsivePercentage: true,
-                    addItemButton       : false,
-                    dragItems           : true,
-                    dragBoards          : false,
-
-                    click: function (el) {                      // mostrar la sidebar de detalles
-                        $('.kanban-overlay, .kanban-sidebar').addClass('show');
-                        $('.edit-kanban-item-title').val($(el).contents()[0].data);
-                    },
-
-                    boards: boardData
-                });
-
-                /* ---------- adornar cada tarjeta ---------- */
-                boardData.forEach(board => {
-                    board.item.forEach(it => {
-                        const $el = $(kanban.findElement(it.id));
-                        if (!$el.length) return;
-
-                        /* avatares */
-                        let htmlUsers = '';
-                        (it.users || []).forEach(u => {
-                            htmlUsers += `
-                                <li class="avatar pull-up my-0">
-                                    <img class="media-object rounded-circle" src="${u}" height="24" width="24">
-                                </li>`;
-                        });
-
-                        /* fecha límite y nº comentarios */
-                        const htmlDue = it.dueDate
-                            ? `<div class="kanban-due-date d-flex align-items-center mr-50">
-                                   <i class="bx bx-time-five font-size-small mr-25"></i>
-                                   <span class="font-size-small">${it.dueDate}</span>
-                               </div>` : '';
-
-                        const htmlCom = it.comment
-                            ? `<div class="kanban-comment d-flex align-items-center mr-50">
-                                   <i class="bx bx-message font-size-small mr-25"></i>
-                                   <span class="font-size-small">${it.comment}</span>
-                               </div>` : '';
-
-                        if (htmlUsers || htmlDue || htmlCom) {
-                            $el.append(`
-                                <div class="kanban-footer d-flex justify-content-between mt-1">
-                                    <div class="kanban-footer-left d-flex">
-                                        ${htmlDue}${htmlCom}
-                                    </div>
-                                    <div class="kanban-footer-right">
-                                        <div class="kanban-users">
-                                            <ul class="list-unstyled users-list m-0 d-flex align-items-center">
-                                                ${htmlUsers}
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>`);
-                        }
-                    });
-                });
-            }
-
-            /* ======================================================
-               2)  PETICIÓN AJAX Y ARRANQUE DEL TABLERO
-            ====================================================== */
-            $.ajax({
-                url     : '{{ route('recepcion.recibidas') }}',
-                type    : 'GET',
-                dataType: 'json',
-                success : res => initKanban( buildKanbanData(res.recepciones || []) ),
-                error   : ()  => initKanban( buildKanbanData([]) )      // tablero vacío si falla la petición
+            
+            // Limpiar todas las columnas
+            $('#columna-recibidas, #columna-progreso, #columna-completadas').empty();
+            
+            recepciones.forEach(function(recepcion, index) {
+                console.log(`📄 Procesando tarea ${index + 1}:`, recepcion);
+                
+                const tarjetaHtml = `
+                    <div class="tarea-card" data-id="${recepcion.id}">
+                        <div class="tarea-titulo">${recepcion.titulo || recepcion.detalles || 'Sin título'}</div>
+                        <div class="tarea-id">ID: ${recepcion.id}</div>
+                        <div class="tarea-estado" style="font-size: 11px; color: #28a745; margin-top: 5px;">
+                            Estado: ${recepcion.estado_slug || 'recibida'}
+                        </div>
+                    </div>
+                `;
+                
+                $('#columna-recibidas').append(tarjetaHtml);
             });
-
-            /* ======================================================
-               3)  Cerrar la sidebar de detalles
-            ====================================================== */
-            $('.kanban-sidebar .close-icon, .kanban-overlay').on('click', () => {
-                $('.kanban-overlay, .kanban-sidebar').removeClass('show');
+            
+                         console.log('✅ Tareas cargadas correctamente');
+             
+             // Inicializar Kanban después de cargar los datos
+             initKanban();
+        },
+        error: function(xhr, status, error) {
+            console.error('❌ Error al cargar tareas:', {xhr, status, error});
+            $('#columna-recibidas').html(`
+                <div class="alert alert-danger">
+                    <strong>Error:</strong> No se pudieron cargar las tareas<br>
+                    <small>Status: ${status} | Error: ${error}</small>
+                </div>
+            `);
+            $('#datos-raw').text('Error: ' + error);
+        }
+    });
+    
+    // Función para inicializar el drag & drop
+    function initKanban() {
+        console.log('🎯 Inicializando Kanban drag & drop...');
+        
+        // Configurar cada columna para drag & drop
+        const columnas = ['columna-recibidas', 'columna-progreso', 'columna-completadas'];
+        
+        columnas.forEach(function(columnaId) {
+            const elemento = document.getElementById(columnaId);
+            if (!elemento) return;
+            
+            new Sortable(elemento, {
+                group: 'kanban', // Permite mover entre columnas
+                animation: 150,
+                ghostClass: 'sortable-ghost',
+                dragClass: 'sortable-drag',
+                
+                // Mejorar feedback visual para columnas vacías
+                onMove: function(evt) {
+                    // Resaltar la columna de destino con colores más tenues
+                    document.querySelectorAll('.sortable-column').forEach(col => {
+                        col.style.borderColor = 'transparent';
+                    });
+                    evt.to.style.borderColor = '#d1ecf1'; // Azul muy tenue
+                    evt.to.style.backgroundColor = '#f8fdff'; // Fondo casi imperceptible
+                },
+                
+                onEnd: function(evt) {
+                    // Quitar resaltado de todas las columnas
+                    document.querySelectorAll('.sortable-column').forEach(col => {
+                        col.style.borderColor = col.children.length === 0 ? '#e9ecef' : 'transparent';
+                        col.style.backgroundColor = col.children.length === 0 ? '#f8f9fa' : 'transparent';
+                    });
+                    
+                    const tareaId = evt.item.dataset.id;
+                    const columnaOrigen = evt.from.id;
+                    const columnaDestino = evt.to.id;
+                    
+                    console.log(`📦 Tarea ${tareaId} movida de ${columnaOrigen} a ${columnaDestino}`);
+                    
+                    if (columnaOrigen !== columnaDestino) {
+                        showMoveAlert(tareaId, columnaDestino);
+                    }
+                }
             });
         });
-    </script>
-@endsection
+        
+        console.log('✅ Kanban inicializado correctamente');
+    }
+    
+    // Función para mostrar el cambio de estado
+    function showMoveAlert(tareaId, nuevaColumna) {
+        let nuevoEstado = '';
+        switch(nuevaColumna) {
+            case 'columna-recibidas': nuevoEstado = 'Recibida'; break;
+            case 'columna-progreso': nuevoEstado = 'En Progreso'; break;
+            case 'columna-completadas': nuevoEstado = 'Completada'; break;
+        }
+        // Aquí harías el AJAX para actualizar en el servidor
+    }
+    
+    // Evento click en tareas (súper simple)
+    $(document).on('click', '.tarea-card', function() {
+        const id = $(this).data('id');
+        alert('Tarea clickeada: ' + id);
+    });
+});
+</script>
 @endsection

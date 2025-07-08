@@ -64,26 +64,24 @@ class RecepcionController extends Controller
 
     public function recibidas()
     {
-        // Consulta optimizada - Solo campos necesarios
+        // Consulta súper simple - Solo lo básico que funciona
         $recepciones = Recepcion::where('user_id_destino', auth()->user()->id)
-            ->with([
-                'solicitud:id,solicitud',  // Solo campos necesarios
-                'estado:id,estado'
-            ])
-            ->select('id', 'detalles', 'solicitud_id', 'estado_id', 'created_at')
+            ->with('solicitud:id,solicitud')  // Solo solicitud
+            ->select('id', 'detalles', 'solicitud_id', 'created_at')
             ->orderBy('created_at', 'desc')
-            ->limit(50)  // Limitar resultados
+            ->limit(20)  // Menos registros para ser más rápido
             ->get();
 
-        // Mapeo eficiente sin bucles anidados
+        // Mapeo súper simple
         $datos = $recepciones->map(function($r) {
             return [
                 'id' => $r->id,
-                'titulo' => $r->solicitud?->solicitud,
+                'titulo' => $r->solicitud ? $r->solicitud->solicitud : 'Sin título',
                 'detalles' => $r->detalles,
-                'estado_slug' => $r->estado ? strtolower(str_replace(' ', '_', $r->estado->estado)) : 'recibidas'
+                'estado_slug' => 'recibida'  // Por ahora todo va como "recibida"
             ];
         });
+        
         return response()->json(['recepciones' => $datos]);
     }
 
