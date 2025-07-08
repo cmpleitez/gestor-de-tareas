@@ -1,5 +1,6 @@
 
 ...🟢 TABLERO KANBAN para recepcionistas, supervisores, gestores y operadores
+    ... server error
     ... colocar las solicitudes recibidas en los canvan de cada quien
 
 🟢 en la mayoria de las vistas se debe agregar un margen arriba de 1 o 2 porque todo esta muy pegado al techo
