@@ -126,30 +126,27 @@
             background: #f8f9fa;
         }
 
-        .sortable-ghost {
-            opacity: 0.3 !important;
-            /* Reflejo más tenue en la posición original */
-            background: #f0f0f0 !important;
-        }
-
-        /* Tarjeta mientras se arrastra - usando las clases correctas de SortableJS */
         .sortable-chosen {
+            /* MOSTRAR SOLO LA TARJETA CHOSEN */
             opacity: 1 !important;
-            /* Tarjeta arrastrada completamente visible */
             background: white !important;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4) !important;
-            transform: rotate(3deg) scale(1.05) !important;
-            z-index: 9999 !important;
-            border: 2px solid #007bff !important;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6) !important;
+            transform: rotate(5deg) scale(1.15) !important;
+            z-index: 99999 !important;
+            border: 4px solid #007bff !important;
+            border-radius: 10px !important;
         }
 
-        .sortable-drag {
+        .sortable-ghost {
+            /* OCULTAR COMPLETAMENTE LA TARJETA GHOST */
+            opacity: 0 !important;
+            visibility: hidden !important;
+            display: none !important;
+        }
+
+        /* FORZAR que cualquier tarea siendo arrastrada sea visible */
+        .tarea-card {
             opacity: 1 !important;
-            background: white !important;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4) !important;
-            transform: rotate(3deg) scale(1.05) !important;
-            z-index: 9999 !important;
-            border: 2px solid #007bff !important;
         }
     </style>
 
