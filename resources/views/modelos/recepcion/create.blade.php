@@ -59,16 +59,16 @@
                                 <div class="col-12">
                                     <div class="form-group">
                                         <label for="textarea-counter">Detalles</label>
-                                        <textarea class="form-control" id="textarea-counter" name="detalles" rows="3" required minlength="9"
-                                            maxlength="255" data-validation-required-message="El campo detalles es requerido"
-                                            data-validation-minlength-message="El campo detalles debe tener al menos 9 caracteres"
-                                            data-validation-maxlength-message="El campo detalles debe tener menos de 255 caracteres"
-                                            placeholder="Detalles de la solicitud (mínimo 9 caracteres)">{{ old('detalles') }}</textarea>
+                                        <textarea class="form-control" id="textarea-counter" name="detalle" rows="3" required minlength="9"
+                                            maxlength="255" data-validation-required-message="El campo detalle es requerido"
+                                            data-validation-minlength-message="El campo detalle debe tener al menos 9 caracteres"
+                                            data-validation-maxlength-message="El campo detalle debe tener menos de 255 caracteres"
+                                            placeholder="Detalles de la solicitud (mínimo 9 caracteres)">{{ old('detalle') }}</textarea>
                                         <small class="counter-value float-right"><span class="char-count">0</span> /
                                             255</small>
-                                        @error('detalles')
+                                        @error('detalle')
                                             <div class="col-sm-12 badge bg-danger text-wrap">
-                                                {{ $errors->first('detalles') }}
+                                                {{ $errors->first('detalle') }}
                                             </div>
                                         @enderror
                                     </div>
@@ -91,9 +91,9 @@
     <script>
         document.getElementById('textarea-counter').addEventListener('invalid', function(e) {
             if (this.validity.valueMissing) {
-                this.setCustomValidity('El campo detalles es requerido');
+                this.setCustomValidity('El campo detalle es requerido');
             } else if (this.validity.tooShort) {
-                this.setCustomValidity('El campo detalles debe tener al menos 9 caracteres');
+                this.setCustomValidity('El campo detalle debe tener al menos 9 caracteres');
             } else {
                 this.setCustomValidity('');
             }

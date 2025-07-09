@@ -40,7 +40,7 @@
                                         <th class="text-center">N° de atención</th>
                                         <th>Participantes</th>
                                         <th>solicitud</th>
-                                        <th>detalles</th>
+                                        <th>detalle</th>
                                         <th class="text-center">Distribución</th>
                                     </tr>
                                 </thead>
@@ -63,7 +63,7 @@
                                                 </div>
                                             </td>
                                             <td>{{ $recepcion->solicitud->solicitud }}</td>
-                                            <td>{{ $recepcion->detalles }}</td>
+                                            <td>{{ $recepcion->detalle }}</td>
                                             {{-- TABLERO DE CONTROL --}}
                                             <td class="text-center">
                                                 <div class="btn-group" role="group" aria-label="label">
@@ -107,7 +107,7 @@
                                         <th class="text-center">N° de atención</th>
                                         <th>Participantes</th>
                                         <th>solicitud</th>
-                                        <th>detalles</th>
+                                        <th>detalle</th>
                                         <th class="text-center">Distribución</th>
                                     </tr>
                                 </tfoot>

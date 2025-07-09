@@ -35,7 +35,7 @@
                     <h5 class="mb-0">✔️ Resueltas</h5>
                 </div>
                 <div class="card-body kanban-columna">
-                    <div id="columna-completadas" class="sortable-column">
+                    <div id="columna-resueltas" class="sortable-column">
                         <div class="text-center text-muted">Vacío por ahora</div>
                     </div>
                 </div>
@@ -160,7 +160,7 @@
                 type: 'GET',
                 timeout: 10000,
                 success: function(response) {
-                    console.log('✅ Respuesta del servidor:', response);
+                    console.log('✅ Respuesta del servidor:', response.recepciones);
 
                     // Mostrar datos crudos para debug
                     $('#datos-raw').text(JSON.stringify(response, null, 2));
@@ -176,20 +176,17 @@
                     }
 
                     // Limpiar todas las columnas
-                    $('#columna-recibidas, #columna-progreso, #columna-completadas').empty();
-
+                    $('#columna-recibidas, #columna-progreso, #columna-resueltas').empty();
                     recepciones.forEach(function(recepcion, index) {
                         console.log(`📄 Procesando tarea ${index + 1}:`, recepcion);
-
                         const tarjetaHtml = `
-                    <div class="tarea-card" data-id="${recepcion.id}">
-                        <div class="tarea-titulo">${recepcion.titulo || recepcion.detalles || 'Sin título'}</div>
-                        <div class="tarea-id">ID: ${recepcion.id}</div>
-                        <div class="tarea-estado" style="font-size: 11px; color: #28a745; margin-top: 5px;">
-                            Estado: ${recepcion.estado_slug || 'recibida'}
-                        </div>
-                    </div>
-                `;
+                        <div class="tarea-card" data-id="${recepcion.id}">
+                            <div class="tarea-titulo">${recepcion.titulo || recepcion.detalles || 'Sin título'}</div>
+                            <div class="tarea-id">ID: ${recepcion.id}</div>
+                            <div class="tarea-estado" style="font-size: 11px; color: #28a745; margin-top: 5px;">
+                                Estado: ${recepcion.estado || 'Recibida'}
+                            </div>
+                        </div>`;
 
                         $('#columna-recibidas').append(tarjetaHtml);
                     });
@@ -199,19 +196,13 @@
                     // Inicializar Kanban después de cargar los datos
                     initKanban();
                 },
-                error: function(xhr, status, error) {
+                    error: function(xhr, status, error) {
                     console.error('❌ Error al cargar tareas:', {
                         xhr,
                         status,
                         error
-                    });
-                    $('#columna-recibidas').html(`
-                <div class="alert alert-danger">
-                    <strong>Error:</strong> No se pudieron cargar las tareas<br>
-                    <small>Status: ${status} | Error: ${error}</small>
-                </div>
-            `);
-                    $('#datos-raw').text('Error: ' + error);
+                });
+
                 }
             });
 
@@ -220,7 +211,7 @@
                 console.log('🎯 Inicializando Kanban drag & drop...');
 
                 // Configurar cada columna para drag & drop
-                const columnas = ['columna-recibidas', 'columna-progreso', 'columna-completadas'];
+                const columnas = ['columna-recibidas', 'columna-progreso', 'columna-resueltas'];
 
                 columnas.forEach(function(columnaId) {
                     const elemento = document.getElementById(columnaId);
@@ -281,14 +272,14 @@
                     case 'columna-progreso':
                         nuevoEstado = 'En Progreso';
                         break;
-                    case 'columna-completadas':
+                    case 'columna-resueltas':
                         nuevoEstado = 'Completada';
                         break;
                 }
                 // Aquí harías el AJAX para actualizar en el servidor
             }
 
-            // Evento click en tareas (súper simple)
+            // Click para mostrar las actividades en la persiana que se abre a la derecha de la vista 
             $(document).on('click', '.tarea-card', function() {
                 const id = $(this).data('id');
                 alert('Tarea clickeada: ' + id);

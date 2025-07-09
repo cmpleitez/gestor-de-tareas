@@ -10,6 +10,9 @@
 🟢 register: asegurar el id del usuario con un aumento no automático sino programatico
 🟢 solicitud.asignar-tareas: maquetar
 🟢 dashboard: palabra conectado en azul vivido, desconectado en rojo vivido
+🟢 parametrizar bloque de procesamiento actualmente fijado en 20 unidades
+🟢 mis-tareas: ajustar la visibilidad de la tarjeta fantasma y la tarjeta elegida
+🟢 mis-tareas: es posible colocar en primer plano los ultimos 3 digitos los cuales pueden servir como una suerte de ticket de atencion reseteando en 100, ya que los ante-anteriores 3 digitos tambien se resetean matematicamente en en 100
 
 🟠 rage agains the machine & limp bizkit & korn & alice in chains
     ...limp bizkit: im broke

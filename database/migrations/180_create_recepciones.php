@@ -20,7 +20,7 @@ return new class extends Migration
             $table->foreignId('user_id_destino');
             $table->foreignId('estado_id');
             $table->char('atencion_id', 12)->foreignId();
-            $table->string('detalles');
+            $table->string('detalle');
             $table->string('observacion')->nullable();
             $table->boolean('activo')->default(true);
             $table->timestamps();

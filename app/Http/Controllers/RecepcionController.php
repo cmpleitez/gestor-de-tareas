@@ -64,21 +64,18 @@ class RecepcionController extends Controller
 
     public function recibidas()
     {
-        // Consulta súper simple - Solo lo básico que funciona
+        //Consulta de recepciones
         $recepciones = Recepcion::where('user_id_destino', auth()->user()->id)
-            ->with('solicitud:id,solicitud')  // Solo solicitud
-            ->select('id', 'detalles', 'solicitud_id', 'created_at')
-            ->orderBy('created_at', 'desc')
-            ->limit(20)  // Menos registros para ser más rápido
-            ->get();
+        ->with('solicitud')->orderBy('created_at', 'desc')
+        ->limit(20)->get(); //Bloque de procesamiento: 20 unidades cada vez
 
-        // Mapeo súper simple
-        $datos = $recepciones->map(function($r) {
+        //Transformando a la estructura de la tarjeta
+        $datos = $recepciones->map(function($tarjeta) {
             return [
-                'id' => $r->id,
-                'titulo' => $r->solicitud ? $r->solicitud->solicitud : 'Sin título',
-                'detalles' => $r->detalles,
-                'estado_slug' => 'recibida'  // Por ahora todo va como "recibida"
+                'id' => $tarjeta->atencion_id,
+                'titulo' => $tarjeta->solicitud->solicitud,
+                'detalle' => $tarjeta->detalle,
+                'estado' => $tarjeta->estado->estado
             ];
         });
         
@@ -120,7 +117,7 @@ class RecepcionController extends Controller
             $recepcion->role_id = Role::where('name', 'Recepcionista')->first()->id;
             $recepcion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
             $recepcion->atencion_id = $atencion_id;
-            $recepcion->detalles = $request->detalles;
+            $recepcion->detalle = $request->detalle;
             $recepcion->activo = false; //Por defecto invalidada, se valida al derivar la solicitud
             $recepcion->save();
         } catch (\Exception $e) {
@@ -177,7 +174,7 @@ class RecepcionController extends Controller
             $new_recepcion->role_id = $role_id;
             $new_recepcion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
             $new_recepcion->atencion_id = $recepcion->atencion_id;
-            $new_recepcion->detalles = $recepcion->detalles;
+            $new_recepcion->detalle = $recepcion->detalle;
             $new_recepcion->activo = false;
             $new_recepcion->save();
             $recepcion->activo = true; //Se transforma en una solicitud válida al ser derivada a un área
@@ -223,7 +220,7 @@ class RecepcionController extends Controller
             $new_recepcion->role_id = $role_id;
             $new_recepcion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
             $new_recepcion->atencion_id = $recepcion->atencion_id;
-            $new_recepcion->detalles = $recepcion->detalles;
+            $new_recepcion->detalle = $recepcion->detalle;
             $new_recepcion->activo = false;
             $new_recepcion->save();
             $recepcion->activo = true; //Se transforma en una solicitud válida al ser asignada a un gestor
@@ -259,7 +256,7 @@ class RecepcionController extends Controller
             $new_recepcion->role_id = $role_id;
             $new_recepcion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
             $new_recepcion->atencion_id = $recepcion->atencion_id;
-            $new_recepcion->detalles = $recepcion->detalles;
+            $new_recepcion->detalle = $recepcion->detalle;
             $new_recepcion->activo = false;
             $new_recepcion_id = $new_recepcion->id;
             $new_recepcion->save();
@@ -297,6 +294,83 @@ class RecepcionController extends Controller
     {
         $recepciones = Recepcion::where('user_id_destino', auth()->user()->id)->get();
         return view('modelos.recepcion.mis-tareas', compact('recepciones'));
+    }
+
+    public function solicitudesPorEstado(Request $request)
+    {
+        $estados = $request->get('estados', ['Recibida', 'En Proceso', 'Finalizada']);
+        
+        $recepciones = Recepcion::where('user_id_destino', auth()->user()->id)
+            ->with(['solicitud', 'estado'])
+            ->whereHas('estado', function($query) use ($estados) {
+                $query->whereIn('estado', $estados);
+            })
+            ->orderBy('created_at', 'desc')
+            ->limit(60) // 20 por cada estado aprox
+            ->get();
+
+        // Agrupamos por estado
+        $datos = $recepciones->groupBy('estado.estado')->map(function($grupo, $estado) {
+            return $grupo->map(function($tarjeta) use ($estado) {
+                return [
+                    'id' => $tarjeta->id,
+                    'titulo' => $tarjeta->solicitud->solicitud,
+                    'detalle' => $tarjeta->detalle,
+                    'estado' => $estado,
+                    'fecha' => $tarjeta->created_at->format('Y-m-d H:i')
+                ];
+            });
+        });
+        
+        return response()->json([
+            'solicitudes' => $datos,
+            'total_por_estado' => $datos->map->count()
+        ]);
+    }
+
+    public function todasLasSolicitudes()
+    {
+        $recepciones = Recepcion::where('user_id_destino', auth()->user()->id)
+            ->with(['solicitud', 'estado'])
+            ->orderBy('created_at', 'desc')
+            ->limit(50)
+            ->get();
+
+        $datos = $recepciones->map(function($tarjeta) {
+            return [
+                'id' => $tarjeta->id,
+                'titulo' => $tarjeta->solicitud->solicitud,
+                'detalle' => $tarjeta->detalle,
+                'estado' => $tarjeta->estado->estado,
+                'estado_slug' => strtolower(str_replace(' ', '_', $tarjeta->estado->estado)),
+                'fecha' => $tarjeta->created_at->diffForHumans()
+            ];
+        });
+        
+        return response()->json(['recepciones' => $datos]);
+    }
+
+    public function dashboard()
+    {
+        $recepciones = Recepcion::where('user_id_destino', auth()->user()->id)
+            ->with(['solicitud:id,solicitud', 'estado:id,estado']) // Solo campos necesarios
+            ->select(['id', 'solicitud_id', 'estado_id', 'detalle', 'created_at']) 
+            ->orderBy('created_at', 'desc')
+            ->limit(30)
+            ->get();
+
+        $datos = $recepciones->groupBy('estado.estado');
+        
+        return response()->json([
+            'recibidas' => $datos->get('Recibida', collect())->take(10),
+            'en_proceso' => $datos->get('En Proceso', collect())->take(10), 
+            'finalizadas' => $datos->get('Finalizada', collect())->take(10),
+            'totales' => [
+                'recibidas' => $datos->get('Recibida', collect())->count(),
+                'en_proceso' => $datos->get('En Proceso', collect())->count(),
+                'finalizadas' => $datos->get('Finalizada', collect())->count(),
+            ]
+        ]);
     }
 
 }
