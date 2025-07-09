@@ -1,12 +1,10 @@
 @extends('dashboard')
-
 @section('contenedor')
-    <!-- Tablero Kanban básico -->
     <div class="row" style="display: flex; align-items: stretch;">
         <div class="col-md-4">
             <div class="card">
                 <div class="card-header bg-warning text-white">
-                    <h5 class="mb-0">📥 Recibidas</h5>
+                    <h5 class="mb-0">📨 Recibidas</h5>
                 </div>
                 <div class="card-body kanban-columna">
                     <div id="columna-recibidas" class="sortable-column">
@@ -20,7 +18,7 @@
         <div class="col-md-4">
             <div class="card">
                 <div class="card-header bg-info text-white">
-                    <h5 class="mb-0">⚡ En Progreso</h5>
+                    <h5 class="mb-0">📦 En Progreso</h5>
                 </div>
                 <div class="card-body kanban-columna">
                     <div id="columna-progreso" class="sortable-column">
@@ -49,7 +47,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
     <style>
-        .tarea-card {
+        .solicitud-card {
             background: white;
             border: 1px solid #e3e6f0;
             border-radius: 6px;
@@ -60,18 +58,18 @@
             border-left: 4px solid #007bff;
         }
 
-        .tarea-card:hover {
+        .solicitud-card:hover {
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             transform: translateY(-1px);
         }
 
-        .tarea-titulo {
+        .solicitud-titulo {
             font-weight: 600;
             margin-bottom: 5px;
             font-size: 14px;
         }
 
-        .tarea-id {
+        .solicitud-id {
             font-size: 11px;
             color: #6c757d;
             background: #f8f9fa;
@@ -144,126 +142,129 @@
             display: none !important;
         }
 
-        /* FORZAR que cualquier tarea siendo arrastrada sea visible */
-        .tarea-card {
+        /* FORZAR que cualquier solicitud siendo arrastrada sea visible */
+        .solicitud-card {
             opacity: 1 !important;
         }
     </style>
 
     <script>
         $(document).ready(function() {
-            console.log('🚀 Iniciando carga de tareas...');
-
-            // Hacer petición AJAX súper simple
-            $.ajax({
-                url: '{{ route('recepcion.recibidas') }}',
-                type: 'GET',
-                timeout: 10000,
-                success: function(response) {
-                    console.log('✅ Respuesta del servidor:', response.recepciones);
-
-                    // Mostrar datos crudos para debug
-                    $('#datos-raw').text(JSON.stringify(response, null, 2));
-
-                    // Procesar recepciones
-                    const recepciones = response.recepciones || [];
-                    console.log('📋 Total recepciones:', recepciones.length);
-
-                    if (recepciones.length === 0) {
-                        $('#columna-recibidas').html(
-                            '<div class="text-center text-muted">No hay tareas recibidas</div>');
-                        return;
+            // LECTURA DE DATOS
+            const CACHE_KEY = 'kanban_solicituds_recibidas';
+            const CACHE_TTL = 60000; // 1 minuto en ms
+            function guardarEnCache(datos) {
+                const payload = {
+                    data: datos,
+                    timestamp: Date.now()
+                };
+                localStorage.setItem(CACHE_KEY, JSON.stringify(payload));
+            }
+            function leerDeCache() {
+                const raw = localStorage.getItem(CACHE_KEY);
+                if (!raw) return null;
+                try {
+                    const payload = JSON.parse(raw);
+                    if (Date.now() - payload.timestamp < CACHE_TTL) {
+                        return payload.data;
+                    } else {
+                        localStorage.removeItem(CACHE_KEY);
+                        return null;
                     }
-
-                    // Limpiar todas las columnas
-                    $('#columna-recibidas, #columna-progreso, #columna-resueltas').empty();
-                    recepciones.forEach(function(recepcion, index) {
-                        console.log(`📄 Procesando tarea ${index + 1}:`, recepcion);
-                        const tarjetaHtml = `
-                        <div class="tarea-card" data-id="${recepcion.id}">
-                            <div class="tarea-titulo">${recepcion.titulo || recepcion.detalles || 'Sin título'}</div>
-                            <div class="tarea-id">ID: ${recepcion.id}</div>
-                            <div class="tarea-estado" style="font-size: 11px; color: #28a745; margin-top: 5px;">
+                } catch {
+                    localStorage.removeItem(CACHE_KEY);
+                    return null;
+                }
+            }
+            function cargarSolicitudes() { // Actualizar en segundo plano
+                const cache = leerDeCache();
+                if (cache) {
+                    mostrarTarjetas(cache);
+                    cargarDesdeServidor(true); 
+                } else {
+                    cargarDesdeServidor(false);
+                }
+            }
+            function cargarDesdeServidor(silencioso) {
+                if (!silencioso) {
+                    $('#columna-recibidas').html('<div class="text-center text-muted"><i class="bx bx-loader-alt bx-spin"></i> Cargando...</div>');
+                }
+                $.ajax({
+                    url: '{{ route('recepcion.recibidas') }}',
+                    type: 'GET',
+                    timeout: 10000,
+                    success: function(response) {
+                        const recepciones = response.recepciones || [];
+                        guardarEnCache(recepciones);
+                        mostrarTarjetas(recepciones);
+                    },
+                    error: function(xhr, status, error) {
+                        if (!silencioso) {
+                            $('#columna-recibidas').html('<div class="text-center text-danger">Error al cargar solicituds</div>');
+                        }
+                    }
+                });
+            }
+            function mostrarTarjetas(recepciones) {
+                if (recepciones.length === 0) {
+                    $('#columna-recibidas').html('<div class="text-center text-muted">No hay solicituds recibidas</div>');
+                    return;
+                }
+                $('#columna-recibidas, #columna-progreso, #columna-resueltas').empty();
+                recepciones.forEach(function(recepcion, index) {
+                    const tarjetaHtml = `
+                        <div class="solicitud-card" data-id="${recepcion.id}">
+                            <div class="solicitud-titulo">${recepcion.titulo || recepcion.detalles || 'Sin título'}</div>
+                            <div class="solicitud-id">ID: ${recepcion.id}</div>
+                            <div class="solicitud-estado" style="font-size: 11px; color: #28a745; margin-top: 5px;">
                                 Estado: ${recepcion.estado || 'Recibida'}
                             </div>
                         </div>`;
-
-                        $('#columna-recibidas').append(tarjetaHtml);
-                    });
-
-                    console.log('✅ Tareas cargadas correctamente');
-
-                    // Inicializar Kanban después de cargar los datos
-                    initKanban();
-                },
-                    error: function(xhr, status, error) {
-                    console.error('❌ Error al cargar tareas:', {
-                        xhr,
-                        status,
-                        error
+                    $('#columna-recibidas').append(tarjetaHtml);
                 });
+                initKanban();
+            }
 
-                }
-            });
+            // INICIALIZACIÓN
+            cargarSolicitudes();
 
-            // Función para inicializar el drag & drop
+            // INICIALIZACIÓN DEL DRAG & DROP
             function initKanban() {
-                console.log('🎯 Inicializando Kanban drag & drop...');
-
-                // Configurar cada columna para drag & drop
                 const columnas = ['columna-recibidas', 'columna-progreso', 'columna-resueltas'];
-
                 columnas.forEach(function(columnaId) {
                     const elemento = document.getElementById(columnaId);
                     if (!elemento) return;
-
                     new Sortable(elemento, {
                         group: 'kanban', // Permite mover entre columnas
-                        animation: 150,
+                        animation: 150, // Velocidad de la animación
                         ghostClass: 'sortable-ghost', // Elemento en posición original
                         chosenClass: 'sortable-chosen', // Elemento seleccionado  
                         dragClass: 'sortable-drag', // Elemento siendo arrastrado
-
-                        // Mejorar feedback visual para columnas vacías
-                        onMove: function(evt) {
-                            // Resaltar la columna de destino con colores más tenues
+                        onMove: function(evt) { //columna de destino con colores más tenues
                             document.querySelectorAll('.sortable-column').forEach(col => {
                                 col.style.borderColor = 'transparent';
                             });
                             evt.to.style.borderColor = '#d1ecf1'; // Azul muy tenue
-                            evt.to.style.backgroundColor =
-                            '#f8fdff'; // Fondo casi imperceptible
+                            evt.to.style.backgroundColor = '#f8fdff'; // Fondo casi imperceptible
                         },
-
-                        onEnd: function(evt) {
-                            // Quitar resaltado de todas las columnas
+                        onEnd: function(evt) { //Quitar resaltado de todas las columnas
                             document.querySelectorAll('.sortable-column').forEach(col => {
-                                col.style.borderColor = col.children.length === 0 ?
-                                    '#e9ecef' : 'transparent';
-                                col.style.backgroundColor = col.children.length === 0 ?
-                                    '#f8f9fa' : 'transparent';
+                                col.style.borderColor = col.children.length === 0 ? '#e9ecef' : 'transparent';
+                                col.style.backgroundColor = col.children.length === 0 ? '#f8f9fa' : 'transparent';
                             });
-
-                            const tareaId = evt.item.dataset.id;
+                            const solicitudId = evt.item.dataset.id;
                             const columnaOrigen = evt.from.id;
                             const columnaDestino = evt.to.id;
-
-                            console.log(
-                                `📦 Tarea ${tareaId} movida de ${columnaOrigen} a ${columnaDestino}`
-                                );
-
                             if (columnaOrigen !== columnaDestino) {
-                                showMoveAlert(tareaId, columnaDestino);
+                                showMoveAlert(solicitudId, columnaDestino);
                             }
                         }
                     });
                 });
-
-                console.log('✅ Kanban inicializado correctamente');
             }
 
-            // Función para mostrar el cambio de estado
-            function showMoveAlert(tareaId, nuevaColumna) {
+            //MOSTRAR EL CAMBIO DE ESTADO
+            function showMoveAlert(solicitudId, nuevaColumna) {
                 let nuevoEstado = '';
                 switch (nuevaColumna) {
                     case 'columna-recibidas':
@@ -273,14 +274,65 @@
                         nuevoEstado = 'En Progreso';
                         break;
                     case 'columna-resueltas':
-                        nuevoEstado = 'Completada';
+                        nuevoEstado = 'Resuelta';
                         break;
                 }
-                // Aquí harías el AJAX para actualizar en el servidor
+                
+                console.log('🔄 Actualizando estado:', {
+                    solicitudId: solicitudId,
+                    nuevoEstado: nuevoEstado,
+                    columna: nuevaColumna
+                });
+                
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+                
+                $.ajax({
+                    url: '{{ route('recepcion.update', ['recepcion' => ':id', 'estado' => ':estado']) }}'
+                        .replace(':id', solicitudId)
+                        .replace(':estado', encodeURIComponent(nuevoEstado)),
+                    method: 'PUT',
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        console.log('✅ Respuesta exitosa:', response);
+                        if (response.success) {
+                            alert('✅ Estado actualizado a: ' + nuevoEstado);
+                        } else {
+                            alert('❌ Error al actualizar el estado: ' + response.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('🚨 Error AJAX completo:', {
+                            xhr: xhr,
+                            status: status,
+                            error: error,
+                            responseText: xhr.responseText,
+                            responseJSON: xhr.responseJSON
+                        });
+                        
+                        let mensaje = '🚨 Error desconocido';
+                        if (xhr.status === 419) {
+                            mensaje = '🚨 Error CSRF - Recarga la página';
+                        } else if (xhr.status === 404) {
+                            mensaje = '🚨 Ruta no encontrada';
+                        } else if (xhr.status === 500) {
+                            mensaje = '🚨 Error del servidor';
+                        } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                            mensaje = '🚨 ' + xhr.responseJSON.message;
+                        }
+                        
+                        alert(mensaje);
+                    }
+                });
             }
 
-            // Click para mostrar las actividades en la persiana que se abre a la derecha de la vista 
-            $(document).on('click', '.tarea-card', function() {
+            //MOSTRAR ACTIVIDADES EN LA PERSIANA: Click para mostrar las actividades en la persiana que se abre a la derecha de la vista 
+            $(document).on('click', '.solicitud-card', function() {
                 const id = $(this).data('id');
                 alert('Tarea clickeada: ' + id);
             });

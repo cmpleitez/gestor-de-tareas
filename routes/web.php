@@ -122,6 +122,9 @@ Route::middleware([
             Route::get('operadores/{solicitud}', [recepcionController::class, 'operadores'])->name('recepcion.operadores');
             Route::get('create', [RecepcionController::class, 'create'])->name('recepcion.create');
             Route::post('store', [RecepcionController::class, 'store'])->name('recepcion.store');
+            
+            Route::put('update/{recepcion}/{estado}', [RecepcionController::class, 'update'])->name('recepcion.update');
+            
             Route::post('activate/{recepcion}', [RecepcionController::class, 'activate'])->name('recepcion.activate');
             Route::get('derivar/{recepcion}/{area}', [RecepcionController::class, 'derivar'])->name('recepcion.derivar');
             Route::get('asignar/{recepcion}/{equipo}', [RecepcionController::class, 'asignar'])->name('recepcion.asignar');

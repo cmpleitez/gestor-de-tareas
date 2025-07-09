@@ -32,6 +32,7 @@ class CreateNewUser implements CreatesNewUsers
         //GUARDANDO
         try {
             DB::beginTransaction();
+                $validated['password'] = Hash::make($validated['password']);
                 $user = User::create($validated); //Crear el registro en la base de datos
                 ini_set('max_execution_time', 60);
                 ini_set('memory_limit', '256M');

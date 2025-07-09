@@ -12,6 +12,7 @@ use App\Models\Equipo;
 use App\Models\Actividad;
 use App\Models\Atencion;
 use App\Models\Estado;
+use Illuminate\Support\Facades\Cache;
 
 class RecepcionController extends Controller
 {
@@ -64,22 +65,52 @@ class RecepcionController extends Controller
 
     public function recibidas()
     {
-        //Consulta de recepciones
-        $recepciones = Recepcion::where('user_id_destino', auth()->user()->id)
-        ->with('solicitud')->orderBy('created_at', 'desc')
-        ->limit(20)->get(); //Bloque de procesamiento: 20 unidades cada vez
-
-        //Transformando a la estructura de la tarjeta
-        $datos = $recepciones->map(function($tarjeta) {
-            return [
-                'id' => $tarjeta->atencion_id,
-                'titulo' => $tarjeta->solicitud->solicitud,
-                'detalle' => $tarjeta->detalle,
-                'estado' => $tarjeta->estado->estado
-            ];
-        });
+        $requestStart = microtime(true);
+        \Log::info("🟢 INICIO recibidas() - Request ID: " . request()->ip());
         
-        return response()->json(['recepciones' => $datos]);
+        $userId = auth()->user()->id;
+        $cacheKey = "recepciones_recibidas_user_{$userId}";
+        
+        $startTime = microtime(true);
+        
+        // Verificar si el cache existe
+        if (Cache::has($cacheKey)) {
+            $datos = Cache::get($cacheKey);
+            $cacheTime = (microtime(true) - $startTime) * 1000;
+            \Log::info("🚀 Cache HIT - Usuario: {$userId}, Tiempo: {$cacheTime}ms");
+        } else {
+            // Cache de servidor por 3 minutos
+            $datos = Cache::remember($cacheKey, 180, function() use ($userId) {
+                $dbStartTime = microtime(true);
+                
+                //Consulta de recepciones
+                $recepciones = Recepcion::where('user_id_destino', $userId)
+                ->with(['solicitud', 'estado'])->orderBy('created_at', 'desc')
+                ->limit(20)->get(); //Bloque de procesamiento: 20 unidades cada vez
+
+                $dbTime = (microtime(true) - $dbStartTime) * 1000;
+                \Log::info("💾 Consulta BD (con estados) - Usuario: {$userId}, Tiempo: {$dbTime}ms, Registros: " . $recepciones->count());
+
+                //Transformando a la estructura de la tarjeta
+                return $recepciones->map(function($tarjeta) {
+                    return [
+                        'id' => $tarjeta->atencion_id,
+                        'titulo' => $tarjeta->solicitud->solicitud,
+                        'detalle' => $tarjeta->detalle,
+                        'estado' => $tarjeta->estado->estado
+                    ];
+                });
+            });
+            
+            $totalTime = (microtime(true) - $startTime) * 1000;
+            \Log::info("❌ Cache MISS - Usuario: {$userId}, Tiempo cache: {$totalTime}ms");
+        }
+        
+        $totalRequestTime = (microtime(true) - $requestStart) * 1000;
+        \Log::info("🔴 FIN recibidas() - Usuario: {$userId}, Tiempo TOTAL del método: {$totalRequestTime}ms");
+        
+        return response()->json(['recepciones' => $datos])
+            ->header('Cache-Control', 'public, max-age=60'); // Cache HTTP por 1 minuto
     }
 
     public function create()
@@ -138,9 +169,15 @@ class RecepcionController extends Controller
         //
     }
 
-    public function update(Request $request, string $id)
+    public function update(Recepcion $recepcion, string $estado)
     {
-        //
+        $estado = Estado::where('estado', $estado)->first();
+        if (!$estado) {
+            return response()->json(['success' => false, 'message' => 'Estado no encontrado']);
+        }
+        $recepcion->estado_id = $estado->id;
+        $recepcion->save();
+        return response()->json(['success' => true, 'message' => 'Estado actualizado correctamente']);
     }
 
     public function derivar(Recepcion $recepcion, Area $area)

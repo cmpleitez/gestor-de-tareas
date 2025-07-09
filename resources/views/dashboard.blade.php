@@ -9,6 +9,7 @@
     <meta name="description" content="Gestor de tareas">
     <meta name="keywords" content="gestor, gestión, tareas, actividades, proyectos">
     <meta name="author" content="">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>Gestor de tareas {{ config('app.version') }}</title>
     <link rel="apple-touch-icon" href="{{ asset('app-assets/images/ico/apple-icon-120.png') }}">

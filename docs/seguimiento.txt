@@ -1,7 +1,10 @@
 
 ...🟢 TABLERO KANBAN para recepcionistas, supervisores, gestores y operadores
-    ... server error
-    ... colocar las solicitudes recibidas en los canvan de cada quien
+    ... ajustar el register para que guarde encriptada la clave del usuario: solucion al: server error 500
+        ...volver a la depuracion de las demoras en la carga 
+            ...INICIALIZACIÓN DEL DRAG & DROP pendiente lectura para maquetarlo luego
+                ...actualizando estado de la solicitud en el drop
+                    ...actualizar el estado en el frontend
 
 🟢 en la mayoria de las vistas se debe agregar un margen arriba de 1 o 2 porque todo esta muy pegado al techo
 🟢 recepcion.index: establece unidades de capacidad tecnica en el subtitulo de las tres ventanas de distribucion de solicitudes: derivacion, asignacion y delegación
@@ -13,6 +16,7 @@
 🟢 parametrizar bloque de procesamiento actualmente fijado en 20 unidades
 🟢 mis-tareas: ajustar la visibilidad de la tarjeta fantasma y la tarjeta elegida
 🟢 mis-tareas: es posible colocar en primer plano los ultimos 3 digitos los cuales pueden servir como una suerte de ticket de atencion reseteando en 100, ya que los ante-anteriores 3 digitos tambien se resetean matematicamente en en 100
+🟢 mis-tareas: analizar el procedimiento de actualizacion de datos tomando en cuenta inicialmente que el operador solo vera sus solicitudes y si cambian es porque él las ha cambiado lo que hara que se refleje en el front end sin demora
 
 🟠 rage agains the machine & limp bizkit & korn & alice in chains
     ...limp bizkit: im broke
