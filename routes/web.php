@@ -115,7 +115,7 @@ Route::middleware([
         Route::group(['prefix' => 'recepcion'], function () {
             Route::get('/', [RecepcionController::class, 'index'])->name('recepcion');
             
-            Route::get('recibidas', [recepcionController::class, 'recibidas'])->name('recepcion.recibidas');
+            Route::get('recepciones', [recepcionController::class, 'recepciones'])->name('recepcion.solicitudes');
 
             Route::get('areas/{solicitud}', [recepcionController::class, 'areas'])->name('recepcion.areas');
             Route::get('equipos/{solicitud}', [recepcionController::class, 'equipos'])->name('recepcion.equipos');

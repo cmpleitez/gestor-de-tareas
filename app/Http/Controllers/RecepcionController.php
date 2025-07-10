@@ -63,54 +63,29 @@ class RecepcionController extends Controller
         ]);
     }
 
-    public function recibidas()
+    public function recepciones()
     {
-        $requestStart = microtime(true);
-        \Log::info("🟢 INICIO recibidas() - Request ID: " . request()->ip());
-        
+        //Cache de 3 minutos
         $userId = auth()->user()->id;
-        $cacheKey = "recepciones_recibidas_user_{$userId}";
-        
-        $startTime = microtime(true);
-        
-        // Verificar si el cache existe
-        if (Cache::has($cacheKey)) {
-            $datos = Cache::get($cacheKey);
-            $cacheTime = (microtime(true) - $startTime) * 1000;
-            \Log::info("🚀 Cache HIT - Usuario: {$userId}, Tiempo: {$cacheTime}ms");
-        } else {
-            // Cache de servidor por 3 minutos
-            $datos = Cache::remember($cacheKey, 180, function() use ($userId) {
-                $dbStartTime = microtime(true);
-                
-                //Consulta de recepciones
-                $recepciones = Recepcion::where('user_id_destino', $userId)
-                ->with(['solicitud', 'estado'])->orderBy('created_at', 'desc')
-                ->limit(20)->get(); //Bloque de procesamiento: 20 unidades cada vez
+        $datos = Cache::remember("recepciones_user_{$userId}", 180, function() use ($userId) {
 
-                $dbTime = (microtime(true) - $dbStartTime) * 1000;
-                \Log::info("💾 Consulta BD (con estados) - Usuario: {$userId}, Tiempo: {$dbTime}ms, Registros: " . $recepciones->count());
+        //Consulta de recepciones
+        $recepciones = Recepcion::where('user_id_destino', $userId)
+        ->with(['solicitud', 'estado'])->orderBy('created_at', 'desc')
+        ->limit(20)->get(); //Bloque de procesamiento: 20 unidades cada vez
 
-                //Transformando a la estructura de la tarjeta
-                return $recepciones->map(function($tarjeta) {
-                    return [
-                        'id' => $tarjeta->atencion_id,
-                        'titulo' => $tarjeta->solicitud->solicitud,
-                        'detalle' => $tarjeta->detalle,
-                        'estado' => $tarjeta->estado->estado
-                    ];
-                });
+        //Transformando a la estructura de la tarjeta
+        return $recepciones->map(function($tarjeta) {
+            return [
+                'id' => $tarjeta->atencion_id,
+                'titulo' => $tarjeta->solicitud->solicitud,
+                'detalle' => $tarjeta->detalle,
+                'estado' => $tarjeta->estado->estado,
+                'estado_id' => $tarjeta->estado->id
+            ];
             });
-            
-            $totalTime = (microtime(true) - $startTime) * 1000;
-            \Log::info("❌ Cache MISS - Usuario: {$userId}, Tiempo cache: {$totalTime}ms");
-        }
-        
-        $totalRequestTime = (microtime(true) - $requestStart) * 1000;
-        \Log::info("🔴 FIN recibidas() - Usuario: {$userId}, Tiempo TOTAL del método: {$totalRequestTime}ms");
-        
-        return response()->json(['recepciones' => $datos])
-            ->header('Cache-Control', 'public, max-age=60'); // Cache HTTP por 1 minuto
+        });
+        return response()->json(['recepciones' => $datos]);
     }
 
     public function create()
@@ -168,13 +143,9 @@ class RecepcionController extends Controller
     {
         //
     }
-
-    public function update(Recepcion $recepcion, string $estado)
+    
+    public function update(Recepcion $recepcion, Estado $estado)
     {
-        $estado = Estado::where('estado', $estado)->first();
-        if (!$estado) {
-            return response()->json(['success' => false, 'message' => 'Estado no encontrado']);
-        }
         $recepcion->estado_id = $estado->id;
         $recepcion->save();
         return response()->json(['success' => true, 'message' => 'Estado actualizado correctamente']);
@@ -329,85 +300,9 @@ class RecepcionController extends Controller
 
     public function misTareas()
     {
+        $areas = Area::where('zona_id', auth()->user()->oficina->area->zona_id)->get();
         $recepciones = Recepcion::where('user_id_destino', auth()->user()->id)->get();
-        return view('modelos.recepcion.mis-tareas', compact('recepciones'));
-    }
-
-    public function solicitudesPorEstado(Request $request)
-    {
-        $estados = $request->get('estados', ['Recibida', 'En Proceso', 'Finalizada']);
-        
-        $recepciones = Recepcion::where('user_id_destino', auth()->user()->id)
-            ->with(['solicitud', 'estado'])
-            ->whereHas('estado', function($query) use ($estados) {
-                $query->whereIn('estado', $estados);
-            })
-            ->orderBy('created_at', 'desc')
-            ->limit(60) // 20 por cada estado aprox
-            ->get();
-
-        // Agrupamos por estado
-        $datos = $recepciones->groupBy('estado.estado')->map(function($grupo, $estado) {
-            return $grupo->map(function($tarjeta) use ($estado) {
-                return [
-                    'id' => $tarjeta->id,
-                    'titulo' => $tarjeta->solicitud->solicitud,
-                    'detalle' => $tarjeta->detalle,
-                    'estado' => $estado,
-                    'fecha' => $tarjeta->created_at->format('Y-m-d H:i')
-                ];
-            });
-        });
-        
-        return response()->json([
-            'solicitudes' => $datos,
-            'total_por_estado' => $datos->map->count()
-        ]);
-    }
-
-    public function todasLasSolicitudes()
-    {
-        $recepciones = Recepcion::where('user_id_destino', auth()->user()->id)
-            ->with(['solicitud', 'estado'])
-            ->orderBy('created_at', 'desc')
-            ->limit(50)
-            ->get();
-
-        $datos = $recepciones->map(function($tarjeta) {
-            return [
-                'id' => $tarjeta->id,
-                'titulo' => $tarjeta->solicitud->solicitud,
-                'detalle' => $tarjeta->detalle,
-                'estado' => $tarjeta->estado->estado,
-                'estado_slug' => strtolower(str_replace(' ', '_', $tarjeta->estado->estado)),
-                'fecha' => $tarjeta->created_at->diffForHumans()
-            ];
-        });
-        
-        return response()->json(['recepciones' => $datos]);
-    }
-
-    public function dashboard()
-    {
-        $recepciones = Recepcion::where('user_id_destino', auth()->user()->id)
-            ->with(['solicitud:id,solicitud', 'estado:id,estado']) // Solo campos necesarios
-            ->select(['id', 'solicitud_id', 'estado_id', 'detalle', 'created_at']) 
-            ->orderBy('created_at', 'desc')
-            ->limit(30)
-            ->get();
-
-        $datos = $recepciones->groupBy('estado.estado');
-        
-        return response()->json([
-            'recibidas' => $datos->get('Recibida', collect())->take(10),
-            'en_proceso' => $datos->get('En Proceso', collect())->take(10), 
-            'finalizadas' => $datos->get('Finalizada', collect())->take(10),
-            'totales' => [
-                'recibidas' => $datos->get('Recibida', collect())->count(),
-                'en_proceso' => $datos->get('En Proceso', collect())->count(),
-                'finalizadas' => $datos->get('Finalizada', collect())->count(),
-            ]
-        ]);
+        return view('modelos.recepcion.mis-tareas', compact('areas', 'recepciones'));
     }
 
 }
