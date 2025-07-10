@@ -110,37 +110,99 @@
 
 @section('contenedor')
 
-    @if (auth()->user()->hasRole('Recepcionista'))
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header text-white">
-                        <h5 class="mb-0">Areas Destino</h5>
-                    </div>
+    <div class="accordion collapse-icon accordion-icon-rotate" id="accordionWrapa2">
+        <div class="card collapse-header">
+            <div id="heading5" class="card-header" data-toggle="collapse" data-target="#accordion5" aria-expanded="false"
+                aria-controls="accordion5" role="tablist">
+                <span class="collapse-title">
+                    <i class="bx bx-cloud align-middle"></i>
+                    <span class="align-middle">
+                        @if(auth()->user()->hasRole('Recepcionista'))
+                            AREAS DESTINO
+                        @elseif(auth()->user()->hasRole('Supervisor')) 
+                            EQUIPOS DESTINO
+                        @elseif(auth()->user()->hasRole('Gestor'))
+                            OPERADORES DESTINO
+                        @endif
+                    </span>
+                </span>
+            </div>
+            <div id="accordion5" role="tabpanel" data-parent="#accordionWrapa2" aria-labelledby="heading5" class="collapse">
+                <div class="card-content">
                     <div class="card-body">
-                        <div class="row" style="display: flex; align-items: stretch;">
-                            @foreach ($areas as $area)
-                                <div class="col-md-3">
-                                    <div class="card">
-                                        <div class="card-header text-white">
-                                            <div class="custom-control custom-radio">
-                                                <input type="radio" id="area_{{ $area->id }}" name="area_destino"
-                                                    class="custom-control-input" value="{{ $area->id }}">
-                                                <label class="custom-control-label h5 mb-0" for="area_{{ $area->id }}"
-                                                    style="padding: 10px; cursor: pointer;">
-                                                    {{ $area->area }}
-                                                </label>
+                        @if (auth()->user()->hasRole('Recepcionista') && isset($areas))
+                            <div class="row" style="display: flex; align-items: stretch;">
+                                @foreach ($areas as $area)
+                                    <div class="col-md-3">
+                                        <div class="card">
+                                            <div class="card-header text-white">
+                                                <div class="custom-control custom-radio">
+                                                    <input type="radio" id="area_{{ $area->id }}"
+                                                        name="area_destino" class="custom-control-input"
+                                                        value="{{ $area->id }}">
+                                                    <label class="custom-control-label h5 mb-0"
+                                                        for="area_{{ $area->id }}"
+                                                        style="padding: 10px; cursor: pointer;">
+                                                        {{ $area->area }}
+                                                    </label>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            @endforeach
-                        </div>
+                                @endforeach
+                            </div>
+                        @elseif (auth()->user()->hasRole('Supervisor') && isset($equipos))
+                            <div class="row" style="display: flex; align-items: stretch;">
+                                @foreach ($equipos as $equipo)
+                                    <div class="col-md-3">
+                                        <div class="card">
+                                            <div class="card-header bg-info text-white">
+                                                <div class="custom-control custom-radio">
+                                                    <input type="radio" id="equipo_{{ $equipo->id }}"
+                                                        name="equipo_destino" class="custom-control-input"
+                                                        value="{{ $equipo->id }}">
+                                                    <label class="custom-control-label h5 mb-0"
+                                                        for="equipo_{{ $equipo->id }}"
+                                                        style="padding: 10px; cursor: pointer;">
+                                                        {{ $equipo->equipo }}
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @elseif (auth()->user()->hasRole('Gestor') && isset($operadores))
+                            <div class="row" style="display: flex; align-items: stretch;">
+                                @foreach ($operadores as $operador)
+                                    <div class="col-md-3">
+                                        <div class="card">
+                                            <div class="card-header bg-success text-white">
+                                                <div class="custom-control custom-radio">
+                                                    <input type="radio" id="operador_{{ $operador->id }}"
+                                                        name="operador_destino" class="custom-control-input"
+                                                        value="{{ $operador->id }}">
+                                                    <label class="custom-control-label h5 mb-0"
+                                                        for="operador_{{ $operador->id }}"
+                                                        style="padding: 10px; cursor: pointer;">
+                                                        {{ $operador->name }}
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <div class="text-center text-muted">
+                                <p>No hay elementos disponibles para tu rol.</p>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
         </div>
-    @endif
+    </div>
 
     <div class="row" style="display: flex; align-items: stretch;">
         <div class="col-md-4">
@@ -233,7 +295,7 @@
                 if (!silencioso) {
                     $('#columna-recibidas').html(
                         '<div class="text-center text-muted"><i class="bx bx-loader-alt bx-spin"></i> Cargando...</div>'
-                        );
+                    );
                 }
                 $.ajax({
                     url: '{{ route('recepcion.solicitudes') }}',
@@ -248,7 +310,7 @@
                         if (!silencioso) {
                             $('#columna-recibidas').html(
                                 '<div class="text-center text-danger">Error al cargar solicituds</div>'
-                                );
+                            );
                         }
                     }
                 });
@@ -343,7 +405,7 @@
                             });
                             evt.to.style.borderColor = '#d1ecf1'; // Azul muy tenue
                             evt.to.style.backgroundColor =
-                            '#f8fdff'; // Fondo casi imperceptible
+                                '#f8fdff'; // Fondo casi imperceptible
                         },
                         onEnd: function(evt) { //Quitar resaltado de todas las columnas
                             document.querySelectorAll('.sortable-column').forEach(col => {

@@ -300,9 +300,29 @@ class RecepcionController extends Controller
 
     public function misTareas()
     {
-        $areas = Area::where('zona_id', auth()->user()->oficina->area->zona_id)->get();
-        $recepciones = Recepcion::where('user_id_destino', auth()->user()->id)->get();
-        return view('modelos.recepcion.mis-tareas', compact('areas', 'recepciones'));
+        $user = auth()->user();
+        $recepciones = Recepcion::where('user_id_destino', $user->id)->get();
+        
+        // Datos según el rol del usuario
+        if ($user->hasRole('Recepcionista')) {
+            $areas = Area::where('zona_id', $user->oficina->area->zona_id)->get();
+            return view('modelos.recepcion.mis-tareas', compact('areas', 'recepciones'));
+        } 
+        elseif ($user->hasRole('Supervisor')) {
+            $equipos = Equipo::whereHas('usuarios.oficina', function($query) use ($user) {
+                $query->where('area_id', $user->oficina->area_id);
+            })->get();
+            return view('modelos.recepcion.mis-tareas', compact('equipos', 'recepciones'));
+        }
+        elseif ($user->hasRole('Gestor')) {
+            $operadores = User::role('Operador')->whereHas('oficina.area', function($query) use ($user) {
+                $query->where('area_id', $user->oficina->area_id);
+            })->where('activo', true)->get();
+            return view('modelos.recepcion.mis-tareas', compact('operadores', 'recepciones'));
+        }
+        
+        // Por defecto, sin datos adicionales
+        return view('modelos.recepcion.mis-tareas', compact('recepciones'));
     }
 
 }
