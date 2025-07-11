@@ -103,34 +103,27 @@ Route::middleware([
         });
     });
 
-    //OPERADORES
-/*     Route::group(['middleware' => ['role:Operador']], function () {
-        Route::group(['prefix' => 'recepcion'], function () { //Asignación de tareas
-            
-        });
-    });
- */
     //BENEFICIARIOS
-    Route::group(['middleware' => ['role:Beneficiario|Recepcionista']], function () {
+    Route::group(['middleware' => ['role:Recepcionista|Supervisor|Gestor']], function () {
         Route::group(['prefix' => 'recepcion'], function () {
             Route::get('/', [RecepcionController::class, 'index'])->name('recepcion');
-            
             Route::get('recepciones', [recepcionController::class, 'recepciones'])->name('recepcion.solicitudes');
-
             Route::get('areas/{solicitud}', [recepcionController::class, 'areas'])->name('recepcion.areas');
             Route::get('equipos/{solicitud}', [recepcionController::class, 'equipos'])->name('recepcion.equipos');
             Route::get('operadores/{solicitud}', [recepcionController::class, 'operadores'])->name('recepcion.operadores');
-            Route::get('create', [RecepcionController::class, 'create'])->name('recepcion.create');
-            Route::post('store', [RecepcionController::class, 'store'])->name('recepcion.store');
-            
-            Route::put('update/{recepcion}/{estado}', [RecepcionController::class, 'update'])->name('recepcion.update');
-            
             Route::post('activate/{recepcion}', [RecepcionController::class, 'activate'])->name('recepcion.activate');
-            Route::get('derivar/{recepcion}/{area}', [RecepcionController::class, 'derivar'])->name('recepcion.derivar');
-            Route::get('asignar/{recepcion}/{equipo}', [RecepcionController::class, 'asignar'])->name('recepcion.asignar');
-            Route::get('delegar/{recepcion}/{user}', [RecepcionController::class, 'delegar'])->name('recepcion.delegar');
+            Route::post('derivar/{recepcion_id}/{area_id}', [RecepcionController::class, 'derivar'])->name('recepcion.derivar');
+            Route::post('asignar/{recepcion_id}/{equipo_id}', [RecepcionController::class, 'asignar'])->name('recepcion.asignar');
+            Route::post('delegar/{recepcion_id}/{user_id}', [RecepcionController::class, 'delegar'])->name('recepcion.delegar');
             Route::get('mis-tareas', [RecepcionController::class, 'misTareas'])->name('recepcion.mis-tareas');
         });
     });
 
+    //BENEFICIARIOS
+    Route::group(['middleware' => ['role:Beneficiario']], function () {
+        Route::group(['prefix' => 'recepcion'], function () {
+            Route::get('create', [RecepcionController::class, 'create'])->name('recepcion.create');
+            Route::post('store', [RecepcionController::class, 'store'])->name('recepcion.store');
+        });
+    });
 });

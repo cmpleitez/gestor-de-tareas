@@ -256,7 +256,7 @@
                     var html = '';
                     areas.forEach(function(area) {
                         var url =
-                            '{{ route('recepcion.derivar', ['recepcion' => ':recepcionId', 'area' => ':areaId']) }}'
+                            '{{ route('recepcion.derivar', ['recepcion_id' => ':recepcionId', 'area_id' => ':areaId']) }}'
                             .replace(':recepcionId', recepcionId)
                             .replace(':areaId', area.id);
 
@@ -290,7 +290,7 @@
                     var html = '';
                     equipos.forEach(function(equipo) {
                         var url =
-                            '{{ route('recepcion.asignar', ['recepcion' => ':recepcionId', 'equipo' => ':equipoId']) }}'
+                            '{{ route('recepcion.asignar', ['recepcion_id' => ':recepcionId', 'equipo_id' => ':equipoId']) }}'
                             .replace(':recepcionId', recepcionId)
                             .replace(':equipoId', equipo.id);
 
@@ -322,7 +322,7 @@
                     var html = '';
                     operadores.forEach(function(operador) {
                         var url =
-                            '{{ route('recepcion.delegar', ['recepcion' => ':recepcionId', 'user' => ':userId']) }}'
+                            '{{ route('recepcion.delegar', ['recepcion_id' => ':recepcionId', 'user_id' => ':userId']) }}'
                             .replace(':recepcionId', recepcionId)
                             .replace(':userId', operador.id);
 

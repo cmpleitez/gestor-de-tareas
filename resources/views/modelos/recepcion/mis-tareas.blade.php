@@ -109,141 +109,143 @@
 @endsection
 
 @section('contenedor')
-
-    <div class="accordion collapse-icon accordion-icon-rotate" id="accordionWrapa2">
-        <div class="card collapse-header">
-            <div id="heading5" class="card-header" data-toggle="collapse" data-target="#accordion5" aria-expanded="false"
-                aria-controls="accordion5" role="tablist">
-                <span class="collapse-title">
-                    <i class="bx bx-cloud align-middle"></i>
-                    <span class="align-middle">
-                        @if(auth()->user()->hasRole('Recepcionista'))
-                            AREAS DESTINO
-                        @elseif(auth()->user()->hasRole('Supervisor')) 
-                            EQUIPOS DESTINO
-                        @elseif(auth()->user()->hasRole('Gestor'))
-                            OPERADORES DESTINO
-                        @endif
-                    </span>
+<div class="accordion collapse-icon accordion-icon-rotate" id="accordionWrapa2">
+    <div class="card collapse-header">
+        <div id="heading5" class="card-header" data-toggle="collapse" data-target="#accordion5" aria-expanded="false"
+            aria-controls="accordion5" role="tablist">
+            <span class="collapse-title">
+                <i class="bx bx-cloud align-middle"></i>
+                <span class="align-middle text-uppercase">
+                    @if(auth()->user()->hasRole('Recepcionista'))
+                        DERIVANDO SOLICITUDES HACIA {{ auth()->user()->oficina->area->area }}
+                    @elseif(auth()->user()->hasRole('Supervisor'))
+                        ASIGNANDO SOLICITUDES A {{ auth()->user()->equipos()->first()->equipo }}
+                    @elseif(auth()->user()->hasRole('Gestor'))
+                        DELEGANDO SOLICITUDES A {{ auth()->user()->name }}
+                    @endif
                 </span>
-            </div>
-            <div id="accordion5" role="tabpanel" data-parent="#accordionWrapa2" aria-labelledby="heading5" class="collapse">
-                <div class="card-content">
-                    <div class="card-body">
-                        @if (auth()->user()->hasRole('Recepcionista') && isset($areas))
-                            <div class="row" style="display: flex; align-items: stretch;">
-                                @foreach ($areas as $area)
-                                    <div class="col-md-3">
-                                        <div class="card">
-                                            <div class="card-header text-white">
-                                                <div class="custom-control custom-radio">
-                                                    <input type="radio" id="area_{{ $area->id }}"
-                                                        name="area_destino" class="custom-control-input"
-                                                        value="{{ $area->id }}">
-                                                    <label class="custom-control-label h5 mb-0"
-                                                        for="area_{{ $area->id }}"
-                                                        style="padding: 10px; cursor: pointer;">
-                                                        {{ $area->area }}
-                                                    </label>
-                                                </div>
+            </span>
+        </div>
+        <div id="accordion5" role="tabpanel" data-parent="#accordionWrapa2" aria-labelledby="heading5" class="collapse">
+            <div class="card-content">
+                <div class="card-body">
+                    @if (auth()->user()->hasRole('Recepcionista') && isset($areas))
+                        <div class="row" style="display: flex; align-items: stretch;">
+                            @foreach ($areas as $area)
+                                <div class="col-md-3">
+                                    <div class="card">
+                                        <div class="card-header text-white">
+                                            <div class="custom-control custom-radio">
+                                                <input type="radio" id="area_{{ $area->id }}"
+                                                    name="area_destino" class="custom-control-input"
+                                                    value="{{ $area->id }}"
+                                                    {{ $area->id == auth()->user()->oficina->area_id ? 'checked' : '' }}>
+                                                <label class="custom-control-label h5 mb-0"
+                                                    for="area_{{ $area->id }}"
+                                                    style="padding: 10px; cursor: pointer;">
+                                                    {{ $area->area }}
+                                                </label>
                                             </div>
                                         </div>
                                     </div>
-                                @endforeach
-                            </div>
-                        @elseif (auth()->user()->hasRole('Supervisor') && isset($equipos))
-                            <div class="row" style="display: flex; align-items: stretch;">
-                                @foreach ($equipos as $equipo)
-                                    <div class="col-md-3">
-                                        <div class="card">
-                                            <div class="card-header bg-info text-white">
-                                                <div class="custom-control custom-radio">
+                                </div>
+                            @endforeach
+                        </div>
+                    @elseif (auth()->user()->hasRole('Supervisor') && isset($equipos))
+                        <div class="row" style="display: flex; align-items: stretch;">
+                            @foreach ($equipos as $equipo)
+                                <div class="col-md-3">
+                                    <div class="card">
+                                        <div class="card-header bg-info text-white">
+                                            <div class="custom-control custom-radio">
                                                     <input type="radio" id="equipo_{{ $equipo->id }}"
                                                         name="equipo_destino" class="custom-control-input"
-                                                        value="{{ $equipo->id }}">
-                                                    <label class="custom-control-label h5 mb-0"
-                                                        for="equipo_{{ $equipo->id }}"
-                                                        style="padding: 10px; cursor: pointer;">
-                                                        {{ $equipo->equipo }}
-                                                    </label>
-                                                </div>
+                                                        value="{{ $equipo->id }}"
+                                                        {{ $equipo->id == auth()->user()->equipos->first()->id ? 'checked' : '' }}>
+                                                <label class="custom-control-label h5 mb-0"
+                                                    for="equipo_{{ $equipo->id }}"
+                                                    style="padding: 10px; cursor: pointer;">
+                                                    {{ $equipo->equipo }}
+                                                </label>
                                             </div>
                                         </div>
                                     </div>
-                                @endforeach
-                            </div>
-                        @elseif (auth()->user()->hasRole('Gestor') && isset($operadores))
-                            <div class="row" style="display: flex; align-items: stretch;">
-                                @foreach ($operadores as $operador)
-                                    <div class="col-md-3">
-                                        <div class="card">
-                                            <div class="card-header bg-success text-white">
-                                                <div class="custom-control custom-radio">
-                                                    <input type="radio" id="operador_{{ $operador->id }}"
-                                                        name="operador_destino" class="custom-control-input"
-                                                        value="{{ $operador->id }}">
-                                                    <label class="custom-control-label h5 mb-0"
-                                                        for="operador_{{ $operador->id }}"
-                                                        style="padding: 10px; cursor: pointer;">
-                                                        {{ $operador->name }}
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        @else
-                            <div class="text-center text-muted">
-                                <p>No hay elementos disponibles para tu rol.</p>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row" style="display: flex; align-items: stretch;">
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-header bg-warning text-white">
-                    <h5 class="mb-0">📨 Recibidas</h5>
-                </div>
-                <div class="card-body kanban-columna">
-                    <div id="columna-recibidas" class="sortable-column">
-                        <div class="text-center text-muted">
-                            <i class="bx bx-loader-alt bx-spin"></i> Cargando...
+                                </div>
+                            @endforeach
                         </div>
-                    </div>
+                    @elseif (auth()->user()->hasRole('Gestor') && isset($operadores))
+                        <div class="row" style="display: flex; align-items: stretch;">
+                            @foreach ($operadores as $operador)
+                                <div class="col-md-3">
+                                    <div class="card">
+                                        <div class="card-header bg-success text-white">
+                                            <div class="custom-control custom-radio">
+                                                <input type="radio" id="operador_{{ $operador->id }}"
+                                                    name="operador_destino" class="custom-control-input"
+                                                    value="{{ $operador->id }}"
+                                                    {{ $operador->id == auth()->user()->id ? 'checked' : '' }}>
+                                                <label class="custom-control-label h5 mb-0"
+                                                    for="operador_{{ $operador->id }}"
+                                                    style="padding: 10px; cursor: pointer;">
+                                                    {{ $operador->name }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="text-center text-muted">
+                            <p>No hay elementos disponibles para tu rol.</p>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-header bg-info text-white">
-                    <h5 class="mb-0">📦 En Progreso</h5>
-                </div>
-                <div class="card-body kanban-columna">
-                    <div id="columna-progreso" class="sortable-column">
-                        <div class="text-center text-muted">Vacío por ahora</div>
-                    </div>
-                </div>
+    </div>
+</div>
+
+<div class="row" style="display: flex; align-items: stretch;">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-warning text-white">
+                <h5 class="mb-0">📨 Recibidas</h5>
             </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-header bg-success text-white">
-                    <h5 class="mb-0">✔️ Resueltas</h5>
-                </div>
-                <div class="card-body kanban-columna">
-                    <div id="columna-resueltas" class="sortable-column">
-                        <div class="text-center text-muted">Vacío por ahora</div>
+            <div class="card-body kanban-columna">
+                <div id="columna-recibidas" class="sortable-column">
+                    <div class="text-center text-muted">
+                        <i class="bx bx-loader-alt bx-spin"></i> Cargando...
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">📦 En Progreso</h5>
+            </div>
+            <div class="card-body kanban-columna">
+                <div id="columna-progreso" class="sortable-column">
+                    <div class="text-center text-muted">Vacío por ahora</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">✔️ Resueltas</h5>
+            </div>
+            <div class="card-body kanban-columna">
+                <div id="columna-resueltas" class="sortable-column">
+                    <div class="text-center text-muted">Vacío por ahora</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('js')
@@ -252,7 +254,16 @@
     <script src="{{ asset('app-assets/vendors/js/jkanban/Sortable.min.js') }}"></script>
 
     <script>
+        let userRole = '';
+        @if(auth()->user()->hasRole('Recepcionista'))
+            userRole = 'Recepcionista';
+        @elseif(auth()->user()->hasRole('Supervisor'))
+            userRole = 'Supervisor';
+        @elseif(auth()->user()->hasRole('Gestor'))
+            userRole = 'Gestor';
+        @endif
         $(document).ready(function() {
+            
             // LECTURA DE DATOS
             const CACHE_KEY = 'kanban_solicituds_recibidas';
             const CACHE_TTL = 60000; // 1 minuto en ms
@@ -263,7 +274,6 @@
                 };
                 localStorage.setItem(CACHE_KEY, JSON.stringify(payload));
             }
-
             function leerDeCache() {
                 const raw = localStorage.getItem(CACHE_KEY);
                 if (!raw) return null;
@@ -280,7 +290,6 @@
                     return null;
                 }
             }
-
             function cargarSolicitudes() { // Actualizar en segundo plano
                 const cache = leerDeCache();
                 if (cache) {
@@ -290,7 +299,6 @@
                     cargarDesdeServidor(false);
                 }
             }
-
             function cargarDesdeServidor(silencioso) {
                 if (!silencioso) {
                     $('#columna-recibidas').html(
@@ -315,48 +323,37 @@
                     }
                 });
             }
-
             function mostrarTarjetas(recepciones) {
-                // Limpiar todos los tableros
-                $('#columna-recibidas, #columna-progreso, #columna-resueltas').empty();
-
+                $('#columna-recibidas, #columna-progreso, #columna-resueltas').empty(); // Limpiar todos los tableros
                 if (recepciones.length === 0) {
                     $('#columna-recibidas').html('<div class="text-center text-muted">No hay solicitudes</div>');
                     $('#columna-progreso').html('<div class="text-center text-muted">No hay solicitudes</div>');
                     $('#columna-resueltas').html('<div class="text-center text-muted">No hay solicitudes</div>');
                     return;
                 }
-
-                // Contadores para verificar si hay tarjetas en cada columna
-                let contadores = {
+                let contadores = { // Contadores para verificar si hay tarjetas en cada columna
                     recibidas: 0,
                     progreso: 0,
                     resueltas: 0
                 };
-
-                // Distribuir las tarjetas según su estado
-                recepciones.forEach(function(recepcion, index) {
-                    const estadoId = recepcion.estado_id || 1; // Por defecto ID 1 (Recibida)
+                recepciones.forEach(function(recepcion, index) { // Distribuir las tarjetas según su estado
+                    const estadoId = recepcion.estado_id || 1;
                     const estadoNombre = recepcion.estado || 'Recibida';
-
-                    // Determinar el color del borde y columna según el estado_id
-                    let colorBorde = '#007bff'; // Azul por defecto
-                    let columnaDestino = 'columna-recibidas'; // Por defecto
-
-                    if (estadoId === 1) { // Recibida
-                        colorBorde = '#ffc107'; // Amarillo para recibidas
+                    let colorBorde = '#007bff';
+                    let columnaDestino = 'columna-recibidas';
+                    if (estadoId === 1) {
+                        colorBorde = '#ffc107';
                         columnaDestino = 'columna-recibidas';
                         contadores.recibidas++;
-                    } else if (estadoId === 2) { // En progreso
-                        colorBorde = '#17a2b8'; // Azul info para en proceso
+                    } else if (estadoId === 2) {
+                        colorBorde = '#17a2b8';
                         columnaDestino = 'columna-progreso';
                         contadores.progreso++;
-                    } else if (estadoId === 3) { // Resuelta
-                        colorBorde = '#28a745'; // Verde para finalizadas
+                    } else if (estadoId === 3) {
+                        colorBorde = '#28a745';
                         columnaDestino = 'columna-resueltas';
                         contadores.resueltas++;
                     }
-
                     const tarjetaHtml = `
                         <div class="solicitud-card" data-id="${recepcion.id}" data-estado-id="${estadoId}" style="border-left-color: ${colorBorde};">
                             <div class="solicitud-titulo">${recepcion.titulo || recepcion.detalles || 'Sin título'}</div>
@@ -365,12 +362,9 @@
                                 Estado: ${estadoNombre}
                             </div>
                         </div>`;
-
                     $(`#${columnaDestino}`).append(tarjetaHtml);
                 });
-
-                // Mostrar mensajes si alguna columna quedó vacía
-                if (contadores.recibidas === 0) {
+                if (contadores.recibidas === 0) { // Mostrar mensajes si alguna columna quedó vacía
                     $('#columna-recibidas').html(
                         '<div class="text-center text-muted">No hay solicitudes recibidas</div>');
                 }
@@ -382,20 +376,17 @@
                     $('#columna-resueltas').html(
                         '<div class="text-center text-muted">No hay solicitudes resueltas</div>');
                 }
-
                 initKanban();
             }
             cargarSolicitudes(); //Cargar las solicitudes desde el servidor
-
-            // INICIALIZACIÓN DEL DRAG & DROP
-            function initKanban() {
+            function initKanban() { // Inicializar el kanban
                 const columnas = ['columna-recibidas', 'columna-progreso', 'columna-resueltas'];
                 columnas.forEach(function(columnaId) {
                     const elemento = document.getElementById(columnaId);
                     if (!elemento) return;
                     new Sortable(elemento, {
                         group: 'kanban', // Permite mover entre columnas
-                        animation: 150, // Velocidad de la animación
+                        animation: 50, // Velocidad de la animación
                         ghostClass: 'sortable-ghost', // Elemento en posición original
                         chosenClass: 'sortable-chosen', // Elemento seleccionado  
                         dragClass: 'sortable-drag', // Elemento siendo arrastrado
@@ -425,7 +416,7 @@
                 });
             }
 
-            //ACTUALIZACION DE ESTADO
+            //ACTUALIZACION DE ESTADO EN EL FRONTEND
             function showMoveAlert(solicitudId, nuevaColumna) {
                 let nuevoEstadoId = 1; // Por defecto Recibida
                 let nombreEstado = 'Recibida';
@@ -448,40 +439,77 @@
                         colorBorde = '#28a745'; // Verde
                         break;
                 }
-                $.ajaxSetup({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                let url = '';
+                let selectedValue = null;
+                if (userRole === 'Recepcionista') { //Derivar solicitud
+                    selectedValue = $('input[name="area_destino"]:checked').val();
+                    if (!selectedValue) {
+                        Swal.fire({
+                            position: 'top-end',
+                            type: 'warning',
+                            title: 'Selecciona un área destino primero',
+                            showConfirmButton: false,
+                            timer: 2000
+                        });
+                        // Revertir el movimiento visualmente (opcional, pero simple: recargar)
+                        location.reload();
+                        return;
                     }
-                });
-                $.ajax({
-                    url: '{{ route('recepcion.update', ['recepcion' => ':id', 'estado' => ':estado']) }}'
+                    url = '{{ route("recepcion.derivar", ["recepcion_id" => ":id", "area_id" => ":area"]) }}'
                         .replace(':id', solicitudId)
-                        .replace(':estado', nuevoEstadoId),
-                    method: 'PUT',
+                        .replace(':area', selectedValue);
+                } else if (userRole === 'Supervisor') { //Asignar solicitud
+                    selectedValue = $('input[name="equipo_destino"]:checked').val();
+                    if (!selectedValue) {
+                        Swal.fire({
+                            position: 'top-end',
+                            type: 'warning',
+                            title: 'Selecciona un equipo destino primero',
+                            showConfirmButton: false,
+                            timer: 2000
+                        });
+                        location.reload();
+                        return;
+                    }
+                    url = '{{ route("recepcion.asignar", ["recepcion_id" => ":id", "equipo_id" => ":equipo"]) }}'
+                        .replace(':id', solicitudId)
+                        .replace(':equipo', selectedValue);
+                } else if (userRole === 'Gestor') { //Delegar solicitud
+                    selectedValue = $('input[name="operador_destino"]:checked').val();
+                    if (!selectedValue) {
+                        Swal.fire({
+                            position: 'top-end',
+                            type: 'warning',
+                            title: 'Selecciona un operador destino primero',
+                            showConfirmButton: false,
+                            timer: 2000
+                        });
+                        location.reload();
+                        return;
+                    }
+                    url = '{{ route("recepcion.delegar", ["recepcion_id" => ":id", "user_id" => ":user"]) }}'
+                        .replace(':id', solicitudId)
+                        .replace(':user', selectedValue);
+                }
+
+
+                $.ajax({
+                    url: url,
+                    method: 'POST',
                     data: {
                         _token: $('meta[name="csrf-token"]').attr('content')
                     },
                     success: function(response) {
                         if (response.success) {
-                            // Actualizar la tarjeta visualmente
-                            const tarjeta = $(
-                                `#${nuevaColumna} .solicitud-card[data-id="${solicitudId}"]`);
-                            const tituloTarjeta = tarjeta.find('.solicitud-titulo').text() ||
-                                'Sin título';
+                            const tarjeta = $(`#${nuevaColumna} .solicitud-card[data-id="${solicitudId}"]`);
+                            const tituloTarjeta = tarjeta.find('.solicitud-titulo').text() || 'Sin título';
 
                             if (tarjeta.length > 0) {
-                                // Actualizar el color del borde
                                 tarjeta.css('border-left-color', colorBorde);
-
-                                // Actualizar el texto del estado
                                 tarjeta.find('.solicitud-estado').text('Estado: ' + nombreEstado);
                                 tarjeta.find('.solicitud-estado').css('color', colorBorde);
-
-                                // Actualizar el data-estado-id
                                 tarjeta.attr('data-estado-id', nuevoEstadoId);
                             }
-
-                            // Mensaje de éxito con SweetAlert2
                             Swal.fire({
                                 position: 'top-end',
                                 type: 'success',
@@ -491,11 +519,12 @@
                                 confirmButtonClass: 'btn btn-primary',
                                 buttonsStyling: false
                             });
+
                         } else {
                             Swal.fire({
                                 position: 'top-end',
                                 type: 'error',
-                                title: 'Error al actualizar',
+                                title: response.message,
                                 showConfirmButton: false,
                                 timer: 1500,
                                 confirmButtonClass: 'btn btn-primary',
@@ -514,16 +543,18 @@
                         } else if (xhr.responseJSON && xhr.responseJSON.message) {
                             mensaje = '🚨 ' + xhr.responseJSON.message;
                         }
-                        // Mensaje de error con SweetAlert2
                         Swal.fire({
                             position: 'top-end',
                             type: 'error',
-                            title: 'Error de comunicación',
+                            title: mensaje,
                             showConfirmButton: false,
                             timer: 1500,
                             confirmButtonClass: 'btn btn-primary',
                             buttonsStyling: false
                         });
+                        
+                        // Revertir movimiento en caso de error
+                        location.reload();
                     }
                 });
             }
@@ -540,6 +571,28 @@
                     confirmButtonClass: 'btn btn-primary',
                     buttonsStyling: false
                 });
+            });
+
+            // ACTUALIZACIÓN DINÁMICA DEL TÍTULO DEL ACORDEÓN
+            $(document).on('change', 'input[name="area_destino"]', function() {
+                const areaId = $(this).val();
+                const areaNombre = $(this).closest('.card').find('label').text().trim();
+                $('.collapse-title span.align-middle').text(`DERIVANDO SOLICITUDES HACIA ${areaNombre}`);
+                $('#accordion5').collapse('hide');
+            });
+
+            $(document).on('change', 'input[name="equipo_destino"]', function() {
+                const equipoId = $(this).val();
+                const equipoNombre = $(this).closest('.card').find('label').text().trim();
+                $('.collapse-title span.align-middle').text(`ASIGNANDO SOLICITUDES A ${equipoNombre}`);
+                $('#accordion5').collapse('hide');
+            });
+
+            $(document).on('change', 'input[name="operador_destino"]', function() {
+                const operadorId = $(this).val();
+                const operadorNombre = $(this).closest('.card').find('label').text().trim();
+                $('.collapse-title span.align-middle').text(`DELEGANDO SOLICITUDES A ${operadorNombre}`);
+                $('#accordion5').collapse('hide');
             });
         });
     </script>

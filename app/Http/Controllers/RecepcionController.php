@@ -13,6 +13,7 @@ use App\Models\Actividad;
 use App\Models\Atencion;
 use App\Models\Estado;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class RecepcionController extends Controller
 {
@@ -144,79 +145,103 @@ class RecepcionController extends Controller
         //
     }
     
-    public function update(Recepcion $recepcion, Estado $estado)
+    public function derivar($recepcion_id, $area_id)
     {
-        $recepcion->estado_id = $estado->id;
-        $recepcion->save();
-        return response()->json(['success' => true, 'message' => 'Estado actualizado correctamente']);
-    }
-
-    public function derivar(Recepcion $recepcion, Area $area)
-    {
-        //Validando el número de atención
-        $role_id = Role::where('name', 'Supervisor')->first()->id;
-        $derivada = Recepcion::where('atencion_id', $recepcion->atencion_id)->where('role_id', $role_id)->first();
-        if ($derivada) {
-            return back()->with('error', 'La solicitud con número de atención ' . $derivada->atencion_id . ' ya ha sido derivada a ' . $derivada->usuarioDestino->name . ' en el área ' . $derivada->area->area);
+        Log::info('Método derivar iniciado', ['recepcion_id' => $recepcion_id, 'area_id' => $area_id, 'user_id' => auth()->user()->id]);
+        $recepcion = Recepcion::find($recepcion_id);
+        if (!$recepcion) {
+            return response()->json(['success' => false, 'message' => 'No se encontró la recepción solicitada'], 404);
         }
-        //Seleccionando el supervisor
-        $supervisores = User::role('Supervisor')->whereHas('oficina.area', function($query) use ($area){
-            $query->where('area_id', $area->id);
-        })->get();
-        if ($supervisores->isEmpty()) {
-            return back()->with('error', 'La funcionalidad se encuentra inhabilitada, consulte con el administrador del sistema');
+        $area = Area::find($area_id);
+        if (!$area) {
+            return response()->json(['success' => false, 'message' => 'No se encontró el área solicitada'], 404);
         }
-        $supervisor = $supervisores->random();
-        //Derivando la solicitud
-        DB::beginTransaction();
         try {
-            $new_recepcion = new Recepcion(); //Creando la nueva recepción
-            $new_recepcion->id = (new KeyMaker())->generate('Recepcion', $recepcion->solicitud_id);
-            $new_recepcion->solicitud_id = $recepcion->solicitud_id;
-            $new_recepcion->oficina_id = $recepcion->oficina_id;
-            $new_recepcion->area_id = $area->id;
-            $new_recepcion->zona_id = $area->zona_id;
-            $new_recepcion->distrito_id = $area->zona->distrito_id;
-            $new_recepcion->user_id_origen = auth()->user()->id;
-            $new_recepcion->user_id_destino = $supervisor->id;
-            $new_recepcion->role_id = $role_id;
-            $new_recepcion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
-            $new_recepcion->atencion_id = $recepcion->atencion_id;
-            $new_recepcion->detalle = $recepcion->detalle;
-            $new_recepcion->activo = false;
-            $new_recepcion->save();
-            $recepcion->activo = true; //Se transforma en una solicitud válida al ser derivada a un área
-            $recepcion->save();
-            DB::commit(); //Finalizando la transacción
-            return redirect()->route('recepcion')->with('success', 'La solicitud "' . $recepcion->atencion_id . '" ha sido derivada a ' . $recepcion->usuarioDestino->name . ' del area ' . $recepcion->area->area);
+            //Validando el número de atención
+            $role_id = Role::where('name', 'Supervisor')->first()->id;
+            $derivada = Recepcion::where('atencion_id', $recepcion->atencion_id)->where('role_id', $role_id)->first();
+            if ($derivada) {
+                return response()->json(['success' => false, 'message' => 'La solicitud con número de atención ' . $derivada->atencion_id . ' ya ha sido derivada a ' . $derivada->usuarioDestino->name . ' en el área ' . $derivada->area->area]);
+            }
+            //Seleccionando el supervisor
+            $supervisores = User::role('Supervisor')->whereHas('oficina', function($query) use ($area) {
+                $query->where('area_id', $area->id);
+            })->get();
+            if ($supervisores->isEmpty()) {
+                Log::warning('No se encontró supervisor para área', ['area_id' => $area->id]);
+                return response()->json(['success' => false, 'message' => 'No hay supervisor disponible para esta área'], 422);
+            }
+            $supervisor = $supervisores->random();
+            //Derivando la solicitud
+            DB::beginTransaction();
+            try {
+                $new_recepcion = new Recepcion(); //Creando solicitud - Copia Supervisor
+                $new_recepcion->id = (new KeyMaker())->generate('Recepcion', $recepcion->solicitud_id);
+                $new_recepcion->solicitud_id = $recepcion->solicitud_id;
+                $new_recepcion->oficina_id = $recepcion->oficina_id;
+                $new_recepcion->area_id = $area->id;
+                $new_recepcion->zona_id = $area->zona_id;
+                $new_recepcion->distrito_id = $area->zona->distrito_id;
+                $new_recepcion->user_id_origen = auth()->user()->id;
+                $new_recepcion->user_id_destino = $supervisor->id;
+                $new_recepcion->role_id = $role_id;
+                $new_recepcion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
+                $new_recepcion->atencion_id = $recepcion->atencion_id;
+                $new_recepcion->detalle = $recepcion->detalle;
+                $new_recepcion->activo = false;
+                $new_recepcion->save();
+                $recepcion->activo = true; //Validar solicitud y actualizar estado - Copia Recepcionista
+                $recepcion->estado_id = Estado::where('estado', 'En progreso')->first()->id;
+                $recepcion->save();
+                DB::commit(); //Finalizando la transacción
+                Log::info('Método derivar finalizado', ['recepcion_id' => $recepcion_id, 'area_id' => $area_id, 'user_id' => auth()->user()->id]);
+                return response()->json(['success' => true, 'message' => 'La solicitud "' . $recepcion->atencion_id . '" ha sido derivada a ' . $recepcion->usuarioDestino->name . ' del area ' . $recepcion->area->area]);
+            } catch (\Exception $e) {
+                Log::error('Error al derivar', ['recepcion_id' => $recepcion_id, 'area_id' => $area_id, 'user_id' => auth()->user()->id, 'error' => $e->getMessage()]);
+
+                DB::rollBack();
+                return response()->json(['success' => false, 'message' => 'Ocurrió un error al derivar la solicitud:' . $e->getMessage()]);
+            }
         } catch (\Exception $e) {
+            Log::error('Error al derivar', ['recepcion_id' => $recepcion_id, 'area_id' => $area_id, 'user_id' => auth()->user()->id, 'error' => $e->getMessage()]);
+
             DB::rollBack();
-            return back()->with('error', 'Ocurrió un error al derivar la solicitud:' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Error al derivar: ' . $e->getMessage()], 500);
         }
     }
 
-    public function asignar(Recepcion $recepcion, Equipo $equipo)
+    public function asignar($recepcion_id, $equipo_id)
     {
+        Log::info('Método asignar iniciado', ['recepcion_id' => $recepcion_id, 'equipo_id' => $equipo_id, 'user_id' => auth()->user()->id]);
+        $recepcion = Recepcion::find($recepcion_id);
+        if (!$recepcion) {
+            return response()->json(['success' => false, 'message' => 'No se encontró la recepción solicitada'], 404);
+        }        
+        $equipo = Equipo::find($equipo_id);
+        if (!$equipo) {
+            return response()->json(['success' => false, 'message' => 'No se encontró el equipo solicitado'], 404);
+        }
         //Validando el número de atención
         $role_id = Role::where('name', 'Gestor')->first()->id;
         $asignada = Recepcion::where('atencion_id', $recepcion->atencion_id)->where('role_id', $role_id)->first();
         if ($asignada) {
-            return back()->with('error', 'La solicitud con número de atención ' . $asignada->atencion_id . ' ya ha sido asignada a ' . $asignada->usuarioDestino->name . ' en el área ' . $asignada->area->area);
+            return response()->json(['success' => false, 'message' => 'La solicitud con número de atención ' . $asignada->atencion_id . ' ya ha sido asignada a ' . $asignada->usuarioDestino->name . ' en el área ' . $asignada->area->area]);
         }
         //Seleccionando el gestor
-        $gestores = User::role('Gestor')->whereHas('oficina.area', function($query) use ($recepcion){
+        $gestores = User::role('Gestor')->whereHas('oficina', function($query) use ($recepcion) {
             $query->where('area_id', $recepcion->area_id);
-        })->whereHas('equipos', function($query) use ($equipo){
+        })->whereHas('equipos', function($query) use ($equipo) {
             $query->where('equipos.id', $equipo->id);
         })->get();
         if ($gestores->isEmpty()) {
-            return back()->with('error', 'La funcionalidad se encuentra inhabilitada, consulte con el administrador del sistema');
+            Log::warning('No se encontró gestor para equipo', ['equipo_id' => $equipo->id]);
+            return response()->json(['success' => false, 'message' => 'No hay gestor disponible para este equipo'], 422);
         }
         $gestor = $gestores->random();
         //Asignando la solicitud
         DB::beginTransaction();
         try {
-            $new_recepcion = new Recepcion(); //Creando una nueva recepción para el gestor
+            $new_recepcion = new Recepcion(); //Creando solicitud - Copia Gestor
             $new_recepcion->id = (new KeyMaker())->generate('Recepcion', $recepcion->solicitud_id);
             $new_recepcion->solicitud_id = $recepcion->solicitud_id;
             $new_recepcion->oficina_id = $recepcion->oficina_id;
@@ -231,28 +256,40 @@ class RecepcionController extends Controller
             $new_recepcion->detalle = $recepcion->detalle;
             $new_recepcion->activo = false;
             $new_recepcion->save();
-            $recepcion->activo = true; //Se transforma en una solicitud válida al ser asignada a un gestor
+            $recepcion->activo = true; //Validar solicitud y actualizar estado - Copia Supervisor
+            $recepcion->estado_id = Estado::where('estado', 'En progreso')->first()->id;
             $recepcion->save();
             DB::commit(); //Finalizando la transacción
-            return redirect()->route('recepcion')->with('success', 'La solicitud "' . $recepcion->atencion_id . '" ha sido asignada a ' . $recepcion->usuarioDestino->name . ' del area ' . $recepcion->area->area);
+            //return redirect()->route('recepcion')->with('success', 'La solicitud "' . $recepcion->atencion_id . '" ha sido asignada a ' . $recepcion->usuarioDestino->name . ' del area ' . $recepcion->area->area);
+            return response()->json(['success' => true, 'message' => 'La solicitud "' . $recepcion->atencion_id . '" ha sido asignada a ' . $recepcion->usuarioDestino->name . ' del area ' . $recepcion->area->area]);
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Ocurrió un error al asignar la solicitud:' . $e->getMessage());
+            //return back()->with('error', 'Ocurrió un error al asignar la solicitud:' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Ocurrió un error al asignar la solicitud:' . $e->getMessage()]);
         }
     }
 
-    public function delegar(Recepcion $recepcion, User $user)
+    public function delegar($recepcion_id, $user_id)
     {
+        Log::info('Método delegar iniciado', ['recepcion_id' => $recepcion_id, 'user_id' => $user_id, 'auth_user_id' => auth()->user()->id]);
+        $recepcion = Recepcion::find($recepcion_id);
+        if (!$recepcion) {
+            return response()->json(['success' => false, 'message' => 'No se encontró la recepción solicitada'], 404);
+        }
+        $user = User::find($user_id);
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'No se encontró el usuario solicitado'], 404);
+        }
         //Validando el número de atención
         $role_id = Role::where('name', 'Operador')->first()->id;
         $delegada = Recepcion::where('atencion_id', $recepcion->atencion_id)->where('role_id', $role_id)->first();
         if ($delegada) {
-            return back()->with('error', 'La solicitud con número de atención ' . $delegada->atencion_id . ' ya ha sido delegada a ' . $delegada->usuarioDestino->name . ' en el área ' . $delegada->area->area);
+            return response()->json(['success' => false, 'message' => 'La solicitud con número de atención ' . $delegada->atencion_id . ' ya ha sido delegada a ' . $delegada->usuarioDestino->name . ' en el área ' . $delegada->area->area]);
         }
         //Delegando la solicitud
         DB::beginTransaction();
         try {
-            $new_recepcion = new Recepcion(); //Creando la nueva recepción
+            $new_recepcion = new Recepcion(); //Creando solicitud - Copia Operador
             $new_recepcion->id = (new KeyMaker())->generate('Recepcion', $recepcion->solicitud_id);
             $new_recepcion->solicitud_id = $recepcion->solicitud_id;
             $new_recepcion->oficina_id = $recepcion->oficina_id;
@@ -268,7 +305,8 @@ class RecepcionController extends Controller
             $new_recepcion->activo = false;
             $new_recepcion_id = $new_recepcion->id;
             $new_recepcion->save();
-            $recepcion->activo = true; //Validando la solicitud delegada
+            $recepcion->activo = true; //Validar solicitud y actualizar estado - Copia Gestor
+            $recepcion->estado_id = Estado::where('estado', 'En progreso')->first()->id;
             $recepcion->save();
             foreach ($recepcion->solicitud->tareas as $tarea) { //Delegando las actividades
                 $actividad = new Actividad();
@@ -282,10 +320,12 @@ class RecepcionController extends Controller
                 $actividad->save();
             }
             DB::commit();
-            return redirect()->route('recepcion')->with('success', 'La solicitud "' . $recepcion->atencion_id . '" ha sido delegada a ' . $user->name . ' del área ' . $recepcion->area->area);
+            //return redirect()->route('recepcion')->with('success', 'La solicitud "' . $recepcion->atencion_id . '" ha sido delegada a ' . $user->name . ' del área ' . $recepcion->area->area);
+            return response()->json(['success' => true, 'message' => 'La solicitud "' . $recepcion->atencion_id . '" ha sido delegada a ' . $user->name . ' del área ' . $recepcion->area->area]);
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Ocurrió un error al delegar la solicitud:' . $e->getMessage());
+            //return back()->with('error', 'Ocurrió un error al delegar la solicitud:' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Ocurrió un error al delegar la solicitud:' . $e->getMessage()]);
         }
     }
 
