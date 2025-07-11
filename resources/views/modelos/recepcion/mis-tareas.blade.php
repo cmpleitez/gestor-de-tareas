@@ -355,13 +355,30 @@
                         contadores.resueltas++;
                     }
                     const tarjetaHtml = `
-                        <div class="solicitud-card" data-id="${recepcion.id}" data-estado-id="${estadoId}" style="border-left-color: ${colorBorde};">
-                            <div class="solicitud-titulo">${recepcion.titulo || recepcion.detalles || 'Sin título'}</div>
-                            <div class="solicitud-id">ID: ${recepcion.id}</div>
-                            <div class="solicitud-estado" style="font-size: 11px; color: ${colorBorde}; margin-top: 5px;">
-                                Estado: ${estadoNombre}
+                    <div class="solicitud-card" data-id="${recepcion.id}" data-estado-id="${estadoId}" style="border-left-color: ${colorBorde};">
+                        <div class="solicitud-titulo">${recepcion.titulo || recepcion.detalles || 'Sin título'}</div>
+                        <div class="solicitud-id">ID: ${recepcion.id}</div>
+                        <div class="solicitud-estado" style="font-size: 11px; color: ${colorBorde}; margin-top: 5px;">
+                            Estado: ${estadoNombre}
+                        </div>
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px; padding-top: 6px; border-top: 1px solid #f0f0f0;">
+                            <div style="display: flex; flex-direction: column; justify-content: center; height: 32px; flex: 1;">
+                                <div style="text-align: right; font-size: 10px; color: #6c757d; line-height: 1.2; margin-bottom: 1px;">
+                                    ${recepcion.user_destino_nombre || 'Sin asignar'}
+                                </div>
+                                <div style="text-align: right; background: #f8f9fa; padding: 1px 6px; border-radius: 3px; font-size: 9px; color: #495057; font-weight: 500; display: inline-block; margin-left: auto;">
+                                    ${recepcion.area_destino_nombre || 'Sin área'}
+                                </div>
                             </div>
-                        </div>`;
+                            <div style="margin-left: 8px;">
+                                ${recepcion.user_destino_foto ? 
+                                    `<img src="${recepcion.user_destino_foto}" alt="Usuario" class="avatar" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;">` 
+                                    : 
+                                    `<div class="avatar" style="width: 32px; height: 32px; border-radius: 50%; background: #e9ecef; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #6c757d;">?</div>`
+                                }
+                            </div>
+                        </div>
+                    </div>`;
                     $(`#${columnaDestino}`).append(tarjetaHtml);
                 });
                 if (contadores.recibidas === 0) { // Mostrar mensajes si alguna columna quedó vacía
@@ -409,19 +426,18 @@
                             const columnaOrigen = evt.from.id;
                             const columnaDestino = evt.to.id;
                             if (columnaOrigen !== columnaDestino) {
-                                showMoveAlert(solicitudId, columnaDestino);
+                                showMoveAlert(solicitudId, columnaDestino, evt);
                             }
                         }
                     });
                 });
             }
-
+            
             //ACTUALIZACION DE ESTADO EN EL FRONTEND
-            function showMoveAlert(solicitudId, nuevaColumna) {
+            function showMoveAlert(solicitudId, nuevaColumna, evt) {
                 let nuevoEstadoId = 1; // Por defecto Recibida
                 let nombreEstado = 'Recibida';
                 let colorBorde = '#ffc107'; // Amarillo por defecto
-
                 switch (nuevaColumna) {
                     case 'columna-recibidas':
                         nuevoEstadoId = 1; // ID de Recibida
@@ -439,9 +455,9 @@
                         colorBorde = '#28a745'; // Verde
                         break;
                 }
-                let url = '';
+                let url = ''; //Seleccionando la ruta a la que se va a enviar la solicitud
                 let selectedValue = null;
-                if (userRole === 'Recepcionista') { //Derivar solicitud
+                if (userRole === 'Recepcionista') { 
                     selectedValue = $('input[name="area_destino"]:checked').val();
                     if (!selectedValue) {
                         Swal.fire({
@@ -451,14 +467,14 @@
                             showConfirmButton: false,
                             timer: 2000
                         });
-                        // Revertir el movimiento visualmente (opcional, pero simple: recargar)
-                        location.reload();
+                        // Revertir la tarjeta a su posición original
+                        $(evt.from).append(evt.item);
                         return;
                     }
                     url = '{{ route("recepcion.derivar", ["recepcion_id" => ":id", "area_id" => ":area"]) }}'
                         .replace(':id', solicitudId)
                         .replace(':area', selectedValue);
-                } else if (userRole === 'Supervisor') { //Asignar solicitud
+                } else if (userRole === 'Supervisor') { 
                     selectedValue = $('input[name="equipo_destino"]:checked').val();
                     if (!selectedValue) {
                         Swal.fire({
@@ -468,13 +484,14 @@
                             showConfirmButton: false,
                             timer: 2000
                         });
-                        location.reload();
+                        // Revertir la tarjeta a su posición original
+                        $(evt.from).append(evt.item);
                         return;
                     }
                     url = '{{ route("recepcion.asignar", ["recepcion_id" => ":id", "equipo_id" => ":equipo"]) }}'
                         .replace(':id', solicitudId)
                         .replace(':equipo', selectedValue);
-                } else if (userRole === 'Gestor') { //Delegar solicitud
+                } else if (userRole === 'Gestor') { 
                     selectedValue = $('input[name="operador_destino"]:checked').val();
                     if (!selectedValue) {
                         Swal.fire({
@@ -484,15 +501,16 @@
                             showConfirmButton: false,
                             timer: 2000
                         });
-                        location.reload();
+                        // Revertir la tarjeta a su posición original
+                        $(evt.from).append(evt.item);
                         return;
                     }
                     url = '{{ route("recepcion.delegar", ["recepcion_id" => ":id", "user_id" => ":user"]) }}'
                         .replace(':id', solicitudId)
                         .replace(':user', selectedValue);
                 }
-
-
+                
+                //ACTUALIZAR ESTADO EN EL BACKEND
                 $.ajax({
                     url: url,
                     method: 'POST',
@@ -519,17 +537,18 @@
                                 confirmButtonClass: 'btn btn-primary',
                                 buttonsStyling: false
                             });
-
                         } else {
                             Swal.fire({
                                 position: 'top-end',
                                 type: 'error',
                                 title: response.message,
-                                showConfirmButton: false,
-                                timer: 1500,
+                                showConfirmButton: true,
+                                timer: 6000,
                                 confirmButtonClass: 'btn btn-primary',
                                 buttonsStyling: false
                             });
+                            // Revertir la tarjeta a su posición original
+                            $(evt.from).append(evt.item);
                         }
                     },
                     error: function(xhr, status, error) {
@@ -547,18 +566,17 @@
                             position: 'top-end',
                             type: 'error',
                             title: mensaje,
-                            showConfirmButton: false,
-                            timer: 1500,
+                            showConfirmButton: true,
+                            timer: 6000,
                             confirmButtonClass: 'btn btn-primary',
                             buttonsStyling: false
                         });
-                        
-                        // Revertir movimiento en caso de error
-                        location.reload();
+                        // Revertir la tarjeta a su posición original
+                        $(evt.from).append(evt.item);
                     }
                 });
             }
-
+            
             //MOSTRAR ACTIVIDADES EN LA PERSIANA: Click para mostrar las actividades en la persiana que se abre a la derecha de la vista 
             $(document).on('click', '.solicitud-card', function() {
                 const id = $(this).data('id');
@@ -572,22 +590,20 @@
                     buttonsStyling: false
                 });
             });
-
-            // ACTUALIZACIÓN DINÁMICA DEL TÍTULO DEL ACORDEÓN
+            
+            //ACTUALIZACIÓN DINÁMICA DEL TÍTULO DEL ACORDEÓN
             $(document).on('change', 'input[name="area_destino"]', function() {
                 const areaId = $(this).val();
                 const areaNombre = $(this).closest('.card').find('label').text().trim();
                 $('.collapse-title span.align-middle').text(`DERIVANDO SOLICITUDES HACIA ${areaNombre}`);
                 $('#accordion5').collapse('hide');
             });
-
             $(document).on('change', 'input[name="equipo_destino"]', function() {
                 const equipoId = $(this).val();
                 const equipoNombre = $(this).closest('.card').find('label').text().trim();
                 $('.collapse-title span.align-middle').text(`ASIGNANDO SOLICITUDES A ${equipoNombre}`);
                 $('#accordion5').collapse('hide');
             });
-
             $(document).on('change', 'input[name="operador_destino"]', function() {
                 const operadorId = $(this).val();
                 const operadorNombre = $(this).closest('.card').find('label').text().trim();

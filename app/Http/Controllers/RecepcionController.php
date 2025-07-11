@@ -82,7 +82,10 @@ class RecepcionController extends Controller
                 'titulo' => $tarjeta->solicitud->solicitud,
                 'detalle' => $tarjeta->detalle,
                 'estado' => $tarjeta->estado->estado,
-                'estado_id' => $tarjeta->estado->id
+                'estado_id' => $tarjeta->estado->id,
+                'user_destino_foto' => $tarjeta->usuarioDestino ? $tarjeta->usuarioDestino->profile_photo_url : null,
+                'user_destino_nombre' => $tarjeta->usuarioDestino ? $tarjeta->usuarioDestino->name : 'Sin asignar',
+                'area_destino_nombre' => $tarjeta->area ? $tarjeta->area->area : 'Sin área'
             ];
             });
         });

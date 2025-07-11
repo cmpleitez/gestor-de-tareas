@@ -1,17 +1,12 @@
 
-
-🟢 Error 500 esta dando por falta de optimize
+🟠 mis-tareas: que desaparezca de recibidas cuando pasa a en progreso, no cuando el origen y destino es el mismo.
+🟠 Error 500 esta dando por falta de optimize
 
 ...🟢 TABLERO KANBAN para recepcionistas, supervisores, gestores y operadores
-    ... ajustar el register para que guarde encriptada la clave del usuario: solucion al: server error 500
-        ...volver a la depuracion de las demoras en la carga 
-            ...INICIALIZACIÓN DEL DRAG & DROP pendiente lectura para maquetarlo luego
-                ...actualizando estado de la solicitud en el drop
-                    ...actualizar el estado en el frontend
-                        ...probar y luego limpiar y compactar codigo
-                            ... mis-tareas: que desaparezca de recibidas cuando pasa a en progreso
-                            ... mis-tareas: agregar la foto del propietario de la solicitud en progreso un tooltip para ver su nombre y ubicacion (area)
-                            ... mis-tareas: cuando des clic en el boton de radio cerrar la persiana
+    ... el movimiento hacia el tablero de recibidas: ya ha sido derivada
+    ... el movimiento hacia el tablero de en progreso: ya ha sido derivada
+    ... el movimiento hacia el tablero de resueltas: ya ha sido derivada
+                            
 
 🟢 mis-tareas: crear una estrategia de uso de cache
 🟢 en la mayoria de las vistas se debe agregar un margen arriba de 1 o 2 porque todo esta muy pegado al techo
