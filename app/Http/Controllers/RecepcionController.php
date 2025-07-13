@@ -66,30 +66,28 @@ class RecepcionController extends Controller
 
     public function recepciones()
     {
-        //Cache de 3 minutos
-        $userId = auth()->user()->id;
-        $datos = Cache::remember("recepciones_user_{$userId}", 180, function () use ($userId) {
+        //Consulta de recepciones
+        $recepciones = Recepcion::where('user_id_destino', auth()->user()->id)
+        ->with(['solicitud', 'estado'])->orderBy('created_at', 'desc')
+        ->limit(20)->get(); //Bloque de procesamiento: 20 unidades cada vez
 
-            //Consulta de recepciones
-            return $recepciones = Recepcion::where('user_id_destino', $userId)
-                ->with(['solicitud', 'estado'])->orderBy('created_at', 'desc')
-                ->limit(20)->get(); //Bloque de procesamiento: 20 unidades cada vez
-
-            //Transformando a la estructura de la tarjeta
-            return $recepciones->map(function ($tarjeta) {
-                return [
-                    'id' => $tarjeta->atencion_id,
-                    'titulo' => $tarjeta->solicitud->solicitud,
-                    'detalle' => $tarjeta->detalle,
-                    'estado' => $tarjeta->estado->estado,
-                    'estado_id' => $tarjeta->estado->id,
-                    'user_destino_foto' => $tarjeta->usuarioDestino ? $tarjeta->usuarioDestino->profile_photo_url : null,
-                    'user_destino_nombre' => $tarjeta->usuarioDestino ? $tarjeta->usuarioDestino->name : 'Sin asignar',
-                    'area_destino_nombre' => $tarjeta->area ? $tarjeta->area->area : 'Sin área'
-                ];
-            });
+        //Transformando a la estructura de la tarjeta
+        $recepciones = $recepciones->map(function ($tarjeta) {
+            return [
+                'id' => $tarjeta->atencion_id,
+                'titulo' => $tarjeta->solicitud->solicitud,
+                'detalles' => $tarjeta->detalle,
+                'estado' => $tarjeta->estado->estado,
+                'estado_id' => $tarjeta->estado->id,
+                'user_destino_foto' => $tarjeta->usuarioDestino && $tarjeta->usuarioDestino->profile_photo_url
+                    ? $tarjeta->usuarioDestino->profile_photo_url
+                    : asset('app-assets/images/pages/operador.png'),
+                'user_destino_nombre' => $tarjeta->usuarioDestino->name,
+                'area_destino_nombre' => $tarjeta->area->area,
+                'role_destino_nombre' => $tarjeta->role->name
+            ];
         });
-        return response()->json(['recepciones' => $datos]);
+        return response()->json(['recepciones' => $recepciones]);
     }
 
     public function create()

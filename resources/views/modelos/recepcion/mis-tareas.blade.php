@@ -117,11 +117,11 @@
                 <i class="bx bx-cloud align-middle"></i>
                 <span class="align-middle text-uppercase">
                     @if(auth()->user()->hasRole('Recepcionista'))
-                        DERIVANDO SOLICITUDES HACIA {{ auth()->user()->oficina->area->area }}
+                        DERIVANDO SOLICITUDES HACIA EL AREA {{ auth()->user()->oficina->area->area }}
                     @elseif(auth()->user()->hasRole('Supervisor'))
-                        ASIGNANDO SOLICITUDES A {{ auth()->user()->equipos()->first()->equipo }}
+                        ASIGNANDO SOLICITUDES AL EQUIPO DE TRABAJO {{ auth()->user()->equipos()->first()->equipo }}
                     @elseif(auth()->user()->hasRole('Gestor'))
-                        DELEGANDO SOLICITUDES A {{ auth()->user()->name }}
+                        DELEGANDO SOLICITUDES AL OPERADOR {{ auth()->user()->name }}
                     @endif
                 </span>
             </span>
@@ -325,12 +325,7 @@
             }
             function mostrarTarjetas(recepciones) {
                 $('#columna-recibidas, #columna-progreso, #columna-resueltas').empty(); // Limpiar todos los tableros
-                if (recepciones.length === 0) {
-                    $('#columna-recibidas').html('<div class="text-center text-muted">No hay solicitudes</div>');
-                    $('#columna-progreso').html('<div class="text-center text-muted">No hay solicitudes</div>');
-                    $('#columna-resueltas').html('<div class="text-center text-muted">No hay solicitudes</div>');
-                    return;
-                }
+                
                 let contadores = { // Contadores para verificar si hay tarjetas en cada columna
                     recibidas: 0,
                     progreso: 0,
@@ -364,10 +359,10 @@
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px; padding-top: 6px; border-top: 1px solid #f0f0f0;">
                             <div style="display: flex; flex-direction: column; justify-content: center; height: 32px; flex: 1;">
                                 <div style="text-align: right; font-size: 10px; color: #6c757d; line-height: 1.2; margin-bottom: 1px;">
-                                    ${recepcion.user_destino_nombre || 'Sin asignar'}
+                                    ${recepcion.user_destino_nombre}
                                 </div>
                                 <div style="text-align: right; background: #f8f9fa; padding: 1px 6px; border-radius: 3px; font-size: 9px; color: #495057; font-weight: 500; display: inline-block; margin-left: auto;">
-                                    ${recepcion.area_destino_nombre || 'Sin área'}
+                                    ${recepcion.role_destino_nombre + ' del área ' + recepcion.area_destino_nombre}
                                 </div>
                             </div>
                             <div style="margin-left: 8px;">
@@ -601,13 +596,13 @@
             $(document).on('change', 'input[name="equipo_destino"]', function() {
                 const equipoId = $(this).val();
                 const equipoNombre = $(this).closest('.card').find('label').text().trim();
-                $('.collapse-title span.align-middle').text(`ASIGNANDO SOLICITUDES A ${equipoNombre}`);
+                $('.collapse-title span.align-middle').text(`ASIGNANDO SOLICITUDES AL EQUIPO DE TRABAJO ${equipoNombre}`);
                 $('#accordion5').collapse('hide');
             });
             $(document).on('change', 'input[name="operador_destino"]', function() {
                 const operadorId = $(this).val();
                 const operadorNombre = $(this).closest('.card').find('label').text().trim();
-                $('.collapse-title span.align-middle').text(`DELEGANDO SOLICITUDES A ${operadorNombre}`);
+                $('.collapse-title span.align-middle').text(`DELEGANDO SOLICITUDES AL OPERADOR ${operadorNombre}`);
                 $('#accordion5').collapse('hide');
             });
         });
