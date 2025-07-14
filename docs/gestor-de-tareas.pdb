@@ -2144,7 +2144,7 @@ DESTINATION 0 Arial,8,N</a:FontList>
 <a:ModificationDate>1751476737</a:ModificationDate>
 <a:CenterTextOffset>(1364, -5483)</a:CenterTextOffset>
 <a:CenterTextWidth>7199</a:CenterTextWidth>
-<a:Rect>((-59600,80552), (-44280,91444))</a:Rect>
+<a:Rect>((-59600,80552), (-44279,91444))</a:Rect>
 <a:ListOfPoints>((-49242,80552),(-49242,91444),(-59600,91444))</a:ListOfPoints>
 <a:CornerStyle>2</a:CornerStyle>
 <a:ArrowStyle>1</a:ArrowStyle>

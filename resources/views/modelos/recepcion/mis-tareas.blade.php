@@ -5,6 +5,7 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/vendors/css/extensions/sweetalert2.min.css') }}">
     <!-- Bootstrap Extended CSS para compatibilidad con SweetAlert2 -->
     <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/bootstrap-extended.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/pages/app-kanban.css') }}">
     <style>
         .solicitud-card {
             background: white;
@@ -109,6 +110,7 @@
 @endsection
 
 @section('contenedor')
+{{-- ITEMS DESTINATARIOS PARA CADA ROL --}}
 <div class="accordion collapse-icon accordion-icon-rotate" id="accordionWrapa2">
     <div class="card collapse-header">
         <div id="heading5" class="card-header" data-toggle="collapse" data-target="#accordion5" aria-expanded="false"
@@ -117,11 +119,11 @@
                 <i class="bx bx-cloud align-middle"></i>
                 <span class="align-middle text-uppercase">
                     @if(auth()->user()->hasRole('Recepcionista'))
-                        DERIVANDO SOLICITUDES HACIA EL AREA {{ auth()->user()->oficina->area->area }}
+                        AREA: {{ auth()->user()->oficina->area->area }}
                     @elseif(auth()->user()->hasRole('Supervisor'))
-                        ASIGNANDO SOLICITUDES AL EQUIPO DE TRABAJO {{ auth()->user()->equipos()->first()->equipo }}
+                        EQUIPO DE TRABAJO: {{ auth()->user()->equipos()->first()->equipo }}
                     @elseif(auth()->user()->hasRole('Gestor'))
-                        DELEGANDO SOLICITUDES AL OPERADOR {{ auth()->user()->name }}
+                        OPERADOR: {{ auth()->user()->name }}
                     @endif
                 </span>
             </span>
@@ -206,6 +208,7 @@
     </div>
 </div>
 
+{{-- TABLEROS KANBAN --}}
 <div class="row" style="display: flex; align-items: stretch;">
     <div class="col-md-4">
         <div class="card">
@@ -246,13 +249,29 @@
         </div>
     </div>
 </div>
+
+{{-- Overlay y Sidebar Kanban --}}
+<div class="kanban-overlay"></div>
+<div class="kanban-sidebar">
+    <div class="card shadow-none">
+        <div class="card-header d-flex justify-content-between align-items-center border-bottom px-2 py-1">
+            <h3 class="card-title" id="sidebar-card-title">Detalle de Solicitud</h3>
+            <button type="button" class="close close-icon">
+                <i class="bx bx-x"></i>
+            </button>
+        </div>
+        <div class="card-body" id="sidebar-card-body">
+            <p>Selecciona una tarjeta para ver detalles...</p>
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('js')
-    <!-- SweetAlert2 JS Local -->
+    {{-- LIBRERIAS --}}
     <script src="{{ asset('app-assets/vendors/js/extensions/sweetalert2.all.min.js') }}"></script>
     <script src="{{ asset('app-assets/vendors/js/jkanban/Sortable.min.js') }}"></script>
-
+    {{-- LOGICA KANBAN --}}
     <script>
         let userRole = '';
         @if(auth()->user()->hasRole('Recepcionista'))
@@ -261,69 +280,32 @@
             userRole = 'Supervisor';
         @elseif(auth()->user()->hasRole('Gestor'))
             userRole = 'Gestor';
+        @elseif(auth()->user()->hasRole('Operador'))
+            userRole = 'Operador';
         @endif
         $(document).ready(function() {
             
             // LECTURA DE DATOS
-            const CACHE_KEY = 'kanban_solicituds_recibidas';
-            const CACHE_TTL = 60000; // 1 minuto en ms
-            function guardarEnCache(datos) {
-                const payload = {
-                    data: datos,
-                    timestamp: Date.now()
-                };
-                localStorage.setItem(CACHE_KEY, JSON.stringify(payload));
-            }
-            function leerDeCache() {
-                const raw = localStorage.getItem(CACHE_KEY);
-                if (!raw) return null;
-                try {
-                    const payload = JSON.parse(raw);
-                    if (Date.now() - payload.timestamp < CACHE_TTL) {
-                        return payload.data;
-                    } else {
-                        localStorage.removeItem(CACHE_KEY);
-                        return null;
-                    }
-                } catch {
-                    localStorage.removeItem(CACHE_KEY);
-                    return null;
-                }
-            }
-            function cargarSolicitudes() { // Actualizar en segundo plano
-                const cache = leerDeCache();
-                if (cache) {
-                    mostrarTarjetas(cache);
-                    cargarDesdeServidor(true);
-                } else {
-                    cargarDesdeServidor(false);
-                }
-            }
-            function cargarDesdeServidor(silencioso) {
-                if (!silencioso) {
-                    $('#columna-recibidas').html(
-                        '<div class="text-center text-muted"><i class="bx bx-loader-alt bx-spin"></i> Cargando...</div>'
-                    );
-                }
+            function cargarTarjetas() {
+                $('#columna-recibidas').html(
+                    '<div class="text-center text-muted"><i class="bx bx-loader-alt bx-spin"></i> Cargando...</div>'
+                );
                 $.ajax({
                     url: '{{ route('recepcion.solicitudes') }}',
                     type: 'GET',
-                    timeout: 10000,
+                    timeout: 3000,
                     success: function(response) {
                         const recepciones = response.recepciones || [];
-                        guardarEnCache(recepciones);
-                        mostrarTarjetas(recepciones);
+                        ubicarTarjetas(recepciones);
                     },
                     error: function(xhr, status, error) {
-                        if (!silencioso) {
-                            $('#columna-recibidas').html(
-                                '<div class="text-center text-danger">Error al cargar solicituds</div>'
-                            );
-                        }
+                        $('#columna-recibidas').html(
+                            '<div class="text-center text-danger">Error al cargar solicitudes</div>'
+                        );
                     }
                 });
             }
-            function mostrarTarjetas(recepciones) {
+            function ubicarTarjetas(recepciones) {
                 $('#columna-recibidas, #columna-progreso, #columna-resueltas').empty(); // Limpiar todos los tableros
                 
                 let contadores = { // Contadores para verificar si hay tarjetas en cada columna
@@ -331,7 +313,7 @@
                     progreso: 0,
                     resueltas: 0
                 };
-                recepciones.forEach(function(recepcion, index) { // Distribuir las tarjetas según su estado
+                recepciones.forEach(function(recepcion, index) { // Distribuir las tarjetas en los tableros según su estado
                     const estadoId = recepcion.estado_id || 1;
                     const estadoNombre = recepcion.estado || 'Recibida';
                     let colorBorde = '#007bff';
@@ -350,24 +332,24 @@
                         contadores.resueltas++;
                     }
                     const tarjetaHtml = `
-                    <div class="solicitud-card" data-id="${recepcion.id}" data-estado-id="${estadoId}" style="border-left-color: ${colorBorde};">
-                        <div class="solicitud-titulo">${recepcion.titulo || recepcion.detalles || 'Sin título'}</div>
-                        <div class="solicitud-id">ID: ${recepcion.id}</div>
+                    <div class="solicitud-card" data-id="${recepcion.recepcion_id}" data-estado-id="${recepcion.estado_id}" style="border-left-color: ${colorBorde};">
+                        <div class="solicitud-titulo">${recepcion.titulo || recepcion.detalle || 'Sin título'}</div>
+                        <div class="solicitud-id">ID: ${recepcion.atencion_id}</div>
                         <div class="solicitud-estado" style="font-size: 11px; color: ${colorBorde}; margin-top: 5px;">
-                            Estado: ${estadoNombre}
+                            Estado: ${estadoNombre} (${recepcion.recepcion_id})
                         </div>
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px; padding-top: 6px; border-top: 1px solid #f0f0f0;">
                             <div style="display: flex; flex-direction: column; justify-content: center; height: 32px; flex: 1;">
                                 <div style="text-align: right; font-size: 10px; color: #6c757d; line-height: 1.2; margin-bottom: 1px;">
-                                    ${recepcion.user_destino_nombre}
+                                    ${recepcion.user_name}
                                 </div>
-                                <div style="text-align: right; background: #f8f9fa; padding: 1px 6px; border-radius: 3px; font-size: 9px; color: #495057; font-weight: 500; display: inline-block; margin-left: auto;">
-                                    ${recepcion.role_destino_nombre + ' del área ' + recepcion.area_destino_nombre}
+                                <div style="text-align: right; background:rgb(239, 242, 247); padding: 1px 6px; border-radius: 3px; font-size: 9px; color: #495057; font-weight: 500; display: inline-block; margin-left: auto;">
+                                    ${recepcion.role_name + ' del área ' + recepcion.area}
                                 </div>
                             </div>
                             <div style="margin-left: 8px;">
-                                ${recepcion.user_destino_foto ? 
-                                    `<img src="${recepcion.user_destino_foto}" alt="Usuario" class="avatar" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;">` 
+                                ${recepcion.user_foto ? 
+                                    `<img src="${recepcion.user_foto}" alt="Usuario" class="avatar" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;">` 
                                     : 
                                     `<div class="avatar" style="width: 32px; height: 32px; border-radius: 50%; background: #e9ecef; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #6c757d;">?</div>`
                                 }
@@ -390,7 +372,7 @@
                 }
                 initKanban();
             }
-            cargarSolicitudes(); //Cargar las solicitudes desde el servidor
+            cargarTarjetas(); //Cargar las solicitudes desde el servidor
             function initKanban() { // Inicializar el kanban
                 const columnas = ['columna-recibidas', 'columna-progreso', 'columna-resueltas'];
                 columnas.forEach(function(columnaId) {
@@ -503,6 +485,9 @@
                     url = '{{ route("recepcion.delegar", ["recepcion_id" => ":id", "user_id" => ":user"]) }}'
                         .replace(':id', solicitudId)
                         .replace(':user', selectedValue);
+                } else if (userRole === 'Operador') { 
+                    url = '{{ route("recepcion.iniciar-tareas", ["recepcion_id" => ":id"]) }}'
+                        .replace(':id', solicitudId);
                 }
                 
                 //ACTUALIZAR ESTADO EN EL BACKEND
@@ -542,8 +527,7 @@
                                 confirmButtonClass: 'btn btn-primary',
                                 buttonsStyling: false
                             });
-                            // Revertir la tarjeta a su posición original
-                            $(evt.from).append(evt.item);
+                            $(evt.from).append(evt.item); // Revertir la tarjeta a su posición original
                         }
                     },
                     error: function(xhr, status, error) {
@@ -566,43 +550,49 @@
                             confirmButtonClass: 'btn btn-primary',
                             buttonsStyling: false
                         });
-                        // Revertir la tarjeta a su posición original
-                        $(evt.from).append(evt.item);
+                        $(evt.from).append(evt.item); // Revertir la tarjeta a su posición original
                     }
                 });
             }
             
-            //MOSTRAR ACTIVIDADES EN LA PERSIANA: Click para mostrar las actividades en la persiana que se abre a la derecha de la vista 
+            //MOSTRAR DETALLE EN SIDEBAR KANBAN
             $(document).on('click', '.solicitud-card', function() {
-                const id = $(this).data('id');
-                Swal.fire({
-                    position: 'top-end',
-                    type: 'info',
-                    title: 'Tarjeta seleccionada',
-                    showConfirmButton: false,
-                    timer: 1500,
-                    confirmButtonClass: 'btn btn-primary',
-                    buttonsStyling: false
-                });
+                const $card = $(this);
+                const titulo = $card.find('.solicitud-titulo').text().trim();
+                const atencion = $card.find('.solicitud-id').text().trim();
+
+                // Rellenar la información en el sidebar
+                $('#sidebar-card-title').text(titulo);
+                $('#sidebar-card-body').html('<p>' + atencion + '</p>');
+
+                // Mostrar overlay y sidebar
+                $('.kanban-overlay').addClass('show');
+                $('.kanban-sidebar').addClass('show');
+            });
+
+            //Cerrar sidebar al hacer clic en overlay o en el icono de cierre
+            $(document).on('click', '.kanban-overlay, .kanban-sidebar .close-icon', function() {
+                $('.kanban-overlay').removeClass('show');
+                $('.kanban-sidebar').removeClass('show');
             });
             
             //ACTUALIZACIÓN DINÁMICA DEL TÍTULO DEL ACORDEÓN
             $(document).on('change', 'input[name="area_destino"]', function() {
                 const areaId = $(this).val();
                 const areaNombre = $(this).closest('.card').find('label').text().trim();
-                $('.collapse-title span.align-middle').text(`DERIVANDO SOLICITUDES HACIA ${areaNombre}`);
+                $('.collapse-title span.align-middle').text(`AREA: ${areaNombre}`);
                 $('#accordion5').collapse('hide');
             });
             $(document).on('change', 'input[name="equipo_destino"]', function() {
                 const equipoId = $(this).val();
                 const equipoNombre = $(this).closest('.card').find('label').text().trim();
-                $('.collapse-title span.align-middle').text(`ASIGNANDO SOLICITUDES AL EQUIPO DE TRABAJO ${equipoNombre}`);
+                $('.collapse-title span.align-middle').text(`EQUIPO DE TRABAJO: ${equipoNombre}`);
                 $('#accordion5').collapse('hide');
             });
             $(document).on('change', 'input[name="operador_destino"]', function() {
                 const operadorId = $(this).val();
                 const operadorNombre = $(this).closest('.card').find('label').text().trim();
-                $('.collapse-title span.align-middle').text(`DELEGANDO SOLICITUDES AL OPERADOR ${operadorNombre}`);
+                $('.collapse-title span.align-middle').text(`OPERADOR: ${operadorNombre}`);
                 $('#accordion5').collapse('hide');
             });
         });

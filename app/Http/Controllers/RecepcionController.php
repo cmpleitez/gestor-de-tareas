@@ -74,17 +74,18 @@ class RecepcionController extends Controller
         //Transformando a la estructura de la tarjeta
         $recepciones = $recepciones->map(function ($tarjeta) {
             return [
-                'id' => $tarjeta->atencion_id,
+                'atencion_id' => $tarjeta->atencion_id,
                 'titulo' => $tarjeta->solicitud->solicitud,
-                'detalles' => $tarjeta->detalle,
+                'detalle' => $tarjeta->detalle,
                 'estado' => $tarjeta->estado->estado,
                 'estado_id' => $tarjeta->estado->id,
-                'user_destino_foto' => $tarjeta->usuarioDestino && $tarjeta->usuarioDestino->profile_photo_url
+                'user_foto' => $tarjeta->usuarioDestino && $tarjeta->usuarioDestino->profile_photo_url
                     ? $tarjeta->usuarioDestino->profile_photo_url
                     : asset('app-assets/images/pages/operador.png'),
-                'user_destino_nombre' => $tarjeta->usuarioDestino->name,
-                'area_destino_nombre' => $tarjeta->area->area,
-                'role_destino_nombre' => $tarjeta->role->name
+                'user_name' => $tarjeta->usuarioDestino->name,
+                'area' => $tarjeta->area->area,
+                'role_name' => $tarjeta->role->name,
+                'recepcion_id' => $tarjeta->id
             ];
         });
         return response()->json(['recepciones' => $recepciones]);
@@ -148,7 +149,6 @@ class RecepcionController extends Controller
 
     public function derivar($recepcion_id, $area_id)
     {
-        Log::info('Método derivar iniciado', ['recepcion_id' => $recepcion_id, 'area_id' => $area_id, 'user_id' => auth()->user()->id]);
         $recepcion = Recepcion::find($recepcion_id);
         if (!$recepcion) {
             return response()->json(['success' => false, 'message' => 'No se encontró la recepción solicitada'], 404);
@@ -191,21 +191,19 @@ class RecepcionController extends Controller
                 $new_recepcion->detalle = $recepcion->detalle;
                 $new_recepcion->activo = false;
                 $new_recepcion->save();
+
+                Log::info('En la derivación: Se actualiza al estado "En progreso" para la solicitud "' . $recepcion->id . '"');
+
                 $recepcion->activo = true; //Validar solicitud y actualizar estado - Copia Recepcionista
                 $recepcion->estado_id = Estado::where('estado', 'En progreso')->first()->id;
                 $recepcion->save();
                 DB::commit(); //Finalizando la transacción
-                Log::info('Método derivar finalizado', ['recepcion_id' => $recepcion_id, 'area_id' => $area_id, 'user_id' => auth()->user()->id]);
                 return response()->json(['success' => true, 'message' => 'La solicitud "' . $recepcion->atencion_id . '" ha sido derivada a ' . $recepcion->usuarioDestino->name . ' del area ' . $recepcion->area->area]);
             } catch (\Exception $e) {
-                Log::error('Error al derivar', ['recepcion_id' => $recepcion_id, 'area_id' => $area_id, 'user_id' => auth()->user()->id, 'error' => $e->getMessage()]);
-
                 DB::rollBack();
                 return response()->json(['success' => false, 'message' => 'Ocurrió un error al derivar la solicitud:' . $e->getMessage()]);
             }
         } catch (\Exception $e) {
-            Log::error('Error al derivar', ['recepcion_id' => $recepcion_id, 'area_id' => $area_id, 'user_id' => auth()->user()->id, 'error' => $e->getMessage()]);
-
             DB::rollBack();
             return response()->json(['success' => false, 'message' => 'Error al derivar: ' . $e->getMessage()], 500);
         }
@@ -213,7 +211,7 @@ class RecepcionController extends Controller
 
     public function asignar($recepcion_id, $equipo_id)
     {
-        Log::info('Método asignar iniciado', ['recepcion_id' => $recepcion_id, 'equipo_id' => $equipo_id, 'user_id' => auth()->user()->id]);
+        //Validando
         $recepcion = Recepcion::find($recepcion_id);
         if (!$recepcion) {
             return response()->json(['success' => false, 'message' => 'No se encontró la recepción solicitada'], 404);
@@ -222,7 +220,6 @@ class RecepcionController extends Controller
         if (!$equipo) {
             return response()->json(['success' => false, 'message' => 'No se encontró el equipo solicitado'], 404);
         }
-        //Validando el número de atención
         $role_id = Role::where('name', 'Gestor')->first()->id;
         $asignada = Recepcion::where('atencion_id', $recepcion->atencion_id)->where('role_id', $role_id)->first();
         if ($asignada) {
@@ -257,15 +254,16 @@ class RecepcionController extends Controller
             $new_recepcion->detalle = $recepcion->detalle;
             $new_recepcion->activo = false;
             $new_recepcion->save();
+
+            Log::info('En la asignación: Se actualiza al estado "En progreso" para la solicitud "' . $recepcion->id . '"');
+
             $recepcion->activo = true; //Validar solicitud y actualizar estado - Copia Supervisor
             $recepcion->estado_id = Estado::where('estado', 'En progreso')->first()->id;
             $recepcion->save();
             DB::commit(); //Finalizando la transacción
-            //return redirect()->route('recepcion')->with('success', 'La solicitud "' . $recepcion->atencion_id . '" ha sido asignada a ' . $recepcion->usuarioDestino->name . ' del area ' . $recepcion->area->area);
             return response()->json(['success' => true, 'message' => 'La solicitud "' . $recepcion->atencion_id . '" ha sido asignada a ' . $recepcion->usuarioDestino->name . ' del area ' . $recepcion->area->area]);
         } catch (\Exception $e) {
             DB::rollBack();
-            //return back()->with('error', 'Ocurrió un error al asignar la solicitud:' . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Ocurrió un error al asignar la solicitud:' . $e->getMessage()]);
         }
     }
@@ -303,29 +301,55 @@ class RecepcionController extends Controller
             $new_recepcion->atencion_id = $recepcion->atencion_id;
             $new_recepcion->detalle = $recepcion->detalle;
             $new_recepcion->activo = false;
-            $new_recepcion_id = $new_recepcion->id;
             $new_recepcion->save();
+
+            Log::info('En la delegación: Se actualiza al estado "En progreso" para la solicitud "' . $recepcion->id . '"');
+
             $recepcion->activo = true; //Validar solicitud y actualizar estado - Copia Gestor
             $recepcion->estado_id = Estado::where('estado', 'En progreso')->first()->id;
             $recepcion->save();
-            foreach ($recepcion->solicitud->tareas as $tarea) { //Delegando las actividades
-                $actividad = new Actividad();
-                $actividad->id = (new KeyMaker())->generate('Actividad', $recepcion->solicitud_id);
-                $actividad->recepcion_id = $new_recepcion_id;
-                $actividad->tarea_id = $tarea->id;
-                $actividad->role_id = $role_id;
-                $actividad->user_id_origen = auth()->user()->id;
-                $actividad->user_id_destino = $user->id;
-                $actividad->activo = false;
-                $actividad->save();
-            }
+
             DB::commit();
-            //return redirect()->route('recepcion')->with('success', 'La solicitud "' . $recepcion->atencion_id . '" ha sido delegada a ' . $user->name . ' del área ' . $recepcion->area->area);
             return response()->json(['success' => true, 'message' => 'La solicitud "' . $recepcion->atencion_id . '" ha sido delegada a ' . $user->name . ' del área ' . $recepcion->area->area]);
         } catch (\Exception $e) {
             DB::rollBack();
-            //return back()->with('error', 'Ocurrió un error al delegar la solicitud:' . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Ocurrió un error al delegar la solicitud:' . $e->getMessage()]);
+        }
+    }
+
+    public function iniciarTareas(string $recepcion_id)
+    {
+        
+        
+        
+        $recepcion = Recepcion::find($recepcion_id); //Validando
+        if (!$recepcion) {
+            return response()->json(['success' => false, 'message' => 'No se encontró la recepción solicitada'], 404);
+        }
+        if ($recepcion->solicitud->tareas->count() == 0) {
+            return response()->json(['success' => false, 'message' => 'La solicitud no tiene tareas asignadas']);
+        }
+        DB::beginTransaction(); //Iniciando las tareas
+        try {
+            foreach ($recepcion->solicitud->tareas as $tarea) { 
+                $actividad = new Actividad();
+                $actividad->id = (new KeyMaker())->generate('Actividad', $recepcion->solicitud_id);
+                $actividad->recepcion_id = $recepcion->id;
+                $actividad->tarea_id = $tarea->id;
+                $actividad->role_id = Role::where('name', 'Operador')->first()->id;
+                $actividad->user_id_origen = auth()->user()->id;
+                $actividad->user_id_destino = $recepcion->user_id_destino;
+                $actividad->estado_id = Estado::where('estado', 'En progreso')->first()->id;
+                $actividad->save();
+            }
+            $recepcion->activo = true; //Validar solicitud y actualizar estado - Copia Operador
+            $recepcion->estado_id = Estado::where('estado', 'En progreso')->first()->id;
+            $recepcion->save();
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Las tareas de la solicitud "' . $recepcion->atencion_id . '" han sido iniciadas']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => 'Ocurrió un error al iniciar las tareas:' . $e->getMessage()]);
         }
     }
 
