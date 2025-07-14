@@ -226,7 +226,7 @@ class RecepcionController extends Controller
         $role_id = Role::where('name', 'Gestor')->first()->id;
         $asignada = Recepcion::where('atencion_id', $recepcion->atencion_id)->where('role_id', $role_id)->first();
         if ($asignada) {
-            return response()->json(['success' => false, 'message' => 'La solicitud con número de atención ' . $asignada->atencion_id . ' ya ha sido asignada a ' . $asignada->usuarioDestino->name . ' en el área ' . $asignada->area->area]);
+            return response()->json(['success' => false, 'message' => 'La solicitud con número de atención ' . $asignada->atencion_id . ' ya ha sido asignada al '.$asignada->role->name .' '. $asignada->usuarioDestino->name . ' en el área ' . $asignada->area->area]);
         }
         //Seleccionando el gestor
         $gestores = User::role('Gestor')->whereHas('oficina', function ($query) use ($recepcion) {
@@ -272,7 +272,6 @@ class RecepcionController extends Controller
 
     public function delegar($recepcion_id, $user_id)
     {
-        Log::info('Método delegar iniciado', ['recepcion_id' => $recepcion_id, 'user_id' => $user_id, 'auth_user_id' => auth()->user()->id]);
         $recepcion = Recepcion::find($recepcion_id);
         if (!$recepcion) {
             return response()->json(['success' => false, 'message' => 'No se encontró la recepción solicitada'], 404);
@@ -285,7 +284,7 @@ class RecepcionController extends Controller
         $role_id = Role::where('name', 'Operador')->first()->id;
         $delegada = Recepcion::where('atencion_id', $recepcion->atencion_id)->where('role_id', $role_id)->first();
         if ($delegada) {
-            return response()->json(['success' => false, 'message' => 'La solicitud con número de atención ' . $delegada->atencion_id . ' ya ha sido delegada a ' . $delegada->usuarioDestino->name . ' en el área ' . $delegada->area->area]);
+            return response()->json(['success' => false, 'message' => 'La solicitud con número de atención ' . $delegada->atencion_id . ' ya ha sido delegada al '.$delegada->role->name .' '. $delegada->usuarioDestino->name . ' en el área ' . $delegada->area->area]);
         }
         //Delegando la solicitud
         DB::beginTransaction();
@@ -354,7 +353,7 @@ class RecepcionController extends Controller
             })->get();
             return view('modelos.recepcion.mis-tareas', compact('equipos', 'recepciones'));
         } elseif ($user->hasRole('Gestor')) {
-            $operadores = User::role('Operador')->whereHas('oficina.area', function ($query) use ($user) {
+            $operadores = User::role('Operador')->whereHas('oficina', function ($query) use ($user) {
                 $query->where('area_id', $user->oficina->area_id);
             })->where('activo', true)->get();
             return view('modelos.recepcion.mis-tareas', compact('operadores', 'recepciones'));

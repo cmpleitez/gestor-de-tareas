@@ -7,6 +7,8 @@
     ... el movimiento hacia el tablero de en progreso: ya ha sido derivada
     ... el movimiento hacia el tablero de resueltas: ya ha sido derivada
                             
+🟢 analizar si el canva del operador sera el mismo que el de los: supervisores, recepcionistas y gestores
+🟢 mis-tareas: se deb validar cuando no hay operadores, no hay supervisores o no hay equipos de trabajo 
 🟢 proceso de rechazo de una solicitud
 🟢 mis-tareas: crear una estrategia de uso de cache
 🟢 en la mayoria de las vistas se debe agregar un margen arriba de 1 o 2 porque todo esta muy pegado al techo
