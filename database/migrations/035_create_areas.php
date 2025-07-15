@@ -10,12 +10,12 @@ return new class extends Migration
     {
         Schema::create('areas', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('zona_id');
+            $table->foreignId('oficina_id');
             $table->string('area', 128)->unique();
             $table->boolean('activo')->default(true);
             $table->timestamps();
 
-            $table->foreign('zona_id')->references('id')->on('zonas');
+            $table->foreign('oficina_id')->references('id')->on('oficinas');
         });
     }
 

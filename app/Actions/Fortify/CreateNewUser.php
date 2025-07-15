@@ -9,6 +9,7 @@ use Illuminate\Validation\Rule;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Exception;
 
 use App\Models\User;
@@ -19,16 +20,23 @@ class CreateNewUser implements CreatesNewUsers
 
     public function create(array $input): User
     {
+        // DEPURACIÓN: mostrar el input recibido
+        //dd($input); // Detiene la ejecución y muestra el contenido recibido
+        
+        
         //VALIDANDO
         $validated =Validator::make($input, [
             'name' => ['required', 'string', 'max:255', 'regex:/^(?! )[a-zA-ZáéíóúÁÉÍÓÚ]+( [a-zA-ZáéíóúÁÉÍÓÚ]+)*$/'],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')],
             'dui' => ['required', 'string', Rule::unique('users', 'dui'), new ValidDui],
-            'oficina_id' => ['required', 'exists:oficinas,id'],
+            'area_id' => ['required', 'exists:areas,id'],
             'password' => $this->passwordRules(),
             'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
             'profile_photo_path' => ['nullable', 'image', 'max:10240'],
         ])->validate();
+        
+        //dd($validated); // Depuración: mostrar el array validado
+        
         //GUARDANDO
         try {
             DB::beginTransaction();

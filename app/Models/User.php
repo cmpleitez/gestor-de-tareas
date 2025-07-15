@@ -33,7 +33,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'dui',
         'email',
         'password',
-        'oficina_id',
+        'area_id',
         'profile_photo_path'
     ];
 
@@ -88,9 +88,9 @@ class User extends Authenticatable implements MustVerifyEmail
         return asset('app-assets/images/pages/operador.png');
     }
 
-    public function oficina()
+    public function area()
     {
-        return $this->belongsTo(Oficina::class);
+        return $this->belongsTo(Area::class);
     }
 
     public function equipos()

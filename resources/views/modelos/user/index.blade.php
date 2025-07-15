@@ -43,8 +43,8 @@
                                     @foreach ($users as $user)
                                         <tr>
                                             {{-- CAMPOS --}}
-                                            <td>{{ $user->oficina->area->area }}</td>
-                                            <td>{{ $user->oficina->oficina }}</td>
+                                            <td>{{ $user->area->area }}</td>
+                                            <td>{{ $user->area->oficina->oficina }}</td>
                                             <td>{{ $user->name }}</td>
                                             <td>{{ $user->email }}</td>
                                             <td class="text-center">{{ $user->created_at->format('d/m/Y') }}</td>

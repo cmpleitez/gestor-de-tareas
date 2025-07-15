@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('oficina_id');
+            $table->foreignId('area_id');
             $table->string('dui',9)->unique();
             $table->string('name');
             $table->string('email')->unique();
@@ -22,7 +22,7 @@ return new class extends Migration
             $table->boolean('activo')->default(true);
             $table->timestamps();
 
-            $table->foreign('oficina_id')->references('id')->on('oficinas');
+            $table->foreign('area_id')->references('id')->on('areas');
         });
     }
 

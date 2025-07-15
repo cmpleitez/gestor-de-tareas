@@ -15,8 +15,8 @@ class Zona extends Model
         return $this->belongsTo(Distrito::class);
     }
 
-    public function areas()
+    public function oficinas()
     {
-        return $this->hasMany(Area::class);
+        return $this->hasMany(Oficina::class);
     }
 }

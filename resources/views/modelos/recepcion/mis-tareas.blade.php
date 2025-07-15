@@ -119,7 +119,7 @@
                 <i class="bx bx-cloud align-middle"></i>
                 <span class="align-middle text-uppercase">
                     @if(auth()->user()->hasRole('Recepcionista'))
-                        AREA: {{ auth()->user()->oficina->area->area }}
+                        AREA: {{ auth()->user()->area->area }}
                     @elseif(auth()->user()->hasRole('Supervisor'))
                         EQUIPO DE TRABAJO: {{ auth()->user()->equipos()->first()->equipo }}
                     @elseif(auth()->user()->hasRole('Gestor'))
@@ -141,7 +141,7 @@
                                                 <input type="radio" id="area_{{ $area->id }}"
                                                     name="area_destino" class="custom-control-input"
                                                     value="{{ $area->id }}"
-                                                    {{ $area->id == auth()->user()->oficina->area_id ? 'checked' : '' }}>
+                                                    {{ $area->id == auth()->user()->area_id ? 'checked' : '' }}>
                                                 <label class="custom-control-label h5 mb-0"
                                                     for="area_{{ $area->id }}"
                                                     style="padding: 10px; cursor: pointer;">

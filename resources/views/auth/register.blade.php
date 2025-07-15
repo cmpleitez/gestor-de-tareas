@@ -297,20 +297,20 @@
                                         </div>
                                     @enderror
                                 </div>
-                                <div class="col-sm-12"> {{-- Oficina --}}
+                                <div class="col-sm-12"> {{-- Area --}}
                                     <div class="form-group">
-                                        <label for="oficina_id">Oficina</label>
-                                        <select class="select2 form-control" id="oficina_id" name="oficina_id" 
-                                        data-validation-required-message="La oficina es requerida" required>
-                                            @foreach ($oficinas as $oficina)
-                                                <option value="{{ $oficina->id }}" {{ old('oficina_id') == $oficina->id ? 'selected' : '' }}>
-                                                    {{ $oficina->oficina }}
+                                        <label for="area_id">Area</label>
+                                        <select class="select2 form-control" id="area_id" name="area_id" 
+                                        data-validation-required-message="La area es requerida" required>
+                                            @foreach ($areas as $area)
+                                                <option value="{{ $area->id }}" {{ old('area_id') == $area->id ? 'selected' : '' }}>
+                                                    {{ $area->area }}
                                                 </option>
                                             @endforeach
                                         </select>
-                                        @error('oficina_id')
+                                        @error('area_id')
                                             <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
-                                                {{ $errors->first('oficina_id') }}
+                                                {{ $errors->first('area_id') }}
                                             </div>
                                         @enderror
                                     </div>

@@ -9,13 +9,14 @@ class Area extends Model
 {
     use HasFactory;
 
-    public function oficinas()
+    public function oficina()
     {
-        return $this->hasMany(Oficina::class);
+        return $this->belongsTo(Oficina::class);
     }
 
-    public function zona()
+    public function users()
     {
-        return $this->belongsTo(Zona::class);
+        return $this->hasMany(User::class);
     }
+    
 }
