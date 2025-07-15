@@ -93,6 +93,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsTo(Area::class);
     }
 
+    public function oficina()
+    {
+        return $this->hasOneThrough(Oficina::class, Area::class);
+    }
+
     public function equipos()
     {
         return $this->belongsToMany(Equipo::class);

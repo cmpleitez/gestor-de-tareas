@@ -28,7 +28,8 @@ class RecepcionController extends Controller
 
     public function areas(Solicitud $solicitud)
     {
-        $areas = Area::where('zona_id', auth()->user()->oficina->area->zona_id)
+        $user = auth()->user()->load('area.oficina.zona');
+        $areas = Area::where('zona_id', $user->area->oficina->zona_id)
             ->whereHas('oficinas.users.solicitudes', function ($query) use ($solicitud) {
                 $query->where('solicitudes.id', $solicitud->id);
             })->get();
@@ -39,8 +40,9 @@ class RecepcionController extends Controller
     }
     public function equipos(Solicitud $solicitud)
     {
-        $equipos = Equipo::whereHas('usuarios.oficina', function ($query) use ($solicitud) {
-            $query->where('area_id', auth()->user()->oficina->area_id);
+        $user = auth()->user()->load('area');
+        $equipos = Equipo::whereHas('usuarios.area', function ($query) use ($user) {
+            $query->where('id', $user->area_id);
         })->whereHas('usuarios.solicitudes', function ($query) use ($solicitud) {
             $query->where('solicitudes.id', $solicitud->id);
         })->get();
@@ -52,8 +54,9 @@ class RecepcionController extends Controller
 
     public function operadores(Solicitud $solicitud)
     {
-        $operadores = User::role('Operador')->whereHas('oficina.area', function ($query) use ($solicitud) {
-            $query->where('area_id', auth()->user()->oficina->area_id);
+        $user = auth()->user()->load('area');
+        $operadores = User::role('Operador')->whereHas('area', function ($query) use ($user) {
+            $query->where('id', $user->area_id);
         })->whereHas('solicitudes', function ($query) use ($solicitud) {
             $query->where('solicitudes.id', $solicitud->id);
         })->get();
@@ -100,8 +103,9 @@ class RecepcionController extends Controller
     public function store(Request $request)
     {
         //Seleccionando un recepcionista aleatorio de la oficina destino
-        $recepcionistas = User::role('Recepcionista')->whereHas('area', function ($query) {
-            $query->where('oficina_id', auth()->user()->area->oficina_id);
+        $user = auth()->user()->load('area.oficina.zona.distrito');
+        $recepcionistas = User::role('Recepcionista')->whereHas('area', function ($query) use ($user) {
+            $query->where('oficina_id', $user->area->oficina_id);
         })->get();
         if ($recepcionistas->isEmpty()) {
             return back()->with('error', 'La funcionalidad se encuentra inhabilitada, consulte con el administrador del sistema');
@@ -120,9 +124,9 @@ class RecepcionController extends Controller
             $recepcion->id = (new KeyMaker())->generate('Recepcion', $request->solicitud_id);
             $recepcion->solicitud_id = $request->solicitud_id;
             $recepcion->oficina_id = $recepcionista->area->oficina_id;
-            $recepcion->area_id = auth()->user()->area_id;
-            $recepcion->zona_id = auth()->user()->area->oficina->zona_id;
-            $recepcion->distrito_id = auth()->user()->area->oficina->zona->distrito_id;
+            $recepcion->area_id = $user->area_id;
+            $recepcion->zona_id = $user->area->oficina->zona_id;
+            $recepcion->distrito_id = $user->area->oficina->zona->distrito_id;
             $recepcion->user_id_origen = auth()->user()->id;
             $recepcion->user_id_destino = $recepcionista->id;
             $recepcion->role_id = Role::where('name', 'Recepcionista')->first()->id;
@@ -136,7 +140,7 @@ class RecepcionController extends Controller
             return back()->with('error', 'Ocurrió un error cuando se intentaba enviar la solicitud:' . $e->getMessage());
         }
         DB::commit(); //Finalizando la transacción
-        return redirect()->route('recepcion')->with('success', 'La solicitud número "' . $atencion_id . '" ha sido recibida en el area ' . auth()->user()->area->area);
+        return redirect()->route('recepcion')->with('success', 'La solicitud número "' . $atencion_id . '" ha sido recibida en el area ' . $user->area->area);
     }
 
     public function show(string $id)
@@ -155,7 +159,7 @@ class RecepcionController extends Controller
         if (!$recepcion) {
             return response()->json(['success' => false, 'message' => 'No se encontró la recepción solicitada'], 404);
         }
-        $area = Area::find($area_id);
+        $area = Area::find($area_id)->load('oficina.zona.distrito');
         if (!$area) {
             return response()->json(['success' => false, 'message' => 'No se encontró el área solicitada'], 404);
         }
@@ -167,11 +171,10 @@ class RecepcionController extends Controller
                 return response()->json(['success' => false, 'message' => 'La solicitud con número de atención ' . $derivada->atencion_id . ' ya ha sido derivada a ' . $derivada->usuarioDestino->name . ' en el área ' . $derivada->area->area]);
             }
             //Seleccionando el supervisor
-            $supervisores = User::role('Supervisor')->whereHas('oficina', function ($query) use ($area) {
-                $query->where('area_id', $area->id);
+            $supervisores = User::role('Supervisor')->whereHas('area', function ($query) use ($area) {
+                $query->where('id', $area->id);
             })->get();
             if ($supervisores->isEmpty()) {
-                Log::warning('No se encontró supervisor para área', ['area_id' => $area->id]);
                 return response()->json(['success' => false, 'message' => 'No hay supervisor disponible para esta área'], 422);
             }
             $supervisor = $supervisores->random();
@@ -183,8 +186,8 @@ class RecepcionController extends Controller
                 $new_recepcion->solicitud_id = $recepcion->solicitud_id;
                 $new_recepcion->oficina_id = $recepcion->oficina_id;
                 $new_recepcion->area_id = $area->id;
-                $new_recepcion->zona_id = $area->zona_id;
-                $new_recepcion->distrito_id = $area->zona->distrito_id;
+                $new_recepcion->zona_id = $area->oficina->zona_id;
+                $new_recepcion->distrito_id = $area->oficina->zona->distrito_id;
                 $new_recepcion->user_id_origen = auth()->user()->id;
                 $new_recepcion->user_id_destino = $supervisor->id;
                 $new_recepcion->role_id = $role_id;
@@ -194,13 +197,11 @@ class RecepcionController extends Controller
                 $new_recepcion->activo = false;
                 $new_recepcion->save();
 
-                Log::info('En la derivación: Se actualiza al estado "En progreso" para la solicitud "' . $recepcion->id . '"');
-
                 $recepcion->activo = true; //Validar solicitud y actualizar estado - Copia Recepcionista
                 $recepcion->estado_id = Estado::where('estado', 'En progreso')->first()->id;
                 $recepcion->save();
                 DB::commit(); //Finalizando la transacción
-                return response()->json(['success' => true, 'message' => 'La solicitud "' . $recepcion->atencion_id . '" ha sido derivada a ' . $recepcion->usuarioDestino->name . ' del area ' . $recepcion->area->area]);
+                return response()->json(['success' => true, 'message' => 'La solicitud "' . $recepcion->atencion_id . '" ha sido derivada a ' . $supervisor->name . ' del area ' . $area->area]);
             } catch (\Exception $e) {
                 DB::rollBack();
                 return response()->json(['success' => false, 'message' => 'Ocurrió un error al derivar la solicitud:' . $e->getMessage()]);
@@ -228,8 +229,8 @@ class RecepcionController extends Controller
             return response()->json(['success' => false, 'message' => 'La solicitud con número de atención ' . $asignada->atencion_id . ' ya ha sido asignada al '.$asignada->role->name .' '. $asignada->usuarioDestino->name . ' en el área ' . $asignada->area->area]);
         }
         //Seleccionando el gestor
-        $gestores = User::role('Gestor')->whereHas('oficina', function ($query) use ($recepcion) {
-            $query->where('area_id', $recepcion->area_id);
+        $gestores = User::role('Gestor')->whereHas('area', function ($query) use ($recepcion) {
+            $query->where('id', $recepcion->area_id);
         })->whereHas('equipos', function ($query) use ($equipo) {
             $query->where('equipos.id', $equipo->id);
         })->get();
@@ -321,9 +322,6 @@ class RecepcionController extends Controller
 
     public function iniciarTareas(string $recepcion_id)
     {
-        
-        
-        
         $recepcion = Recepcion::find($recepcion_id); //Validando
         if (!$recepcion) {
             return response()->json(['success' => false, 'message' => 'No se encontró la recepción solicitada'], 404);
@@ -371,16 +369,17 @@ class RecepcionController extends Controller
 
         // Datos según el rol del usuario
         if ($user->hasRole('Recepcionista')) {
+            $user->load('area.oficina');
             $areas = Area::where('oficina_id', $user->area->oficina_id)->get();
             return view('modelos.recepcion.mis-tareas', compact('areas', 'recepciones'));
         } elseif ($user->hasRole('Supervisor')) {
-            $equipos = Equipo::whereHas('usuarios.oficina', function ($query) use ($user) {
-                $query->where('area_id', $user->area_id);
+            $equipos = Equipo::whereHas('usuarios.area', function ($query) use ($user) {
+                $query->where('id', $user->area_id);
             })->get();
             return view('modelos.recepcion.mis-tareas', compact('equipos', 'recepciones'));
         } elseif ($user->hasRole('Gestor')) {
-            $operadores = User::role('Operador')->whereHas('oficina', function ($query) use ($user) {
-                $query->where('area_id', $user->area_id);
+            $operadores = User::role('Operador')->whereHas('area', function ($query) use ($user) {
+                $query->where('id', $user->area_id);
             })->where('activo', true)->get();
             return view('modelos.recepcion.mis-tareas', compact('operadores', 'recepciones'));
         }

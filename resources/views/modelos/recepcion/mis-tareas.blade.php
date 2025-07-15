@@ -84,6 +84,60 @@
             background: #f8f9fa;
         }
 
+        /* Estilos mejorados para las tarjetas */
+        .solicitud-card {
+            background: white;
+            border: 1px solid #e3e6f0;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: move;
+            transition: all 0.3s ease;
+            border-left: 4px solid #007bff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .solicitud-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+
+        .solicitud-titulo {
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #2c3e50;
+        }
+
+        .solicitud-id {
+            font-size: 11px;
+            color: #6c757d;
+            background: #f8f9fa;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            font-weight: 500;
+        }
+
+        /* Mejoras en los encabezados de las columnas */
+        .card {
+            border-radius: 8px !important;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            border: none !important;
+            margin: 0 !important;
+            padding: 0.6rem !important;
+        }
+
+        .badge {
+            font-size: 0.65rem;
+            padding: 0.15rem 0.4rem;
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            color: #333 !important;
+        }
+
         .sortable-chosen {
             /* MOSTRAR SOLO LA TARJETA CHOSEN */
             opacity: 1 !important;
@@ -106,102 +160,226 @@
         .solicitud-card {
             opacity: 1 !important;
         }
+
+        /* Accordion elegante */
+        #heading5 {
+            background: linear-gradient(156deg, #221627 0%, #4e2a5d 100%) !important;
+            min-height: 60px;
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+        }
+        #heading5[aria-expanded="true"] .accordion-arrow { transform: rotate(180deg); }
+        
+        /* Cards con altura uniforme */
+        .accordion .row { display: flex; align-items: stretch; }
+        .accordion .col-md-3 { display: flex; }
+        .accordion .card { flex: 1; display: flex; flex-direction: column; }
+        .accordion .card-header { flex-shrink: 0; }
+        .accordion .card-body { flex: 1; }
+        
+        /* Diseño de selección de departamentos */
+        .dept-selector {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .dept-selector:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-color: #007bff;
+        }
+        .dept-selector.selected {
+            border-color: #007bff;
+            background: linear-gradient(135deg, #f8f9ff 0%, #e3f2fd 100%);
+            box-shadow: 0 4px 16px rgba(0,123,255,0.2);
+        }
+        .dept-selector .dept-header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 6px 6px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .dept-selector .dept-body {
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .dept-selector .dept-info {
+            flex: 1;
+        }
+        .dept-selector .dept-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #2c3e50;
+            margin-bottom: 4px;
+        }
+        .dept-selector .dept-desc {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        .dept-selector .radio-indicator {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #dee2e6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        .dept-selector.selected .radio-indicator {
+            border-color: #007bff;
+            background: #007bff;
+        }
+        .dept-selector.selected .radio-indicator::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+        }
+
+        /* Utilidades tipográficas */
+        .font-weight-500 { font-weight: 500 !important; }
+        .font-weight-600 { font-weight: 600 !important; }
+        .letter-spacing-1 { letter-spacing: 0.5px; }
     </style>
 @endsection
 
 @section('contenedor')
 {{-- ITEMS DESTINATARIOS PARA CADA ROL --}}
-<div class="accordion collapse-icon accordion-icon-rotate" id="accordionWrapa2">
-    <div class="card collapse-header">
-        <div id="heading5" class="card-header" data-toggle="collapse" data-target="#accordion5" aria-expanded="false"
-            aria-controls="accordion5" role="tablist">
-            <span class="collapse-title">
-                <i class="bx bx-cloud align-middle"></i>
-                <span class="align-middle text-uppercase">
-                    @if(auth()->user()->hasRole('Recepcionista'))
-                        AREA: {{ auth()->user()->area->area }}
-                    @elseif(auth()->user()->hasRole('Supervisor'))
-                        EQUIPO DE TRABAJO: {{ auth()->user()->equipos()->first()->equipo }}
-                    @elseif(auth()->user()->hasRole('Gestor'))
-                        OPERADOR: {{ auth()->user()->name }}
-                    @endif
-                </span>
-            </span>
-        </div>
-        <div id="accordion5" role="tabpanel" data-parent="#accordionWrapa2" aria-labelledby="heading5" class="collapse">
-            <div class="card-content">
-                <div class="card-body">
-                    @if (auth()->user()->hasRole('Recepcionista') && isset($areas))
-                        <div class="row" style="display: flex; align-items: stretch;">
-                            @foreach ($areas as $area)
-                                <div class="col-md-3">
-                                    <div class="card">
-                                        <div class="card-header text-white">
-                                            <div class="custom-control custom-radio">
-                                                <input type="radio" id="area_{{ $area->id }}"
-                                                    name="area_destino" class="custom-control-input"
-                                                    value="{{ $area->id }}"
-                                                    {{ $area->id == auth()->user()->area_id ? 'checked' : '' }}>
-                                                <label class="custom-control-label h5 mb-0"
-                                                    for="area_{{ $area->id }}"
-                                                    style="padding: 10px; cursor: pointer;">
-                                                    {{ $area->area }}
-                                                </label>
+<div class="row">
+    <div class="col-12">
+        <div class="accordion" id="accordionWrapa2">
+            <div class="card collapse-header shadow-sm border-0 overflow-hidden">
+                <div id="heading5" class="card-header" data-toggle="collapse" data-target="#accordion5" aria-expanded="false"
+                    aria-controls="accordion5" role="tablist" style="border: none; margin: 0; cursor: pointer; transition: all 0.3s ease;">
+                    <div class="d-flex align-items-center justify-content-between w-100">
+                        <div class="d-flex align-items-center">
+                            <div class="mr-2">
+                                <i class="bx bx-target-lock text-white" style="font-size: 1.1rem;"></i>
+                            </div>
+                            <div class="d-flex flex-column align-items-start justify-content-center">
+                                <h6 class="mb-0 text-white font-weight-500" style="font-size: 1rem; letter-spacing: 0.3px;">
+                                    @if(auth()->user()->hasRole('Recepcionista'))
+                                        Área de Destino: <span class="font-weight-600">{{ auth()->user()->area->area }}</span>
+                                    @elseif(auth()->user()->hasRole('Supervisor'))
+                                        Equipo de Trabajo: <span class="font-weight-600">{{ auth()->user()->equipos()->first()->equipo }}</span>
+                                    @elseif(auth()->user()->hasRole('Gestor'))
+                                        Operador Asignado: <span class="font-weight-600">{{ auth()->user()->name }}</span>
+                                    @endif
+                                </h6>
+                                <small class="text-white-50" style="font-size: 0.8rem;">
+                                    Selecciona el destino para derivar solicitudes
+                                </small>
+                            </div>
+                        </div>
+                        <div>
+                            <i class="bx bx-chevron-down text-white accordion-arrow" style="font-size: 1rem; transition: transform 0.3s ease;"></i>
+                        </div>
+                    </div>
+                </div>
+                <div id="accordion5" role="tabpanel" data-parent="#accordionWrapa2" aria-labelledby="heading5" class="collapse">
+                    <div class="card-content">
+                        <div class="card-body" style="background: #f8f9fa; padding: 1.5rem;">
+                            @if (auth()->user()->hasRole('Recepcionista') && isset($areas)) {{-- RECEPCIONISTA --}}
+                                <div class="row" style="display: flex; align-items: stretch;">
+                                    @foreach ($areas as $area)
+                                        <div class="col-md-3">
+                                            <div class="dept-selector {{ $area->id == auth()->user()->area_id ? 'selected' : '' }}" 
+                                                 onclick="selectDepartment('area_{{ $area->id }}')">
+                                                <div class="dept-header">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="bx bx-building mr-2"></i>
+                                                        <span>Área</span>
+                                                    </div>
+                                                    <div class="radio-indicator"></div>
+                                                </div>
+                                                <div class="dept-body">
+                                                    <div class="dept-info">
+                                                        <div class="dept-name">{{ $area->area }}</div>
+                                                        <div class="dept-desc">Departamento de trabajo</div>
+                                                    </div>
+                                                </div>
+                                                <input type="radio" id="area_{{ $area->id }}" name="area_destino" 
+                                                       value="{{ $area->id }}" 
+                                                       {{ $area->id == auth()->user()->area_id ? 'checked' : '' }} 
+                                                       style="display: none;">
                                             </div>
                                         </div>
-                                    </div>
+                                    @endforeach
                                 </div>
-                            @endforeach
-                        </div>
-                    @elseif (auth()->user()->hasRole('Supervisor') && isset($equipos))
-                        <div class="row" style="display: flex; align-items: stretch;">
-                            @foreach ($equipos as $equipo)
-                                <div class="col-md-3">
-                                    <div class="card">
-                                        <div class="card-header bg-info text-white">
-                                            <div class="custom-control custom-radio">
-                                                    <input type="radio" id="equipo_{{ $equipo->id }}"
-                                                        name="equipo_destino" class="custom-control-input"
-                                                        value="{{ $equipo->id }}"
-                                                        {{ $equipo->id == auth()->user()->equipos->first()->id ? 'checked' : '' }}>
-                                                <label class="custom-control-label h5 mb-0"
-                                                    for="equipo_{{ $equipo->id }}"
-                                                    style="padding: 10px; cursor: pointer;">
-                                                    {{ $equipo->equipo }}
-                                                </label>
+                            @elseif (auth()->user()->hasRole('Supervisor') && isset($equipos)) {{-- SUPERVISOR --}}
+                                <div class="row" style="display: flex; align-items: stretch;">
+                                    @foreach ($equipos as $equipo)
+                                        <div class="col-md-3">
+                                            <div class="dept-selector {{ $equipo->id == auth()->user()->equipos->first()->id ? 'selected' : '' }}" 
+                                                 onclick="selectDepartment('equipo_{{ $equipo->id }}')">
+                                                <div class="dept-header">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="bx bx-group mr-2"></i>
+                                                        <span>Equipo</span>
+                                                    </div>
+                                                    <div class="radio-indicator"></div>
+                                                </div>
+                                                <div class="dept-body">
+                                                    <div class="dept-info">
+                                                        <div class="dept-name">{{ $equipo->equipo }}</div>
+                                                        <div class="dept-desc">Grupo de trabajo</div>
+                                                    </div>
+                                                </div>
+                                                <input type="radio" id="equipo_{{ $equipo->id }}" name="equipo_destino" 
+                                                       value="{{ $equipo->id }}" 
+                                                       {{ $equipo->id == auth()->user()->equipos->first()->id ? 'checked' : '' }} 
+                                                       style="display: none;">
                                             </div>
                                         </div>
-                                    </div>
+                                    @endforeach
                                 </div>
-                            @endforeach
-                        </div>
-                    @elseif (auth()->user()->hasRole('Gestor') && isset($operadores))
-                        <div class="row" style="display: flex; align-items: stretch;">
-                            @foreach ($operadores as $operador)
-                                <div class="col-md-3">
-                                    <div class="card">
-                                        <div class="card-header bg-success text-white">
-                                            <div class="custom-control custom-radio">
-                                                <input type="radio" id="operador_{{ $operador->id }}"
-                                                    name="operador_destino" class="custom-control-input"
-                                                    value="{{ $operador->id }}"
-                                                    {{ $operador->id == auth()->user()->id ? 'checked' : '' }}>
-                                                <label class="custom-control-label h5 mb-0"
-                                                    for="operador_{{ $operador->id }}"
-                                                    style="padding: 10px; cursor: pointer;">
-                                                    {{ $operador->name }}
-                                                </label>
+                            @elseif (auth()->user()->hasRole('Gestor') && isset($operadores)) {{-- GESTOR --}}
+                                <div class="row" style="display: flex; align-items: stretch;">
+                                    @foreach ($operadores as $operador)
+                                        <div class="col-md-3">
+                                            <div class="dept-selector {{ $operador->id == auth()->user()->id ? 'selected' : '' }}" 
+                                                 onclick="selectDepartment('operador_{{ $operador->id }}')">
+                                                <div class="dept-header">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="bx bx-user mr-2"></i>
+                                                        <span>Operador</span>
+                                                    </div>
+                                                    <div class="radio-indicator"></div>
+                                                </div>
+                                                <div class="dept-body">
+                                                    <div class="dept-info">
+                                                        <div class="dept-name">{{ $operador->name }}</div>
+                                                        <div class="dept-desc">Personal asignado</div>
+                                                    </div>
+                                                </div>
+                                                <input type="radio" id="operador_{{ $operador->id }}" name="operador_destino" 
+                                                       value="{{ $operador->id }}" 
+                                                       {{ $operador->id == auth()->user()->id ? 'checked' : '' }} 
+                                                       style="display: none;">
                                             </div>
                                         </div>
-                                    </div>
+                                    @endforeach
                                 </div>
-                            @endforeach
+                            @else
+                                <div class="text-center text-muted py-4">
+                                    <i class="bx bx-info-circle" style="font-size: 2rem;"></i>
+                                    <p class="mt-2 mb-0">No hay elementos disponibles para tu rol.</p>
+                                </div>
+                            @endif
                         </div>
-                    @else
-                        <div class="text-center text-muted">
-                            <p>No hay elementos disponibles para tu rol.</p>
-                        </div>
-                    @endif
+                    </div>
                 </div>
             </div>
         </div>
@@ -211,39 +389,64 @@
 {{-- TABLEROS KANBAN --}}
 <div class="row" style="display: flex; align-items: stretch;">
     <div class="col-md-4">
-        <div class="card">
-            <div class="card-header bg-warning text-white">
-                <h5 class="mb-0">📨 Recibidas</h5>
+        <div class="card border-0 overflow-hidden">
+            <div class="card-header" style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); border: none; margin: 0;">
+                <div class="d-flex align-items-center">
+                    <div class="mr-2">
+                        <i class="bx bx-inbox text-white" style="font-size: 0.9rem;"></i>
+                    </div>
+                    <h6 class="mb-0 text-white font-weight-600" style="font-size: 0.9rem;">Recibidas</h6>
+                    <span class="badge badge-light ml-auto" id="contador-recibidas">0</span>
+                </div>
             </div>
-            <div class="card-body kanban-columna">
+            <div class="card-body kanban-columna" style="background: #f8f9fa; padding: 1rem;">
                 <div id="columna-recibidas" class="sortable-column">
-                    <div class="text-center text-muted">
-                        <i class="bx bx-loader-alt bx-spin"></i> Cargando...
+                    <div class="text-center text-muted py-4">
+                        <i class="bx bx-loader-alt bx-spin text-primary" style="font-size: 1.5rem;"></i>
+                        <div class="mt-2">Cargando solicitudes...</div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <div class="col-md-4">
-        <div class="card">
-            <div class="card-header bg-info text-white">
-                <h5 class="mb-0">📦 En Progreso</h5>
+        <div class="card border-0 overflow-hidden">
+            <div class="card-header" style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); border: none; margin: 0;">
+                <div class="d-flex align-items-center">
+                    <div class="mr-2">
+                        <i class="bx bx-time-five text-white" style="font-size: 0.9rem;"></i>
+                    </div>
+                    <h6 class="mb-0 text-white font-weight-600" style="font-size: 0.9rem;">En Progreso</h6>
+                    <span class="badge badge-light ml-auto" id="contador-progreso">0</span>
+                </div>
             </div>
-            <div class="card-body kanban-columna">
+            <div class="card-body kanban-columna" style="background: #f8f9fa; padding: 1rem;">
                 <div id="columna-progreso" class="sortable-column">
-                    <div class="text-center text-muted">Vacío por ahora</div>
+                    <div class="text-center text-muted py-4">
+                        <i class="bx bx-hourglass text-warning" style="font-size: 1.5rem;"></i>
+                        <div class="mt-2">Sin tareas en progreso</div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
     <div class="col-md-4">
-        <div class="card">
-            <div class="card-header bg-success text-white">
-                <h5 class="mb-0">✔️ Resueltas</h5>
+        <div class="card border-0 overflow-hidden">
+            <div class="card-header" style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); border: none; margin: 0;">
+                <div class="d-flex align-items-center">
+                    <div class="mr-2">
+                        <i class="bx bx-check-circle text-white" style="font-size: 0.9rem;"></i>
+                    </div>
+                    <h6 class="mb-0 text-white font-weight-600" style="font-size: 0.9rem;">Resueltas</h6>
+                    <span class="badge badge-light ml-auto" id="contador-resueltas">0</span>
+                </div>
             </div>
-            <div class="card-body kanban-columna">
+            <div class="card-body kanban-columna" style="background: #f8f9fa; padding: 1rem;">
                 <div id="columna-resueltas" class="sortable-column">
-                    <div class="text-center text-muted">Vacío por ahora</div>
+                    <div class="text-center text-muted py-4">
+                        <i class="bx bx-trophy text-success" style="font-size: 1.5rem;"></i>
+                        <div class="mt-2">Sin tareas completadas</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -283,12 +486,33 @@
         @elseif(auth()->user()->hasRole('Operador'))
             userRole = 'Operador';
         @endif
-        $(document).ready(function() {
+        // Función para seleccionar departamentos
+        function selectDepartment(radioId) {
+            // Desmarcar todos los selectores
+            document.querySelectorAll('.dept-selector').forEach(selector => {
+                selector.classList.remove('selected');
+            });
             
+            // Marcar el seleccionado
+            const selectedElement = document.querySelector(`[onclick="selectDepartment('${radioId}')"]`);
+            if (selectedElement) {
+                selectedElement.classList.add('selected');
+            }
+            
+            // Marcar el radio button
+            const radio = document.getElementById(radioId);
+            if (radio) {
+                radio.checked = true;
+                // Disparar el evento change para actualizar el título
+                $(radio).trigger('change');
+            }
+        }
+
+        $(document).ready(function() {
             // LECTURA DE DATOS
             function cargarTarjetas() {
                 $('#columna-recibidas').html(
-                    '<div class="text-center text-muted"><i class="bx bx-loader-alt bx-spin"></i> Cargando...</div>'
+                    '<div class="text-center text-muted py-4"><i class="bx bx-loader-alt bx-spin text-primary" style="font-size: 1.5rem;"></i><div class="mt-2">Cargando solicitudes...</div></div>'
                 );
                 $.ajax({
                     url: '{{ route('recepcion.solicitudes') }}',
@@ -300,7 +524,7 @@
                     },
                     error: function(xhr, status, error) {
                         $('#columna-recibidas').html(
-                            '<div class="text-center text-danger">Error al cargar solicitudes</div>'
+                            '<div class="text-center text-danger py-4"><i class="bx bx-error-circle" style="font-size: 1.5rem;"></i><div class="mt-2">Error al cargar solicitudes</div></div>'
                         );
                     }
                 });
@@ -358,17 +582,22 @@
                     </div>`;
                     $(`#${columnaDestino}`).append(tarjetaHtml);
                 });
+                // Actualizar contadores
+                $('#contador-recibidas').text(contadores.recibidas);
+                $('#contador-progreso').text(contadores.progreso);
+                $('#contador-resueltas').text(contadores.resueltas);
+                
                 if (contadores.recibidas === 0) { // Mostrar mensajes si alguna columna quedó vacía
                     $('#columna-recibidas').html(
-                        '<div class="text-center text-muted">No hay solicitudes recibidas</div>');
+                        '<div class="text-center text-muted py-4"><i class="bx bx-inbox text-muted" style="font-size: 1.5rem;"></i><div class="mt-2">Sin solicitudes recibidas</div></div>');
                 }
                 if (contadores.progreso === 0) {
                     $('#columna-progreso').html(
-                        '<div class="text-center text-muted">No hay solicitudes en progreso</div>');
+                        '<div class="text-center text-muted py-4"><i class="bx bx-time-five text-muted" style="font-size: 1.5rem;"></i><div class="mt-2">Sin tareas en progreso</div></div>');
                 }
                 if (contadores.resueltas === 0) {
                     $('#columna-resueltas').html(
-                        '<div class="text-center text-muted">No hay solicitudes resueltas</div>');
+                        '<div class="text-center text-muted py-4"><i class="bx bx-check-circle text-muted" style="font-size: 1.5rem;"></i><div class="mt-2">Sin tareas completadas</div></div>');
                 }
                 initKanban();
             }
@@ -575,24 +804,24 @@
                 $('.kanban-overlay').removeClass('show');
                 $('.kanban-sidebar').removeClass('show');
             });
-            
+
             //ACTUALIZACIÓN DINÁMICA DEL TÍTULO DEL ACORDEÓN
             $(document).on('change', 'input[name="area_destino"]', function() {
                 const areaId = $(this).val();
-                const areaNombre = $(this).closest('.card').find('label').text().trim();
-                $('.collapse-title span.align-middle').text(`AREA: ${areaNombre}`);
+                const areaNombre = $(this).closest('.dept-selector').find('.dept-name').text().trim();
+                $('#heading5 h6 .font-weight-600').text(areaNombre);
                 $('#accordion5').collapse('hide');
             });
             $(document).on('change', 'input[name="equipo_destino"]', function() {
                 const equipoId = $(this).val();
-                const equipoNombre = $(this).closest('.card').find('label').text().trim();
-                $('.collapse-title span.align-middle').text(`EQUIPO DE TRABAJO: ${equipoNombre}`);
+                const equipoNombre = $(this).closest('.dept-selector').find('.dept-name').text().trim();
+                $('#heading5 h6 .font-weight-600').text(equipoNombre);
                 $('#accordion5').collapse('hide');
             });
             $(document).on('change', 'input[name="operador_destino"]', function() {
                 const operadorId = $(this).val();
-                const operadorNombre = $(this).closest('.card').find('label').text().trim();
-                $('.collapse-title span.align-middle').text(`OPERADOR: ${operadorNombre}`);
+                const operadorNombre = $(this).closest('.dept-selector').find('.dept-name').text().trim();
+                $('#heading5 h6 .font-weight-600').text(operadorNombre);
                 $('#accordion5').collapse('hide');
             });
         });
