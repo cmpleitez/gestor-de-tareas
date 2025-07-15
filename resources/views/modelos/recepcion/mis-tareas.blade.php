@@ -271,11 +271,11 @@
                             <div class="d-flex flex-column align-items-start justify-content-center">
                                 <h6 class="mb-0 text-white font-weight-500" style="font-size: 1rem; letter-spacing: 0.3px;">
                                     @if(auth()->user()->hasRole('Recepcionista'))
-                                        Área de Destino: <span class="font-weight-600">{{ auth()->user()->area->area }}</span>
+                                        <span class="font-weight-600">{{ auth()->user()->area->area }}</span>
                                     @elseif(auth()->user()->hasRole('Supervisor'))
-                                        Equipo de Trabajo: <span class="font-weight-600">{{ auth()->user()->equipos()->first()->equipo }}</span>
+                                        <span class="font-weight-600">{{ auth()->user()->equipos()->first()->equipo }}</span>
                                     @elseif(auth()->user()->hasRole('Gestor'))
-                                        Operador Asignado: <span class="font-weight-600">{{ auth()->user()->name }}</span>
+                                        <span class="font-weight-600">{{ auth()->user()->name }}</span>
                                     @endif
                                 </h6>
                                 <small class="text-white-50" style="font-size: 0.8rem;">
@@ -296,7 +296,7 @@
                                     @foreach ($areas as $area)
                                         <div class="col-md-3">
                                             <div class="dept-selector {{ $area->id == auth()->user()->area_id ? 'selected' : '' }}" 
-                                                 onclick="selectDepartment('area_{{ $area->id }}')">
+                                                onclick="selectDepartment('area_{{ $area->id }}')">
                                                 <div class="dept-header">
                                                     <div class="d-flex align-items-center">
                                                         <i class="bx bx-building mr-2"></i>
@@ -311,9 +311,9 @@
                                                     </div>
                                                 </div>
                                                 <input type="radio" id="area_{{ $area->id }}" name="area_destino" 
-                                                       value="{{ $area->id }}" 
-                                                       {{ $area->id == auth()->user()->area_id ? 'checked' : '' }} 
-                                                       style="display: none;">
+                                                    value="{{ $area->id }}" 
+                                                    {{ $area->id == auth()->user()->area_id ? 'checked' : '' }} 
+                                                    style="display: none;">
                                             </div>
                                         </div>
                                     @endforeach
@@ -323,7 +323,7 @@
                                     @foreach ($equipos as $equipo)
                                         <div class="col-md-3">
                                             <div class="dept-selector {{ $equipo->id == auth()->user()->equipos->first()->id ? 'selected' : '' }}" 
-                                                 onclick="selectDepartment('equipo_{{ $equipo->id }}')">
+                                                onclick="selectDepartment('equipo_{{ $equipo->id }}')">
                                                 <div class="dept-header">
                                                     <div class="d-flex align-items-center">
                                                         <i class="bx bx-group mr-2"></i>
@@ -338,9 +338,9 @@
                                                     </div>
                                                 </div>
                                                 <input type="radio" id="equipo_{{ $equipo->id }}" name="equipo_destino" 
-                                                       value="{{ $equipo->id }}" 
-                                                       {{ $equipo->id == auth()->user()->equipos->first()->id ? 'checked' : '' }} 
-                                                       style="display: none;">
+                                                    value="{{ $equipo->id }}" 
+                                                    {{ $equipo->id == auth()->user()->equipos->first()->id ? 'checked' : '' }} 
+                                                    style="display: none;">
                                             </div>
                                         </div>
                                     @endforeach
@@ -350,7 +350,7 @@
                                     @foreach ($operadores as $operador)
                                         <div class="col-md-3">
                                             <div class="dept-selector {{ $operador->id == auth()->user()->id ? 'selected' : '' }}" 
-                                                 onclick="selectDepartment('operador_{{ $operador->id }}')">
+                                                onclick="selectDepartment('operador_{{ $operador->id }}')">
                                                 <div class="dept-header">
                                                     <div class="d-flex align-items-center">
                                                         <i class="bx bx-user mr-2"></i>
@@ -365,9 +365,9 @@
                                                     </div>
                                                 </div>
                                                 <input type="radio" id="operador_{{ $operador->id }}" name="operador_destino" 
-                                                       value="{{ $operador->id }}" 
-                                                       {{ $operador->id == auth()->user()->id ? 'checked' : '' }} 
-                                                       style="display: none;">
+                                                    value="{{ $operador->id }}" 
+                                                    {{ $operador->id == auth()->user()->id ? 'checked' : '' }} 
+                                                    style="display: none;">
                                             </div>
                                         </div>
                                     @endforeach
@@ -385,7 +385,6 @@
         </div>
     </div>
 </div>
-
 {{-- TABLEROS KANBAN --}}
 <div class="row" style="display: flex; align-items: stretch;">
     <div class="col-md-4">
@@ -393,7 +392,7 @@
             <div class="card-header" style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); border: none; margin: 0;">
                 <div class="d-flex align-items-center">
                     <div class="mr-2">
-                        <i class="bx bx-inbox text-white" style="font-size: 0.9rem;"></i>
+                        <i class="bx bx-archive text-white" style="font-size: 0.9rem;"></i>
                     </div>
                     <h6 class="mb-0 text-white font-weight-600" style="font-size: 0.9rem;">Recibidas</h6>
                     <span class="badge badge-light ml-auto" id="contador-recibidas">0</span>
@@ -453,7 +452,7 @@
     </div>
 </div>
 
-{{-- Overlay y Sidebar Kanban --}}
+{{-- OVERLAY Y SIDEBAR KANVAN --}}
 <div class="kanban-overlay"></div>
 <div class="kanban-sidebar">
     <div class="card shadow-none">
@@ -518,6 +517,7 @@
                     url: '{{ route('recepcion.solicitudes') }}',
                     type: 'GET',
                     timeout: 3000,
+                    cache: false,
                     success: function(response) {
                         const recepciones = response.recepciones || [];
                         ubicarTarjetas(recepciones);
@@ -582,14 +582,13 @@
                     </div>`;
                     $(`#${columnaDestino}`).append(tarjetaHtml);
                 });
-                // Actualizar contadores
-                $('#contador-recibidas').text(contadores.recibidas);
+                $('#contador-recibidas').text(contadores.recibidas); // Actualizar contadores
                 $('#contador-progreso').text(contadores.progreso);
                 $('#contador-resueltas').text(contadores.resueltas);
                 
                 if (contadores.recibidas === 0) { // Mostrar mensajes si alguna columna quedó vacía
                     $('#columna-recibidas').html(
-                        '<div class="text-center text-muted py-4"><i class="bx bx-inbox text-muted" style="font-size: 1.5rem;"></i><div class="mt-2">Sin solicitudes recibidas</div></div>');
+                        '<div class="text-center text-muted py-4"><i class="bx bx-archive text-muted" style="font-size: 1.5rem;"></i><div class="mt-2">Sin solicitudes recibidas</div></div>');
                 }
                 if (contadores.progreso === 0) {
                     $('#columna-progreso').html(
@@ -663,7 +662,7 @@
                 }
                 let url = ''; //Seleccionando la ruta a la que se va a enviar la solicitud
                 let selectedValue = null;
-                if (userRole === 'Recepcionista') { 
+                if (userRole === 'Recepcionista') { //RECEPCIONISTA
                     selectedValue = $('input[name="area_destino"]:checked').val();
                     if (!selectedValue) {
                         Swal.fire({
@@ -673,14 +672,13 @@
                             showConfirmButton: false,
                             timer: 2000
                         });
-                        // Revertir la tarjeta a su posición original
                         $(evt.from).append(evt.item);
                         return;
                     }
                     url = '{{ route("recepcion.derivar", ["recepcion_id" => ":id", "area_id" => ":area"]) }}'
                         .replace(':id', solicitudId)
                         .replace(':area', selectedValue);
-                } else if (userRole === 'Supervisor') { 
+                } else if (userRole === 'Supervisor') { //SUPERVISOR
                     selectedValue = $('input[name="equipo_destino"]:checked').val();
                     if (!selectedValue) {
                         Swal.fire({
@@ -690,14 +688,13 @@
                             showConfirmButton: false,
                             timer: 2000
                         });
-                        // Revertir la tarjeta a su posición original
                         $(evt.from).append(evt.item);
                         return;
                     }
                     url = '{{ route("recepcion.asignar", ["recepcion_id" => ":id", "equipo_id" => ":equipo"]) }}'
                         .replace(':id', solicitudId)
                         .replace(':equipo', selectedValue);
-                } else if (userRole === 'Gestor') { 
+                } else if (userRole === 'Gestor') { //GESTOR
                     selectedValue = $('input[name="operador_destino"]:checked').val();
                     if (!selectedValue) {
                         Swal.fire({
@@ -707,22 +704,24 @@
                             showConfirmButton: false,
                             timer: 2000
                         });
-                        // Revertir la tarjeta a su posición original
                         $(evt.from).append(evt.item);
                         return;
                     }
                     url = '{{ route("recepcion.delegar", ["recepcion_id" => ":id", "user_id" => ":user"]) }}'
                         .replace(':id', solicitudId)
                         .replace(':user', selectedValue);
-                } else if (userRole === 'Operador') { 
+                } else if (userRole === 'Operador') { //OPERADOR
+                    alert('entro');
+
+
                     url = '{{ route("recepcion.iniciar-tareas", ["recepcion_id" => ":id"]) }}'
                         .replace(':id', solicitudId);
                 }
-                
                 //ACTUALIZAR ESTADO EN EL BACKEND
                 $.ajax({
                     url: url,
                     method: 'POST',
+                    cache: false,
                     data: {
                         _token: $('meta[name="csrf-token"]').attr('content')
                     },
@@ -789,15 +788,79 @@
                 const $card = $(this);
                 const titulo = $card.find('.solicitud-titulo').text().trim();
                 const atencion = $card.find('.solicitud-id').text().trim();
+                const recepcionId = $card.data('id');
 
                 // Rellenar la información en el sidebar
                 $('#sidebar-card-title').text(titulo);
                 $('#sidebar-card-body').html('<p>' + atencion + '</p>');
+                
+                // Cargar y dibujar las tareas
+                cargarTareas(recepcionId);
 
                 // Mostrar overlay y sidebar
                 $('.kanban-overlay').addClass('show');
                 $('.kanban-sidebar').addClass('show');
             });
+
+            // Función para cargar y dibujar las tareas
+            function cargarTareas(recepcionId) {
+                $.ajax({
+                    url: '{{ route("recepcion.tareas", ["recepcion_id" => ":id"]) }}'.replace(':id', recepcionId),
+                    type: 'GET',
+                    cache: false,
+                    success: function(response) {
+                        const tareas = response.tareas || [];
+                        dibujarTareas(tareas);
+                    },
+                    error: function(xhr, status, error) {
+                        $('#sidebar-card-body').append('<div class="text-center text-muted py-3"><i class="bx bx-error-circle text-danger"></i><div class="mt-2">Error al cargar tareas</div></div>');
+                    }
+                });
+            }
+
+            // Función para dibujar las tareas en el sidebar
+            function dibujarTareas(tareas) {
+                if (tareas.length === 0) {
+                    $('#sidebar-card-body').append('<div class="text-center text-muted py-3"><i class="bx bx-task text-muted"></i><div class="mt-2">Sin tareas asignadas</div></div>');
+                    return;
+                }
+
+                let tareasHtml = '<div class="mt-3"><h6 class="font-weight-600 mb-2">Tareas de la solicitud:</h6>';
+                
+                tareas.forEach(function(tarea) {
+                    let estadoColor = '#6c757d'; // Gris por defecto
+                    let estadoIcon = 'bx-circle';
+                    
+                    if (tarea.estado_id === 2) { // En progreso
+                        estadoColor = '#17a2b8';
+                        estadoIcon = 'bx-time-five';
+                    } else if (tarea.estado_id === 3) { // Completada
+                        estadoColor = '#28a745';
+                        estadoIcon = 'bx-check-circle';
+                    }
+
+                    tareasHtml += `
+                        <div class="dept-selector" style="margin-bottom: 8px; border: 1px solid #e3e6f0;">
+                            <div class="dept-header" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); color: #495057; padding: 8px 12px;">
+                                <div class="d-flex align-items-center">
+                                    <i class="bx ${estadoIcon} mr-2" style="color: ${estadoColor}; font-size: 0.9rem;"></i>
+                                    <span style="font-size: 0.8rem; font-weight: 500;">Tarea</span>
+                                </div>
+                                <div style="font-size: 0.7rem; color: ${estadoColor}; font-weight: 600;">${tarea.estado}</div>
+                            </div>
+                            <div class="dept-body" style="padding: 10px 12px;">
+                                <div class="dept-info">
+                                    <div class="dept-name" style="font-size: 0.85rem; margin-bottom: 2px;">${tarea.tarea}</div>
+                                    <div class="dept-desc" style="font-size: 0.7rem;">ID: ${tarea.actividad_id}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                tareasHtml += '</div>';
+                $('#sidebar-card-body').append(tareasHtml);
+            }
 
             //Cerrar sidebar al hacer clic en overlay o en el icono de cierre
             $(document).on('click', '.kanban-overlay, .kanban-sidebar .close-icon', function() {

@@ -274,6 +274,10 @@ class RecepcionController extends Controller
     public function delegar($recepcion_id, $user_id)
     {
         $recepcion = Recepcion::find($recepcion_id);
+
+
+
+
         if (!$recepcion) {
             return response()->json(['success' => false, 'message' => 'No se encontró la recepción solicitada'], 404);
         }
@@ -386,6 +390,25 @@ class RecepcionController extends Controller
 
         // Por defecto, sin datos adicionales
         return view('modelos.recepcion.mis-tareas', compact('recepciones'));
+    }
+
+    public function obtenerTareas($recepcion_id)
+    {
+        $actividades = Actividad::where('recepcion_id', $recepcion_id)
+            ->with(['tarea', 'estado'])
+            ->get();
+
+        $tareas = $actividades->map(function ($actividad) {
+            return [
+                'recepcion_id' => $actividad->recepcion_id,
+                'tarea' => $actividad->tarea->tarea,
+                'estado' => $actividad->estado->estado,
+                'estado_id' => $actividad->estado_id,
+                'actividad_id' => $actividad->id
+            ];
+        });
+
+        return response()->json(['tareas' => $tareas]);
     }
 
 }
