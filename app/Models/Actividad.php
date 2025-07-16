@@ -14,7 +14,17 @@ class Actividad extends Model
     protected $casts = [
         'activo' => 'boolean',
     ];
-    
+
+    public function estado()
+    {
+        return $this->belongsTo(Estado::class);
+    }
+
+    public function tarea()
+    {
+        return $this->belongsTo(Tarea::class);
+    }
+
     public function recepcion()
     {
         return $this->belongsTo(Recepcion::class);

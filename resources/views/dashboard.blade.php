@@ -23,9 +23,10 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/vendors/css/animate/animate.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/vendors/css/extensions/dragula.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/vendors/css/forms/select/select2.min.css') }}">
-        <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/vendors/css/extensions/toastr.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/vendors/css/extensions/toastr.css') }}">
 
-    <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/vendors/css/tables/datatable/datatables.min.css') }}">
+    <link rel="stylesheet" type="text/css"
+        href="{{ asset('app-assets/vendors/css/tables/datatable/datatables.min.css') }}">
     <!-- END: Vendor CSS-->
 
     <!-- BEGIN: Theme CSS-->
@@ -40,11 +41,17 @@
     <!-- BEGIN: Page CSS-->
     <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/core/menu/menu-types/vertical-menu.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/pages/dashboard-analytics.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/plugins/forms/validation/form-validation.css') }}">
+    <link rel="stylesheet" type="text/css"
+        href="{{ asset('app-assets/css/plugins/forms/validation/form-validation.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/plugins/extensions/toastr.css') }}">
     <!-- END: Page CSS-->
 
     <style>
+        html body.navbar-sticky .app-content .content-wrapper {
+            padding: 3.8rem 2.2rem 0;
+            margin-top: 3rem;
+        }
+
         body {
             margin: 0;
             font-family: "IBM Plex Sans", Helvetica, Arial, serif;
@@ -84,6 +91,14 @@
             font-weight: 600;
             padding: 1rem 1rem !important;
             font-size: 0.8rem;
+        }
+
+        #heading5 {
+            background: linear-gradient(156deg, #221627 0%, #4e2a5d 100%) !important;
+            min-height: 52px;
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
         }
 
         .card-footer {
@@ -288,7 +303,7 @@
                                                     fallbackCopyTextToClipboard(text);
                                                 });
                                         }
-                                        
+
                                         function fallbackCopyTextToClipboard(text) {
                                             const textArea = document.createElement("textarea");
                                             textArea.value = text;
@@ -301,12 +316,18 @@
                                             try {
                                                 const successful = document.execCommand('copy');
                                                 if (successful) {
-                                                    toastr.success('Correo copiado al portapapeles', '', {positionClass: 'toast-top-center'});
+                                                    toastr.success('Correo copiado al portapapeles', '', {
+                                                        positionClass: 'toast-top-center'
+                                                    });
                                                 } else {
-                                                    toastr.error('No se pudo copiar el correo', 'Error', {positionClass: 'toast-top-center'});
+                                                    toastr.error('No se pudo copiar el correo', 'Error', {
+                                                        positionClass: 'toast-top-center'
+                                                    });
                                                 }
                                             } catch (err) {
-                                                toastr.error('No se pudo copiar el correo', 'Error', {positionClass: 'toast-top-center'});
+                                                toastr.error('No se pudo copiar el correo', 'Error', {
+                                                    positionClass: 'toast-top-center'
+                                                });
                                             }
                                             document.body.removeChild(textArea);
                                         }
@@ -315,12 +336,14 @@
                                         class="user-status text-gray-600">{{ auth()->check() ? 'Conectado' : 'Desconectado' }}</span>
                                 </div>
                                 <div class="avatar">
-                                    @if(auth()->check())
+                                    @if (auth()->check())
                                         @php $photoPath = auth()->user()->profile_photo_path; @endphp
                                         @if ($photoPath && Storage::disk('public')->exists($photoPath))
-                                            <img src="{{ Storage::url($photoPath) }}" alt="avatar" style="height: 45px; width: 45px; object-fit: cover;">
+                                            <img src="{{ Storage::url($photoPath) }}" alt="avatar"
+                                                style="height: 45px; width: 45px; object-fit: cover;">
                                         @else
-                                            <img src="{{ asset('app-assets/images/pages/operador.png') }}" alt="avatar" style="height: 45px; width: 45px; object-fit: cover;">
+                                            <img src="{{ asset('app-assets/images/pages/operador.png') }}"
+                                                alt="avatar" style="height: 45px; width: 45px; object-fit: cover;">
                                         @endif
                                     @endif
                                 </div>
@@ -328,7 +351,8 @@
                             <div class="dropdown-menu dropdown-menu-right pb-0">
                                 <a class="dropdown-item" href="#"><i class="bx bx-user mr-50"></i>
                                     Perfil</a>
-                                <a class="dropdown-item" href="{{ route('recepcion.mis-tareas') }}"><i class="bx bx-check-square mr-50"></i>
+                                <a class="dropdown-item" href="{{ route('recepcion.solicitudes') }}"><i
+                                        class="bx bx-check-square mr-50"></i>
                                     Mis tareas</a>
                                 <div class="dropdown-divider mb-0"></div>
                                 <form method="POST" action="{{ route('logout') }}" style="display: inline;">
@@ -365,7 +389,7 @@
                             data-ticon="bx-disc"></i></a></li>
             </ul>
         </div>
-        
+
         <div class="shadow-bottom"></div>
         <div class="main-menu-content">
             <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation"
@@ -375,9 +399,9 @@
                     <ul class="menu-content" style="display: block;">
                         @role('Beneficiario')
                             <li><a href="{{ Route('recepcion.create') }}">
-                                <i class="bx bx-right-arrow-alt"></i>
-                                <span class="menu-item" data-i18n="Second Level">Recepciones</span>
-                            </a></li>
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Recepciones</span>
+                                </a></li>
                         @endrole
                         @role('Operador')
                             <li><a href="#">
@@ -479,7 +503,7 @@
     <script src="{{ asset('app-assets/vendors/js/extensions/dragula.min.js') }}"></script>
     <script src="{{ asset('app-assets/vendors/js/forms/validation/jqBootstrapValidation.js') }}"></script>
     <script src="{{ asset('app-assets/vendors/js/forms/select/select2.full.min.js') }}"></script>
-        <script src="{{ asset('app-assets/vendors/js/extensions/toastr.min.js') }}"></script>
+    <script src="{{ asset('app-assets/vendors/js/extensions/toastr.min.js') }}"></script>
 
     <script src="{{ asset('app-assets/vendors/js/tables/datatable/datatables.min.js') }}"></script>
     <script src="{{ asset('app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}"></script>
@@ -538,9 +562,16 @@
                     },
                     "responsive": true,
                     "autoWidth": false,
-                    "order": [[0, 'asc'], [1, 'asc'], [2, 'asc']],
+                    "order": [
+                        [0, 'asc'],
+                        [1, 'asc'],
+                        [2, 'asc']
+                    ],
                     "pageLength": 50, // Mostrar 50 registros por defecto
-                    "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Todos"]] // Opciones de paginación
+                    "lengthMenu": [
+                        [10, 25, 50, 100, -1],
+                        [10, 25, 50, 100, "Todos"]
+                    ] // Opciones de paginación
                 });
                 // Inicializar tooltips de Bootstrap 4
                 $('[data-toggle="tooltip"]').tooltip();

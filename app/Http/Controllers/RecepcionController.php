@@ -26,6 +26,46 @@ class RecepcionController extends Controller
         return view('modelos.recepcion.index', compact('recepciones'));
     }
 
+    public function solicitudes()
+    {
+        $user = auth()->user()->load('area');
+        $recepciones = Recepcion::where('user_id_destino', $user->id)
+            ->with(['solicitud', 'estado', 'usuarioDestino', 'area', 'role'])
+            ->orderBy('created_at', 'desc')
+            ->limit(20)
+            ->get();
+        $tarjetas = $recepciones->map(function ($tarjeta) {
+            return [
+                'atencion_id' => $tarjeta->atencion_id,
+                'titulo' => $tarjeta->solicitud->solicitud,
+                'detalle' => $tarjeta->detalle,
+                'estado' => $tarjeta->estado->estado,
+                'estado_id' => $tarjeta->estado->id,
+                'user_foto' => $tarjeta->usuarioDestino && $tarjeta->usuarioDestino->profile_photo_url
+                    ? $tarjeta->usuarioDestino->profile_photo_url
+                    : asset('app-assets/images/pages/operador.png'),
+                'user_name' => $tarjeta->usuarioDestino->name,
+                'area' => $tarjeta->area->area,
+                'role_name' => $tarjeta->role->name,
+                'recepcion_id' => $tarjeta->id
+            ];
+        });
+        $data = ['tarjetas' => $tarjetas];
+        if ($user->hasRole('Recepcionista')) {
+            $user->load('area.oficina');
+            $data['areas'] = Area::where('oficina_id', $user->area->oficina_id)->get();
+        } elseif ($user->hasRole('Supervisor')) {
+            $data['equipos'] = Equipo::whereHas('usuarios.area', function ($query) use ($user) {
+                $query->where('id', $user->area_id);
+            })->get();
+        } elseif ($user->hasRole('Gestor')) {
+            $data['operadores'] = User::role('Operador')->whereHas('area', function ($query) use ($user) {
+                $query->where('id', $user->area_id);
+            })->where('activo', true)->get();
+        }
+        return view('modelos.recepcion.solicitudes', $data);
+    }
+
     public function areas(Solicitud $solicitud)
     {
         $user = auth()->user()->load('area.oficina.zona');
@@ -65,33 +105,6 @@ class RecepcionController extends Controller
             'operadores' => $operadores,
             'operadores_activos' => $operadores_activos
         ]);
-    }
-
-    public function recepciones()
-    {
-        //Consulta de recepciones
-        $recepciones = Recepcion::where('user_id_destino', auth()->user()->id)
-        ->with(['solicitud', 'estado'])->orderBy('created_at', 'desc')
-        ->limit(20)->get(); //Bloque de procesamiento: 20 unidades cada vez
-
-        //Transformando a la estructura de la tarjeta
-        $recepciones = $recepciones->map(function ($tarjeta) {
-            return [
-                'atencion_id' => $tarjeta->atencion_id,
-                'titulo' => $tarjeta->solicitud->solicitud,
-                'detalle' => $tarjeta->detalle,
-                'estado' => $tarjeta->estado->estado,
-                'estado_id' => $tarjeta->estado->id,
-                'user_foto' => $tarjeta->usuarioDestino && $tarjeta->usuarioDestino->profile_photo_url
-                    ? $tarjeta->usuarioDestino->profile_photo_url
-                    : asset('app-assets/images/pages/operador.png'),
-                'user_name' => $tarjeta->usuarioDestino->name,
-                'area' => $tarjeta->area->area,
-                'role_name' => $tarjeta->role->name,
-                'recepcion_id' => $tarjeta->id
-            ];
-        });
-        return response()->json(['recepciones' => $recepciones]);
     }
 
     public function create()
@@ -141,16 +154,6 @@ class RecepcionController extends Controller
         }
         DB::commit(); //Finalizando la transacción
         return redirect()->route('recepcion')->with('success', 'La solicitud número "' . $atencion_id . '" ha sido recibida en el area ' . $user->area->area);
-    }
-
-    public function show(string $id)
-    {
-        //
-    }
-
-    public function edit(string $id)
-    {
-        //
     }
 
     public function derivar($recepcion_id, $area_id)
@@ -274,10 +277,6 @@ class RecepcionController extends Controller
     public function delegar($recepcion_id, $user_id)
     {
         $recepcion = Recepcion::find($recepcion_id);
-
-
-
-
         if (!$recepcion) {
             return response()->json(['success' => false, 'message' => 'No se encontró la recepción solicitada'], 404);
         }
@@ -309,13 +308,9 @@ class RecepcionController extends Controller
             $new_recepcion->detalle = $recepcion->detalle;
             $new_recepcion->activo = false;
             $new_recepcion->save();
-
-            Log::info('En la delegación: Se actualiza al estado "En progreso" para la solicitud "' . $recepcion->id . '"');
-
             $recepcion->activo = true; //Validar solicitud y actualizar estado - Copia Gestor
             $recepcion->estado_id = Estado::where('estado', 'En progreso')->first()->id;
             $recepcion->save();
-
             DB::commit();
             return response()->json(['success' => true, 'message' => 'La solicitud "' . $recepcion->atencion_id . '" ha sido delegada a ' . $user->name . ' del área ' . $recepcion->area->area]);
         } catch (\Exception $e) {
@@ -357,47 +352,11 @@ class RecepcionController extends Controller
         }
     }
 
-    public function destroy(string $id)
-    {
-        //
-    }
-
-    public function activate(Recepcion $recepcion)
-    {
-    }
-
-    public function misTareas()
-    {
-        $user = auth()->user()->load('area');
-        $recepciones = Recepcion::where('user_id_destino', $user->id)->get();
-
-        // Datos según el rol del usuario
-        if ($user->hasRole('Recepcionista')) {
-            $user->load('area.oficina');
-            $areas = Area::where('oficina_id', $user->area->oficina_id)->get();
-            return view('modelos.recepcion.mis-tareas', compact('areas', 'recepciones'));
-        } elseif ($user->hasRole('Supervisor')) {
-            $equipos = Equipo::whereHas('usuarios.area', function ($query) use ($user) {
-                $query->where('id', $user->area_id);
-            })->get();
-            return view('modelos.recepcion.mis-tareas', compact('equipos', 'recepciones'));
-        } elseif ($user->hasRole('Gestor')) {
-            $operadores = User::role('Operador')->whereHas('area', function ($query) use ($user) {
-                $query->where('id', $user->area_id);
-            })->where('activo', true)->get();
-            return view('modelos.recepcion.mis-tareas', compact('operadores', 'recepciones'));
-        }
-
-        // Por defecto, sin datos adicionales
-        return view('modelos.recepcion.mis-tareas', compact('recepciones'));
-    }
-
-    public function obtenerTareas($recepcion_id)
+    public function tareas($recepcion_id)
     {
         $actividades = Actividad::where('recepcion_id', $recepcion_id)
             ->with(['tarea', 'estado'])
             ->get();
-
         $tareas = $actividades->map(function ($actividad) {
             return [
                 'recepcion_id' => $actividad->recepcion_id,
