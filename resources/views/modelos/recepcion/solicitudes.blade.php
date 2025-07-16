@@ -188,6 +188,8 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
             position: relative;
             padding: 20px;
+            width: 100%;
+            height: 100%;
         }
         .item-selector:hover {
             transform: translateY(-2px);

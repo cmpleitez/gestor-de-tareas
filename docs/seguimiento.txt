@@ -1,10 +1,8 @@
-
 ⭐ "Mi estilo de trabajo: código limpio y estándar, sin artificios, compactar servicios, reutilizar estilos existentes, priorizar Claude Sonnet 3.5 y 4, así como Grok 4,  Claude Opus y o3 para las respuesta de calidad, y mencionar en cada respuesta tuya el modelo que usaste para la misma. Cuando diga: esta linea o lineas me refiero a que ya hice referencia dichas líneas con CTRL+L"
 🟠 mis-tareas: que desaparezca de recibidas cuando pasa a en progreso, no cuando el origen y destino es el mismo.
 🟠 Error 500 esta dando por falta de optimize
 🟠 se reviso que areas y oficinas estan al revez en el diagrama de datos, en realidad las areas dependen de las oficinas, pues cada oficina puede tener una copia total o parcial del organigrama de areas de la sede central
 🟠 ante un traslado de equipo a equipo, o de area a area, las solicitudes permaneceran pegadas al operador propietario, mientras no sean transferidas a otro operador
-
 
 🟠 PROCEDIMIENTO:
     1. El beneficiario envia solicitud al recepcionista de la oficina a la que está suscrito, del distrito y zona a los que pertenece segun residencia
