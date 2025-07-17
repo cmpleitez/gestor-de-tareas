@@ -116,6 +116,7 @@ Route::middleware([
             Route::post('delegar/{recepcion_id}/{user_id}', [RecepcionController::class, 'delegar'])->name('recepcion.delegar');
             Route::post('iniciar-tareas/{recepcion_id}', [RecepcionController::class, 'iniciarTareas'])->name('recepcion.iniciar-tareas');
             Route::get('tareas/{recepcion_id}', [RecepcionController::class, 'tareas'])->name('recepcion.tareas');
+            Route::post('reportar-tarea/{actividad_id}', [RecepcionController::class, 'reportarTarea'])->name('recepcion.reportar-tarea');
         });
     });
 

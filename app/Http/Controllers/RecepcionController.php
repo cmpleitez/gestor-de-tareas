@@ -12,7 +12,6 @@ use App\Models\Equipo;
 use App\Models\Actividad;
 use App\Models\Atencion;
 use App\Models\Estado;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class RecepcionController extends Controller
@@ -35,6 +34,16 @@ class RecepcionController extends Controller
             ->limit(20)
             ->get();
         $tarjetas = $recepciones->map(function ($tarjeta) {
+            // Calcular progreso basado en actividades
+            $totalActividades = Actividad::where('recepcion_id', $tarjeta->id)->count();
+            $actividadesResueltas = Actividad::where('recepcion_id', $tarjeta->id)
+                ->where('estado_id', 3) // Asumiendo que 3 es el ID para "Resuelta"
+                ->count();
+            
+            $porcentajeProgreso = $totalActividades > 0 
+                ? round(($actividadesResueltas / $totalActividades) * 100, 2)
+                : 0;
+            
             return [
                 'atencion_id' => $tarjeta->atencion_id,
                 'titulo' => $tarjeta->solicitud->solicitud,
@@ -47,7 +56,10 @@ class RecepcionController extends Controller
                 'user_name' => $tarjeta->usuarioDestino->name,
                 'area' => $tarjeta->area->area,
                 'role_name' => $tarjeta->role->name,
-                'recepcion_id' => $tarjeta->id
+                'recepcion_id' => $tarjeta->id,
+                'total_actividades' => $totalActividades,
+                'actividades_resueltas' => $actividadesResueltas,
+                'porcentaje_progreso' => $porcentajeProgreso
             ];
         });
         $data = ['tarjetas' => $tarjetas];
@@ -368,6 +380,46 @@ class RecepcionController extends Controller
         });
 
         return response()->json(['tareas' => $tareas]);
+    }
+
+    public function reportarTarea(Request $request, $actividad_id)
+    {
+        $actividad = Actividad::find($actividad_id);
+        if (!$actividad) {
+            return response()->json(['success' => false, 'message' => 'No se encontró la tarea'], 404);
+        }
+        $nuevoEstado = $request->input('estado');
+        if ($nuevoEstado === 'Resuelta') {
+            $estado = Estado::where('estado', 'Resuelta')->first();
+        } elseif ($nuevoEstado === 'En progreso') {
+            $estado = Estado::where('estado', 'En progreso')->first();
+        } else {
+            return response()->json(['success' => false, 'message' => 'Estado no válido'], 422);
+        }
+        $actividad->estado_id = $estado->id;
+        $actividad->save();
+        
+        // Calcular progreso actualizado para esta recepción
+        $recepcionId = $actividad->recepcion_id;
+        $totalActividades = Actividad::where('recepcion_id', $recepcionId)->count();
+        $actividadesResueltas = Actividad::where('recepcion_id', $recepcionId)
+            ->where('estado_id', 3) // Asumiendo que 3 es el ID para "Resuelta"
+            ->count();
+        
+        $porcentajeProgreso = $totalActividades > 0 
+            ? round(($actividadesResueltas / $totalActividades) * 100, 2)
+            : 0;
+        
+        return response()->json([
+            'success' => true, 
+            'message' => 'Estado de la tarea actualizado correctamente',
+            'recepcion_id' => $recepcionId,
+            'progreso' => [
+                'total_actividades' => $totalActividades,
+                'actividades_resueltas' => $actividadesResueltas,
+                'porcentaje' => $porcentajeProgreso
+            ]
+        ]);
     }
 
 }
