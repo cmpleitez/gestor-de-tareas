@@ -117,6 +117,144 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             transform: translateY(-2px);
         }
+        
+        /* Estilos para Sortable.js */
+        .sortable-ghost {
+            opacity: 0.5;
+        }
+        
+        .sortable-chosen {
+            transform: rotate(5deg);
+        }
+        
+        .sortable-drag {
+            transform: rotate(5deg);
+        }
+        
+        /* Estilos para el sidebar y overlay */
+        .kanban-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .kanban-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .kanban-sidebar {
+            position: fixed;
+            top: 0;
+            right: -100%; /* Oculto fuera de pantalla independientemente del ancho */
+            width: clamp(200px, 32vw, 432px); /* Máx 432 px, mínimo 304 px, 32 % viewport */
+            height: 100%;
+            background: #fff;
+            z-index: 1000;
+            transition: right 0.3s ease;
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .kanban-sidebar.show {
+            right: 0;
+        }
+        
+        /* Contenido del sidebar con scroll */
+        #sidebar-card-body {
+            flex: 1 !important;
+            overflow-y: auto !important;
+            padding: 2rem !important;
+            max-height: calc(100vh - 60px) !important; /* Altura menos header */
+            display: flex !important;
+            flex-direction: column !important;
+        }
+        
+        /* Personalizar scrollbar del sidebar */
+        #sidebar-card-body::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        #sidebar-card-body::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        
+        #sidebar-card-body::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+        
+        #sidebar-card-body::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        
+        /* Bloquear scroll de la página principal cuando sidebar está abierto */
+        body.sidebar-open {
+            overflow: hidden;
+        }
+        
+        /* Optimización de items para el sidebar */
+        #sidebar-card-body .item-selector {
+            padding: 12px 45px 12px 16px !important;
+            margin-bottom: 10px !important;
+            position: relative !important;
+            min-height: auto !important;
+            height: auto !important;
+            border: 1px solid #e3e6f0 !important;
+            border-radius: 8px !important;
+            background: white !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+        }
+        
+        #sidebar-card-body .item-body {
+            display: block !important;
+            width: 100% !important;
+            padding-right: 0 !important;
+        }
+        
+        #sidebar-card-body .item-info {
+            width: 100% !important;
+            flex: none !important;
+        }
+        
+        #sidebar-card-body .item-name {
+            font-size: 0.9rem !important;
+            line-height: 1.5 !important;
+            word-wrap: break-word !important;
+            overflow-wrap: break-word !important;
+            white-space: normal !important;
+            width: 100% !important;
+            margin-bottom: 6px !important;
+            display: block !important;
+            color: #2c3e50 !important;
+            font-weight: 500 !important;
+        }
+        
+        #sidebar-card-body .item-desc {
+            font-size: 0.8rem !important;
+            margin-top: 0 !important;
+            color: #6c757d !important;
+            width: 100% !important;
+            white-space: normal !important;
+            text-align: left !important;
+        }
+        
+        /* Responsive para pantallas más pequeñas */
+        @media (max-width: 768px) {
+            .kanban-sidebar {
+                right: -100%;
+                width: 100%;
+            }
+        }
 
         .solicitud-titulo {
             font-weight: 600;
@@ -224,7 +362,7 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
             position: relative;
             padding: 20px;
-            width: 100%;
+            width: 92%;
             height: 100%;
         }
 
@@ -302,8 +440,8 @@
 
         /* Estilos para checkbox de tareas del sidebar */
         .checkbox-indicator {
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             border: 2px solid #dee2e6;
             border-radius: 4px;
             display: flex;
@@ -311,8 +449,10 @@
             justify-content: center;
             transition: all 0.3s ease;
             background: white;
-            top: 16px;
-            right: 14px;
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            z-index: 10;
         }
 
         .checkbox-indicator.checked {
@@ -323,7 +463,7 @@
         .checkbox-indicator.checked::after {
             content: '✓';
             color: white;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: bold;
         }
 
@@ -336,6 +476,15 @@
         #accordionWrapa2 * {
             box-shadow: none !important;
             filter: none !important;
+        }
+
+        .kanban-sidebar,
+        .kanban-sidebar *{max-width:none!important;}
+        #sidebar-card-body .item-name,
+        #sidebar-card-body .item-desc{
+          white-space:normal!important;
+          overflow:visible!important;
+          word-break:break-word!important;   /* se parte donde sea necesario */
         }
     </style>
 @endsection
@@ -656,7 +805,7 @@
                 <i class="bx bx-x text-white"></i>
             </button>
         </div>
-        <div id="sidebar-card-body" style="padding: 1rem;">
+        <div id="sidebar-card-body">
             <p>Selecciona una tarjeta para ver detalles...</p>
         </div>
     </div>
@@ -666,6 +815,7 @@
     {{-- LOGICA KANBAN --}}
     <script src="{{ asset('app-assets/vendors/js/extensions/sweetalert2.all.min.js') }}"></script>
     <script src="{{ asset('app-assets/vendors/js/jkanban/Sortable.min.js') }}"></script>
+    <script src="{{ asset('app-assets/vendors/js/jkanban/jkanban.min.js') }}"></script>
     <script>
         let userRole = '';
         @if (auth()->user()->hasRole('Recepcionista'))
@@ -692,7 +842,6 @@
                 $(radio).trigger('change'); // Disparar el evento change para actualizar el título
             }
         }
-        // Aquí puedes mantener o adaptar la lógica de drag & drop si es necesaria, pero elimina la carga AJAX de tarjetas
         function initKanban() { // Inicializar el kanban
             const columnas = ['columna-recibidas', 'columna-progreso', 'columna-resueltas'];
             columnas.forEach(function(columnaId) {
@@ -808,9 +957,6 @@
                     .replace(':id', solicitudId)
                     .replace(':user', selectedValue);
             } else if (userRole === 'Operador') { //OPERADOR
-                alert('entro');
-
-
                 url = '{{ route('recepcion.iniciar-tareas', ['recepcion_id' => ':id']) }}'
                     .replace(':id', solicitudId);
             }
@@ -826,7 +972,6 @@
                     if (response.success) {
                         const tarjeta = $(`#${nuevaColumna} .solicitud-card[data-id="${solicitudId}"]`);
                         const tituloTarjeta = tarjeta.find('.solicitud-titulo').text() || 'Sin título';
-
                         if (tarjeta.length > 0) {
                             tarjeta.css('border-left-color', colorBorde);
                             tarjeta.find('.solicitud-estado').text('Estado: ' + nombreEstado);
@@ -879,7 +1024,6 @@
                 }
             });
         }
-        
         //MOSTRAR TAREAS EN SIDEBAR
         $(document).on('click', '.solicitud-card', function() {
             const $card = $(this);
@@ -891,6 +1035,7 @@
             cargarTareas(recepcionId); // Cargar y dibujar las tareas
             $('.kanban-overlay').addClass('show'); // Mostrar overlay y sidebar
             $('.kanban-sidebar').addClass('show');
+            $('body').addClass('sidebar-open'); // Bloquear scroll de la página principal
         });
         function cargarTareas(recepcionId) { // Función para cargar y dibujar las tareas
             $.ajax({
@@ -923,22 +1068,21 @@
                 if (tarea.estado_id === 2) { // En progreso
                     estadoColor = '#17a2b8';
                     estadoIcon = 'bx-time-five';
-                } else if (tarea.estado_id === 3) { // Completada
+                } else if (tarea.estado_id == 3) { // Completada (ID 3 = Resuelta) - usando == por si es string
                     estadoColor = '#28a745';
                     estadoIcon = 'bx-check-circle';
                 }
                 tareasHtml += `
-                    <div class="item-selector ${tarea.estado_id === 3 ? 'selected' : ''}" onclick="selectTask('task_${tarea.actividad_id}')" style="margin-bottom: 12px;">
-                        <div class="checkbox-indicator ${tarea.estado_id === 3 ? 'checked' : ''}" id="checkbox_${tarea.actividad_id}" style="position: absolute; z-index: 10;"></div>
-
+                    <div class="item-selector ${tarea.estado_id == 3 ? 'selected' : ''}" onclick="selectTask('task_${tarea.actividad_id}')">
+                        <div class="checkbox-indicator ${tarea.estado_id == 3 ? 'checked' : ''}" id="checkbox_${tarea.actividad_id}"></div>
                         <div class="item-body">
                             <div class="item-info">
                                 <div class="item-name">${tarea.tarea}</div>
-                                <div class="item-desc text-right">ID: ${tarea.actividad_id}</div>
+                                <div class="item-desc">ID: ${tarea.actividad_id}</div>
                             </div>
                         </div>
                         <input type="checkbox" id="task_${tarea.actividad_id}" name="tarea_completada" 
-                            value="${tarea.actividad_id}" ${tarea.estado_id === 3 ? 'checked' : ''} style="display: none;">
+                            value="${tarea.actividad_id}" ${tarea.estado_id == 3 ? 'checked' : ''} style="display: none;">
                     </div>
                 `;
             });
@@ -974,7 +1118,6 @@
                             if (response.progreso && response.recepcion_id) {
                                 updateProgressByPercentage(response.recepcion_id, response.progreso.porcentaje);
                             }
-                            
                             Swal.fire({
                                 position: 'top-end',
                                 type: 'success',
@@ -1018,6 +1161,7 @@
         function() { //Cerrar sidebar al hacer clic en overlay o en el icono de cierre
             $('.kanban-overlay').removeClass('show');
             $('.kanban-sidebar').removeClass('show');
+            $('body').removeClass('sidebar-open'); // Reactivar scroll de la página principal
         });
         $(document).on('change', 'input[name="area_destino"]', function() { //Actualizacion dinamica del acordion
             const areaId = $(this).val();
@@ -1037,30 +1181,33 @@
             $('#heading5 h6 .font-weight-600').text(operadorNombre);
             $('#accordion5').collapse('hide');
         });
-
-        // Función para actualizar progreso basado en porcentaje de tareas resueltas
+        //ACTUALIZAR PROGRESO DE LAS TAREAS
         function updateProgressByPercentage(recepcionId, porcentaje) {
-            let naranja, amarillo, verde, celeste;
-            
-            alert(porcentaje);
 
-            // Aplicar distribución de colores según tabla proporcionada
-            if (porcentaje == 0) {
+            console.log(porcentaje);
+            
+            let naranja, amarillo, verde, celeste;
+            if (porcentaje == 0) { // Aplicar distribución de colores según tabla proporcionada
                 naranja = 45; amarillo = 25; verde = 20; celeste = 10;
-            } else if (porcentaje <= 10) {
+            } else if (porcentaje >= 10 && porcentaje < 30) {
                 naranja = 15; amarillo = 35; verde = 25; celeste = 25;
-            } else if (porcentaje <= 30) {
+                console.log('porcentaje >= 10 && porcentaje < 30');
+            } else if (porcentaje >= 30 && porcentaje < 60) {
                 naranja = 0; amarillo = 50; verde = 30; celeste = 30;
-            } else if (porcentaje <= 60) {
-                naranja = 0; amarillo = 0; verde = 45; celeste = 55;
-            } else if (porcentaje <= 80) {
-                naranja = 0; amarillo = 0; verde = 50; celeste = 50;
-            } else if (porcentaje <= 85) {
-                naranja = 0; amarillo = 0; verde = 25; celeste = 75;
+                console.log('porcentaje >= 30 && porcentaje < 60');
+            } else if (porcentaje >= 60 && porcentaje < 80) {
+                naranja = 0; amarillo = 25; verde = 35; celeste = 65;
+                console.log('porcentaje >= 60 && porcentaje < 80');
+            } else if (porcentaje >= 80 && porcentaje < 85) {
+                naranja = 0; amarillo = 15; verde = 35; celeste = 50;
+                console.log('porcentaje >= 80 && porcentaje < 85');
+            } else if (porcentaje >= 85 && porcentaje < 100) {
+                naranja = 0; amarillo = 10; verde = 30; celeste = 60;
+                console.log('porcentaje >= 85 && porcentaje < 100');
             } else { // 100%
                 naranja = 0; amarillo = 0; verde = 0; celeste = 100;
+                console.log('100');
             }
-            
             const progressBar = $(`[data-recepcion-id="${recepcionId}"]`);
             if (progressBar.length > 0) {
                 progressBar.css({
@@ -1070,17 +1217,14 @@
                 });
             }
         }
-        
-        // Función para inicializar progreso de todas las tarjetas
-        function initializeProgress() {
+        function initializeProgress() { // Función para inicializar progreso de todas las tarjetas
             @foreach($tarjetas as $tarjeta)
                 updateProgressByPercentage('{{ $tarjeta["recepcion_id"] }}', {{ $tarjeta["porcentaje_progreso"] }});
             @endforeach
         }
-        
-        // Inicializar al cargar la página
-        $(document).ready(function() {
+        $(document).ready(function() { // Inicializar al cargar la página
             initializeProgress();
+            initKanban();
         });
     </script>
 @endsection

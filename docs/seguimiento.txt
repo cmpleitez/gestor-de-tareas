@@ -32,6 +32,7 @@
     ...el porcentaje de avance debe ser el numero de tareas resueltas contenidas en el modelo actividad
         ...la barra de progreso debe tener el estilo de colores progresivos degradados segun la cantidad de tareas resueltas el progreso debe ser el siguiente: naranja(15%), amarillo(25%), verde(35%) y celeste(25%), 
             ...el color final en el degradado debe ser blanco cuando falte alguno de los colores debido al avance alcanzado
+                ..cuando una tarea se reporte como resuelta revisar si quedan tareas pendientes, si ya no hay entonces pasar la tarjeta al tablero de resueltas y actualizar el estado de la solicitud la solicitud
 
 
 🟢 recepcion.index: eliminar este servicio porque ya fue mejorado con el kanvan

@@ -37,7 +37,7 @@ class RecepcionController extends Controller
             // Calcular progreso basado en actividades
             $totalActividades = Actividad::where('recepcion_id', $tarjeta->id)->count();
             $actividadesResueltas = Actividad::where('recepcion_id', $tarjeta->id)
-                ->where('estado_id', 3) // Asumiendo que 3 es el ID para "Resuelta"
+                ->where('estado_id', 3) // ID 3 = Resuelta según la BD
                 ->count();
             
             $porcentajeProgreso = $totalActividades > 0 
@@ -62,7 +62,10 @@ class RecepcionController extends Controller
                 'porcentaje_progreso' => $porcentajeProgreso
             ];
         });
-        $data = ['tarjetas' => $tarjetas];
+        $data = [
+            'tarjetas' => $tarjetas,
+            'estado_resuelta_id' => 3
+        ];
         if ($user->hasRole('Recepcionista')) {
             $user->load('area.oficina');
             $data['areas'] = Area::where('oficina_id', $user->area->oficina_id)->get();
@@ -379,6 +382,8 @@ class RecepcionController extends Controller
             ];
         });
 
+
+
         return response()->json(['tareas' => $tareas]);
     }
 
@@ -403,7 +408,7 @@ class RecepcionController extends Controller
         $recepcionId = $actividad->recepcion_id;
         $totalActividades = Actividad::where('recepcion_id', $recepcionId)->count();
         $actividadesResueltas = Actividad::where('recepcion_id', $recepcionId)
-            ->where('estado_id', 3) // Asumiendo que 3 es el ID para "Resuelta"
+            ->where('estado_id', 3) // ID 3 = Resuelta según la BD
             ->count();
         
         $porcentajeProgreso = $totalActividades > 0 
