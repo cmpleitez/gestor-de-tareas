@@ -25,14 +25,6 @@ class RecepcionController extends Controller
             ->limit(10)
             ->get();
         $tarjetas = $recepciones->map(function ($tarjeta) {
-            $totalActividades = Actividad::where('recepcion_id', $tarjeta->id)->count(); // Calcular progreso basado en actividades
-            $actividadesResueltas = Actividad::where('recepcion_id', $tarjeta->id)
-                ->where('estado_id', 3) // ID 3 = Resuelta según la BD
-                ->count();
-            $porcentajeProgreso = $totalActividades > 0 
-                ? round(($actividadesResueltas / $totalActividades) * 100, 2)
-                : 0;
-            
             return [
                 'atencion_id' => $tarjeta->atencion_id,
                 'titulo' => $tarjeta->solicitud->solicitud,
@@ -46,9 +38,7 @@ class RecepcionController extends Controller
                 'area' => $tarjeta->area->area,
                 'role_name' => $tarjeta->role->name,
                 'recepcion_id' => $tarjeta->id,
-                'total_actividades' => $totalActividades,
-                'actividades_resueltas' => $actividadesResueltas,
-                'porcentaje_progreso' => $porcentajeProgreso
+                'porcentaje_progreso' => $tarjeta->avance // Usar el campo avance de la BD
             ];
         });
         $data = [
@@ -389,7 +379,9 @@ class RecepcionController extends Controller
         }
         $actividad->estado_id = $estado->id;
         $actividad->save();
-        $recepcionId = $actividad->recepcion_id; // Calcular progreso actualizado para esta recepción
+        $recepcionActual = Recepcion::find($actividad->recepcion_id); // Obtener la recepción actual para acceder al atencion_id
+        $atencionId = $recepcionActual->atencion_id;
+        $recepcionId = $actividad->recepcion_id; // ID de la recepción del operador propietario
         $totalActividades = Actividad::where('recepcion_id', $recepcionId)->count();
         $actividadesResueltas = Actividad::where('recepcion_id', $recepcionId)
             ->where('estado_id', 3) // ID 3 = Resuelta según la BD
@@ -397,21 +389,22 @@ class RecepcionController extends Controller
         $porcentajeProgreso = $totalActividades > 0 
             ? round(($actividadesResueltas / $totalActividades) * 100, 2)
             : 0;
+        Recepcion::where('atencion_id', $atencionId)->update(['avance' => $porcentajeProgreso]); // Actualizar el campo avance en todas las recepciones con el mismo atencion_id
         $todasResueltas = ($actividadesResueltas === $totalActividades); // Verificar si todas las tareas están resueltas
         $solicitudActualizada = false;
-        if ($todasResueltas && $nuevoEstado === 'Resuelta') // Actualizar el estado de la solicitud a "Resuelta" {
-            $recepcion = Recepcion::find($recepcionId);
-            if ($recepcion) {
+        if ($todasResueltas && $nuevoEstado === 'Resuelta') { // Actualizar el estado de la solicitud a "Resuelta"
+            if ($recepcionActual) {
                 $estadoResuelta = Estado::where('estado', 'Resuelta')->first();
-                $recepcion->estado_id = $estadoResuelta->id;
-                $recepcion->save();
+                $recepcionActual->estado_id = $estadoResuelta->id;
+                $recepcionActual->save();
                 $solicitudActualizada = true;
             }
         }
         return response()->json([
             'success' => true, 
             'message' => 'Estado de la tarea actualizado correctamente',
-            'recepcion_id' => $recepcionId,
+            'recepcion_id' => $actividad->recepcion_id,
+            'atencion_id' => $atencionId,
             'progreso' => [
                 'total_actividades' => $totalActividades,
                 'actividades_resueltas' => $actividadesResueltas,

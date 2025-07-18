@@ -18,33 +18,26 @@
     8. La solicitud esta en mínimo rango de maniobra que es el operador.
     9. El operador avanza la solicitud desde su tablero de recibidas a su tablero en progreso y automáticamente se originan las tareas a cumplir segun su skill
     10. El operador va cumpliendo sus tareas una a una y reportandolas como realizadas
-
-...🟢 Mostrar las tareas de cada solicitud en la persiana que se abre a la derecha
-    ... al agregar las tareas al operador propietario se agregan todas las tareas que tiene asignada la solicitud, vamos a revisar si el operador majena el perfil de habilidades 
-        ... ok ahi esta el problema: tenemos las tareas que deben realizarse según la solicitud pero no según habilidades del operador propietario, 
-            ...debemos agregar una tabla llamada "tarea-user"
-            ...luego agregar un servicio al frontend que permita actualizar las tareas que el operador puede realizar
-            ...luego en la delegacion de tareas agregar una validacion en donde todas las tareas de la solicitud existen entre todos los operadores propietarios de la misma
-                ...si queda alguna tarea sin poder ser resuelta por falta de operadores asignados debe rechazarse la delegación
-                ...cuando una tarea la tenga asignada más de un operador se debe elegir uno de ellos aleatoriamente
-...ahora tenemos que las tareas de una solicitud pueden ser realizadas por uno o varios operadores
-
+🟢 analizar que hacer cuando el operador es gestor y no pertenece a ningun equipo de trabajo, pues no podría delegar las tareas a su equipo de trabajo.
+🟢 Construir el perfil de habilidades del usuario
+    debemos agregar una tabla llamada "tarea-user"
+    crud del skill del usuario: user -> tareas_user -> tareas
+    ...La lógica de la delegacion se ha expandido, pues habrian dos maneras de delegar una solicitud: por operador o por equipo de trabajo. 
+        ...cuando se delegue por operador validar si este tiene todas las hablidades para realizar todas las tareas de la solicitud, sino rechazar la delegacion
+        hacer la misma validacion para el equipo de trabajo, si no se valida igual rechazarla
+        si queda alguna tarea sin poder ser resuelta por falta de operadores asignados debe rechazarse la delegación
+        cuando una tarea la tenga asignada más de un operador se debe elegir uno de ellos aleatoriamente
+    ahora tenemos que las tareas de una solicitud pueden ser realizadas por uno o varios operadores
+🟢 podriamos llegar a que la tarjeta tenga las fotos de todos los usuarios participantes: recepcionistas, supervisores, gestores y operadores, ya que cada uno de ellos tiene una copia de la solicitud.
 🟢 tableros kanvan: estudio e incoporporación de reglas técnicas necesarias, asi como filtro según rol, y pruebas con casos de roles multiples
-    ...mis-tareas: analizar el procedimiento de actualizacion de datos tomando en cuenta inicialmente que el operador solo vera sus solicitudes y si cambian es porque él las ha cambiado lo que hara que se refleje en el front end sin demora
-    ...re-ordenar las tarjetas cuando se haga drop ya que esta la regla consiste en mantener el orden de atención a las solicitudes aunque el usuario puede optar por atender cualquiera de las que estan visibles, however la etica del sistema es facilitar el orden de llegada
-    ...precargar las primeras 10 solicitudes en orden de llegada, de tal manera que en el top quede la primera que llegó, dejando como un servicio a construir, la priorización de solicitudes a discreción del usuario en cuanto al orden que se presstablecen, 
-        ...ya que como dije el usuario puede priorizarlas en la actual programación
-    ...verificar que pasa al mover las solicitudes en cualquier tablero usando el drag and drop y aplicar reglas técnicas
-    ...analizar como ocultar el acordion de los destinatarios para el rol "Operador" ante el entorno de multiples roles asignados a un usuario
-🟢 recepcion.index: eliminar este servicio porque ya fue mejorado con el kanvan
-🟢 se reviso que areas y oficinas estan al revez en el diagrama de datos, en realidad las areas dependen de las oficinas, pues cada oficina puede tener una copia total o parcial del organigrama de areas de la sede central
-🟢 analizar si el canva del operador sera el mismo que el de los: supervisores, recepcionistas y gestores
-🟢 mis-tareas: se deb validar cuando no hay operadores, no hay supervisores o no hay equipos de trabajo 
+    solicitudes: analizar el procedimiento de actualizacion de datos tomando en cuenta inicialmente que el operador solo vera sus solicitudes y si cambian es porque él las ha cambiado lo que hara que se refleje en el front end sin demora
+    solicitudes: re-ordenar las tarjetas cuando se haga drop ya que esta la regla consiste en mantener el orden de atención a las solicitudes aunque el usuario puede optar por atender cualquiera de las que estan visibles, however la etica del sistema es facilitar el orden de llegada
+    precargar las primeras 10 solicitudes en orden de llegada, de tal manera que en el top quede la primera que llegó, dejando como un servicio a construir, la priorización de solicitudes a discreción del usuario en cuanto al orden que se presstablecen, 
+        ya que como dije el usuario puede priorizarlas en la actual programación
+    verificar que pasa al mover las solicitudes en cualquier tablero usando el drag and drop y aplicar reglas técnicas
+    analizar como ocultar el acordion de los destinatarios para el rol "Operador" ante el entorno de multiples roles asignados a un usuario
 🟢 proceso de rechazo de una solicitud
-🟢 mis-tareas: crear una estrategia de uso de cache
 🟢 en la mayoria de las vistas se debe agregar un margen arriba de 1 o 2 porque todo esta muy pegado al techo
-
-
 🟢 global cruds.edit: si hay historial no se puede editar
 🟢 crear servicio controlado para cambiar el dui a una persona por motivos de error involuntario a la hora de registrar ese dui en el formulario de registro de usuarios
 🟢 register: asegurar el id del usuario con un aumento no automático sino programatico

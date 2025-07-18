@@ -632,6 +632,7 @@
                     <div id="columna-recibidas" class="sortable-column">
                         @forelse($recibidas as $recepcion)
                             <div class="solicitud-card" data-id="{{ $recepcion['recepcion_id'] }}"
+                                data-atencion-id="{{ $recepcion['atencion_id'] }}"
                                 data-estado-id="{{ $recepcion['estado_id'] }}" style="border-left-color: #ffc107;">
                                 <div class="solicitud-titulo">
                                     @if($recepcion['titulo'] && $recepcion['detalle'])
@@ -648,7 +649,7 @@
                                 <div class="solicitud-estado" style="font-size: 11px; color: #ffc107; margin-top: 5px;">
                                     Estado: {{ $recepcion['estado'] }} ({{ $recepcion['recepcion_id'] }})
                                 </div>
-                                <div class="progress-divider" data-recepcion-id="{{ $recepcion['recepcion_id'] }}"></div>
+                                <div class="progress-divider" data-atencion-id="{{ $recepcion['atencion_id'] }}"></div>
                                 <div
                                     style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px; padding-top: 6px;">
                                     <div
@@ -700,6 +701,7 @@
                     <div id="columna-progreso" class="sortable-column">
                         @forelse($progreso as $recepcion)
                             <div class="solicitud-card" data-id="{{ $recepcion['recepcion_id'] }}"
+                                data-atencion-id="{{ $recepcion['atencion_id'] }}"
                                 data-estado-id="{{ $recepcion['estado_id'] }}" style="border-left-color: #17a2b8;">
                                 <div class="solicitud-titulo">
                                     @if($recepcion['titulo'] && $recepcion['detalle'])
@@ -716,7 +718,7 @@
                                 <div class="solicitud-estado" style="font-size: 11px; color: #17a2b8; margin-top: 5px;">
                                     Estado: {{ $recepcion['estado'] }} ({{ $recepcion['recepcion_id'] }})
                                 </div>
-                                <div class="progress-divider" data-recepcion-id="{{ $recepcion['recepcion_id'] }}"></div>
+                                <div class="progress-divider" data-atencion-id="{{ $recepcion['atencion_id'] }}"></div>
                                 <div
                                     style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px; padding-top: 6px;">
                                     <div
@@ -768,6 +770,7 @@
                     <div id="columna-resueltas" class="sortable-column">
                         @forelse($resueltas as $recepcion)
                             <div class="solicitud-card" data-id="{{ $recepcion['recepcion_id'] }}"
+                                data-atencion-id="{{ $recepcion['atencion_id'] }}"
                                 data-estado-id="{{ $recepcion['estado_id'] }}" style="border-left-color: #28a745;">
                                 <div class="solicitud-titulo">
                                     @if($recepcion['titulo'] && $recepcion['detalle'])
@@ -784,7 +787,7 @@
                                 <div class="solicitud-estado" style="font-size: 11px; color: #28a745; margin-top: 5px;">
                                     Estado: {{ $recepcion['estado'] }} ({{ $recepcion['recepcion_id'] }})
                                 </div>
-                                <div class="progress-divider" data-recepcion-id="{{ $recepcion['recepcion_id'] }}"></div>
+                                <div class="progress-divider" data-atencion-id="{{ $recepcion['atencion_id'] }}"></div>
                                 <div
                                     style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px; padding-top: 6px;">
                                     <div
@@ -1140,7 +1143,7 @@
                     },
                     success: function(response) {
                         if (response.success) {
-                            updateProgressByPercentage(response.recepcion_id, response.progreso.porcentaje);
+                            updateProgressByPercentage(response.atencion_id, response.progreso.porcentaje);
                             if (response.todas_resueltas && response.solicitud_actualizada) { // Verificar si todas las tareas están resueltas
                                 const tarjeta = $(`.solicitud-card[data-id="${response.recepcion_id}"]`); // Mover la tarjeta al tablero de resueltas
                                 if (tarjeta.length > 0) {
@@ -1226,7 +1229,7 @@
             $('#accordion5').collapse('hide');
         });
         //ACTUALIZAR PROGRESO DE LAS TAREAS
-        function updateProgressByPercentage(recepcionId, porcentaje) {
+        function updateProgressByPercentage(atencionId, porcentaje) {
             let naranja, amarillo, verde, celeste;
             if (porcentaje == 0) { // Aplicar distribución de colores según tabla proporcionada
                 naranja = 45; amarillo = 25; verde = 20; celeste = 10;
@@ -1249,13 +1252,16 @@
                 naranja = 0; amarillo = 0; verde = 0; celeste = 100;
                 console.log('100');
             }
-            const progressBar = $(`[data-recepcion-id="${recepcionId}"]`);
-            if (progressBar.length > 0) {
-                progressBar.css({
+            
+            // Actualizar todas las barras de progreso con el mismo atencion_id
+            const progressBars = $(`[data-atencion-id="${atencionId}"]`);
+            if (progressBars.length > 0) {
+                progressBars.css({
                     '--naranja': naranja + '%',
                     '--amarillo': amarillo + '%',
                     '--verde': verde + '%'
                 });
+                console.log(`Actualizadas ${progressBars.length} barras de progreso para atencion_id: ${atencionId}`);
             }
         }
         function actualizarContadores() { // Función para actualizar los contadores de las columnas
@@ -1268,7 +1274,7 @@
         }
         function initializeProgress() { // Función para inicializar progreso de todas las tarjetas
             @foreach($tarjetas as $tarjeta)
-                updateProgressByPercentage('{{ $tarjeta["recepcion_id"] }}', {{ $tarjeta["porcentaje_progreso"] }});
+                updateProgressByPercentage('{{ $tarjeta["atencion_id"] }}', {{ $tarjeta["porcentaje_progreso"] }});
             @endforeach
         }
         $(document).ready(function() { // Inicializar al cargar la página
