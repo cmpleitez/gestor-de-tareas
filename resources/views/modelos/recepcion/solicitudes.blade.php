@@ -616,7 +616,7 @@
         $resueltas = $tarjetas->where('estado_id', 3);
     @endphp
     <div class="row" style="display: flex; align-items: stretch;">
-        <div class="col-md-4">
+        <div class="col-md-4"> {{-- Recibidas --}}
             <div class="card border-0 overflow-hidden">
                 <div class="card-header"
                     style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); border: none; margin: 0;">
@@ -634,7 +634,16 @@
                             <div class="solicitud-card" data-id="{{ $recepcion['recepcion_id'] }}"
                                 data-estado-id="{{ $recepcion['estado_id'] }}" style="border-left-color: #ffc107;">
                                 <div class="solicitud-titulo">
-                                    {{ $recepcion['titulo'] ?? ($recepcion['detalle'] ?? 'Sin título') }}</div>
+                                    @if($recepcion['titulo'] && $recepcion['detalle'])
+                                        {{ $recepcion['titulo'] }} - {{ $recepcion['detalle'] }}
+                                    @elseif($recepcion['titulo'])
+                                        {{ $recepcion['titulo'] }}
+                                    @elseif($recepcion['detalle'])
+                                        {{ $recepcion['detalle'] }}
+                                    @else
+                                        Sin título
+                                    @endif
+                                </div>
                                 <div class="solicitud-id">ID: {{ $recepcion['atencion_id'] }}</div>
                                 <div class="solicitud-estado" style="font-size: 11px; color: #ffc107; margin-top: 5px;">
                                     Estado: {{ $recepcion['estado'] }} ({{ $recepcion['recepcion_id'] }})
@@ -675,7 +684,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4"> {{-- En Progreso --}}
             <div class="card border-0 overflow-hidden">
                 <div class="card-header"
                     style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); border: none; margin: 0;">
@@ -693,7 +702,16 @@
                             <div class="solicitud-card" data-id="{{ $recepcion['recepcion_id'] }}"
                                 data-estado-id="{{ $recepcion['estado_id'] }}" style="border-left-color: #17a2b8;">
                                 <div class="solicitud-titulo">
-                                    {{ $recepcion['titulo'] ?? ($recepcion['detalle'] ?? 'Sin título') }}</div>
+                                    @if($recepcion['titulo'] && $recepcion['detalle'])
+                                        {{ $recepcion['titulo'] }} - {{ $recepcion['detalle'] }}
+                                    @elseif($recepcion['titulo'])
+                                        {{ $recepcion['titulo'] }}
+                                    @elseif($recepcion['detalle'])
+                                        {{ $recepcion['detalle'] }}
+                                    @else
+                                        Sin título
+                                    @endif
+                                </div>
                                 <div class="solicitud-id">ID: {{ $recepcion['atencion_id'] }}</div>
                                 <div class="solicitud-estado" style="font-size: 11px; color: #17a2b8; margin-top: 5px;">
                                     Estado: {{ $recepcion['estado'] }} ({{ $recepcion['recepcion_id'] }})
@@ -734,7 +752,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4"> {{-- Resueltas --}}
             <div class="card border-0 overflow-hidden">
                 <div class="card-header"
                     style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); border: none; margin: 0;">
@@ -752,7 +770,16 @@
                             <div class="solicitud-card" data-id="{{ $recepcion['recepcion_id'] }}"
                                 data-estado-id="{{ $recepcion['estado_id'] }}" style="border-left-color: #28a745;">
                                 <div class="solicitud-titulo">
-                                    {{ $recepcion['titulo'] ?? ($recepcion['detalle'] ?? 'Sin título') }}</div>
+                                    @if($recepcion['titulo'] && $recepcion['detalle'])
+                                        {{ $recepcion['titulo'] }} - {{ $recepcion['detalle'] }}
+                                    @elseif($recepcion['titulo'])
+                                        {{ $recepcion['titulo'] }}
+                                    @elseif($recepcion['detalle'])
+                                        {{ $recepcion['detalle'] }}
+                                    @else
+                                        Sin título
+                                    @endif
+                                </div>
                                 <div class="solicitud-id">ID: {{ $recepcion['atencion_id'] }}</div>
                                 <div class="solicitud-estado" style="font-size: 11px; color: #28a745; margin-top: 5px;">
                                     Estado: {{ $recepcion['estado'] }} ({{ $recepcion['recepcion_id'] }})
@@ -794,7 +821,6 @@
             </div>
         </div>
     </div>
-
     {{-- OVERLAY Y SIDEBAR KANVAN --}}
     <div class="kanban-overlay"></div>
     <div class="kanban-sidebar">
@@ -878,7 +904,7 @@
                 });
             });
         }
-        //ACTUALIZACION DE ESTADO EN EL FRONTEND
+        //ACTUALIZACION DE ESTADO DE LA SOLICITUD EN EL FRONTEND
         function showMoveAlert(solicitudId, nuevaColumna, evt) {
             let nuevoEstadoId = 1; // Por defecto Recibida
             let nombreEstado = 'Recibida';
@@ -902,7 +928,7 @@
             }
             let url = ''; //Seleccionando la ruta a la que se va a enviar la solicitud
             let selectedValue = null;
-            if (userRole === 'Recepcionista') { //RECEPCIONISTA
+            if (userRole === 'Recepcionista') { //recepcionista
                 selectedValue = $('input[name="area_destino"]:checked').val();
                 if (!selectedValue) {
                     Swal.fire({
@@ -920,7 +946,7 @@
                 url = '{{ route('recepcion.derivar', ['recepcion_id' => ':id', 'area_id' => ':area']) }}'
                     .replace(':id', solicitudId)
                     .replace(':area', selectedValue);
-            } else if (userRole === 'Supervisor') { //SUPERVISOR
+            } else if (userRole === 'Supervisor') { //supervisor
                 selectedValue = $('input[name="equipo_destino"]:checked').val();
                 if (!selectedValue) {
                     Swal.fire({
@@ -938,7 +964,7 @@
                 url = '{{ route('recepcion.asignar', ['recepcion_id' => ':id', 'equipo_id' => ':equipo']) }}'
                     .replace(':id', solicitudId)
                     .replace(':equipo', selectedValue);
-            } else if (userRole === 'Gestor') { //GESTOR
+            } else if (userRole === 'Gestor') { //gestor
                 selectedValue = $('input[name="operador_destino"]:checked').val();
                 if (!selectedValue) {
                     Swal.fire({
@@ -956,11 +982,11 @@
                 url = '{{ route('recepcion.delegar', ['recepcion_id' => ':id', 'user_id' => ':user']) }}'
                     .replace(':id', solicitudId)
                     .replace(':user', selectedValue);
-            } else if (userRole === 'Operador') { //OPERADOR
+            } else if (userRole === 'Operador') { //operador
                 url = '{{ route('recepcion.iniciar-tareas', ['recepcion_id' => ':id']) }}'
                     .replace(':id', solicitudId);
             }
-            //ACTUALIZAR ESTADO EN EL BACKEND
+            //ACTUALIZAR ESTADO DE LA SOLICITUD EN EL BACKEND
             $.ajax({
                 url: url,
                 method: 'POST',
@@ -1089,7 +1115,7 @@
             tareasHtml += '</div>';
             $('#sidebar-card-body').append(tareasHtml);
         }
-        //ACTUALIZAR TAREAS
+        //ACTUALIZAR EL ESTADO DE LA TAREA
         function selectTask(taskId) { // Función para seleccionar tareas
             const checkbox = document.getElementById(taskId); // Marcar/desmarcar el checkbox
             const visualCheckbox = document.querySelector(`[onclick="selectTask('${taskId}')"] .checkbox-indicator`);
@@ -1114,19 +1140,37 @@
                     },
                     success: function(response) {
                         if (response.success) {
-                            // Actualizar progreso si se proporciona en la respuesta
-                            if (response.progreso && response.recepcion_id) {
-                                updateProgressByPercentage(response.recepcion_id, response.progreso.porcentaje);
+                            updateProgressByPercentage(response.recepcion_id, response.progreso.porcentaje);
+                            if (response.todas_resueltas && response.solicitud_actualizada) { // Verificar si todas las tareas están resueltas
+                                const tarjeta = $(`.solicitud-card[data-id="${response.recepcion_id}"]`); // Mover la tarjeta al tablero de resueltas
+                                if (tarjeta.length > 0) {
+                                    tarjeta.css('border-left-color', '#28a745'); // Actualizar el estado visual de la tarjeta
+                                    tarjeta.find('.solicitud-estado').text('Estado: Resuelta');
+                                    tarjeta.find('.solicitud-estado').css('color', '#28a745');
+                                    tarjeta.attr('data-estado-id', 3);
+                                    $('#columna-resueltas').append(tarjeta); // Mover la tarjeta al tablero de resueltas
+                                    actualizarContadores();
+                                    Swal.fire({ // Mostrar mensaje de éxito
+                                        position: 'top-end',
+                                        type: 'success',
+                                        title: '¡Todas las tareas completadas! Solicitud movida a Resueltas',
+                                        showConfirmButton: false,
+                                        timer: 3000,
+                                        confirmButtonClass: 'btn btn-primary',
+                                        buttonsStyling: false
+                                    });
+                                }
+                            } else {
+                                Swal.fire({ // Mensaje normal para tarea individual
+                                    position: 'top-end',
+                                    type: 'success',
+                                    title: 'Tarea ' + String(actividadId).slice(-4) + ' se reportó como ' + nuevoEstado,
+                                    showConfirmButton: false,
+                                    timer: 1500,
+                                    confirmButtonClass: 'btn btn-primary',
+                                    buttonsStyling: false
+                                });
                             }
-                            Swal.fire({
-                                position: 'top-end',
-                                type: 'success',
-                                title: 'Tarea ' + String(actividadId).slice(-4) + ' se reportó como ' + nuevoEstado,
-                                showConfirmButton: false,
-                                timer: 1500,
-                                confirmButtonClass: 'btn btn-primary',
-                                buttonsStyling: false
-                            });
                         } else {
                             Swal.fire({
                                 position: 'top-end',
@@ -1183,9 +1227,6 @@
         });
         //ACTUALIZAR PROGRESO DE LAS TAREAS
         function updateProgressByPercentage(recepcionId, porcentaje) {
-
-            console.log(porcentaje);
-            
             let naranja, amarillo, verde, celeste;
             if (porcentaje == 0) { // Aplicar distribución de colores según tabla proporcionada
                 naranja = 45; amarillo = 25; verde = 20; celeste = 10;
@@ -1216,6 +1257,14 @@
                     '--verde': verde + '%'
                 });
             }
+        }
+        function actualizarContadores() { // Función para actualizar los contadores de las columnas
+            const recibidas = $('#columna-recibidas .solicitud-card').length;
+            const progreso = $('#columna-progreso .solicitud-card').length;
+            const resueltas = $('#columna-resueltas .solicitud-card').length;
+            $('#contador-recibidas').text(recibidas);
+            $('#contador-progreso').text(progreso);
+            $('#contador-resueltas').text(resueltas);
         }
         function initializeProgress() { // Función para inicializar progreso de todas las tarjetas
             @foreach($tarjetas as $tarjeta)

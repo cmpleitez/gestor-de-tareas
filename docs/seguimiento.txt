@@ -26,15 +26,16 @@
             ...luego agregar un servicio al frontend que permita actualizar las tareas que el operador puede realizar
             ...luego en la delegacion de tareas agregar una validacion en donde todas las tareas de la solicitud existen entre todos los operadores propietarios de la misma
                 ...si queda alguna tarea sin poder ser resuelta por falta de operadores asignados debe rechazarse la delegación
-                ... cuando una tarea la tenga asignada más de un operador se debe elegir uno de ellos aleatoriamente
-... ahora tenemos que las tareas de una solicitud pueden ser realizadas por uno o varios operadores
-... agregar a la tarjeta una barra de progreso que crezca dinámicamente en los tres tableros, 
-    ...el porcentaje de avance debe ser el numero de tareas resueltas contenidas en el modelo actividad
-        ...la barra de progreso debe tener el estilo de colores progresivos degradados segun la cantidad de tareas resueltas el progreso debe ser el siguiente: naranja(15%), amarillo(25%), verde(35%) y celeste(25%), 
-            ...el color final en el degradado debe ser blanco cuando falte alguno de los colores debido al avance alcanzado
-                ..cuando una tarea se reporte como resuelta revisar si quedan tareas pendientes, si ya no hay entonces pasar la tarjeta al tablero de resueltas y actualizar el estado de la solicitud la solicitud
+                ...cuando una tarea la tenga asignada más de un operador se debe elegir uno de ellos aleatoriamente
+...ahora tenemos que las tareas de una solicitud pueden ser realizadas por uno o varios operadores
 
-
+🟢 tableros kanvan: estudio e incoporporación de reglas técnicas necesarias, asi como filtro según rol, y pruebas con casos de roles multiples
+    ...mis-tareas: analizar el procedimiento de actualizacion de datos tomando en cuenta inicialmente que el operador solo vera sus solicitudes y si cambian es porque él las ha cambiado lo que hara que se refleje en el front end sin demora
+    ...re-ordenar las tarjetas cuando se haga drop ya que esta la regla consiste en mantener el orden de atención a las solicitudes aunque el usuario puede optar por atender cualquiera de las que estan visibles, however la etica del sistema es facilitar el orden de llegada
+    ...precargar las primeras 10 solicitudes en orden de llegada, de tal manera que en el top quede la primera que llegó, dejando como un servicio a construir, la priorización de solicitudes a discreción del usuario en cuanto al orden que se presstablecen, 
+        ...ya que como dije el usuario puede priorizarlas en la actual programación
+    ...verificar que pasa al mover las solicitudes en cualquier tablero usando el drag and drop y aplicar reglas técnicas
+    ...analizar como ocultar el acordion de los destinatarios para el rol "Operador" ante el entorno de multiples roles asignados a un usuario
 🟢 recepcion.index: eliminar este servicio porque ya fue mejorado con el kanvan
 🟢 se reviso que areas y oficinas estan al revez en el diagrama de datos, en realidad las areas dependen de las oficinas, pues cada oficina puede tener una copia total o parcial del organigrama de areas de la sede central
 🟢 analizar si el canva del operador sera el mismo que el de los: supervisores, recepcionistas y gestores
@@ -42,7 +43,8 @@
 🟢 proceso de rechazo de una solicitud
 🟢 mis-tareas: crear una estrategia de uso de cache
 🟢 en la mayoria de las vistas se debe agregar un margen arriba de 1 o 2 porque todo esta muy pegado al techo
-🟢 recepcion.index: establece unidades de capacidad tecnica en el subtitulo de las tres ventanas de distribucion de solicitudes: derivacion, asignacion y delegación
+
+
 🟢 global cruds.edit: si hay historial no se puede editar
 🟢 crear servicio controlado para cambiar el dui a una persona por motivos de error involuntario a la hora de registrar ese dui en el formulario de registro de usuarios
 🟢 register: asegurar el id del usuario con un aumento no automático sino programatico
@@ -51,7 +53,6 @@
 🟢 parametrizar bloque de procesamiento actualmente fijado en 20 unidades
 🟢 mis-tareas: ajustar la visibilidad de la tarjeta fantasma y la tarjeta elegida
 🟢 mis-tareas: es posible colocar en primer plano los ultimos 3 digitos los cuales pueden servir como una suerte de ticket de atencion reseteando en 100, ya que los ante-anteriores 3 digitos tambien se resetean matematicamente en en 100
-🟢 mis-tareas: analizar el procedimiento de actualizacion de datos tomando en cuenta inicialmente que el operador solo vera sus solicitudes y si cambian es porque él las ha cambiado lo que hara que se refleje en el front end sin demora
 
 🟠 rage agains the machine & limp bizkit & korn & alice in chains
     ...limp bizkit: im broke

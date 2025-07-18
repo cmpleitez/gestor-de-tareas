@@ -103,11 +103,10 @@ Route::middleware([
         });
     });
 
-    //BENEFICIARIOS
+    //OPERADORES
     Route::group(['middleware' => ['role:Recepcionista|Supervisor|Gestor|Operador']], function () {
         Route::group(['prefix' => 'recepcion'], function () {
-            Route::get('/', [RecepcionController::class, 'index'])->name('recepcion');
-            Route::get('solicitudes', [RecepcionController::class, 'solicitudes'])->name('recepcion.solicitudes'); //Carga la vista y los destinatarios segun rol
+            Route::get('solicitudes', [RecepcionController::class, 'solicitudes'])->name('recepcion.solicitudes');
             Route::get('areas/{solicitud}', [recepcionController::class, 'areas'])->name('recepcion.areas');
             Route::get('equipos/{solicitud}', [recepcionController::class, 'equipos'])->name('recepcion.equipos');
             Route::get('operadores/{solicitud}', [recepcionController::class, 'operadores'])->name('recepcion.operadores');

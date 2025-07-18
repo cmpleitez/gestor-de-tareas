@@ -16,30 +16,19 @@ use Illuminate\Support\Facades\Log;
 
 class RecepcionController extends Controller
 {
-
-    public function index()
-    {
-        $recepciones = Recepcion::orWhere('user_id_origen', auth()->user()->id)
-            ->orWhere('user_id_destino', auth()->user()->id)
-            ->with('solicitud')->get();
-        return view('modelos.recepcion.index', compact('recepciones'));
-    }
-
     public function solicitudes()
     {
         $user = auth()->user()->load('area');
         $recepciones = Recepcion::where('user_id_destino', $user->id)
             ->with(['solicitud', 'estado', 'usuarioDestino', 'area', 'role'])
             ->orderBy('created_at', 'desc')
-            ->limit(20)
+            ->limit(10)
             ->get();
         $tarjetas = $recepciones->map(function ($tarjeta) {
-            // Calcular progreso basado en actividades
-            $totalActividades = Actividad::where('recepcion_id', $tarjeta->id)->count();
+            $totalActividades = Actividad::where('recepcion_id', $tarjeta->id)->count(); // Calcular progreso basado en actividades
             $actividadesResueltas = Actividad::where('recepcion_id', $tarjeta->id)
                 ->where('estado_id', 3) // ID 3 = Resuelta según la BD
                 ->count();
-            
             $porcentajeProgreso = $totalActividades > 0 
                 ? round(($actividadesResueltas / $totalActividades) * 100, 2)
                 : 0;
@@ -168,7 +157,7 @@ class RecepcionController extends Controller
             return back()->with('error', 'Ocurrió un error cuando se intentaba enviar la solicitud:' . $e->getMessage());
         }
         DB::commit(); //Finalizando la transacción
-        return redirect()->route('recepcion')->with('success', 'La solicitud número "' . $atencion_id . '" ha sido recibida en el area ' . $user->area->area);
+        return redirect()->route('recepcion.create')->with('success', 'La solicitud número "' . $atencion_id . '" ha sido recibida en el area ' . $user->area->area);
     }
 
     public function derivar($recepcion_id, $area_id)
@@ -381,15 +370,12 @@ class RecepcionController extends Controller
                 'actividad_id' => $actividad->id
             ];
         });
-
-
-
         return response()->json(['tareas' => $tareas]);
     }
 
     public function reportarTarea(Request $request, $actividad_id)
     {
-        $actividad = Actividad::find($actividad_id);
+        $actividad = Actividad::find($actividad_id); //Validando
         if (!$actividad) {
             return response()->json(['success' => false, 'message' => 'No se encontró la tarea'], 404);
         }
@@ -403,18 +389,25 @@ class RecepcionController extends Controller
         }
         $actividad->estado_id = $estado->id;
         $actividad->save();
-        
-        // Calcular progreso actualizado para esta recepción
-        $recepcionId = $actividad->recepcion_id;
+        $recepcionId = $actividad->recepcion_id; // Calcular progreso actualizado para esta recepción
         $totalActividades = Actividad::where('recepcion_id', $recepcionId)->count();
         $actividadesResueltas = Actividad::where('recepcion_id', $recepcionId)
             ->where('estado_id', 3) // ID 3 = Resuelta según la BD
             ->count();
-        
         $porcentajeProgreso = $totalActividades > 0 
             ? round(($actividadesResueltas / $totalActividades) * 100, 2)
             : 0;
-        
+        $todasResueltas = ($actividadesResueltas === $totalActividades); // Verificar si todas las tareas están resueltas
+        $solicitudActualizada = false;
+        if ($todasResueltas && $nuevoEstado === 'Resuelta') // Actualizar el estado de la solicitud a "Resuelta" {
+            $recepcion = Recepcion::find($recepcionId);
+            if ($recepcion) {
+                $estadoResuelta = Estado::where('estado', 'Resuelta')->first();
+                $recepcion->estado_id = $estadoResuelta->id;
+                $recepcion->save();
+                $solicitudActualizada = true;
+            }
+        }
         return response()->json([
             'success' => true, 
             'message' => 'Estado de la tarea actualizado correctamente',
@@ -423,8 +416,9 @@ class RecepcionController extends Controller
                 'total_actividades' => $totalActividades,
                 'actividades_resueltas' => $actividadesResueltas,
                 'porcentaje' => $porcentajeProgreso
-            ]
+            ],
+            'todas_resueltas' => $todasResueltas,
+            'solicitud_actualizada' => $solicitudActualizada
         ]);
     }
-
 }

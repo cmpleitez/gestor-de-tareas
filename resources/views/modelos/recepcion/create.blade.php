@@ -14,13 +14,6 @@
                             <div class="col-md-10 align-items-center" style="padding-left: 0.5rem;">
                                 <p>NUEVA SOLICITUD</p>
                             </div>
-                            <div class="col-md-2 d-flex justify-content-end" style="padding: 0.1rem;">
-                                <a href="{!! route('recepcion') !!}">
-                                    <div class="badge badge-pill badge-primary">
-                                        <i class="bx bx-arrow-back font-medium-3"></i>
-                                    </div>
-                                </a>
-                            </div>
                         </div>
                     </div>
                 </div>
