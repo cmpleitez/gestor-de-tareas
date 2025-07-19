@@ -18,18 +18,14 @@
     8. La solicitud esta en mínimo rango de maniobra que es el operador.
     9. El operador avanza la solicitud desde su tablero de recibidas a su tablero en progreso y automáticamente se originan las tareas a cumplir segun su skill
     10. El operador va cumpliendo sus tareas una a una y reportandolas como realizadas
-🟢 
-analizar que hacer cuando el operador es gestor y no pertenece a ningun equipo de trabajo, pues no podría delegar las tareas a su equipo de trabajo.
-🟢 Construir el perfil de habilidades del usuario
-    debemos agregar una tabla llamada "tarea-user"
-    crud del skill del usuario: user -> tareas_user -> tareas
-    ...La lógica de la delegacion se ha expandido, pues habrian dos maneras de delegar una solicitud: por operador o por equipo de trabajo. 
-        ...cuando se delegue por operador validar si este tiene todas las hablidades para realizar todas las tareas de la solicitud, sino rechazar la delegacion
-        hacer la misma validacion para el equipo de trabajo, si no se valida igual rechazarla
-        si queda alguna tarea sin poder ser resuelta por falta de operadores asignados debe rechazarse la delegación
-        cuando una tarea la tenga asignada más de un operador se debe elegir uno de ellos aleatoriamente
-    ahora tenemos que las tareas de una solicitud pueden ser realizadas por uno o varios operadores
-🟢 podriamos llegar a que la tarjeta tenga las fotos de todos los usuarios participantes: recepcionistas, supervisores, gestores y operadores, ya que cada uno de ellos tiene una copia de la solicitud.
+
+...🟢 implementar el darkmode al maquetado
+
+🟢 validar si la solicitud que se intenta delegar ya la puede realizar el operador destino según su perfil de habilidades
+🟢 estudiar el tema de productividad respecto a las solicitudes resueltas por el operador, si auto avanzarle la copia al recepcionista y al supervisor, pero que solo el gestor tenga que aprobar la resoluciòn de la misma
+    resolver la situacion: cuando la solicitud se encuentra resuelta los roles a excepcion del operador tiene su copia en progreso, y cuando intentan pasarla al tablero de resueltas el sistema intenta distribuirla al siguiente usuario segun el procedimiento
+        luego el sistema mismo reporta que la solicitud ya ha sido delegada
+🟢 validar si el gestor pertenece a un equipo de trabajo para poder delegar solicitudes
 🟢 tableros kanvan: estudio e incoporporación de reglas técnicas necesarias, asi como filtro según rol, y pruebas con casos de roles multiples
     solicitudes: analizar el procedimiento de actualizacion de datos tomando en cuenta inicialmente que el operador solo vera sus solicitudes y si cambian es porque él las ha cambiado lo que hara que se refleje en el front end sin demora
     solicitudes: re-ordenar las tarjetas cuando se haga drop ya que esta la regla consiste en mantener el orden de atención a las solicitudes aunque el usuario puede optar por atender cualquiera de las que estan visibles, however la etica del sistema es facilitar el orden de llegada
@@ -42,9 +38,8 @@ analizar que hacer cuando el operador es gestor y no pertenece a ningun equipo d
 🟢 global cruds.edit: si hay historial no se puede editar
 🟢 crear servicio controlado para cambiar el dui a una persona por motivos de error involuntario a la hora de registrar ese dui en el formulario de registro de usuarios
 🟢 register: asegurar el id del usuario con un aumento no automático sino programatico
-🟢 solicitud.asignar-tareas: maquetar
 🟢 dashboard: palabra conectado en azul vivido, desconectado en rojo vivido
-🟢 parametrizar bloque de procesamiento actualmente fijado en 20 unidades
+🟢 parametrizar bloque de procesamiento actualmente fijado en 10 unidades
 🟢 mis-tareas: ajustar la visibilidad de la tarjeta fantasma y la tarjeta elegida
 🟢 mis-tareas: es posible colocar en primer plano los ultimos 3 digitos los cuales pueden servir como una suerte de ticket de atencion reseteando en 100, ya que los ante-anteriores 3 digitos tambien se resetean matematicamente en en 100
 
