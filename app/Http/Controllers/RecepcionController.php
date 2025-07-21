@@ -280,12 +280,11 @@ class RecepcionController extends Controller
         if (!$user) {
             return response()->json(['success' => false, 'message' => 'No se encontró el usuario solicitado'], 404);
         }
-        $operador_habilitado = $user->solicitudes->where('id', $recepcion->solicitud_id)->first();
+        $operador_habilitado = $user->solicitudes->where('id', $recepcion->solicitud_id)->first(); //Validando que el operador tenga el nivel de habilidades necesario para resolver la solicitud
         if (!$operador_habilitado) {
-            return response()->json(['success' => false, 'message' => 'El operador no tiene las habilidades necesarias para resolver la solicitud'], 422);
+            return response()->json(['success' => false, 'message' => 'El operador no tiene el nivel de habilidades necesario para resolver la solicitud'], 422);
         }
-        //Validando el número de atención
-        $role_id = Role::where('name', 'Operador')->first()->id;
+        $role_id = Role::where('name', 'Operador')->first()->id; //Validando el número de atención
         $delegada = Recepcion::where('atencion_id', $recepcion->atencion_id)->where('role_id', $role_id)->first();
         if ($delegada) {
             return response()->json(['success' => false, 'message' => 'La solicitud con número de atención ' . $delegada->atencion_id . ' ya ha sido delegada al '.$delegada->role->name .' '. $delegada->usuarioDestino->name . ' en el área ' . $delegada->area->area]);
@@ -293,21 +292,23 @@ class RecepcionController extends Controller
         //Delegando la solicitud
         DB::beginTransaction();
         try {
-            $new_recepcion = new Recepcion(); //Creando solicitud - Copia Operador
-            $new_recepcion->id = (new KeyMaker())->generate('Recepcion', $recepcion->solicitud_id);
-            $new_recepcion->solicitud_id = $recepcion->solicitud_id;
-            $new_recepcion->oficina_id = $recepcion->oficina_id;
-            $new_recepcion->area_id = $recepcion->area_id;
-            $new_recepcion->zona_id = $recepcion->zona_id;
-            $new_recepcion->distrito_id = $recepcion->distrito_id;
-            $new_recepcion->user_id_origen = auth()->user()->id;
-            $new_recepcion->user_id_destino = $user->id;
-            $new_recepcion->role_id = $role_id;
-            $new_recepcion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
-            $new_recepcion->atencion_id = $recepcion->atencion_id;
-            $new_recepcion->detalle = $recepcion->detalle;
-            $new_recepcion->activo = false;
-            $new_recepcion->save();
+            if ($recepcion->estado_id !== Estado::where('estado', 'Resuelta')->first()->id) { //Generando copia Operador
+                $new_recepcion = new Recepcion();
+                $new_recepcion->id = (new KeyMaker())->generate('Recepcion', $recepcion->solicitud_id);
+                $new_recepcion->solicitud_id = $recepcion->solicitud_id;
+                $new_recepcion->oficina_id = $recepcion->oficina_id;
+                $new_recepcion->area_id = $recepcion->area_id;
+                $new_recepcion->zona_id = $recepcion->zona_id;
+                $new_recepcion->distrito_id = $recepcion->distrito_id;
+                $new_recepcion->user_id_origen = auth()->user()->id;
+                $new_recepcion->user_id_destino = $user->id;
+                $new_recepcion->role_id = $role_id;
+                $new_recepcion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
+                $new_recepcion->atencion_id = $recepcion->atencion_id;
+                $new_recepcion->detalle = $recepcion->detalle;
+                $new_recepcion->activo = false;
+                $new_recepcion->save();            
+            }
             $recepcion->activo = true; //Validar solicitud y actualizar estado - Copia Gestor
             $recepcion->estado_id = Estado::where('estado', 'En progreso')->first()->id;
             $recepcion->save();
@@ -399,12 +400,15 @@ class RecepcionController extends Controller
         $todasResueltas = ($actividadesResueltas === $totalActividades); // Verificar si todas las tareas están resueltas
         $solicitudActualizada = false;
         if ($todasResueltas && $nuevoEstado === 'Resuelta') { // Actualizar el estado de la solicitud a "Resuelta"
-            if ($recepcionActual) {
-                $estadoResuelta = Estado::where('estado', 'Resuelta')->first();
-                $recepcionActual->estado_id = $estadoResuelta->id;
-                $recepcionActual->save();
-                $solicitudActualizada = true;
+            $estadoResuelta = Estado::where('estado', 'Resuelta')->first();
+            $recepciones = Recepcion::where('atencion_id', $atencionId)->get();
+            foreach ($recepciones as $recepcion) { // Actualizar todas las copias a resuelta exceptuando el usuario con rol "Gestor"
+                if ($recepcion->role->name !== 'Gestor') {
+                    $recepcion->estado_id = $estadoResuelta->id;
+                    $recepcion->save();
+                }
             }
+            $solicitudActualizada = true;
         }
         return response()->json([
             'success' => true, 

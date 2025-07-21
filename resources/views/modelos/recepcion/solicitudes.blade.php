@@ -104,12 +104,11 @@
             width: 100%;
             border-radius: 1.5px;
             margin: 8px 0 6px 0;
-            background: linear-gradient(to right, 
-                #ff8c00 0%, #ff8c00 var(--naranja, 15%), 
-                #ffd700 var(--naranja, 15%), #ffd700 calc(var(--naranja, 15%) + var(--amarillo, 25%)), 
-                #28a745 calc(var(--naranja, 15%) + var(--amarillo, 25%)), #28a745 calc(var(--naranja, 15%) + var(--amarillo, 25%) + var(--verde, 35%)), 
-                #17a2b8 calc(var(--naranja, 15%) + var(--amarillo, 25%) + var(--verde, 35%)), #17a2b8 100%
-            );
+            background: linear-gradient(to right,
+                    #ff8c00 0%, #ff8c00 var(--naranja, 15%),
+                    #ffd700 var(--naranja, 15%), #ffd700 calc(var(--naranja, 15%) + var(--amarillo, 25%)),
+                    #28a745 calc(var(--naranja, 15%) + var(--amarillo, 25%)), #28a745 calc(var(--naranja, 15%) + var(--amarillo, 25%) + var(--verde, 35%)),
+                    #17a2b8 calc(var(--naranja, 15%) + var(--amarillo, 25%) + var(--verde, 35%)), #17a2b8 100%);
             transition: all 0.3s ease;
         }
 
@@ -117,20 +116,20 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             transform: translateY(-2px);
         }
-        
+
         /* Estilos para Sortable.js */
         .sortable-ghost {
             opacity: 0.5;
         }
-        
+
         .sortable-chosen {
             transform: rotate(5deg);
         }
-        
+
         .sortable-drag {
             transform: rotate(5deg);
         }
-        
+
         /* Estilos para el sidebar y overlay */
         .kanban-overlay {
             position: fixed;
@@ -144,17 +143,19 @@
             visibility: hidden;
             transition: all 0.3s ease;
         }
-        
+
         .kanban-overlay.show {
             opacity: 1;
             visibility: visible;
         }
-        
+
         .kanban-sidebar {
             position: fixed;
             top: 0;
-            right: -100%; /* Oculto fuera de pantalla independientemente del ancho */
-            width: clamp(200px, 32vw, 432px); /* Máx 432 px, mínimo 304 px, 32 % viewport */
+            right: -100%;
+            /* Oculto fuera de pantalla independientemente del ancho */
+            width: clamp(200px, 32vw, 432px);
+            /* Máx 432 px, mínimo 304 px, 32 % viewport */
             height: 100%;
             background: #fff;
             z-index: 1000;
@@ -163,45 +164,46 @@
             display: flex;
             flex-direction: column;
         }
-        
+
         .kanban-sidebar.show {
             right: 0;
         }
-        
+
         /* Contenido del sidebar con scroll */
         #sidebar-card-body {
             flex: 1 !important;
             overflow-y: auto !important;
             padding: 2rem !important;
-            max-height: calc(100vh - 60px) !important; /* Altura menos header */
+            max-height: calc(100vh - 60px) !important;
+            /* Altura menos header */
             display: flex !important;
             flex-direction: column !important;
         }
-        
+
         /* Personalizar scrollbar del sidebar */
         #sidebar-card-body::-webkit-scrollbar {
             width: 8px;
         }
-        
+
         #sidebar-card-body::-webkit-scrollbar-track {
             background: #f1f1f1;
             border-radius: 3px;
         }
-        
+
         #sidebar-card-body::-webkit-scrollbar-thumb {
             background: #c1c1c1;
             border-radius: 3px;
         }
-        
+
         #sidebar-card-body::-webkit-scrollbar-thumb:hover {
             background: #a8a8a8;
         }
-        
+
         /* Bloquear scroll de la página principal cuando sidebar está abierto */
         body.sidebar-open {
             overflow: hidden;
         }
-        
+
         /* Optimización de items para el sidebar */
         #sidebar-card-body .item-selector {
             padding: 12px 45px 12px 16px !important;
@@ -214,18 +216,18 @@
             background: white !important;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
         }
-        
+
         #sidebar-card-body .item-body {
             display: block !important;
             width: 100% !important;
             padding-right: 0 !important;
         }
-        
+
         #sidebar-card-body .item-info {
             width: 100% !important;
             flex: none !important;
         }
-        
+
         #sidebar-card-body .item-name {
             font-size: 0.9rem !important;
             line-height: 1.5 !important;
@@ -238,7 +240,7 @@
             color: #2c3e50 !important;
             font-weight: 500 !important;
         }
-        
+
         #sidebar-card-body .item-desc {
             font-size: 0.8rem !important;
             margin-top: 0 !important;
@@ -247,7 +249,7 @@
             white-space: normal !important;
             text-align: left !important;
         }
-        
+
         /* Responsive para pantallas más pequeñas */
         @media (max-width: 768px) {
             .kanban-sidebar {
@@ -479,12 +481,16 @@
         }
 
         .kanban-sidebar,
-        .kanban-sidebar *{max-width:none!important;}
+        .kanban-sidebar * {
+            max-width: none !important;
+        }
+
         #sidebar-card-body .item-name,
-        #sidebar-card-body .item-desc{
-          white-space:normal!important;
-          overflow:visible!important;
-          word-break:break-word!important;   /* se parte donde sea necesario */
+        #sidebar-card-body .item-desc {
+            white-space: normal !important;
+            overflow: visible !important;
+            word-break: break-word !important;
+            /* se parte donde sea necesario */
         }
     </style>
 @endsection
@@ -635,7 +641,7 @@
                                 data-atencion-id="{{ $recepcion['atencion_id'] }}"
                                 data-estado-id="{{ $recepcion['estado_id'] }}" style="border-left-color: #ffc107;">
                                 <div class="solicitud-titulo">
-                                    @if($recepcion['titulo'] && $recepcion['detalle'])
+                                    @if ($recepcion['titulo'] && $recepcion['detalle'])
                                         {{ $recepcion['titulo'] }} - {{ $recepcion['detalle'] }}
                                     @elseif($recepcion['titulo'])
                                         {{ $recepcion['titulo'] }}
@@ -704,7 +710,7 @@
                                 data-atencion-id="{{ $recepcion['atencion_id'] }}"
                                 data-estado-id="{{ $recepcion['estado_id'] }}" style="border-left-color: #17a2b8;">
                                 <div class="solicitud-titulo">
-                                    @if($recepcion['titulo'] && $recepcion['detalle'])
+                                    @if ($recepcion['titulo'] && $recepcion['detalle'])
                                         {{ $recepcion['titulo'] }} - {{ $recepcion['detalle'] }}
                                     @elseif($recepcion['titulo'])
                                         {{ $recepcion['titulo'] }}
@@ -773,7 +779,7 @@
                                 data-atencion-id="{{ $recepcion['atencion_id'] }}"
                                 data-estado-id="{{ $recepcion['estado_id'] }}" style="border-left-color: #28a745;">
                                 <div class="solicitud-titulo">
-                                    @if($recepcion['titulo'] && $recepcion['detalle'])
+                                    @if ($recepcion['titulo'] && $recepcion['detalle'])
                                         {{ $recepcion['titulo'] }} - {{ $recepcion['detalle'] }}
                                     @elseif($recepcion['titulo'])
                                         {{ $recepcion['titulo'] }}
@@ -861,7 +867,7 @@
                 selector.classList.remove('selected');
             });
             const selectedElement = document.querySelector(
-            `[onclick="selectItem('${radioId}')"]`); // Marcar el seleccionado
+                `[onclick="selectItem('${radioId}')"]`); // Marcar el seleccionado
             if (selectedElement) {
                 selectedElement.classList.add('selected');
             }
@@ -871,6 +877,7 @@
                 $(radio).trigger('change'); // Disparar el evento change para actualizar el título
             }
         }
+
         function initKanban() { // Inicializar el kanban
             const columnas = ['columna-recibidas', 'columna-progreso', 'columna-resueltas'];
             columnas.forEach(function(columnaId) {
@@ -907,8 +914,9 @@
                 });
             });
         }
-        //ACTUALIZACION DE ESTADO DE LA SOLICITUD EN EL FRONTEND
         function showMoveAlert(solicitudId, nuevaColumna, evt) {
+            
+            //ACTUALIZACION DE ESTADO DE LA SOLICITUD EN EL FRONTEND
             let nuevoEstadoId = 1; // Por defecto Recibida
             let nombreEstado = 'Recibida';
             let colorBorde = '#ffc107'; // Amarillo por defecto
@@ -929,9 +937,11 @@
                     colorBorde = '#28a745'; // Verde
                     break;
             }
+
+            //ACTUALIZAR ESTADO DE LA SOLICITUD EN EL BACKEND
             let url = ''; //Seleccionando la ruta a la que se va a enviar la solicitud
             let selectedValue = null;
-            if (userRole === 'Recepcionista') { //recepcionista
+            if (userRole === 'Recepcionista') { //Derivar
                 selectedValue = $('input[name="area_destino"]:checked').val();
                 if (!selectedValue) {
                     Swal.fire({
@@ -949,7 +959,7 @@
                 url = '{{ route('recepcion.derivar', ['recepcion_id' => ':id', 'area_id' => ':area']) }}'
                     .replace(':id', solicitudId)
                     .replace(':area', selectedValue);
-            } else if (userRole === 'Supervisor') { //supervisor
+            } else if (userRole === 'Supervisor') { //Asignar
                 selectedValue = $('input[name="equipo_destino"]:checked').val();
                 if (!selectedValue) {
                     Swal.fire({
@@ -967,7 +977,7 @@
                 url = '{{ route('recepcion.asignar', ['recepcion_id' => ':id', 'equipo_id' => ':equipo']) }}'
                     .replace(':id', solicitudId)
                     .replace(':equipo', selectedValue);
-            } else if (userRole === 'Gestor') { //gestor
+            } else if (userRole === 'Gestor') { //Delegar
                 selectedValue = $('input[name="operador_destino"]:checked').val();
                 if (!selectedValue) {
                     Swal.fire({
@@ -985,11 +995,10 @@
                 url = '{{ route('recepcion.delegar', ['recepcion_id' => ':id', 'user_id' => ':user']) }}'
                     .replace(':id', solicitudId)
                     .replace(':user', selectedValue);
-            } else if (userRole === 'Operador') { //operador
+            } else if (userRole === 'Operador') { //Iniciar tareas
                 url = '{{ route('recepcion.iniciar-tareas', ['recepcion_id' => ':id']) }}'
                     .replace(':id', solicitudId);
             }
-            //ACTUALIZAR ESTADO DE LA SOLICITUD EN EL BACKEND
             $.ajax({
                 url: url,
                 method: 'POST',
@@ -1010,7 +1019,8 @@
                         Swal.fire({
                             position: 'top-end',
                             type: 'success',
-                            title: 'Solicitud #' + String(solicitudId).slice(-3) + ' "' + tituloTarjeta + '" 👉🏻 ' + nombreEstado,
+                            title: 'Solicitud #' + String(solicitudId).slice(-3) + ' "' +
+                                tituloTarjeta + '" 👉🏻 ' + nombreEstado,
                             showConfirmButton: false,
                             timer: 3000,
                             confirmButtonClass: 'btn btn-primary',
@@ -1052,7 +1062,12 @@
                     $(evt.from).append(evt.item); // Revertir la tarjeta a su posición original
                 }
             });
+
+
         }
+
+
+
         //MOSTRAR TAREAS EN SIDEBAR
         $(document).on('click', '.solicitud-card', function() {
             const $card = $(this);
@@ -1066,6 +1081,7 @@
             $('.kanban-sidebar').addClass('show');
             $('body').addClass('sidebar-open'); // Bloquear scroll de la página principal
         });
+
         function cargarTareas(recepcionId) { // Función para cargar y dibujar las tareas
             $.ajax({
                 url: '{{ route('recepcion.tareas', ['recepcion_id' => ':id']) }}'.replace(':id', recepcionId),
@@ -1078,15 +1094,16 @@
                 error: function(xhr, status, error) {
                     $('#sidebar-card-body').append(
                         '<div class="text-center text-muted py-3"><i class="bx bx-error-circle text-danger"></i><div class="mt-2">Error al cargar tareas</div></div>'
-                        );
+                    );
                 }
             });
         }
+
         function dibujarTareas(tareas) { // Función para dibujar las tareas en el sidebar
             if (tareas.length === 0) {
                 $('#sidebar-card-body').append(
                     '<div class="text-center text-muted py-3"><i class="bx bx-task text-muted"></i><div class="mt-2">Sin tareas asignadas</div></div>'
-                    );
+                );
                 return;
             }
             let tareasHtml = '<div><h6 class="font-weight-600 mb-2"></h6>';
@@ -1144,14 +1161,18 @@
                     success: function(response) {
                         if (response.success) {
                             updateProgressByPercentage(response.atencion_id, response.progreso.porcentaje);
-                            if (response.todas_resueltas && response.solicitud_actualizada) { // Verificar si todas las tareas están resueltas
-                                const tarjeta = $(`.solicitud-card[data-id="${response.recepcion_id}"]`); // Mover la tarjeta al tablero de resueltas
+                            if (response.todas_resueltas && response
+                                .solicitud_actualizada) { // Verificar si todas las tareas están resueltas
+                                const tarjeta = $(
+                                `.solicitud-card[data-id="${response.recepcion_id}"]`); // Mover la tarjeta al tablero de resueltas
                                 if (tarjeta.length > 0) {
-                                    tarjeta.css('border-left-color', '#28a745'); // Actualizar el estado visual de la tarjeta
+                                    tarjeta.css('border-left-color',
+                                    '#28a745'); // Actualizar el estado visual de la tarjeta
                                     tarjeta.find('.solicitud-estado').text('Estado: Resuelta');
                                     tarjeta.find('.solicitud-estado').css('color', '#28a745');
                                     tarjeta.attr('data-estado-id', 3);
-                                    $('#columna-resueltas').append(tarjeta); // Mover la tarjeta al tablero de resueltas
+                                    $('#columna-resueltas').append(
+                                    tarjeta); // Mover la tarjeta al tablero de resueltas
                                     actualizarContadores();
                                     Swal.fire({ // Mostrar mensaje de éxito
                                         position: 'top-end',
@@ -1167,7 +1188,8 @@
                                 Swal.fire({ // Mensaje normal para tarea individual
                                     position: 'top-end',
                                     type: 'success',
-                                    title: 'Tarea ' + String(actividadId).slice(-4) + ' se reportó como ' + nuevoEstado,
+                                    title: 'Tarea ' + String(actividadId).slice(-4) +
+                                        ' se reportó como ' + nuevoEstado,
                                     showConfirmButton: false,
                                     timer: 1500,
                                     confirmButtonClass: 'btn btn-primary',
@@ -1205,11 +1227,11 @@
             }
         }
         $(document).on('click', '.kanban-overlay, .kanban-sidebar .close-icon',
-        function() { //Cerrar sidebar al hacer clic en overlay o en el icono de cierre
-            $('.kanban-overlay').removeClass('show');
-            $('.kanban-sidebar').removeClass('show');
-            $('body').removeClass('sidebar-open'); // Reactivar scroll de la página principal
-        });
+            function() { //Cerrar sidebar al hacer clic en overlay o en el icono de cierre
+                $('.kanban-overlay').removeClass('show');
+                $('.kanban-sidebar').removeClass('show');
+                $('body').removeClass('sidebar-open'); // Reactivar scroll de la página principal
+            });
         $(document).on('change', 'input[name="area_destino"]', function() { //Actualizacion dinamica del acordion
             const areaId = $(this).val();
             const areaNombre = $(this).closest('.item-selector').find('.item-name').text().trim();
@@ -1232,27 +1254,47 @@
         function updateProgressByPercentage(atencionId, porcentaje) {
             let naranja, amarillo, verde, celeste;
             if (porcentaje == 0) { // Aplicar distribución de colores según tabla proporcionada
-                naranja = 45; amarillo = 25; verde = 20; celeste = 10;
+                naranja = 45;
+                amarillo = 25;
+                verde = 20;
+                celeste = 10;
             } else if (porcentaje >= 10 && porcentaje < 30) {
-                naranja = 15; amarillo = 35; verde = 25; celeste = 25;
+                naranja = 15;
+                amarillo = 35;
+                verde = 25;
+                celeste = 25;
                 console.log('porcentaje >= 10 && porcentaje < 30');
             } else if (porcentaje >= 30 && porcentaje < 60) {
-                naranja = 0; amarillo = 50; verde = 30; celeste = 30;
+                naranja = 0;
+                amarillo = 50;
+                verde = 30;
+                celeste = 30;
                 console.log('porcentaje >= 30 && porcentaje < 60');
             } else if (porcentaje >= 60 && porcentaje < 80) {
-                naranja = 0; amarillo = 25; verde = 35; celeste = 65;
+                naranja = 0;
+                amarillo = 25;
+                verde = 35;
+                celeste = 65;
                 console.log('porcentaje >= 60 && porcentaje < 80');
             } else if (porcentaje >= 80 && porcentaje < 85) {
-                naranja = 0; amarillo = 15; verde = 35; celeste = 50;
+                naranja = 0;
+                amarillo = 15;
+                verde = 35;
+                celeste = 50;
                 console.log('porcentaje >= 80 && porcentaje < 85');
             } else if (porcentaje >= 85 && porcentaje < 100) {
-                naranja = 0; amarillo = 10; verde = 30; celeste = 60;
+                naranja = 0;
+                amarillo = 10;
+                verde = 30;
+                celeste = 60;
                 console.log('porcentaje >= 85 && porcentaje < 100');
             } else { // 100%
-                naranja = 0; amarillo = 0; verde = 0; celeste = 100;
+                naranja = 0;
+                amarillo = 0;
+                verde = 0;
+                celeste = 100;
                 console.log('100');
             }
-            
             // Actualizar todas las barras de progreso con el mismo atencion_id
             const progressBars = $(`[data-atencion-id="${atencionId}"]`);
             if (progressBars.length > 0) {
@@ -1261,9 +1303,9 @@
                     '--amarillo': amarillo + '%',
                     '--verde': verde + '%'
                 });
-                console.log(`Actualizadas ${progressBars.length} barras de progreso para atencion_id: ${atencionId}`);
             }
         }
+
         function actualizarContadores() { // Función para actualizar los contadores de las columnas
             const recibidas = $('#columna-recibidas .solicitud-card').length;
             const progreso = $('#columna-progreso .solicitud-card').length;
@@ -1272,9 +1314,10 @@
             $('#contador-progreso').text(progreso);
             $('#contador-resueltas').text(resueltas);
         }
+
         function initializeProgress() { // Función para inicializar progreso de todas las tarjetas
-            @foreach($tarjetas as $tarjeta)
-                updateProgressByPercentage('{{ $tarjeta["atencion_id"] }}', {{ $tarjeta["porcentaje_progreso"] }});
+            @foreach ($tarjetas as $tarjeta)
+                updateProgressByPercentage('{{ $tarjeta['atencion_id'] }}', {{ $tarjeta['porcentaje_progreso'] }});
             @endforeach
         }
         $(document).ready(function() { // Inicializar al cargar la página
