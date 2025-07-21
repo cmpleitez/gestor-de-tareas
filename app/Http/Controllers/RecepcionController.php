@@ -270,13 +270,19 @@ class RecepcionController extends Controller
 
     public function delegar($recepcion_id, $user_id)
     {
+        //Validación
         $recepcion = Recepcion::find($recepcion_id);
         if (!$recepcion) {
             return response()->json(['success' => false, 'message' => 'No se encontró la recepción solicitada'], 404);
         }
         $user = User::find($user_id);
+        $user->load('solicitudes');
         if (!$user) {
             return response()->json(['success' => false, 'message' => 'No se encontró el usuario solicitado'], 404);
+        }
+        $operador_habilitado = $user->solicitudes->where('id', $recepcion->solicitud_id)->first();
+        if (!$operador_habilitado) {
+            return response()->json(['success' => false, 'message' => 'El operador no tiene las habilidades necesarias para resolver la solicitud'], 422);
         }
         //Validando el número de atención
         $role_id = Role::where('name', 'Operador')->first()->id;
