@@ -114,20 +114,29 @@
 
         .solicitud-card:hover {
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            transform: translateY(-2px);
+            /* Eliminar transform para evitar conflictos con Sortable.js */
         }
 
         /* Estilos para Sortable.js */
         .sortable-ghost {
-            opacity: 0.5;
+            visibility: visible !important;
+            opacity: 0.5 !important;
+            height: 100px !important;
+            background: #e9ecef !important;
+            border: 2px dashed #007bff !important;
+            border-radius: 8px !important;
+            margin-bottom: 12px !important;
         }
 
-        .sortable-chosen {
-            transform: rotate(5deg);
+        .sortable-ghost > * {
+            display: none !important;
         }
-
+        
+        .sortable-chosen,
         .sortable-drag {
-            transform: rotate(5deg);
+            opacity: 0.8 !important;
+            background: #d1ecf1 !important;
+            border: 1px solid #007bff !important;
         }
 
         /* Estilos para el sidebar y overlay */
@@ -285,13 +294,6 @@
             border: none !important;
             margin: 0 !important;
             padding: 0.6rem !important;
-        }
-
-        .badge {
-            font-size: 0.65rem;
-            padding: 0.15rem 0.4rem;
-            background-color: rgba(255, 255, 255, 0.9) !important;
-            color: #333 !important;
         }
 
         .sortable-chosen {
@@ -490,12 +492,24 @@
             white-space: normal !important;
             overflow: visible !important;
             word-break: break-word !important;
-            /* se parte donde sea necesario */
         }
+
+        .badge-pill {
+            padding-right: 0.7rem !important;
+            padding-left: 0.7rem !important;
+        }
+
+        .badge {
+            padding: 0.2rem 1rem;
+            font-size: 0.7rem;
+            font-weight: 410 !important;
+        }
+
     </style>
 @endsection
 
 @section('contenedor')
+
     {{-- ITEMS DESTINATARIOS PARA CADA ROL --}}
     <div class="row">
         <div class="col-12">
@@ -622,7 +636,8 @@
         $resueltas = $tarjetas->where('estado_id', 3);
     @endphp
     <div class="row" style="display: flex; align-items: stretch;">
-        <div class="col-md-4"> {{-- Recibidas --}}
+        {{-- RECIBIDAS --}}
+        <div class="col-md-4"> 
             <div class="card border-0 overflow-hidden">
                 <div class="card-header"
                     style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); border: none; margin: 0;">
@@ -658,17 +673,17 @@
                                 <div class="progress-divider" data-atencion-id="{{ $recepcion['atencion_id'] }}"></div>
                                 <div
                                     style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px; padding-top: 6px;">
-                                    <div
-                                        style="display: flex; flex-direction: column; justify-content: center; height: 32px; flex: 1;">
-                                        <div
-                                            style="text-align: right; font-size: 10px; color: #6c757d; line-height: 1.2; margin-bottom: 1px;">
+                                    
+                                    <div style="display: flex; flex-direction: column; justify-content: center; flex: 1;">
+                                        <div style="text-align: right; font-size: 10px; color: #6c757d; line-height: 1.2; margin-bottom: 1px;">
                                             {{ $recepcion['user_name'] }}
                                         </div>
                                         <div
-                                            style="text-align: right; background:rgb(239, 242, 247); padding: 1px 6px; border-radius: 3px; font-size: 9px; color: #495057; font-weight: 500; display: inline-block; margin-left: auto;">
-                                            {{ $recepcion['role_name'] . ' del área ' . $recepcion['area'] }}
+                                            style="text-align: right; padding: 1px 6px; border-radius: 3px; font-size: 9px; font-weight: 500; display: inline-block; margin-left: auto;">
+                                            <span class="badge badge-pill badge-light-secondary">{{ $recepcion['role_name'] }}</span> del área {{ $recepcion['area'] }}
                                         </div>
                                     </div>
+
                                     <div style="margin-left: 8px;">
                                         @if ($recepcion['user_foto'])
                                             <img src="{{ $recepcion['user_foto'] }}" alt="Usuario" class="avatar"
@@ -691,7 +706,8 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4"> {{-- En Progreso --}}
+        {{-- PROGRESO --}}
+        <div class="col-md-4"> 
             <div class="card border-0 overflow-hidden">
                 <div class="card-header"
                     style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); border: none; margin: 0;">
@@ -727,17 +743,17 @@
                                 <div class="progress-divider" data-atencion-id="{{ $recepcion['atencion_id'] }}"></div>
                                 <div
                                     style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px; padding-top: 6px;">
-                                    <div
-                                        style="display: flex; flex-direction: column; justify-content: center; height: 32px; flex: 1;">
-                                        <div
-                                            style="text-align: right; font-size: 10px; color: #6c757d; line-height: 1.2; margin-bottom: 1px;">
+
+                                    <div style="display: flex; flex-direction: column; justify-content: center; flex: 1;">
+                                        <div style="text-align: right; font-size: 10px; color: #6c757d; line-height: 1.2; margin-bottom: 1px;">
                                             {{ $recepcion['user_name'] }}
                                         </div>
                                         <div
-                                            style="text-align: right; background:rgb(239, 242, 247); padding: 1px 6px; border-radius: 3px; font-size: 9px; color: #495057; font-weight: 500; display: inline-block; margin-left: auto;">
-                                            {{ $recepcion['role_name'] . ' del área ' . $recepcion['area'] }}
+                                            style="text-align: right; padding: 1px 6px; border-radius: 3px; font-size: 9px; font-weight: 500; display: inline-block; margin-left: auto;">
+                                            <span class="badge badge-pill badge-light-primary">{{ $recepcion['role_name'] }}</span> del área {{ $recepcion['area'] }}
                                         </div>
                                     </div>
+
                                     <div style="margin-left: 8px;">
                                         @if ($recepcion['user_foto'])
                                             <img src="{{ $recepcion['user_foto'] }}" alt="Usuario" class="avatar"
@@ -760,7 +776,8 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4"> {{-- Resueltas --}}
+        {{-- RESUELTAS --}}
+        <div class="col-md-4"> 
             <div class="card border-0 overflow-hidden">
                 <div class="card-header"
                     style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); border: none; margin: 0;">
@@ -794,19 +811,20 @@
                                     Estado: {{ $recepcion['estado'] }} ({{ $recepcion['recepcion_id'] }})
                                 </div>
                                 <div class="progress-divider" data-atencion-id="{{ $recepcion['atencion_id'] }}"></div>
-                                <div
-                                    style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px; padding-top: 6px;">
-                                    <div
-                                        style="display: flex; flex-direction: column; justify-content: center; height: 32px; flex: 1;">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px; padding-top: 6px;">
+                                    
+                                    <div style="display: flex; flex-direction: column; justify-content: center; flex: 1;">
                                         <div
                                             style="text-align: right; font-size: 10px; color: #6c757d; line-height: 1.2; margin-bottom: 1px;">
                                             {{ $recepcion['user_name'] }}
                                         </div>
                                         <div
-                                            style="text-align: right; background:rgb(239, 242, 247); padding: 1px 6px; border-radius: 3px; font-size: 9px; color: #495057; font-weight: 500; display: inline-block; margin-left: auto;">
-                                            {{ $recepcion['role_name'] . ' del área ' . $recepcion['area'] }}
+                                            style="text-align: right; padding: 1px 6px; border-radius: 3px; font-size: 9px; display: inline-block; margin-left: auto;">
+                                            <span style="color:rgb(10, 95, 30) !important;" class="badge badge-pill badge-light-success">{{ $recepcion['role_name'] }}</span>
+                                            <span style="color:rgb(10, 95, 30) !important; font-weight: 400;">del área {{ $recepcion['area'] }}</span> 
                                         </div>
                                     </div>
+
                                     <div style="margin-left: 8px;">
                                         @if ($recepcion['user_foto'])
                                             <img src="{{ $recepcion['user_foto'] }}" alt="Usuario" class="avatar"
@@ -817,6 +835,7 @@
                                                 ?</div>
                                         @endif
                                     </div>
+
                                 </div>
                             </div>
                         @empty

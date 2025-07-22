@@ -254,9 +254,6 @@ class RecepcionController extends Controller
             $new_recepcion->detalle = $recepcion->detalle;
             $new_recepcion->activo = false;
             $new_recepcion->save();
-
-            Log::info('En la asignación: Se actualiza al estado "En progreso" para la solicitud "' . $recepcion->id . '"');
-
             $recepcion->activo = true; //Validar solicitud y actualizar estado - Copia Supervisor
             $recepcion->estado_id = Estado::where('estado', 'En progreso')->first()->id;
             $recepcion->save();
@@ -284,15 +281,21 @@ class RecepcionController extends Controller
         if (!$operador_habilitado) {
             return response()->json(['success' => false, 'message' => 'El operador no tiene el nivel de habilidades necesario para resolver la solicitud'], 422);
         }
-        $role_id = Role::where('name', 'Operador')->first()->id; //Validando el número de atención
-        $delegada = Recepcion::where('atencion_id', $recepcion->atencion_id)->where('role_id', $role_id)->first();
-        if ($delegada) {
-            return response()->json(['success' => false, 'message' => 'La solicitud con número de atención ' . $delegada->atencion_id . ' ya ha sido delegada al '.$delegada->role->name .' '. $delegada->usuarioDestino->name . ' en el área ' . $delegada->area->area]);
+        $copia_operador = Recepcion::where('atencion_id', $recepcion->atencion_id)->whereHas('role', function($q) {
+            $q->where('name', 'Operador');
+        })->first();
+        if ($copia_operador->estado->estado !== 'Resuelta') {
+            $role_id = Role::where('name', 'Operador')->first()->id; //Validando el número de atención
+            $delegada = Recepcion::where('atencion_id', $recepcion->atencion_id)->where('role_id', $role_id)->first();
+            if ($delegada) {
+                return response()->json(['success' => false, 'message' => 'La solicitud con número de atención ' . $delegada->atencion_id . ' ya ha sido delegada al '.$delegada->role->name .' '. $delegada->usuarioDestino->name . ' en el área ' . $delegada->area->area]);
+            }
         }
+
         //Delegando la solicitud
         DB::beginTransaction();
         try {
-            if ($recepcion->estado_id !== Estado::where('estado', 'Resuelta')->first()->id) { //Generando copia Operador
+            if ($copia_operador->estado->estado !== 'Resuelta') { //Generando copia Operador
                 $new_recepcion = new Recepcion();
                 $new_recepcion->id = (new KeyMaker())->generate('Recepcion', $recepcion->solicitud_id);
                 $new_recepcion->solicitud_id = $recepcion->solicitud_id;

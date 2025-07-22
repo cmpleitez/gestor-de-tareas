@@ -573,12 +573,6 @@
         // Change menu wrapper, menu container, menu navigation classes
         menuWrapper.removeClass().addClass('main-menu menu-fixed menu-shadow');
 
-        if ($body.data('layout') === "dark-layout" || $body.data('layout') === "semi-dark-layout") {
-          menuWrapper.addClass('menu-dark');
-        }
-        else {
-          menuWrapper.addClass('menu-light');
-        }
         // menuContainer.removeClass().addClass('main-menu-content');
         menuNavigation.removeClass().addClass('navigation navigation-main');
 
