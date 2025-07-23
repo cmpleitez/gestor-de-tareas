@@ -31,11 +31,16 @@
 
         .solicitud-id {
             font-size: 11px;
-            color: #6c757d;
-            background: #f8f9fa;
+            color:rgb(255, 255, 255);
+            background:rgb(175, 178, 180);
             padding: 2px 6px;
             border-radius: 3px;
             display: inline-block;
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            z-index: 2;
+            font-weight: 500;
         }
 
         /* Estilos para drag & drop */
@@ -105,41 +110,12 @@
             border-radius: 1.5px;
             margin: 8px 0 6px 0;
             background: linear-gradient(to right,
-                    #ff8c00 0%, #ff8c00 var(--naranja, 15%),
-                    #ffd700 var(--naranja, 15%), #ffd700 calc(var(--naranja, 15%) + var(--amarillo, 25%)),
-                    #28a745 calc(var(--naranja, 15%) + var(--amarillo, 25%)), #28a745 calc(var(--naranja, 15%) + var(--amarillo, 25%) + var(--verde, 35%)),
-                    #17a2b8 calc(var(--naranja, 15%) + var(--amarillo, 25%) + var(--verde, 35%)), #17a2b8 100%);
-            transition: all 0.3s ease;
+            #ff8c00 0%, #ff8c00 var(--naranja, 15%),
+            #ffd700 var(--naranja, 15%), #ffd700 calc(var(--naranja, 15%) + var(--amarillo, 25%)),
+            #28a745 calc(var(--naranja, 15%) + var(--amarillo, 25%)), #28a745 calc(var(--naranja, 15%) + var(--amarillo, 25%) + var(--verde, 35%)),
+            #17a2b8 calc(var(--naranja, 15%) + var(--amarillo, 25%) + var(--verde, 35%)), #17a2b8 100%); transition: all 0.3s ease;
         }
 
-        .solicitud-card:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            /* Eliminar transform para evitar conflictos con Sortable.js */
-        }
-
-        /* Estilos para Sortable.js */
-        .sortable-ghost {
-            visibility: visible !important;
-            opacity: 0.5 !important;
-            height: 100px !important;
-            background: #e9ecef !important;
-            border: 2px dashed #007bff !important;
-            border-radius: 8px !important;
-            margin-bottom: 12px !important;
-        }
-
-        .sortable-ghost > * {
-            display: none !important;
-        }
-        
-        .sortable-chosen,
-        .sortable-drag {
-            opacity: 0.8 !important;
-            background: #d1ecf1 !important;
-            border: 1px solid #007bff !important;
-        }
-
-        /* Estilos para el sidebar y overlay */
         .kanban-overlay {
             position: fixed;
             top: 0;
@@ -274,16 +250,6 @@
             color: #2c3e50;
         }
 
-        .solicitud-id {
-            font-size: 11px;
-            color: #6c757d;
-            background: #f8f9fa;
-            padding: 4px 8px;
-            border-radius: 4px;
-            display: inline-block;
-            font-weight: 500;
-        }
-
         /* Mejoras en los encabezados de las columnas */
         .card {
             border-radius: 8px !important;
@@ -296,30 +262,6 @@
             padding: 0.6rem !important;
         }
 
-        .sortable-chosen {
-            /* MOSTRAR SOLO LA TARJETA CHOSEN */
-            opacity: 1 !important;
-            background: white !important;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6) !important;
-            transform: rotate(5deg) scale(1.15) !important;
-            z-index: 99999 !important;
-            border: 4px solid #007bff !important;
-            border-radius: 10px !important;
-        }
-
-        .sortable-ghost {
-            /* OCULTAR COMPLETAMENTE LA TARJETA GHOST */
-            opacity: 0 !important;
-            visibility: hidden !important;
-            display: none !important;
-        }
-
-        /* FORZAR que cualquier solicitud siendo arrastrada sea visible */
-        .solicitud-card {
-            opacity: 1 !important;
-        }
-
-        /* Accordion elegante */
         #heading5 {
             background: linear-gradient(156deg, #221627 0%, #4e2a5d 100%) !important;
             min-height: 60px;
@@ -332,7 +274,6 @@
             transform: rotate(180deg);
         }
 
-        /* Cards con altura uniforme */
         .accordion .row {
             display: flex;
             align-items: stretch;
@@ -356,7 +297,6 @@
             flex: 1;
         }
 
-        /* Diseño de selección de items */
         .item-selector {
             cursor: pointer;
             transition: all 0.3s ease;
@@ -505,6 +445,25 @@
             font-weight: 410 !important;
         }
 
+        .solicitud-card {
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            cursor: move;
+        }
+
+        .sortable-drag {
+            opacity: 0.8 !important;
+            transform: rotate(3deg);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .sortable-ghost {
+            opacity: 0.3;
+            background-color: #f1f3f5;
+            border: 2px dashed #007bff;
+        }
     </style>
 @endsection
 
@@ -631,6 +590,7 @@
     </div>
     {{-- TABLEROS KANBAN --}}
     @php
+        use App\Services\KeyRipper;
         $recibidas = $tarjetas->where('estado_id', 1);
         $progreso = $tarjetas->where('estado_id', 2);
         $resueltas = $tarjetas->where('estado_id', 3);
@@ -666,9 +626,9 @@
                                         Sin título
                                     @endif
                                 </div>
-                                <div class="solicitud-id">ID: {{ $recepcion['atencion_id'] }}</div>
-                                <div class="solicitud-estado" style="font-size: 11px; color: #ffc107; margin-top: 5px;">
-                                    Estado: {{ $recepcion['estado'] }} ({{ $recepcion['recepcion_id'] }})
+                                <div class="solicitud-id">ID: {{ KeyRipper::rip($recepcion['atencion_id']) }}</div>
+                                <div class="solicitud-estado" style="font-size: 11px; color:rgb(170, 95, 34) !important; margin-top: 5px;">
+                                    Estado: {{ $recepcion['estado'] }}
                                 </div>
                                 <div class="progress-divider" data-atencion-id="{{ $recepcion['atencion_id'] }}"></div>
                                 <div
@@ -680,7 +640,8 @@
                                         </div>
                                         <div
                                             style="text-align: right; padding: 1px 6px; border-radius: 3px; font-size: 9px; font-weight: 500; display: inline-block; margin-left: auto;">
-                                            <span class="badge badge-pill badge-light-secondary">{{ $recepcion['role_name'] }}</span> del área {{ $recepcion['area'] }}
+                                            <span style="color:rgb(170, 95, 34) !important;" class="badge badge-pill badge-light-warning">{{ $recepcion['role_name'] }}</span>
+                                            <span style="color: #612d03 !important; font-weight: 400;">del área {{ $recepcion['area'] }}</span> 
                                         </div>
                                     </div>
 
@@ -736,9 +697,9 @@
                                         Sin título
                                     @endif
                                 </div>
-                                <div class="solicitud-id">ID: {{ $recepcion['atencion_id'] }}</div>
+                                <div class="solicitud-id">ID: {{ KeyRipper::rip($recepcion['atencion_id']) }}</div>
                                 <div class="solicitud-estado" style="font-size: 11px; color: #17a2b8; margin-top: 5px;">
-                                    Estado: {{ $recepcion['estado'] }} ({{ $recepcion['recepcion_id'] }})
+                                    Estado: {{ $recepcion['estado'] }}
                                 </div>
                                 <div class="progress-divider" data-atencion-id="{{ $recepcion['atencion_id'] }}"></div>
                                 <div
@@ -750,7 +711,8 @@
                                         </div>
                                         <div
                                             style="text-align: right; padding: 1px 6px; border-radius: 3px; font-size: 9px; font-weight: 500; display: inline-block; margin-left: auto;">
-                                            <span class="badge badge-pill badge-light-primary">{{ $recepcion['role_name'] }}</span> del área {{ $recepcion['area'] }}
+                                            <span style="color:rgb(58, 121, 194) !important;" class="badge badge-pill badge-light-primary">{{ $recepcion['role_name'] }}</span>
+                                            <span style="color:rgb(11, 62, 119) !important; font-weight: 500;">del área {{ $recepcion['area'] }}</span> 
                                         </div>
                                     </div>
 
@@ -806,9 +768,9 @@
                                         Sin título
                                     @endif
                                 </div>
-                                <div class="solicitud-id">ID: {{ $recepcion['atencion_id'] }}</div>
+                                <div class="solicitud-id">ID: {{ KeyRipper::rip($recepcion['atencion_id']) }}</div>
                                 <div class="solicitud-estado" style="font-size: 11px; color: #28a745; margin-top: 5px;">
-                                    Estado: {{ $recepcion['estado'] }} ({{ $recepcion['recepcion_id'] }})
+                                    Estado: {{ $recepcion['estado'] }}
                                 </div>
                                 <div class="progress-divider" data-atencion-id="{{ $recepcion['atencion_id'] }}"></div>
                                 <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px; padding-top: 6px;">
@@ -866,11 +828,11 @@
 @endsection
 
 @section('js')
-    {{-- LOGICA KANBAN --}}
     <script src="{{ asset('app-assets/vendors/js/extensions/sweetalert2.all.min.js') }}"></script>
     <script src="{{ asset('app-assets/vendors/js/jkanban/Sortable.min.js') }}"></script>
     <script src="{{ asset('app-assets/vendors/js/jkanban/jkanban.min.js') }}"></script>
     <script>
+        //SELECCIONANDO EL ITEM DESTINATARIO
         let userRole = '';
         @if (auth()->user()->hasRole('Recepcionista'))
             userRole = 'Recepcionista';
@@ -896,45 +858,59 @@
                 $(radio).trigger('change'); // Disparar el evento change para actualizar el título
             }
         }
-
+        //INICIALIZAR KANBAN
         function initKanban() { // Inicializar el kanban
             const columnas = ['columna-recibidas', 'columna-progreso', 'columna-resueltas'];
             columnas.forEach(function(columnaId) {
                 const elemento = document.getElementById(columnaId);
                 if (!elemento) return;
                 new Sortable(elemento, {
-                    group: 'kanban', // Permite mover entre columnas
-                    animation: 50, // Velocidad de la animación
-                    ghostClass: 'sortable-ghost', // Elemento en posición original
-                    chosenClass: 'sortable-chosen', // Elemento seleccionado  
-                    dragClass: 'sortable-drag', // Elemento siendo arrastrado
-                    onMove: function(evt) { //columna de destino con colores más tenues
+                    group: 'kanban', 
+                    animation: 150, 
+                    ghostClass: 'sortable-ghost', 
+                    chosenClass: 'sortable-chosen', 
+                    dragClass: 'sortable-drag', 
+                    forceFallback: true, 
+                    fallbackOnBody: true,
+                    fallbackClass: 'sortable-fallback',
+                    preventFallback: true,
+                    supportPointer: true,
+                    onChoose: function(evt) { // Prevenir selección de texto
+                        evt.preventDefault();
+                        evt.stopPropagation();
+                    },
+                    onMove: function(evt) { // Configuraciones adicionales para mejorar el drag
+                        evt.preventDefault();
+                        evt.stopPropagation();
                         document.querySelectorAll('.sortable-column').forEach(col => {
                             col.style.borderColor = 'transparent';
                         });
                         evt.to.style.borderColor = '#d1ecf1'; // Azul muy tenue
-                        evt.to.style.backgroundColor =
-                            '#f8fdff'; // Fondo casi imperceptible
+                        evt.to.style.backgroundColor = '#f8fdff'; // Fondo casi imperceptible
                     },
-                    onEnd: function(evt) { //Quitar resaltado de todas las columnas
-                        document.querySelectorAll('.sortable-column').forEach(col => {
-                            col.style.borderColor = col.children.length === 0 ?
-                                '#e9ecef' : 'transparent';
-                            col.style.backgroundColor = col.children.length === 0 ?
-                                '#f8f9fa' : 'transparent';
+                    onEnd: function(evt) { 
+                        document.querySelectorAll('.sortable-column').forEach(col => { // Restaurar apariencia de las columnas
+                            col.style.borderColor = col.children.length === 0 ? '#e9ecef' : 'transparent';
+                            col.style.backgroundColor = col.children.length === 0 ? '#f8f9fa' : 'transparent';
                         });
                         const solicitudId = evt.item.dataset.id;
                         const columnaOrigen = evt.from.id;
                         const columnaDestino = evt.to.id;
-                        if (columnaOrigen !== columnaDestino) {
-                            showMoveAlert(solicitudId, columnaDestino, evt);
+                        if (columnaOrigen !== columnaDestino) { // Verificar si realmente cambió de columna
+                            updatePosition(solicitudId, columnaDestino, evt);
                         }
+                        actualizarMensajeColumnaVacia(); // NUEVO: actualizar mensajes de columnas vacías
+                    },
+                    onStart: function(evt) { // Estilos para evitar selección
+                        evt.target.style.userSelect = 'none';
+                        evt.target.style.webkitUserSelect = 'none';
+                        evt.target.style.mozUserSelect = 'none';
+                        evt.target.style.msUserSelect = 'none';
                     }
                 });
             });
         }
-        function showMoveAlert(solicitudId, nuevaColumna, evt) {
-            
+        function updatePosition(solicitudId, nuevaColumna, evt) {
             //ACTUALIZACION DE ESTADO DE LA SOLICITUD EN EL FRONTEND
             let nuevoEstadoId = 1; // Por defecto Recibida
             let nombreEstado = 'Recibida';
@@ -956,7 +932,6 @@
                     colorBorde = '#28a745'; // Verde
                     break;
             }
-
             //ACTUALIZAR ESTADO DE LA SOLICITUD EN EL BACKEND
             let url = ''; //Seleccionando la ruta a la que se va a enviar la solicitud
             let selectedValue = null;
@@ -1082,11 +1057,7 @@
                 }
             });
 
-
         }
-
-
-
         //MOSTRAR TAREAS EN SIDEBAR
         $(document).on('click', '.solicitud-card', function() {
             const $card = $(this);
@@ -1100,7 +1071,6 @@
             $('.kanban-sidebar').addClass('show');
             $('body').addClass('sidebar-open'); // Bloquear scroll de la página principal
         });
-
         function cargarTareas(recepcionId) { // Función para cargar y dibujar las tareas
             $.ajax({
                 url: '{{ route('recepcion.tareas', ['recepcion_id' => ':id']) }}'.replace(':id', recepcionId),
@@ -1117,7 +1087,6 @@
                 }
             });
         }
-
         function dibujarTareas(tareas) { // Función para dibujar las tareas en el sidebar
             if (tareas.length === 0) {
                 $('#sidebar-card-body').append(
@@ -1272,50 +1241,43 @@
         //ACTUALIZAR PROGRESO DE LAS TAREAS
         function updateProgressByPercentage(atencionId, porcentaje) {
             let naranja, amarillo, verde, celeste;
-            if (porcentaje == 0) { // Aplicar distribución de colores según tabla proporcionada
-                naranja = 45;
-                amarillo = 25;
-                verde = 20;
-                celeste = 10;
+            if (porcentaje == 0) { 
+                naranja = 65;
+                amarillo = 30;
+                verde = 5;
+                celeste = 0;
             } else if (porcentaje >= 10 && porcentaje < 30) {
-                naranja = 15;
+                naranja = 45;
                 amarillo = 35;
-                verde = 25;
-                celeste = 25;
-                console.log('porcentaje >= 10 && porcentaje < 30');
+                verde = 15;
+                celeste = 5;
             } else if (porcentaje >= 30 && porcentaje < 60) {
-                naranja = 0;
-                amarillo = 50;
-                verde = 30;
-                celeste = 30;
-                console.log('porcentaje >= 30 && porcentaje < 60');
+                naranja = 15;
+                amarillo = 45;
+                verde = 25;
+                celeste = 15;
             } else if (porcentaje >= 60 && porcentaje < 80) {
                 naranja = 0;
-                amarillo = 25;
-                verde = 35;
-                celeste = 65;
-                console.log('porcentaje >= 60 && porcentaje < 80');
-            } else if (porcentaje >= 80 && porcentaje < 85) {
+                amarillo = 35;
+                verde = 40;
+                celeste = 35;
+            } else if (porcentaje >= 80 && porcentaje < 90) {
                 naranja = 0;
-                amarillo = 15;
-                verde = 35;
-                celeste = 50;
-                console.log('porcentaje >= 80 && porcentaje < 85');
-            } else if (porcentaje >= 85 && porcentaje < 100) {
+                amarillo = 5;
+                verde = 50;
+                celeste = 45;
+            } else if (porcentaje >= 90 && porcentaje < 100) {
                 naranja = 0;
-                amarillo = 10;
-                verde = 30;
-                celeste = 60;
-                console.log('porcentaje >= 85 && porcentaje < 100');
+                amarillo = 0;
+                verde = 15;
+                celeste = 85;
             } else { // 100%
                 naranja = 0;
                 amarillo = 0;
                 verde = 0;
                 celeste = 100;
-                console.log('100');
             }
-            // Actualizar todas las barras de progreso con el mismo atencion_id
-            const progressBars = $(`[data-atencion-id="${atencionId}"]`);
+            const progressBars = $(`[data-atencion-id="${atencionId}"]`); // Actualizar todas las barras de progreso con el mismo atencion_id
             if (progressBars.length > 0) {
                 progressBars.css({
                     '--naranja': naranja + '%',
@@ -1324,7 +1286,33 @@
                 });
             }
         }
-
+        // NUEVO: Mostrar u ocultar mensaje de columna vacía
+        function actualizarMensajeColumnaVacia() {
+            const columnas = [
+                {
+                    id: 'columna-recibidas',
+                    mensaje: '<div class="text-center text-muted py-4"><i class="bx bx-archive text-muted" style="font-size: 1.5rem;"></i><div class="mt-2">Sin solicitudes recibidas</div></div>'
+                },
+                {
+                    id: 'columna-progreso',
+                    mensaje: '<div class="text-center text-muted py-4"><i class="bx bx-time-five text-muted" style="font-size: 1.5rem;"></i><div class="mt-2">Sin tareas en progreso</div></div>'
+                },
+                {
+                    id: 'columna-resueltas',
+                    mensaje: '<div class="text-center text-muted py-4"><i class="bx bx-check-circle text-muted" style="font-size: 1.5rem;"></i><div class="mt-2">Sin tareas completadas</div></div>'
+                }
+            ];
+            columnas.forEach(function(col) {
+                const columna = document.getElementById(col.id);
+                if (!columna) return;
+                // Eliminar mensajes existentes
+                $(columna).find('.text-center.text-muted.py-4').remove();
+                // Si no hay tarjetas, agregar el mensaje
+                if ($(columna).find('.solicitud-card').length === 0) {
+                    $(columna).append(col.mensaje);
+                }
+            });
+        }
         function actualizarContadores() { // Función para actualizar los contadores de las columnas
             const recibidas = $('#columna-recibidas .solicitud-card').length;
             const progreso = $('#columna-progreso .solicitud-card').length;
@@ -1332,12 +1320,13 @@
             $('#contador-recibidas').text(recibidas);
             $('#contador-progreso').text(progreso);
             $('#contador-resueltas').text(resueltas);
+            actualizarMensajeColumnaVacia(); // NUEVO: actualizar mensajes de columnas vacías
         }
-
         function initializeProgress() { // Función para inicializar progreso de todas las tarjetas
             @foreach ($tarjetas as $tarjeta)
                 updateProgressByPercentage('{{ $tarjeta['atencion_id'] }}', {{ $tarjeta['porcentaje_progreso'] }});
             @endforeach
+            actualizarMensajeColumnaVacia(); // NUEVO: inicializar mensajes de columnas vacías
         }
         $(document).ready(function() { // Inicializar al cargar la página
             initializeProgress();
