@@ -1,4 +1,4 @@
-⭐ Mi estilo de trabajo es así: código limpio y estándar, sin artificios, compactar servicios, reutilizar estilos existentes, priorizar Claude Sonnet 4 y 3.5, así como Grok 4,  Claude Opus y o3 para las respuesta de calidad, y mencionar en cada respuesta tuya el modelo que usaste para la misma. Cuando diga: esta linea o lineas me refiero a que ya hice referencia dichas líneas con CTRL+L
+⭐ Mi estilo de trabajo es así: código limpio y estándar, sin artificios, compactar servicios, reutilizar estilos existentes, priorizar Claude Sonnet 4 y 3.5, así como Grok 4,  Claude Opus y o3 para las respuesta de calidad, y mencionar en cada respuesta tuya el modelo que usaste para la misma. Cuando diga: esta linea o lineas me refiero a que ya hice referencia dichas líneas con CTRL+L, y prefiero que busques primero en la pestaña activa y luego en las demas
 ⭐ Entorno del proyecto actual(Gestor de Tareas): 
         Solicitud: está definida por la tabla "atenciones" y su transaccional hija "recepciones" especificamente por el campo "recepciones.atencion_id"; 
         Unidad de trabajo: La unidad general de trabajo es la solicitud y se almacena en la tabla "atenciones"
@@ -28,13 +28,26 @@
     9. El operador avanza la solicitud desde su tablero de recibidas a su tablero en progreso y automáticamente se originan las tareas a cumplir segun su skill
     10. El operador va cumpliendo sus tareas una a una y reportandolas como realizadas
 
-...🟢 terminar de afinar el correlativo amigable pues cuando tipoSolicitud llegue a 199 y pase a 200, el extracto va ser = cero
-    ...entonces en ese caso debería cambiar a uno pero si lo hace se va repetir un numero así:
+🟢 solicitudes: agregar un timer de refresco para volver dinamica la barra de progreso de las tarjetas
+🟢 solicitudes: en el acordion aparece miguel aragon como si fuera el operador destino por defecto y pues no, debe aparecer el que está clicado, 
+    miguel solo aparece el nombre pero no aparece su control de radio en el contenido
+🟢 ya en las preuebas con diferentes perfiles, se encontro que la tarjeta debe mostrar todos los operadores que tengan copias de la solicitud
+🟢 terminar de afinar el correlativo amigable pues cuando tipoSolicitud llegue a 199 y pase a 200, el extracto va ser = cero
+    entonces en ese caso debería cambiar a uno pero si lo hace se va repetir un numero así:
         098	001
         099	001
         101	001
         101	001
-
+🟢 control de movimientos: 
+    Re = Recepciones; Ep = En progreso; Rt = Resueltas;
+    Re -> Ep: Distribuir en base a rol
+    Re -> Rt: Revertir movimiento
+    Ep -> Re: Revertir movimiento
+    Ep -> Re: Revertir movimiento
+    Rt -> Ep: Revertir movimiento
+    Rt -> Re: Revertir movimiento
+        ...Agregar la excepcion: cuando el gestor pase de "en progreso a resueltas", 
+            ...permitir el movimiento para que sirva de control de calidad para la solicitud
 🟢 no refresca el frontend cuando el operador termina las tareas y las tarjetas se trasladan a las resueltas
 🟢 no ordernar lar tarjetas despues de un drop (mantener la priorizacion que hizo el usuario)
     ... para resover esto se debe construir el proceso de priorización

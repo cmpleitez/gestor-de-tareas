@@ -332,7 +332,18 @@
                                         }
                                     </script>
                                     <span
-                                        class="user-status text-gray-600">{{ auth()->check() ? 'Conectado' : 'Desconectado' }}</span>
+                                        class="user-status"
+                                        style="color: #0056b3; font-weight: 600;">
+                                        @if(auth()->check())
+                                            Conectado como
+                                            @php $roles = auth()->user()->getRoleNames(); @endphp
+                                            @if($roles->isNotEmpty())
+                                                {{ $roles[0] }}
+                                            @endif
+                                        @else
+                                            <span style="color: #d90429; font-weight: 600;">Desconectado</span>
+                                        @endif
+                                    </span>
                                 </div>
                                 <div class="avatar">
                                     @if (auth()->check())

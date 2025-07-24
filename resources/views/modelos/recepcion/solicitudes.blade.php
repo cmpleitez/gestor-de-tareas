@@ -464,6 +464,24 @@
             background-color: #f1f3f5;
             border: 2px dashed #007bff;
         }
+        .solicitud-card.animar-traslado {
+            transition: transform 0.5s cubic-bezier(.4,2,.6,1), opacity 0.5s;
+            opacity: 0;
+            transform: translateX(60px) scale(0.97);
+        }
+        .solicitud-card.animar-llegada {
+            animation: llegadaTarjeta 0.5s cubic-bezier(.4,2,.6,1);
+        }
+        @keyframes llegadaTarjeta {
+            0% {
+                opacity: 0;
+                transform: translateX(-60px) scale(0.97);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
     </style>
 @endsection
 
@@ -472,6 +490,7 @@
     {{-- ITEMS DESTINATARIOS PARA CADA ROL --}}
     <div class="row">
         <div class="col-12">
+            @if (!auth()->user()->hasRole('Operador'))
             <div class="accordion" id="accordionWrapa2">
                 <div class="card collapse-header border-0 overflow-hidden">
                     <div id="heading5" class="card-header" data-toggle="collapse" data-target="#accordion5"
@@ -586,6 +605,7 @@
                     </div>
                 </div>
             </div>
+            @endif
         </div>
     </div>
     {{-- TABLEROS KANBAN --}}
@@ -626,11 +646,11 @@
                                         Sin título
                                     @endif
                                 </div>
-                                <div class="solicitud-id">ID: {{ KeyRipper::rip($recepcion['atencion_id']) }}</div>
+                                <div class="solicitud-id">{{ KeyRipper::rip($recepcion['atencion_id']) }}</div>
                                 <div class="solicitud-estado" style="font-size: 11px; color:rgb(170, 95, 34) !important; margin-top: 5px;">
                                     Estado: {{ $recepcion['estado'] }}
                                 </div>
-                                <div class="progress-divider" data-atencion-id="{{ $recepcion['atencion_id'] }}"></div>
+                                <div class="progress-divider" data-atencion-id="{{ $recepcion['atencion_id'] }}" data-avance="{{ $recepcion['porcentaje_progreso'] }}"></div>
                                 <div
                                     style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px; padding-top: 6px;">
                                     
@@ -697,11 +717,11 @@
                                         Sin título
                                     @endif
                                 </div>
-                                <div class="solicitud-id">ID: {{ KeyRipper::rip($recepcion['atencion_id']) }}</div>
+                                <div class="solicitud-id">{{ KeyRipper::rip($recepcion['atencion_id']) }}</div>
                                 <div class="solicitud-estado" style="font-size: 11px; color: #17a2b8; margin-top: 5px;">
                                     Estado: {{ $recepcion['estado'] }}
                                 </div>
-                                <div class="progress-divider" data-atencion-id="{{ $recepcion['atencion_id'] }}"></div>
+                                <div class="progress-divider" data-atencion-id="{{ $recepcion['atencion_id'] }}" data-avance="{{ $recepcion['porcentaje_progreso'] }}"></div>
                                 <div
                                     style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px; padding-top: 6px;">
 
@@ -768,11 +788,11 @@
                                         Sin título
                                     @endif
                                 </div>
-                                <div class="solicitud-id">ID: {{ KeyRipper::rip($recepcion['atencion_id']) }}</div>
+                                <div class="solicitud-id">{{ KeyRipper::rip($recepcion['atencion_id']) }}</div>
                                 <div class="solicitud-estado" style="font-size: 11px; color: #28a745; margin-top: 5px;">
                                     Estado: {{ $recepcion['estado'] }}
                                 </div>
-                                <div class="progress-divider" data-atencion-id="{{ $recepcion['atencion_id'] }}"></div>
+                                <div class="progress-divider" data-atencion-id="{{ $recepcion['atencion_id'] }}" data-avance="{{ $recepcion['porcentaje_progreso'] }}"></div>
                                 <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px; padding-top: 6px;">
                                     
                                     <div style="display: flex; flex-direction: column; justify-content: center; flex: 1;">
@@ -897,6 +917,19 @@
                         const columnaOrigen = evt.from.id;
                         const columnaDestino = evt.to.id;
                         if (columnaOrigen !== columnaDestino) { // Verificar si realmente cambió de columna
+                            if (columnaOrigen !== 'columna-recibidas' || columnaDestino !== 'columna-progreso') { // Validar movimiento único desde columna-recibidas hacia columna-progreso
+                                Swal.fire({
+                                   position: 'top-end',
+                                    type: 'error',
+                                    title: 'Solo puedes mover solicitudes de Recibidas a En Progreso, los demás movimientos están en construcción',
+                                    showConfirmButton: true,
+                                    timer: 6000,
+                                    confirmButtonClass: 'btn btn-danger',
+                                    buttonsStyling: false
+                                });
+                                $(evt.from).append(evt.item); // Revertir la tarjeta a su posición original
+                                return;
+                            }
                             updatePosition(solicitudId, columnaDestino, evt);
                         }
                         actualizarMensajeColumnaVacia(); // NUEVO: actualizar mensajes de columnas vacías
@@ -1031,6 +1064,7 @@
                             buttonsStyling: false
                         });
                         $(evt.from).append(evt.item); // Revertir la tarjeta a su posición original
+                        actualizarMensajeColumnaVacia(); // Actualizar mensaje de columna vacía
                     }
                 },
                 error: function(xhr, status, error) {
@@ -1054,6 +1088,7 @@
                         buttonsStyling: false
                     });
                     $(evt.from).append(evt.item); // Revertir la tarjeta a su posición original
+                    actualizarMensajeColumnaVacia(); // Actualizar mensaje de columna vacía
                 }
             });
 
@@ -1112,7 +1147,7 @@
                         <div class="item-body">
                             <div class="item-info">
                                 <div class="item-name">${tarea.tarea}</div>
-                                <div class="item-desc">ID: ${tarea.actividad_id}</div>
+                                <div class="item-desc">${tarea.actividad_id}</div>
                             </div>
                         </div>
                         <input type="checkbox" id="task_${tarea.actividad_id}" name="tarea_completada" 
@@ -1328,6 +1363,139 @@
             @endforeach
             actualizarMensajeColumnaVacia(); // NUEVO: inicializar mensajes de columnas vacías
         }
+        
+        // ESCUCHADOR DE AVANCES: Recoger IDs de tarjetas en tableros
+        function obtenerAtencionIdsTableros() {
+            let ids = [];
+            $('.solicitud-card').each(function() {
+                let atencionId = $(this).attr('data-atencion-id');
+                if (atencionId) {
+                    ids.push(atencionId);
+                }
+            });
+            return [...new Set(ids)]; // Eliminar repetidos usando Set
+        }
+        
+        function consultarAvancesTablero() {
+            let atencionIds = obtenerAtencionIdsTableros();
+            
+            if (atencionIds.length === 0) {
+                return; // No hay tarjetas en los tableros
+            }
+            
+            $.post({
+                url: '{{ route("recepcion.avance-tablero") }}',
+                data: { 
+                    atencion_ids: atencionIds, 
+                    _token: $('meta[name="csrf-token"]').attr('content') 
+                },
+                success: function(data) {
+                    console.log('Avances recibidos:', data);
+                    
+                    // Comparar avances y estado_id del backend con los del frontend
+                    data.forEach(function(item) {
+                        let $divider = $('.progress-divider[data-atencion-id="' + item.atencion_id + '"]');
+                        let $card = $('.solicitud-card[data-atencion-id="' + item.atencion_id + '"]');
+                        if ($divider.length > 0 && $card.length > 0) {
+                            // Avance
+                            let avanceFrontend = parseFloat($divider.attr('data-avance') || '0');
+                            let avanceBackend = parseFloat(item.avance || '0');
+                            if (avanceFrontend !== avanceBackend) {
+                                $divider.attr('data-avance', avanceBackend);
+                                updateProgressByPercentage(item.atencion_id, avanceBackend);
+                            }
+                            // Estado
+                            let estadoFrontend = parseInt($card.attr('data-estado-id'), 10);
+                            let estadoBackend = parseInt(item.estado_id, 10);
+                            if (estadoFrontend !== estadoBackend) {
+                                $card.attr('data-estado-id', estadoBackend);
+                                if (estadoBackend === 3) {
+                                    $card.addClass('animar-traslado');
+                                    setTimeout(function() {
+                                        $card.removeClass('animar-traslado');
+                                        $('#columna-resueltas').append($card);
+                                        $card.addClass('animar-llegada');
+                                        setTimeout(function() {
+                                            $card.removeClass('animar-llegada');
+                                        }, 500);
+                                        $card.css('border-left-color', '#28a745');
+                                        $card.find('.solicitud-estado').text('Estado: Resuelta');
+                                        $card.find('.solicitud-estado').css('color', '#28a745');
+                                        actualizarContadores();
+                                    }, 500);
+                                }
+                            }
+                        }
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error al consultar avances:', error);
+                }
+            });
+        }
+        
+        // Iniciar escuchador cada 5 segundos
+        setInterval(consultarAvancesTablero, 5000);
+        
+        function obtenerUltimoIdRecibidas() {
+            let ids = $('#columna-recibidas .solicitud-card').map(function() {
+                return parseInt($(this).attr('data-id'), 10);
+            }).get();
+            return ids.length ? Math.max(...ids) : null;
+        }
+
+        function cargarNuevasRecibidas() {
+            let ultimoId = obtenerUltimoIdRecibidas();
+            $.post({
+                url: '{{ route("recepcion.nuevas-recibidas") }}',
+                data: {
+                    ultimo_id: ultimoId,
+                    _token: $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(nuevas) {
+                    if (nuevas && nuevas.length > 0) {
+                        nuevas.forEach(function(tarjeta) {
+                            let html = `
+                                <div class="solicitud-card animar-llegada" data-id="${tarjeta.recepcion_id}"
+                                    data-atencion-id="${tarjeta.atencion_id}"
+                                    data-estado-id="${tarjeta.estado_id}" style="border-left-color: #ffc107;">
+                                    <div class="solicitud-titulo">${tarjeta.titulo || 'Sin título'}</div>
+                                    <div class="solicitud-id">${tarjeta.atencion_id}</div>
+                                    <div class="solicitud-estado" style="font-size: 11px; color:rgb(170, 95, 34) !important; margin-top: 5px;">
+                                        Estado: ${tarjeta.estado}
+                                    </div>
+                                    <div class="progress-divider" data-atencion-id="${tarjeta.atencion_id}" data-avance="${tarjeta.porcentaje_progreso}"></div>
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px; padding-top: 6px;">
+                                        <div style="display: flex; flex-direction: column; justify-content: center; flex: 1;">
+                                            <div style="text-align: right; font-size: 10px; color: #6c757d; line-height: 1.2; margin-bottom: 1px;">
+                                                ${tarjeta.user_name}
+                                            </div>
+                                            <div style="text-align: right; padding: 1px 6px; border-radius: 3px; font-size: 9px; font-weight: 500; display: inline-block; margin-left: auto;">
+                                                <span style="color:rgb(170, 95, 34) !important;" class="badge badge-pill badge-light-warning">${tarjeta.role_name}</span>
+                                                <span style="color: #612d03 !important; font-weight: 400;">del área ${tarjeta.area}</span>
+                                            </div>
+                                        </div>
+                                        <div style="margin-left: 8px;">
+                                            <img src="${tarjeta.user_foto}" alt="Usuario" class="avatar"
+                                                style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;">
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                            let $nueva = $(html);
+                            $('#columna-recibidas').prepend($nueva);
+                            updateProgressByPercentage(tarjeta.atencion_id, tarjeta.porcentaje_progreso);
+                            setTimeout(function() {
+                                $nueva.removeClass('animar-llegada');
+                            }, 500);
+                        });
+                        actualizarContadores();
+                    }
+                }
+            });
+        }
+        setInterval(cargarNuevasRecibidas, 5000);
+        
         $(document).ready(function() { // Inicializar al cargar la página
             initializeProgress();
             initKanban();
