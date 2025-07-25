@@ -43,6 +43,21 @@
             font-weight: 500;
         }
 
+        .fecha-solicitud {
+            font-size: 10px;
+            color:rgb(160, 158, 158);
+            padding: 2px 6px;
+            border-radius: 3px;
+            display: inline-block;
+            position: absolute;
+            top: 26px;
+            right: 7px;
+            z-index: 2;
+            font-weight: 400;
+            font-family: 'Segoe UI', 'system-ui';
+            font-variant-numeric: tabular-nums;
+        }
+
         /* Estilos para drag & drop */
         .kanban-columna {
             min-height: 400px;
@@ -510,7 +525,8 @@
                                             <span
                                                 class="font-weight-600">{{ auth()->user()->equipos()->first()->equipo }}</span>
                                         @elseif(auth()->user()->hasRole('Gestor'))
-                                            <span class="font-weight-600">{{ auth()->user()->name }}</span>
+                                            @php $operador_por_defecto = $operadores->random(); @endphp
+                                            <span class="font-weight-600">{{ $operador_por_defecto->name }}</span>
                                         @endif
                                     </h6>
                                     <small class="text-white-50" style="font-size: 0.8rem;">
@@ -575,20 +591,21 @@
                                 @elseif (auth()->user()->hasRole('Gestor') && isset($operadores))
                                     {{-- GESTOR --}}
                                     <div class="row" style="display: flex; align-items: stretch;">
+                                        @php $operador_por_defecto = $operadores->random(); @endphp
                                         @foreach ($operadores as $operador)
                                             <div class="col-md-3">
-                                                <div class="item-selector {{ $operador->id == auth()->user()->id ? 'selected' : '' }}"
+                                                <div class="item-selector {{ $operador_por_defecto->id == $operador->id ? 'selected' : '' }}"
                                                     onclick="selectItem('operador_{{ $operador->id }}')">
                                                     <div class="item-body">
                                                         <div class="item-info">
                                                             <div class="item-name">{{ $operador->name }}</div>
-                                                            <div class="item-desc">Personal asignado</div>
+                                                            <div class="item-desc">Operador calificado</div>
                                                         </div>
                                                         <div class="radio-indicator"></div>
                                                     </div>
                                                     <input type="radio" id="operador_{{ $operador->id }}"
                                                         name="operador_destino" value="{{ $operador->id }}"
-                                                        {{ $operador->id == auth()->user()->id ? 'checked' : '' }}
+                                                        {{ $operador_por_defecto->id == $operador->id ? 'checked' : '' }}
                                                         style="display: none;">
                                                 </div>
                                             </div>
@@ -626,7 +643,7 @@
                             <i class="bx bx-archive text-white" style="font-size: 0.9rem;"></i>
                         </div>
                         <h6 class="mb-0 text-white font-weight-600" style="font-size: 0.9rem;">Recibidas</h6>
-                        <span class="badge badge-light ml-auto" id="contador-recibidas">{{ $recibidas->count() }}</span>
+                        <span class="badge badge-white ml-auto text-black-50" id="contador-recibidas">{{ $recibidas->count() }}</span>
                     </div>
                 </div>
                 <div class="card-body kanban-columna" style="background: #f8f9fa; padding: 1rem;">
@@ -646,7 +663,16 @@
                                         Sin título
                                     @endif
                                 </div>
-                                <div class="solicitud-id">{{ KeyRipper::rip($recepcion['atencion_id']) }}</div>
+                                <div class="row"> {{-- ID Y FECHA --}}
+                                    <div class="solicitud-id text-center">
+                                        <small style="font-size: 0.7rem;">
+                                            {{ KeyRipper::rip($recepcion['atencion_id']) }}
+                                        </small>
+                                    </div>
+                                    <div class="fecha-solicitud">
+                                        {{ \Carbon\Carbon::parse($recepcion['fecha_hora_solicitud'])->diffForHumans() }}
+                                    </div>
+                                </div>
                                 <div class="solicitud-estado" style="font-size: 11px; color:rgb(170, 95, 34) !important; margin-top: 5px;">
                                     Estado: {{ $recepcion['estado'] }}
                                 </div>
@@ -697,7 +723,7 @@
                             <i class="bx bx-time-five text-white" style="font-size: 0.9rem;"></i>
                         </div>
                         <h6 class="mb-0 text-white font-weight-600" style="font-size: 0.9rem;">En Progreso</h6>
-                        <span class="badge badge-light ml-auto" id="contador-progreso">{{ $progreso->count() }}</span>
+                        <span class="badge badge-white ml-auto text-black-50" id="contador-progreso">{{ $progreso->count() }}</span>
                     </div>
                 </div>
                 <div class="card-body kanban-columna" style="background: #f8f9fa; padding: 1rem;">
@@ -717,7 +743,18 @@
                                         Sin título
                                     @endif
                                 </div>
-                                <div class="solicitud-id">{{ KeyRipper::rip($recepcion['atencion_id']) }}</div>
+
+                                <div class="row"> {{-- ID Y FECHA --}}
+                                    <div class="solicitud-id text-center">
+                                        <small style="font-size: 0.7rem;">
+                                            {{ KeyRipper::rip($recepcion['atencion_id']) }}
+                                        </small>
+                                    </div>
+                                    <div class="fecha-solicitud">
+                                        {{ \Carbon\Carbon::parse($recepcion['fecha_hora_solicitud'])->diffForHumans() }}
+                                    </div>
+                                </div>
+
                                 <div class="solicitud-estado" style="font-size: 11px; color: #17a2b8; margin-top: 5px;">
                                     Estado: {{ $recepcion['estado'] }}
                                 </div>
@@ -730,7 +767,7 @@
                                             {{ $recepcion['user_name'] }}
                                         </div>
                                         <div
-                                            style="text-align: right; padding: 1px 6px; border-radius: 3px; font-size: 9px; font-weight: 500; display: inline-block; margin-left: auto;">
+                                            style="text-align: right; padding: 1px 6px; border-radius: 3px; font-size: 9px; display: inline-block; margin-left: auto;">
                                             <span style="color:rgb(58, 121, 194) !important;" class="badge badge-pill badge-light-primary">{{ $recepcion['role_name'] }}</span>
                                             <span style="color:rgb(11, 62, 119) !important; font-weight: 500;">del área {{ $recepcion['area'] }}</span> 
                                         </div>
@@ -768,7 +805,7 @@
                             <i class="bx bx-check-circle text-white" style="font-size: 0.9rem;"></i>
                         </div>
                         <h6 class="mb-0 text-white font-weight-600" style="font-size: 0.9rem;">Resueltas</h6>
-                        <span class="badge badge-light ml-auto" id="contador-resueltas">{{ $resueltas->count() }}</span>
+                        <span class="badge badge-white ml-auto text-black-50" id="contador-resueltas">{{ $resueltas->count() }}</span>
                     </div>
                 </div>
                 <div class="card-body kanban-columna" style="background: #f8f9fa; padding: 1rem;">
@@ -788,7 +825,16 @@
                                         Sin título
                                     @endif
                                 </div>
-                                <div class="solicitud-id">{{ KeyRipper::rip($recepcion['atencion_id']) }}</div>
+                                <div class="row"> {{-- ID Y FECHA --}}
+                                    <div class="solicitud-id text-center">
+                                        <small style="font-size: 0.7rem;">
+                                            {{ KeyRipper::rip($recepcion['atencion_id']) }}
+                                        </small>
+                                    </div>
+                                    <div class="fecha-solicitud">
+                                        {{ \Carbon\Carbon::parse($recepcion['fecha_hora_solicitud'])->diffForHumans() }}
+                                    </div>
+                                </div>
                                 <div class="solicitud-estado" style="font-size: 11px; color: #28a745; margin-top: 5px;">
                                     Estado: {{ $recepcion['estado'] }}
                                 </div>
@@ -918,15 +964,11 @@
                         const columnaDestino = evt.to.id;
                         if (columnaOrigen !== columnaDestino) { // Verificar si realmente cambió de columna
                             if (columnaOrigen !== 'columna-recibidas' || columnaDestino !== 'columna-progreso') { // Validar movimiento único desde columna-recibidas hacia columna-progreso
-                                Swal.fire({
-                                   position: 'top-end',
-                                    type: 'error',
-                                    title: 'Solo puedes mover solicitudes de Recibidas a En Progreso, los demás movimientos están en construcción',
-                                    showConfirmButton: true,
-                                    timer: 6000,
-                                    confirmButtonClass: 'btn btn-danger',
-                                    buttonsStyling: false
+                                toastr.error('Movimiento no disponible', 'warning', {
+                                    positionClass: 'toast-top-right',
+                                    timeOut: 1000
                                 });
+
                                 $(evt.from).append(evt.item); // Revertir la tarjeta a su posición original
                                 return;
                             }
@@ -1390,7 +1432,6 @@
                     _token: $('meta[name="csrf-token"]').attr('content') 
                 },
                 success: function(data) {
-                    console.log('Avances recibidos:', data);
                     
                     // Comparar avances y estado_id del backend con los del frontend
                     data.forEach(function(item) {
@@ -1433,17 +1474,13 @@
                 }
             });
         }
-        
-        // Iniciar escuchador cada 5 segundos
-        setInterval(consultarAvancesTablero, 5000);
-        
+        setInterval(consultarAvancesTablero, 10000); // Iniciar escuchador
         function obtenerUltimoIdRecibidas() {
             let ids = $('#columna-recibidas .solicitud-card').map(function() {
                 return parseInt($(this).attr('data-id'), 10);
             }).get();
             return ids.length ? Math.max(...ids) : null;
         }
-
         function cargarNuevasRecibidas() {
             let ultimoId = obtenerUltimoIdRecibidas();
             $.post({
@@ -1494,8 +1531,7 @@
                 }
             });
         }
-        setInterval(cargarNuevasRecibidas, 5000);
-        
+        setInterval(cargarNuevasRecibidas, 10000); // Iniciar escuchador
         $(document).ready(function() { // Inicializar al cargar la página
             initializeProgress();
             initKanban();

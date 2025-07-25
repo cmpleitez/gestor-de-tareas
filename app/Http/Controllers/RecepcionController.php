@@ -21,7 +21,7 @@ class RecepcionController extends Controller
         $user = auth()->user()->load('area');
         $recepciones = Recepcion::where('user_id_destino', $user->id)
             ->with(['solicitud', 'estado', 'usuarioDestino', 'area', 'role'])
-            ->orderBy('created_at', 'desc')
+            ->orderBy('atencion_id', 'asc')
             ->limit(10)
             ->get();
         $tarjetas = $recepciones->map(function ($tarjeta) {
@@ -38,7 +38,8 @@ class RecepcionController extends Controller
                 'area' => $tarjeta->area->area,
                 'role_name' => $tarjeta->role->name,
                 'recepcion_id' => $tarjeta->id,
-                'porcentaje_progreso' => $tarjeta->avance // Usar el campo avance de la BD
+                'porcentaje_progreso' => $tarjeta->avance,
+                'fecha_hora_solicitud' => $tarjeta->created_at,
             ];
         });
         $data = [

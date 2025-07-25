@@ -8,11 +8,10 @@
             recepcionista -> supervisor -> gestor -> equipo (en modo lote de trabajo) u operador (modo por unidad de trabajo)
         Impulsos: son los avances de usuario a usuario que suceden en la solicitud
         Tareas: son partes integrales de la solicitud las cuales son procesadas por el area operativa originando varios de los estados de avance.
-🟠 mis-tareas: que desaparezca de recibidas cuando pasa a en progreso, no cuando el origen y destino es el mismo.
+🟠 solicitudes: que desaparezca de recibidas cuando pasa a en progreso, no cuando el origen y destino es el mismo.
 🟠 Error 500 esta dando por falta de optimize
 🟠 se reviso que areas y oficinas estan al revez en el diagrama de datos, en realidad las areas dependen de las oficinas, pues cada oficina puede tener una copia total o parcial del organigrama de areas de la sede central
 🟠 ante un traslado de equipo a equipo, o de area a area, las solicitudes permaneceran pegadas al operador propietario, mientras no sean transferidas a otro operador
-
 🟠 PROCEDIMIENTO:
     1. El beneficiario envia solicitud al recepcionista de la oficina a la que está suscrito, del distrito y zona a los que pertenece segun residencia
     2. La solicitud entra en el rango de maniobra: oficina
@@ -28,16 +27,21 @@
     9. El operador avanza la solicitud desde su tablero de recibidas a su tablero en progreso y automáticamente se originan las tareas a cumplir segun su skill
     10. El operador va cumpliendo sus tareas una a una y reportandolas como realizadas
 
-🟢 solicitudes: agregar un timer de refresco para volver dinamica la barra de progreso de las tarjetas
-🟢 solicitudes: en el acordion aparece miguel aragon como si fuera el operador destino por defecto y pues no, debe aparecer el que está clicado, 
-    miguel solo aparece el nombre pero no aparece su control de radio en el contenido
+🟢 solicitudes / rol gestor: construir proceso para delegar todas las solicitudes recibidas al equipo de trabajo X
+🟢 solicitudes: ordenar el codigo fuente de los js
+🟢 it seems like table order is the opposite of it should be
 🟢 ya en las preuebas con diferentes perfiles, se encontro que la tarjeta debe mostrar todos los operadores que tengan copias de la solicitud
-🟢 terminar de afinar el correlativo amigable pues cuando tipoSolicitud llegue a 199 y pase a 200, el extracto va ser = cero
+
+
+
+...🟢 terminar de afinar el correlativo amigable pues cuando tipoSolicitud llegue a 199 y pase a 200, el extracto va ser = cero
     entonces en ese caso debería cambiar a uno pero si lo hace se va repetir un numero así:
         098	001
         099	001
         101	001
         101	001
+
+
 🟢 control de movimientos: 
     Re = Recepciones; Ep = En progreso; Rt = Resueltas;
     Re -> Ep: Distribuir en base a rol
@@ -46,35 +50,27 @@
     Ep -> Re: Revertir movimiento
     Rt -> Ep: Revertir movimiento
     Rt -> Re: Revertir movimiento
-        ...Agregar la excepcion: cuando el gestor pase de "en progreso a resueltas", 
-            ...permitir el movimiento para que sirva de control de calidad para la solicitud
-🟢 no refresca el frontend cuando el operador termina las tareas y las tarjetas se trasladan a las resueltas
+        Agregar la excepcion: cuando el gestor pase de "en progreso a resueltas", 
+            permitir el movimiento para que sirva de control de calidad para la solicitud
 🟢 no ordernar lar tarjetas despues de un drop (mantener la priorizacion que hizo el usuario)
-    ... para resover esto se debe construir el proceso de priorización
+    para resolver esto se debe construir el proceso de priorización
 🟢 tableros kanvan: estudio e incoporporación de reglas técnicas necesarias, asi como filtro según rol, y pruebas con casos de roles multiples
-    solicitudes: analizar el procedimiento de actualizacion de datos tomando en cuenta inicialmente que el operador solo vera sus solicitudes y si cambian es porque él las ha cambiado lo que hara que se refleje en el front end sin demora
-    solicitudes: re-ordenar las tarjetas cuando se haga drop ya que esta la regla consiste en mantener el orden de atención a las solicitudes aunque el usuario puede optar por atender cualquiera de las que estan visibles, however la etica del sistema es facilitar el orden de llegada
-    precargar las primeras 10 solicitudes en orden de llegada, de tal manera que en el top quede la primera que llegó, dejando como un servicio a construir, la priorización de solicitudes a discreción del usuario en cuanto al orden que se presstablecen, 
-        ya que como dije el usuario puede priorizarlas en la actual programación
-    verificar que pasa al mover las solicitudes en cualquier tablero usando el drag and drop y aplicar reglas técnicas
-    analizar como ocultar el acordion de los destinatarios para el rol "Operador" ante el entorno de multiples roles asignados a un usuario
-🟢 inteligencia artificial ayuda segun el texto libre escrito por el beneficiario, a elegir a éste último, la solicitud de catalogo más adecuada, incluye confirmación del beneficiario
-🟢 recepciones.solicitudes: resaltar el rol sobre el area destino en la tarjeta
-🟢 contruir una consulta persistente que actualice la barra de avance en todas las copias de la solicitud
-🟢 validar si el gestor pertenece a un equipo de trabajo para poder delegar solicitudes
-🟢 proceso de rechazo de una solicitud
+🟢 proceso de rechazo de una solicitud o anulación
 🟢 en la mayoria de las vistas se debe agregar un margen arriba de 1 o 2 porque todo esta muy pegado al techo
 🟢 global cruds.edit: si hay historial no se puede editar
 🟢 crear servicio controlado para cambiar el dui a una persona por motivos de error involuntario a la hora de registrar ese dui en el formulario de registro de usuarios
 🟢 register: asegurar el id del usuario con un aumento no automático sino programatico
-🟢 dashboard: palabra conectado en azul vivido, desconectado en rojo vivido
 🟢 parametrizar bloque de procesamiento actualmente fijado en 10 unidades
-🟢 mis-tareas: ajustar la visibilidad de la tarjeta fantasma y la tarjeta elegida
-🟢 mis-tareas: es posible colocar en primer plano los ultimos 3 digitos los cuales pueden servir como una suerte de ticket de atencion reseteando en 100, ya que los ante-anteriores 3 digitos tambien se resetean matematicamente en en 100
-🟢 maquetacion de la asignacion de tareas y mejoramiento de clic a la hora de elegir la tarea
+🟢 solicitudes: ajustar el movimiento que hace la tarjeta seleccionada "chossen" o algo asi porque se queda pegada cual si no quisiera moverse
+🟢 solicitudes: es posible colocar en primer plano los ultimos 3 digitos los cuales pueden servir como una suerte de ticket de atencion reseteando en 100
+🟢 solicitud: maquetacion de la asignacion de tareas y mejoramiento de clic a la hora de elegir la tarea
+✨ inteligencia artificial ayuda segun el texto libre escrito por el beneficiario, a elegir a éste último, la solicitud de catalogo más adecuada, incluye confirmación del beneficiario
+
+
 🟠 rage agains the machine & limp bizkit & korn & alice in chains
     ...limp bizkit: im broke
     ...rage agains the machine: Mic Check
+
 
 Creando el flujo de trabajo:
 https://miro.com/app/board/uXjVLl8VYdo=/
