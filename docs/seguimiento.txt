@@ -21,10 +21,10 @@
     
     --------------------------- fin de zona de distribucion de solicitudes -----------------------
 
-    6. La solicitud entra en el rango de maniobra: equipo
-    7. El gestor delega la solicitud a los miembros de su equipo, ya sea por unidad u origina un proceso de delegacion auntomática a todos los miembros del equi de una vez.
-    8. La solicitud esta en mínimo rango de maniobra que es el operador.
-    9. El operador avanza la solicitud desde su tablero de recibidas a su tablero en progreso y automáticamente se originan las tareas a cumplir segun su skill
+    06. La solicitud entra en el rango de maniobra: equipo
+    07. El gestor delega la solicitud a los miembros de su equipo, ya sea por unidad u origina un proceso de delegacion auntomática a todos los miembros del equi de una vez.
+    08. La solicitud esta en mínimo rango de maniobra que es el operador.
+    09. El operador avanza la solicitud desde su tablero de recibidas a su tablero en progreso y automáticamente se originan las tareas a cumplir segun su skill
     10. El operador va cumpliendo sus tareas una a una y reportandolas como realizadas
 
 🟢 solicitudes / rol gestor: construir proceso para delegar todas las solicitudes recibidas al equipo de trabajo X
@@ -33,14 +33,12 @@
 🟢 ya en las preuebas con diferentes perfiles, se encontro que la tarjeta debe mostrar todos los operadores que tengan copias de la solicitud
 
 
-
 ...🟢 terminar de afinar el correlativo amigable pues cuando tipoSolicitud llegue a 199 y pase a 200, el extracto va ser = cero
     entonces en ese caso debería cambiar a uno pero si lo hace se va repetir un numero así:
         098	001
         099	001
         101	001
         101	001
-
 
 🟢 control de movimientos: 
     Re = Recepciones; Ep = En progreso; Rt = Resueltas;

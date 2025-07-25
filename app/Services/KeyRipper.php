@@ -6,17 +6,38 @@ class KeyRipper
 {
     public static function rip($id): string
     {
+        // Validación de entrada
+        if (empty($id)) {
+            return '0000';
+        }
+        
         $id = (string)$id;
-        // Tomar los últimos 8 dígitos
+        
+        // Asegurar que tenga al menos 8 dígitos
+        if (strlen($id) < 8) {
+            $id = str_pad($id, 8, '0', STR_PAD_LEFT);
+        }
+        
+        // Extraer los últimos 8 dígitos
         $last8 = substr($id, -8);
-        // Correlativo: últimos 3 dígitos
-        $correlativo = ltrim(substr($last8, 5, 3), '0');
-        // tipoSolicitud: dígitos 2 y 3 (índices 1 y 2)
-        $tipoSolicitud = ltrim(substr($last8, 1, 2), '0');
-        // Unir ambos como texto
+        
+        // Dividir en dos partes: primeros 3 dígitos y últimos 5 dígitos
+        $solicitudPart = substr($last8, 0, 3);  // Primeros 3 dígitos
+        $correlativoPart = substr($last8, 3, 5); // Últimos 5 dígitos
+        
+        // Extraer los últimos 2 dígitos de cada parte
+        $tipoSolicitud = substr($solicitudPart, -2);
+        $correlativo = substr($correlativoPart, -2);
+        
+        // Concatenar como texto
         $result = $tipoSolicitud . $correlativo;
-        // Limitar a 5 dígitos, rellenar con ceros a la izquierda si es necesario
-        $result = str_pad(substr($result, 0, 5), 5, '0', STR_PAD_LEFT);
+        
+        // Excepción: si el resultado es "0000", devolver "10000"
+        if ($result === '0000') {
+            return '10000';
+        }
+        
+        // Retornar el resultado de 4 dígitos
         return $result;
     }
 } 

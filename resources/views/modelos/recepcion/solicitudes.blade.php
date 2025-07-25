@@ -1363,8 +1363,7 @@
                 });
             }
         }
-        // NUEVO: Mostrar u ocultar mensaje de columna vacía
-        function actualizarMensajeColumnaVacia() {
+        function actualizarMensajeColumnaVacia() { // NUEVO: Mostrar u ocultar mensaje de columna vacía
             const columnas = [
                 {
                     id: 'columna-recibidas',
@@ -1382,10 +1381,9 @@
             columnas.forEach(function(col) {
                 const columna = document.getElementById(col.id);
                 if (!columna) return;
-                // Eliminar mensajes existentes
-                $(columna).find('.text-center.text-muted.py-4').remove();
-                // Si no hay tarjetas, agregar el mensaje
-                if ($(columna).find('.solicitud-card').length === 0) {
+                
+                $(columna).find('.text-center.text-muted.py-4').remove(); // Eliminar mensajes existentes
+                if ($(columna).find('.solicitud-card').length === 0) { // Si no hay tarjetas, agregar el mensaje
                     $(columna).append(col.mensaje);
                 }
             });
@@ -1405,7 +1403,6 @@
             @endforeach
             actualizarMensajeColumnaVacia(); // NUEVO: inicializar mensajes de columnas vacías
         }
-        
         // ESCUCHADOR DE AVANCES: Recoger IDs de tarjetas en tableros
         function obtenerAtencionIdsTableros() {
             let ids = [];
@@ -1417,14 +1414,11 @@
             });
             return [...new Set(ids)]; // Eliminar repetidos usando Set
         }
-        
         function consultarAvancesTablero() {
             let atencionIds = obtenerAtencionIdsTableros();
-            
             if (atencionIds.length === 0) {
                 return; // No hay tarjetas en los tableros
             }
-            
             $.post({
                 url: '{{ route("recepcion.avance-tablero") }}',
                 data: { 
@@ -1432,21 +1426,17 @@
                     _token: $('meta[name="csrf-token"]').attr('content') 
                 },
                 success: function(data) {
-                    
-                    // Comparar avances y estado_id del backend con los del frontend
-                    data.forEach(function(item) {
+                    data.forEach(function(item) { // Comparar avances y estado_id del backend con los del frontend
                         let $divider = $('.progress-divider[data-atencion-id="' + item.atencion_id + '"]');
                         let $card = $('.solicitud-card[data-atencion-id="' + item.atencion_id + '"]');
                         if ($divider.length > 0 && $card.length > 0) {
-                            // Avance
-                            let avanceFrontend = parseFloat($divider.attr('data-avance') || '0');
+                            let avanceFrontend = parseFloat($divider.attr('data-avance') || '0'); // Avance
                             let avanceBackend = parseFloat(item.avance || '0');
                             if (avanceFrontend !== avanceBackend) {
                                 $divider.attr('data-avance', avanceBackend);
                                 updateProgressByPercentage(item.atencion_id, avanceBackend);
                             }
-                            // Estado
-                            let estadoFrontend = parseInt($card.attr('data-estado-id'), 10);
+                            let estadoFrontend = parseInt($card.attr('data-estado-id'), 10); // Estado
                             let estadoBackend = parseInt(item.estado_id, 10);
                             if (estadoFrontend !== estadoBackend) {
                                 $card.attr('data-estado-id', estadoBackend);
@@ -1497,9 +1487,18 @@
                                     data-atencion-id="${tarjeta.atencion_id}"
                                     data-estado-id="${tarjeta.estado_id}" style="border-left-color: #ffc107;">
                                     <div class="solicitud-titulo">${tarjeta.titulo || 'Sin título'}</div>
-                                    <div class="solicitud-id">${tarjeta.atencion_id}</div>
+                                    <div class="row"> {{-- ID Y FECHA --}}
+                                        <div class="solicitud-id text-center">
+                                            <small style="font-size: 0.7rem;">
+                                                ${tarjeta.solicitud_id_ripped}
+                                            </small>
+                                        </div>
+                                        <div class="fecha-solicitud">
+                                            ${tarjeta.fecha_relativa}
+                                        </div>
+                                    </div>
                                     <div class="solicitud-estado" style="font-size: 11px; color:rgb(170, 95, 34) !important; margin-top: 5px;">
-                                        Estado: ${tarjeta.estado}
+                                        Estado: ${tarjeta.estado} (atencion_id: ${tarjeta.atencion_id})
                                     </div>
                                     <div class="progress-divider" data-atencion-id="${tarjeta.atencion_id}" data-avance="${tarjeta.porcentaje_progreso}"></div>
                                     <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px; padding-top: 6px;">

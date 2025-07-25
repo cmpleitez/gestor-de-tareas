@@ -13,6 +13,8 @@ use App\Models\Actividad;
 use App\Models\Atencion;
 use App\Models\Estado;
 use Illuminate\Support\Facades\Log;
+use App\Services\KeyRipper;
+use Carbon\Carbon;
 
 class RecepcionController extends Controller
 {
@@ -20,10 +22,10 @@ class RecepcionController extends Controller
     {
         $user = auth()->user()->load('area');
         $recepciones = Recepcion::where('user_id_destino', $user->id)
-            ->with(['solicitud', 'estado', 'usuarioDestino', 'area', 'role'])
-            ->orderBy('atencion_id', 'asc')
-            ->limit(10)
-            ->get();
+        ->with(['solicitud', 'estado', 'usuarioDestino', 'area', 'role'])
+        ->orderBy('created_at', 'asc')
+        ->limit(5)
+        ->get();
         $tarjetas = $recepciones->map(function ($tarjeta) {
             return [
                 'atencion_id' => $tarjeta->atencion_id,
@@ -456,7 +458,7 @@ class RecepcionController extends Controller
         $query = \App\Models\Recepcion::where('user_id_destino', $user->id)
             ->where('estado_id', 1) // Solo recibidas
             ->orderBy('id', 'desc')
-            ->limit(10);
+            ->limit(5);
 
         if ($ultimoId) {
             $query->where('id', '>', $ultimoId);
@@ -476,7 +478,9 @@ class RecepcionController extends Controller
                 'user_name' => $tarjeta->usuarioDestino->name,
                 'area' => $tarjeta->area->area,
                 'role_name' => $tarjeta->role->name,
-                'porcentaje_progreso' => $tarjeta->avance
+                'porcentaje_progreso' => $tarjeta->avance,
+                'solicitud_id_ripped' => KeyRipper::rip($tarjeta->atencion_id),
+                'fecha_relativa' => Carbon::parse($tarjeta->fecha_hora_solicitud)->diffForHumans()
             ];
         });
 
