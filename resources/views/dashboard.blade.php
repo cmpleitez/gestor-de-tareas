@@ -45,6 +45,17 @@
     <!-- END: Page CSS-->
 
     <style>
+        .badge-pill {
+            padding-right: 0.7rem !important;
+            padding-left: 0.7rem !important;
+        }
+
+        .badge {
+            padding: 0.2rem 1rem;
+            font-size: 0.7rem;
+            font-weight: 410 !important;
+        }
+
         html body.navbar-sticky .app-content .content-wrapper {
             padding: 3.8rem 2.2rem 0;
             margin-top: 3rem;
@@ -222,7 +233,6 @@
         .toast-progress {
             background-color: rgba(255, 255, 255, .5) !important;
         }
-
     </style>
 
     @section('css')
@@ -276,8 +286,7 @@
                         <li class="nav-item d-none d-lg-block"><a class="nav-link nav-link-expand"><i
                                     class="ficon bx bx-fullscreen"></i></a></li>
                         <li class="dropdown dropdown-user nav-item">
-                            <a class="dropdown-toggle nav-link dropdown-user-link" href="#"
-                                data-toggle="dropdown">
+                            <a class="dropdown-toggle nav-link dropdown-user-link" href="#" data-toggle="dropdown">
                                 <div class="user-nav d-sm-flex d-none">
                                     <span class="user-name">{{ auth()->user()->name }}</span>
                                     <span class="user-status text-gray-600 d-flex align-items-center"
@@ -331,9 +340,7 @@
                                             document.body.removeChild(textArea);
                                         }
                                     </script>
-                                    <span
-                                        class="user-status"
-                                        style="color: #0056b3; font-weight: 600;">
+                                    <span class="user-status" style="color: #0056b3; font-weight: 600;">
                                         @if(auth()->check())
                                             Conectado como
                                             @php $roles = auth()->user()->getRoleNames(); @endphp
@@ -352,8 +359,8 @@
                                             <img src="{{ Storage::url($photoPath) }}" alt="avatar"
                                                 style="height: 45px; width: 45px; object-fit: cover;">
                                         @else
-                                            <img src="{{ asset('app-assets/images/pages/operador.png') }}"
-                                                alt="avatar" style="height: 45px; width: 45px; object-fit: cover;">
+                                            <img src="{{ asset('app-assets/images/pages/operador.png') }}" alt="avatar"
+                                                style="height: 45px; width: 45px; object-fit: cover;">
                                         @endif
                                     @endif
                                 </div>
@@ -408,59 +415,59 @@
                             data-i18n="Menu Levels">Servicios</span></a>
                     <ul class="menu-content" style="display: block;">
                         @role('Beneficiario')
-                            <li><a href="{{ Route('recepcion.create') }}">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Recepciones</span>
-                                </a></li>
+                        <li><a href="{{ Route('recepcion.create') }}">
+                                <i class="bx bx-right-arrow-alt"></i>
+                                <span class="menu-item" data-i18n="Second Level">Recepciones</span>
+                            </a></li>
                         @endrole
                         @role('Operador')
-                            <li><a href="#">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Disponible</span>
-                                </a></li>
+                        <li><a href="#">
+                                <i class="bx bx-right-arrow-alt"></i>
+                                <span class="menu-item" data-i18n="Second Level">Disponible</span>
+                            </a></li>
                         @endrole
                         @role('Administrador')
-                            <li>
-                                <a href="#">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Administración</span>
-                                </a>
-                                <ul class="menu-content" style="display: block;">
-                                    <li><a href="{{ Route('equipo') }}">
-                                            <i class="bx bx-right-arrow-alt"></i>
-                                            <span class="menu-item" data-i18n="Third Level">Equipos</span></a>
-                                    </li>
-                                    <li><a href="#">
-                                            <i class="bx bx-right-arrow-alt"></i>
-                                            <span class="menu-item" data-i18n="Third Level">Disponible</span>
-                                        </a></li>
-                                </ul>
-                            </li>
+                        <li>
+                            <a href="#">
+                                <i class="bx bx-right-arrow-alt"></i>
+                                <span class="menu-item" data-i18n="Second Level">Administración</span>
+                            </a>
+                            <ul class="menu-content" style="display: block;">
+                                <li><a href="{{ Route('equipo') }}">
+                                        <i class="bx bx-right-arrow-alt"></i>
+                                        <span class="menu-item" data-i18n="Third Level">Equipos</span></a>
+                                </li>
+                                <li><a href="#">
+                                        <i class="bx bx-right-arrow-alt"></i>
+                                        <span class="menu-item" data-i18n="Third Level">Disponible</span>
+                                    </a></li>
+                            </ul>
+                        </li>
                         @endrole
                         @role('SuperAdmin')
-                            <li><a href="#">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Configuración</span>
-                                </a>
-                                <ul class="menu-content" style="display: block;">
-                                    <li><a href="{{ Route('user') }}">
-                                            <i class="bx bx-right-arrow-alt"></i>
-                                            <span class="menu-item" data-i18n="Third Level">Usuarios</span>
-                                        </a></li>
-                                    <li><a href="{{ Route('equipo') }}">
-                                            <i class="bx bx-right-arrow-alt"></i>
-                                            <span class="menu-item" data-i18n="Third Level">Equipos</span>
-                                        </a></li>
-                                    <li><a href="{{ Route('tarea') }}">
-                                            <i class="bx bx-right-arrow-alt"></i>
-                                            <span class="menu-item" data-i18n="Third Level">Tareas</span>
-                                        </a></li>
-                                    <li><a href="{{ Route('solicitud') }}">
-                                            <i class="bx bx-right-arrow-alt"></i>
-                                            <span class="menu-item" data-i18n="Third Level">Solicitudes</span>
-                                        </a></li>
-                                </ul>
-                            </li>
+                        <li><a href="#">
+                                <i class="bx bx-right-arrow-alt"></i>
+                                <span class="menu-item" data-i18n="Second Level">Configuración</span>
+                            </a>
+                            <ul class="menu-content" style="display: block;">
+                                <li><a href="{{ Route('user') }}">
+                                        <i class="bx bx-right-arrow-alt"></i>
+                                        <span class="menu-item" data-i18n="Third Level">Usuarios</span>
+                                    </a></li>
+                                <li><a href="{{ Route('equipo') }}">
+                                        <i class="bx bx-right-arrow-alt"></i>
+                                        <span class="menu-item" data-i18n="Third Level">Equipos</span>
+                                    </a></li>
+                                <li><a href="{{ Route('tarea') }}">
+                                        <i class="bx bx-right-arrow-alt"></i>
+                                        <span class="menu-item" data-i18n="Third Level">Tareas</span>
+                                    </a></li>
+                                <li><a href="{{ Route('solicitud') }}">
+                                        <i class="bx bx-right-arrow-alt"></i>
+                                        <span class="menu-item" data-i18n="Third Level">Solicitudes</span>
+                                    </a></li>
+                            </ul>
+                        </li>
                         @endrole
                     </ul>
                 </li>
@@ -542,7 +549,7 @@
 
     <!-- ... otros scripts ... -->
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             //Captura de alertas del backend
             @if (Session::has('success'))
                 toastr.success("{{ Session::get('success') }}");
@@ -586,7 +593,7 @@
                 // Inicializar tooltips de Bootstrap 4
                 $('[data-toggle="tooltip"]').tooltip();
                 // Reinicializar tooltips después de cada evento de DataTables
-                table.on('draw', function() {
+                table.on('draw', function () {
                     $('[data-toggle="tooltip"]').tooltip();
                 });
             } else {

@@ -449,17 +449,6 @@
             word-break: break-word !important;
         }
 
-        .badge-pill {
-            padding-right: 0.7rem !important;
-            padding-left: 0.7rem !important;
-        }
-
-        .badge {
-            padding: 0.2rem 1rem;
-            font-size: 0.7rem;
-            font-weight: 410 !important;
-        }
-
         .solicitud-card {
             user-select: none;
             -webkit-user-select: none;
@@ -501,7 +490,6 @@
 @endsection
 
 @section('contenedor')
-
     {{-- ITEMS DESTINATARIOS PARA CADA ROL --}}
     <div class="row">
         <div class="col-12">
@@ -643,61 +631,12 @@
                 <div class="card-body kanban-columna" style="background: #f8f9fa; padding: 1rem;">
                     <div id="columna-recibidas" class="sortable-column">
                         @forelse($recibidas as $solicitud)
-                            <div class="solicitud-card" data-id="{{ $solicitud['recepcion_id'] }}"
-                                data-atencion-id="{{ $solicitud['atencion_id'] }}"
-                                data-estado-id="{{ $solicitud['estado_id'] }}"
-                                data-fecha="{{ $solicitud['created_at'] }}" style="border-left-color: #ffc107;">
-                                <div class="solicitud-titulo">
-                                    @if ($solicitud['titulo'] && $solicitud['detalle'])
-                                        {{ $solicitud['titulo'] }} - {{ $solicitud['detalle'] }}
-                                    @elseif($solicitud['titulo'])
-                                        {{ $solicitud['titulo'] }}
-                                    @elseif($solicitud['detalle'])
-                                        {{ $solicitud['detalle'] }}
-                                    @else
-                                        Sin título
-                                    @endif
-                                </div>
-                                <div class="row"> {{-- ID Y FECHA --}}
-                                    <div class="solicitud-id text-center">
-                                        <small style="font-size: 0.7rem;">
-                                            {{ $solicitud['solicitud_id_ripped'] }}
-                                        </small>
-                                    </div>
-                                    <div class="fecha-solicitud">
-                                        {{ $solicitud['fecha_relativa'] }}
-                                    </div>
-                                </div>
-                                <div class="solicitud-estado" style="font-size: 11px; color:rgb(170, 95, 34) !important; margin-top: 5px;">
-                                    Estado: {{ $solicitud['estado'] }}
-                                </div>
-                                <div class="progress-divider" data-atencion-id="{{ $solicitud['atencion_id'] }}" data-avance="{{ $solicitud['porcentaje_progreso'] }}"></div>
-                                <div
-                                    style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px; padding-top: 6px;">
-                                    
-                                    <div style="display: flex; flex-direction: column; justify-content: center; flex: 1;">
-                                        <div style="text-align: right; font-size: 10px; color: #6c757d; line-height: 1.2; margin-bottom: 1px;">
-                                            {{ $solicitud['user_name'] }}
-                                        </div>
-                                        <div
-                                            style="text-align: right; padding: 1px 6px; border-radius: 3px; font-size: 9px; font-weight: 500; display: inline-block; margin-left: auto;">
-                                            <span style="color:rgb(170, 95, 34) !important;" class="badge badge-pill badge-light-warning">{{ $solicitud['role_name'] }}</span>
-                                            <span style="color: #612d03 !important; font-weight: 400;">del área {{ $solicitud['area'] }}</span> 
-                                        </div>
-                                    </div>
-
-                                    <div style="margin-left: 8px;">
-                                        @if ($solicitud['user_foto'])
-                                            <img src="{{ $solicitud['user_foto'] }}" alt="Usuario" class="avatar"
-                                                style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;">
-                                        @else
-                                            <div class="avatar"
-                                                style="width: 32px; height: 32px; border-radius: 50%; background: #e9ecef; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #6c757d;">
-                                                ?</div>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
+                            <x-solicitud-card 
+                                :solicitud="$solicitud"
+                                borderColor="#ffc107"
+                                estadoColor="rgb(170, 95, 34)"
+                                badgeColor="badge-light-warning"
+                                roleColor="#612d03" />
                         @empty
                             <div class="text-center text-muted py-4">
                                 <i class="bx bx-archive text-muted" style="font-size: 1.5rem;"></i>
@@ -724,63 +663,12 @@
                 <div class="card-body kanban-columna" style="background: #f8f9fa; padding: 1rem;">
                     <div id="columna-progreso" class="sortable-column">
                         @forelse($progreso as $solicitud)
-                            <div class="solicitud-card" data-id="{{ $solicitud['recepcion_id'] }}"
-                                data-atencion-id="{{ $solicitud['atencion_id'] }}"
-                                data-estado-id="{{ $solicitud['estado_id'] }}"
-                                data-fecha="{{ $solicitud['created_at'] }}" style="border-left-color: #17a2b8;">
-                                <div class="solicitud-titulo">
-                                    @if ($solicitud['titulo'] && $solicitud['detalle'])
-                                        {{ $solicitud['titulo'] }} - {{ $solicitud['detalle'] }}
-                                    @elseif($solicitud['titulo'])
-                                        {{ $solicitud['titulo'] }}
-                                    @elseif($solicitud['detalle'])
-                                        {{ $solicitud['detalle'] }}
-                                    @else
-                                        Sin título
-                                    @endif
-                                </div>
-
-                                <div class="row"> {{-- ID Y FECHA --}}
-                                    <div class="solicitud-id text-center">
-                                        <small style="font-size: 0.7rem;">
-                                            {{ $solicitud['solicitud_id_ripped'] }}
-                                        </small>
-                                    </div>
-                                    <div class="fecha-solicitud">
-                                        {{ $solicitud['fecha_relativa'] }}
-                                    </div>
-                                </div>
-
-                                <div class="solicitud-estado" style="font-size: 11px; color: #17a2b8; margin-top: 5px;">
-                                    Estado: {{ $solicitud['estado'] }}
-                                </div>
-                                <div class="progress-divider" data-atencion-id="{{ $solicitud['atencion_id'] }}" data-avance="{{ $solicitud['porcentaje_progreso'] }}"></div>
-                                <div
-                                    style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px; padding-top: 6px;">
-
-                                    <div style="display: flex; flex-direction: column; justify-content: center; flex: 1;">
-                                        <div style="text-align: right; font-size: 10px; color: #6c757d; line-height: 1.2; margin-bottom: 1px;">
-                                            {{ $solicitud['user_name'] }}
-                                        </div>
-                                        <div
-                                            style="text-align: right; padding: 1px 6px; border-radius: 3px; font-size: 9px; display: inline-block; margin-left: auto;">
-                                            <span style="color:rgb(58, 121, 194) !important;" class="badge badge-pill badge-light-primary">{{ $solicitud['role_name'] }}</span>
-                                            <span style="color:rgb(11, 62, 119) !important; font-weight: 500;">del área {{ $solicitud['area'] }}</span> 
-                                        </div>
-                                    </div>
-
-                                    <div style="margin-left: 8px;">
-                                        @if ($solicitud['user_foto'])
-                                            <img src="{{ $solicitud['user_foto'] }}" alt="Usuario" class="avatar"
-                                                style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;">
-                                        @else
-                                            <div class="avatar"
-                                                style="width: 32px; height: 32px; border-radius: 50%; background: #e9ecef; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #6c757d;">
-                                                ?</div>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
+                            <x-solicitud-card 
+                                :solicitud="$solicitud"
+                                borderColor="#17a2b8"
+                                estadoColor="#17a2b8"
+                                badgeColor="badge-light-primary"
+                                roleColor="rgb(11, 62, 119)" />
                         @empty
                             <div class="text-center text-muted py-4">
                                 <i class="bx bx-time-five text-muted" style="font-size: 1.5rem;"></i>
@@ -807,62 +695,12 @@
                 <div class="card-body kanban-columna" style="background: #f8f9fa; padding: 1rem;">
                     <div id="columna-resueltas" class="sortable-column">
                         @forelse($resueltas as $solicitud)
-                            <div class="solicitud-card" data-id="{{ $solicitud['recepcion_id'] }}"
-                                data-atencion-id="{{ $solicitud['atencion_id'] }}"
-                                data-estado-id="{{ $solicitud['estado_id'] }}"
-                                data-fecha="{{ $solicitud['created_at'] }}" style="border-left-color: #28a745;">
-                                <div class="solicitud-titulo">
-                                    @if ($solicitud['titulo'] && $solicitud['detalle'])
-                                        {{ $solicitud['titulo'] }} - {{ $solicitud['detalle'] }}
-                                    @elseif($solicitud['titulo'])
-                                        {{ $solicitud['titulo'] }}
-                                    @elseif($solicitud['detalle'])
-                                        {{ $solicitud['detalle'] }}
-                                    @else
-                                        Sin título
-                                    @endif
-                                </div>
-                                <div class="row"> {{-- ID Y FECHA --}}
-                                    <div class="solicitud-id text-center">
-                                        <small style="font-size: 0.7rem;">
-                                            {{ $solicitud['solicitud_id_ripped'] }}
-                                        </small>
-                                    </div>
-                                    <div class="fecha-solicitud">
-                                        {{ $solicitud['fecha_relativa'] }}
-                                    </div>
-                                </div>
-                                <div class="solicitud-estado" style="font-size: 11px; color: #28a745; margin-top: 5px;">
-                                    Estado: {{ $solicitud['estado'] }}
-                                </div>
-                                <div class="progress-divider" data-atencion-id="{{ $solicitud['atencion_id'] }}" data-avance="{{ $solicitud['porcentaje_progreso'] }}"></div>
-                                <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px; padding-top: 6px;">
-                                    
-                                    <div style="display: flex; flex-direction: column; justify-content: center; flex: 1;">
-                                        <div
-                                            style="text-align: right; font-size: 10px; color: #6c757d; line-height: 1.2; margin-bottom: 1px;">
-                                            {{ $solicitud['user_name'] }}
-                                        </div>
-                                        <div
-                                            style="text-align: right; padding: 1px 6px; border-radius: 3px; font-size: 9px; display: inline-block; margin-left: auto;">
-                                            <span style="color:rgb(10, 95, 30) !important;" class="badge badge-pill badge-light-success">{{ $solicitud['role_name'] }}</span>
-                                            <span style="color:rgb(10, 95, 30) !important; font-weight: 400;">del área {{ $solicitud['area'] }}</span> 
-                                        </div>
-                                    </div>
-
-                                    <div style="margin-left: 8px;">
-                                        @if ($solicitud['user_foto'])
-                                            <img src="{{ $solicitud['user_foto'] }}" alt="Usuario" class="avatar"
-                                                style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;">
-                                        @else
-                                            <div class="avatar"
-                                                style="width: 32px; height: 32px; border-radius: 50%; background: #e9ecef; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #6c757d;">
-                                                ?</div>
-                                        @endif
-                                    </div>
-
-                                </div>
-                            </div>
+                            <x-solicitud-card 
+                                :solicitud="$solicitud"
+                                borderColor="#28a745"
+                                estadoColor="#28a745"
+                                badgeColor="badge-light-success"
+                                roleColor="rgb(10, 95, 30)" />
                         @empty
                             <div class="text-center text-muted py-4">
                                 <i class="bx bx-check-circle text-muted" style="font-size: 1.5rem;"></i>
@@ -1398,7 +1236,6 @@
             @endforeach
             actualizarMensajeColumnaVacia(); // NUEVO: inicializar mensajes de columnas vacías
         }
-        
         // REFRESCAR BARRAS DE PROGRESO
         function obtenerAtencionIdsTableros() { 
             let ids = [];
@@ -1461,88 +1298,111 @@
             });
         }
         setInterval(consultarAvancesTablero, 900000);
-        
-
         // REFRESCAR TABLERO DE RECIBIDAS
-/*        
-        function obtenerUltimaFechaRecibidas() { // Refrescar tablero de recibidas cada intervalo de tiempo
+        function generarTarjetaSolicitud(tarjeta, animar = false) {
+            const titulo = tarjeta.titulo && tarjeta.detalle ? 
+                `${tarjeta.titulo} - ${tarjeta.detalle}` : 
+                tarjeta.titulo || tarjeta.detalle || 'Sin título';
+            
+            const avatar = tarjeta.user_foto ? 
+                `<img src="${tarjeta.user_foto}" alt="Usuario" class="avatar" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;">` :
+                `<div class="avatar" style="width: 32px; height: 32px; border-radius: 50%; background: #e9ecef; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #6c757d;">?</div>`;
+            
+            return `
+                <div class="solicitud-card ${animar ? 'animar-llegada' : ''}" 
+                     data-id="${tarjeta.recepcion_id}"
+                     data-atencion-id="${tarjeta.atencion_id}"
+                     data-estado-id="${tarjeta.estado_id}"
+                     data-fecha="${tarjeta.created_at}" 
+                     style="border-left-color: #ffc107;">
+                    
+                    <div class="solicitud-titulo">${titulo}</div>
+                    
+                    <div class="row">
+                        <div class="solicitud-id text-center">
+                            <small style="font-size: 0.7rem;">${tarjeta.solicitud_id_ripped}</small>
+                        </div>
+                        <div class="fecha-solicitud">${tarjeta.fecha_relativa}</div>
+                    </div>
+                    
+                    <div class="solicitud-estado" style="font-size: 11px; color: rgb(170, 95, 34) !important; margin-top: 5px;">
+                        Estado: ${tarjeta.estado}
+                    </div>
+                    
+                    <div class="progress-divider" data-atencion-id="${tarjeta.atencion_id}" data-avance="${tarjeta.porcentaje_progreso}"></div>
+                    
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px; padding-top: 6px;">
+                        <div style="display: flex; flex-direction: column; justify-content: center; flex: 1;">
+                            <div style="text-align: right; font-size: 10px; color: #6c757d; line-height: 1.2; margin-bottom: 1px;">
+                                ${tarjeta.user_name}
+                            </div>
+                            <div style="text-align: right; padding: 1px 6px; border-radius: 3px; font-size: 9px; font-weight: 500; display: inline-block; margin-left: auto;">
+                                <span style="color: rgb(170, 95, 34) !important;" class="badge badge-pill badge-light-warning">${tarjeta.role_name}</span>
+                                <span style="color: #612d03 !important; font-weight: 400;">del área ${tarjeta.area}</span>
+                            </div>
+                        </div>
+                        <div style="margin-left: 8px;">${avatar}</div>
+                    </div>
+                </div>
+            `;
+        }
+        function obtenerUltimaFechaRecibidas() {
             let fechas = $('#columna-recibidas .solicitud-card').map(function() {
-                return $(this).attr('data-fecha');
-            }).get();
-
-            console.log(fechas.length ? Math.max(...fechas) : null);
-
-            return fechas.length ? Math.max(...fechas) : null;
+                let fecha = $(this).attr('data-fecha');
+                return fecha && fecha !== 'null' && fecha !== 'undefined' ? fecha : null;
+            }).get().filter(fecha => fecha !== null);
+            
+            return fechas.length > 0 ? Math.max(...fechas) : null;
         }
         function cargarNuevasRecibidas() {
             let ultimaFecha = obtenerUltimaFechaRecibidas();
+            let data = {
+                _token: $('meta[name="csrf-token"]').attr('content')
+            };
+            
+            // Solo enviar ultima_fecha si es válida
+            if (ultimaFecha && ultimaFecha !== 'null' && ultimaFecha !== 'undefined') {
+                data.ultima_fecha = ultimaFecha;
+            }
+            
             $.post({
                 url: '{{ route("recepcion.nuevas-recibidas") }}',
-                data: {
-                    ultima_fecha: ultimaFecha,
-                    _token: $('meta[name="csrf-token"]').attr('content')
-                },
+                data: data,
                 success: function(nuevas) {
-                    
-                    console.log(nuevas.length);
-
                     if (nuevas.length > 0) {
+                        let tarjetasAgregadas = 0;
+                        
                         nuevas.forEach(function(tarjeta) {
-                            let html = `
-                                <div class="solicitud-card animar-llegada" data-id="${tarjeta.recepcion_id}"
-                                    data-atencion-id="${tarjeta.atencion_id}"
-                                    data-estado-id="${tarjeta.estado_id}"
-                                    data-fecha="${tarjeta.created_at}" style="border-left-color: #ffc107;">
-                                    <div class="solicitud-titulo">${tarjeta.titulo || 'Sin título'}</div>
-                                    <div class="row"> {{-- ID Y FECHA --}}
-                                        <div class="solicitud-id text-center">
-                                            <small style="font-size: 0.7rem;">
-                                                ${tarjeta.solicitud_id_ripped}
-                                            </small>
-                                        </div>
-                                        <div class="fecha-solicitud">
-                                            ${tarjeta.fecha_relativa}
-                                        </div>
-                                    </div>
-                                    <div class="solicitud-estado" style="font-size: 11px; color:rgb(170, 95, 34) !important; margin-top: 5px;">
-                                        Estado: ${tarjeta.estado} (atencion_id: ${tarjeta.atencion_id})
-                                    </div>
-                                    <div class="progress-divider" data-atencion-id="${tarjeta.atencion_id}" data-avance="${tarjeta.porcentaje_progreso}"></div>
-                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px; padding-top: 6px;">
-                                        <div style="display: flex; flex-direction: column; justify-content: center; flex: 1;">
-                                            <div style="text-align: right; font-size: 10px; color: #6c757d; line-height: 1.2; margin-bottom: 1px;">
-                                                ${tarjeta.user_name}
-                                            </div>
-                                            <div style="text-align: right; padding: 1px 6px; border-radius: 3px; font-size: 9px; font-weight: 500; display: inline-block; margin-left: auto;">
-                                                <span style="color:rgb(170, 95, 34) !important;" class="badge badge-pill badge-light-warning">${tarjeta.role_name}</span>
-                                                <span style="color: #612d03 !important; font-weight: 400;">del área ${tarjeta.area}</span>
-                                            </div>
-                                        </div>
-                                        <div style="margin-left: 8px;">
-                                            <img src="${tarjeta.user_foto}" alt="Usuario" class="avatar"
-                                                style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;">
-                                        </div>
-                                    </div>
-                                </div>
-                            `;
-                            let $nueva = $(html);
-                            $('#columna-recibidas').prepend($nueva);
-                            updateProgressByPercentage(tarjeta.atencion_id, tarjeta.porcentaje_progreso);
-                            setTimeout(function() {
-                                $nueva.removeClass('animar-llegada');
-                            }, 500);
+                            // Verificar si la tarjeta ya existe
+                            let tarjetaExistente = $(`#columna-recibidas .solicitud-card[data-id="${tarjeta.recepcion_id}"]`);
+                            
+                            if (tarjetaExistente.length === 0) {
+                                // Solo agregar si no existe
+                                let html = generarTarjetaSolicitud(tarjeta, true);
+                                let $nueva = $(html);
+                                $('#columna-recibidas').prepend($nueva);
+                                updateProgressByPercentage(tarjeta.atencion_id, tarjeta.porcentaje_progreso);
+                                setTimeout(function() {
+                                    $nueva.removeClass('animar-llegada');
+                                }, 500);
+                                tarjetasAgregadas++;
+                            }
                         });
-                        actualizarContadores();
+                        
+                        // Solo actualizar contadores si se agregaron tarjetas
+                        if (tarjetasAgregadas > 0) {
+                            actualizarContadores();
+                            console.log(`Se agregaron ${tarjetasAgregadas} nuevas tarjetas`);
+                        }
                     }
                 }
             });
         }
-        setInterval(cargarNuevasRecibidas, 5000);
-*/
         // INICIALIZAR PROGRESO DE LAS TARJETAS, TABLEROS Y CONTADORES
         $(document).ready(function() {
             initializeProgress();
             initKanban();
+            setInterval(cargarNuevasRecibidas, 900000);
         });
 
     </script>

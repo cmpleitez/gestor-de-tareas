@@ -22,7 +22,7 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::whereNotIn('id', ['1'])->get();
+        $users = User::with('area.oficina', 'equipos', 'roles')->whereNotIn('id', ['1'])->get();
         return view('modelos.user.index', compact('users'));
     }
 

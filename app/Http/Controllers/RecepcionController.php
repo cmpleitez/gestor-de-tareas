@@ -23,7 +23,6 @@ class RecepcionController extends Controller
         $user = auth()->user()->load('area');
         $recepciones = Recepcion::where('user_id_destino', $user->id)
         ->with(['solicitud', 'estado', 'usuarioDestino', 'area', 'role'])
-        ->orderBy('created_at', 'desc')
         ->limit(5)
         ->get();
         $tarjetas = $recepciones->map(function ($tarjeta) {
@@ -46,9 +45,9 @@ class RecepcionController extends Controller
                 'created_at' => $tarjeta->created_at,
             ];
         });
-        $recibidas = $tarjetas->where('estado_id', 1); // Organizar tarjetas por estado
-        $progreso = $tarjetas->where('estado_id', 2);
-        $resueltas = $tarjetas->where('estado_id', 3);
+        $recibidas = $tarjetas->where('estado_id', 1)->sortBy('created_at');
+        $progreso = $tarjetas->where('estado_id', 2)->sortBy('created_at');
+        $resueltas = $tarjetas->where('estado_id', 3)->sortBy('created_at');
         $data = [
             'recibidas' => $recibidas,
             'progreso' => $progreso,
@@ -82,6 +81,7 @@ class RecepcionController extends Controller
             'cantidad_operadores' => $areas->count()
         ]);
     }
+
     public function equipos(Solicitud $solicitud)
     {
         $user = auth()->user()->load('area');
@@ -448,20 +448,18 @@ class RecepcionController extends Controller
         ->get();
         return response()->json($recepciones);
     }
+
     public function nuevasRecibidas(Request $request)
     {
         $user = auth()->user();
         $ultimaFecha = $request->input('ultima_fecha', null);
-
         $query = Recepcion::where('user_id_destino', $user->id)
             ->where('estado_id', 1)
             ->orderBy('created_at', 'desc')
             ->limit(5);
-
         if ($ultimaFecha) {
             $query->where('created_at', '>', $ultimaFecha);
         }
-
         $nuevas = $query->get()->map(function ($tarjeta) {
             return [
                 'recepcion_id' => $tarjeta->id,
@@ -482,7 +480,7 @@ class RecepcionController extends Controller
                 'created_at' => $tarjeta->created_at
             ];
         });
-
         return response()->json($nuevas);
     }
+    
 }
