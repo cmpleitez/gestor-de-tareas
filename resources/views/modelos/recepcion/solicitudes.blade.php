@@ -626,12 +626,6 @@
         </div>
     </div>
     {{-- TABLEROS KANBAN --}}
-    @php
-        use App\Services\KeyRipper;
-        $recibidas = $tarjetas->where('estado_id', 1);
-        $progreso = $tarjetas->where('estado_id', 2);
-        $resueltas = $tarjetas->where('estado_id', 3);
-    @endphp
     <div class="row" style="display: flex; align-items: stretch;">
         {{-- RECIBIDAS --}}
         <div class="col-md-4"> 
@@ -648,17 +642,18 @@
                 </div>
                 <div class="card-body kanban-columna" style="background: #f8f9fa; padding: 1rem;">
                     <div id="columna-recibidas" class="sortable-column">
-                        @forelse($recibidas as $recepcion)
-                            <div class="solicitud-card" data-id="{{ $recepcion['recepcion_id'] }}"
-                                data-atencion-id="{{ $recepcion['atencion_id'] }}"
-                                data-estado-id="{{ $recepcion['estado_id'] }}" style="border-left-color: #ffc107;">
+                        @forelse($recibidas as $solicitud)
+                            <div class="solicitud-card" data-id="{{ $solicitud['recepcion_id'] }}"
+                                data-atencion-id="{{ $solicitud['atencion_id'] }}"
+                                data-estado-id="{{ $solicitud['estado_id'] }}"
+                                data-fecha="{{ $solicitud['created_at'] }}" style="border-left-color: #ffc107;">
                                 <div class="solicitud-titulo">
-                                    @if ($recepcion['titulo'] && $recepcion['detalle'])
-                                        {{ $recepcion['titulo'] }} - {{ $recepcion['detalle'] }}
-                                    @elseif($recepcion['titulo'])
-                                        {{ $recepcion['titulo'] }}
-                                    @elseif($recepcion['detalle'])
-                                        {{ $recepcion['detalle'] }}
+                                    @if ($solicitud['titulo'] && $solicitud['detalle'])
+                                        {{ $solicitud['titulo'] }} - {{ $solicitud['detalle'] }}
+                                    @elseif($solicitud['titulo'])
+                                        {{ $solicitud['titulo'] }}
+                                    @elseif($solicitud['detalle'])
+                                        {{ $solicitud['detalle'] }}
                                     @else
                                         Sin título
                                     @endif
@@ -666,34 +661,34 @@
                                 <div class="row"> {{-- ID Y FECHA --}}
                                     <div class="solicitud-id text-center">
                                         <small style="font-size: 0.7rem;">
-                                            {{ KeyRipper::rip($recepcion['atencion_id']) }}
+                                            {{ $solicitud['solicitud_id_ripped'] }}
                                         </small>
                                     </div>
                                     <div class="fecha-solicitud">
-                                        {{ \Carbon\Carbon::parse($recepcion['fecha_hora_solicitud'])->diffForHumans() }}
+                                        {{ $solicitud['fecha_relativa'] }}
                                     </div>
                                 </div>
                                 <div class="solicitud-estado" style="font-size: 11px; color:rgb(170, 95, 34) !important; margin-top: 5px;">
-                                    Estado: {{ $recepcion['estado'] }}
+                                    Estado: {{ $solicitud['estado'] }}
                                 </div>
-                                <div class="progress-divider" data-atencion-id="{{ $recepcion['atencion_id'] }}" data-avance="{{ $recepcion['porcentaje_progreso'] }}"></div>
+                                <div class="progress-divider" data-atencion-id="{{ $solicitud['atencion_id'] }}" data-avance="{{ $solicitud['porcentaje_progreso'] }}"></div>
                                 <div
                                     style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px; padding-top: 6px;">
                                     
                                     <div style="display: flex; flex-direction: column; justify-content: center; flex: 1;">
                                         <div style="text-align: right; font-size: 10px; color: #6c757d; line-height: 1.2; margin-bottom: 1px;">
-                                            {{ $recepcion['user_name'] }}
+                                            {{ $solicitud['user_name'] }}
                                         </div>
                                         <div
                                             style="text-align: right; padding: 1px 6px; border-radius: 3px; font-size: 9px; font-weight: 500; display: inline-block; margin-left: auto;">
-                                            <span style="color:rgb(170, 95, 34) !important;" class="badge badge-pill badge-light-warning">{{ $recepcion['role_name'] }}</span>
-                                            <span style="color: #612d03 !important; font-weight: 400;">del área {{ $recepcion['area'] }}</span> 
+                                            <span style="color:rgb(170, 95, 34) !important;" class="badge badge-pill badge-light-warning">{{ $solicitud['role_name'] }}</span>
+                                            <span style="color: #612d03 !important; font-weight: 400;">del área {{ $solicitud['area'] }}</span> 
                                         </div>
                                     </div>
 
                                     <div style="margin-left: 8px;">
-                                        @if ($recepcion['user_foto'])
-                                            <img src="{{ $recepcion['user_foto'] }}" alt="Usuario" class="avatar"
+                                        @if ($solicitud['user_foto'])
+                                            <img src="{{ $solicitud['user_foto'] }}" alt="Usuario" class="avatar"
                                                 style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;">
                                         @else
                                             <div class="avatar"
@@ -728,17 +723,18 @@
                 </div>
                 <div class="card-body kanban-columna" style="background: #f8f9fa; padding: 1rem;">
                     <div id="columna-progreso" class="sortable-column">
-                        @forelse($progreso as $recepcion)
-                            <div class="solicitud-card" data-id="{{ $recepcion['recepcion_id'] }}"
-                                data-atencion-id="{{ $recepcion['atencion_id'] }}"
-                                data-estado-id="{{ $recepcion['estado_id'] }}" style="border-left-color: #17a2b8;">
+                        @forelse($progreso as $solicitud)
+                            <div class="solicitud-card" data-id="{{ $solicitud['recepcion_id'] }}"
+                                data-atencion-id="{{ $solicitud['atencion_id'] }}"
+                                data-estado-id="{{ $solicitud['estado_id'] }}"
+                                data-fecha="{{ $solicitud['created_at'] }}" style="border-left-color: #17a2b8;">
                                 <div class="solicitud-titulo">
-                                    @if ($recepcion['titulo'] && $recepcion['detalle'])
-                                        {{ $recepcion['titulo'] }} - {{ $recepcion['detalle'] }}
-                                    @elseif($recepcion['titulo'])
-                                        {{ $recepcion['titulo'] }}
-                                    @elseif($recepcion['detalle'])
-                                        {{ $recepcion['detalle'] }}
+                                    @if ($solicitud['titulo'] && $solicitud['detalle'])
+                                        {{ $solicitud['titulo'] }} - {{ $solicitud['detalle'] }}
+                                    @elseif($solicitud['titulo'])
+                                        {{ $solicitud['titulo'] }}
+                                    @elseif($solicitud['detalle'])
+                                        {{ $solicitud['detalle'] }}
                                     @else
                                         Sin título
                                     @endif
@@ -747,35 +743,35 @@
                                 <div class="row"> {{-- ID Y FECHA --}}
                                     <div class="solicitud-id text-center">
                                         <small style="font-size: 0.7rem;">
-                                            {{ KeyRipper::rip($recepcion['atencion_id']) }}
+                                            {{ $solicitud['solicitud_id_ripped'] }}
                                         </small>
                                     </div>
                                     <div class="fecha-solicitud">
-                                        {{ \Carbon\Carbon::parse($recepcion['fecha_hora_solicitud'])->diffForHumans() }}
+                                        {{ $solicitud['fecha_relativa'] }}
                                     </div>
                                 </div>
 
                                 <div class="solicitud-estado" style="font-size: 11px; color: #17a2b8; margin-top: 5px;">
-                                    Estado: {{ $recepcion['estado'] }}
+                                    Estado: {{ $solicitud['estado'] }}
                                 </div>
-                                <div class="progress-divider" data-atencion-id="{{ $recepcion['atencion_id'] }}" data-avance="{{ $recepcion['porcentaje_progreso'] }}"></div>
+                                <div class="progress-divider" data-atencion-id="{{ $solicitud['atencion_id'] }}" data-avance="{{ $solicitud['porcentaje_progreso'] }}"></div>
                                 <div
                                     style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px; padding-top: 6px;">
 
                                     <div style="display: flex; flex-direction: column; justify-content: center; flex: 1;">
                                         <div style="text-align: right; font-size: 10px; color: #6c757d; line-height: 1.2; margin-bottom: 1px;">
-                                            {{ $recepcion['user_name'] }}
+                                            {{ $solicitud['user_name'] }}
                                         </div>
                                         <div
                                             style="text-align: right; padding: 1px 6px; border-radius: 3px; font-size: 9px; display: inline-block; margin-left: auto;">
-                                            <span style="color:rgb(58, 121, 194) !important;" class="badge badge-pill badge-light-primary">{{ $recepcion['role_name'] }}</span>
-                                            <span style="color:rgb(11, 62, 119) !important; font-weight: 500;">del área {{ $recepcion['area'] }}</span> 
+                                            <span style="color:rgb(58, 121, 194) !important;" class="badge badge-pill badge-light-primary">{{ $solicitud['role_name'] }}</span>
+                                            <span style="color:rgb(11, 62, 119) !important; font-weight: 500;">del área {{ $solicitud['area'] }}</span> 
                                         </div>
                                     </div>
 
                                     <div style="margin-left: 8px;">
-                                        @if ($recepcion['user_foto'])
-                                            <img src="{{ $recepcion['user_foto'] }}" alt="Usuario" class="avatar"
+                                        @if ($solicitud['user_foto'])
+                                            <img src="{{ $solicitud['user_foto'] }}" alt="Usuario" class="avatar"
                                                 style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;">
                                         @else
                                             <div class="avatar"
@@ -810,17 +806,18 @@
                 </div>
                 <div class="card-body kanban-columna" style="background: #f8f9fa; padding: 1rem;">
                     <div id="columna-resueltas" class="sortable-column">
-                        @forelse($resueltas as $recepcion)
-                            <div class="solicitud-card" data-id="{{ $recepcion['recepcion_id'] }}"
-                                data-atencion-id="{{ $recepcion['atencion_id'] }}"
-                                data-estado-id="{{ $recepcion['estado_id'] }}" style="border-left-color: #28a745;">
+                        @forelse($resueltas as $solicitud)
+                            <div class="solicitud-card" data-id="{{ $solicitud['recepcion_id'] }}"
+                                data-atencion-id="{{ $solicitud['atencion_id'] }}"
+                                data-estado-id="{{ $solicitud['estado_id'] }}"
+                                data-fecha="{{ $solicitud['created_at'] }}" style="border-left-color: #28a745;">
                                 <div class="solicitud-titulo">
-                                    @if ($recepcion['titulo'] && $recepcion['detalle'])
-                                        {{ $recepcion['titulo'] }} - {{ $recepcion['detalle'] }}
-                                    @elseif($recepcion['titulo'])
-                                        {{ $recepcion['titulo'] }}
-                                    @elseif($recepcion['detalle'])
-                                        {{ $recepcion['detalle'] }}
+                                    @if ($solicitud['titulo'] && $solicitud['detalle'])
+                                        {{ $solicitud['titulo'] }} - {{ $solicitud['detalle'] }}
+                                    @elseif($solicitud['titulo'])
+                                        {{ $solicitud['titulo'] }}
+                                    @elseif($solicitud['detalle'])
+                                        {{ $solicitud['detalle'] }}
                                     @else
                                         Sin título
                                     @endif
@@ -828,34 +825,34 @@
                                 <div class="row"> {{-- ID Y FECHA --}}
                                     <div class="solicitud-id text-center">
                                         <small style="font-size: 0.7rem;">
-                                            {{ KeyRipper::rip($recepcion['atencion_id']) }}
+                                            {{ $solicitud['solicitud_id_ripped'] }}
                                         </small>
                                     </div>
                                     <div class="fecha-solicitud">
-                                        {{ \Carbon\Carbon::parse($recepcion['fecha_hora_solicitud'])->diffForHumans() }}
+                                        {{ $solicitud['fecha_relativa'] }}
                                     </div>
                                 </div>
                                 <div class="solicitud-estado" style="font-size: 11px; color: #28a745; margin-top: 5px;">
-                                    Estado: {{ $recepcion['estado'] }}
+                                    Estado: {{ $solicitud['estado'] }}
                                 </div>
-                                <div class="progress-divider" data-atencion-id="{{ $recepcion['atencion_id'] }}" data-avance="{{ $recepcion['porcentaje_progreso'] }}"></div>
+                                <div class="progress-divider" data-atencion-id="{{ $solicitud['atencion_id'] }}" data-avance="{{ $solicitud['porcentaje_progreso'] }}"></div>
                                 <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px; padding-top: 6px;">
                                     
                                     <div style="display: flex; flex-direction: column; justify-content: center; flex: 1;">
                                         <div
                                             style="text-align: right; font-size: 10px; color: #6c757d; line-height: 1.2; margin-bottom: 1px;">
-                                            {{ $recepcion['user_name'] }}
+                                            {{ $solicitud['user_name'] }}
                                         </div>
                                         <div
                                             style="text-align: right; padding: 1px 6px; border-radius: 3px; font-size: 9px; display: inline-block; margin-left: auto;">
-                                            <span style="color:rgb(10, 95, 30) !important;" class="badge badge-pill badge-light-success">{{ $recepcion['role_name'] }}</span>
-                                            <span style="color:rgb(10, 95, 30) !important; font-weight: 400;">del área {{ $recepcion['area'] }}</span> 
+                                            <span style="color:rgb(10, 95, 30) !important;" class="badge badge-pill badge-light-success">{{ $solicitud['role_name'] }}</span>
+                                            <span style="color:rgb(10, 95, 30) !important; font-weight: 400;">del área {{ $solicitud['area'] }}</span> 
                                         </div>
                                     </div>
 
                                     <div style="margin-left: 8px;">
-                                        @if ($recepcion['user_foto'])
-                                            <img src="{{ $recepcion['user_foto'] }}" alt="Usuario" class="avatar"
+                                        @if ($solicitud['user_foto'])
+                                            <img src="{{ $solicitud['user_foto'] }}" alt="Usuario" class="avatar"
                                                 style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;">
                                         @else
                                             <div class="avatar"
@@ -985,8 +982,8 @@
                 });
             });
         }
+        //ACTUALIZACION DE ESTADO DE LA SOLICITUD
         function updatePosition(solicitudId, nuevaColumna, evt) {
-            //ACTUALIZACION DE ESTADO DE LA SOLICITUD EN EL FRONTEND
             let nuevoEstadoId = 1; // Por defecto Recibida
             let nombreEstado = 'Recibida';
             let colorBorde = '#ffc107'; // Amarillo por defecto
@@ -1007,7 +1004,6 @@
                     colorBorde = '#28a745'; // Verde
                     break;
             }
-            //ACTUALIZAR ESTADO DE LA SOLICITUD EN EL BACKEND
             let url = ''; //Seleccionando la ruta a la que se va a enviar la solicitud
             let selectedValue = null;
             if (userRole === 'Recepcionista') { //Derivar
@@ -1133,7 +1129,6 @@
                     actualizarMensajeColumnaVacia(); // Actualizar mensaje de columna vacía
                 }
             });
-
         }
         //MOSTRAR TAREAS EN SIDEBAR
         $(document).on('click', '.solicitud-card', function() {
@@ -1403,8 +1398,9 @@
             @endforeach
             actualizarMensajeColumnaVacia(); // NUEVO: inicializar mensajes de columnas vacías
         }
-        // ESCUCHADOR DE AVANCES: Recoger IDs de tarjetas en tableros
-        function obtenerAtencionIdsTableros() {
+        
+        // REFRESCAR BARRAS DE PROGRESO
+        function obtenerAtencionIdsTableros() { 
             let ids = [];
             $('.solicitud-card').each(function() {
                 let atencionId = $(this).attr('data-atencion-id');
@@ -1464,28 +1460,39 @@
                 }
             });
         }
-        setInterval(consultarAvancesTablero, 10000); // Iniciar escuchador
-        function obtenerUltimoIdRecibidas() {
-            let ids = $('#columna-recibidas .solicitud-card').map(function() {
-                return parseInt($(this).attr('data-id'), 10);
+        setInterval(consultarAvancesTablero, 900000);
+        
+
+        // REFRESCAR TABLERO DE RECIBIDAS
+/*        
+        function obtenerUltimaFechaRecibidas() { // Refrescar tablero de recibidas cada intervalo de tiempo
+            let fechas = $('#columna-recibidas .solicitud-card').map(function() {
+                return $(this).attr('data-fecha');
             }).get();
-            return ids.length ? Math.max(...ids) : null;
+
+            console.log(fechas.length ? Math.max(...fechas) : null);
+
+            return fechas.length ? Math.max(...fechas) : null;
         }
         function cargarNuevasRecibidas() {
-            let ultimoId = obtenerUltimoIdRecibidas();
+            let ultimaFecha = obtenerUltimaFechaRecibidas();
             $.post({
                 url: '{{ route("recepcion.nuevas-recibidas") }}',
                 data: {
-                    ultimo_id: ultimoId,
+                    ultima_fecha: ultimaFecha,
                     _token: $('meta[name="csrf-token"]').attr('content')
                 },
                 success: function(nuevas) {
-                    if (nuevas && nuevas.length > 0) {
+                    
+                    console.log(nuevas.length);
+
+                    if (nuevas.length > 0) {
                         nuevas.forEach(function(tarjeta) {
                             let html = `
                                 <div class="solicitud-card animar-llegada" data-id="${tarjeta.recepcion_id}"
                                     data-atencion-id="${tarjeta.atencion_id}"
-                                    data-estado-id="${tarjeta.estado_id}" style="border-left-color: #ffc107;">
+                                    data-estado-id="${tarjeta.estado_id}"
+                                    data-fecha="${tarjeta.created_at}" style="border-left-color: #ffc107;">
                                     <div class="solicitud-titulo">${tarjeta.titulo || 'Sin título'}</div>
                                     <div class="row"> {{-- ID Y FECHA --}}
                                         <div class="solicitud-id text-center">
@@ -1530,10 +1537,13 @@
                 }
             });
         }
-        setInterval(cargarNuevasRecibidas, 10000); // Iniciar escuchador
-        $(document).ready(function() { // Inicializar al cargar la página
+        setInterval(cargarNuevasRecibidas, 5000);
+*/
+        // INICIALIZAR PROGRESO DE LAS TARJETAS, TABLEROS Y CONTADORES
+        $(document).ready(function() {
             initializeProgress();
             initKanban();
         });
+
     </script>
 @endsection

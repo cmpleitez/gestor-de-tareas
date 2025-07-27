@@ -13,8 +13,8 @@ use App\Models\Actividad;
 use App\Models\Atencion;
 use App\Models\Estado;
 use Illuminate\Support\Facades\Log;
-use App\Services\KeyRipper;
 use Carbon\Carbon;
+use App\Services\KeyRipper;
 
 class RecepcionController extends Controller
 {
@@ -23,7 +23,7 @@ class RecepcionController extends Controller
         $user = auth()->user()->load('area');
         $recepciones = Recepcion::where('user_id_destino', $user->id)
         ->with(['solicitud', 'estado', 'usuarioDestino', 'area', 'role'])
-        ->orderBy('created_at', 'asc')
+        ->orderBy('created_at', 'desc')
         ->limit(5)
         ->get();
         $tarjetas = $recepciones->map(function ($tarjeta) {
@@ -41,12 +41,19 @@ class RecepcionController extends Controller
                 'role_name' => $tarjeta->role->name,
                 'recepcion_id' => $tarjeta->id,
                 'porcentaje_progreso' => $tarjeta->avance,
-                'fecha_hora_solicitud' => $tarjeta->created_at,
+                'solicitud_id_ripped' => KeyRipper::rip($tarjeta->atencion_id),
+                'fecha_relativa' => Carbon::parse($tarjeta->created_at)->diffForHumans(),
+                'created_at' => $tarjeta->created_at,
             ];
         });
+        $recibidas = $tarjetas->where('estado_id', 1); // Organizar tarjetas por estado
+        $progreso = $tarjetas->where('estado_id', 2);
+        $resueltas = $tarjetas->where('estado_id', 3);
         $data = [
+            'recibidas' => $recibidas,
+            'progreso' => $progreso,
+            'resueltas' => $resueltas,
             'tarjetas' => $tarjetas,
-            'estado_resuelta_id' => 3
         ];
         if ($user->hasRole('Recepcionista')) {
             $user->load('area.oficina');
@@ -426,42 +433,33 @@ class RecepcionController extends Controller
             'solicitud_actualizada' => $solicitudActualizada
         ]);
     }
-
-    /**
-     * Devuelve el avance de las recepciones del usuario actual que están en los tableros.
-     */
     public function avanceTablero(Request $request)
     {
         $user = auth()->user();
         $atencionIds = $request->input('atencion_ids', []);
-        
         if (!is_array($atencionIds) || empty($atencionIds)) {
             return response()->json([]);
         }
-        
-        // IDs de estados que representan tableros activos (ajusta según tu lógica)
-        $estadosTablero = [1, 2, 3]; // 1: Recibida, 2: En progreso, 3: Resuelta
-        
+        $estadosTablero = [1, 2, 3]; // 1: Recibida, 2: En progreso, 3: Resuelta // IDs de estados que representan tableros activos (ajusta según tu lógica)
         $recepciones = Recepcion::where('user_id_destino', $user->id)
-            ->whereIn('estado_id', $estadosTablero)
-            ->whereIn('atencion_id', $atencionIds)
-            ->select('atencion_id', 'avance', 'estado_id')
-            ->get();
+        ->whereIn('estado_id', $estadosTablero)
+        ->whereIn('atencion_id', $atencionIds)
+        ->select('atencion_id', 'avance', 'estado_id')
+        ->get();
         return response()->json($recepciones);
     }
-
     public function nuevasRecibidas(Request $request)
     {
         $user = auth()->user();
-        $ultimoId = $request->input('ultimo_id', null);
+        $ultimaFecha = $request->input('ultima_fecha', null);
 
-        $query = \App\Models\Recepcion::where('user_id_destino', $user->id)
-            ->where('estado_id', 1) // Solo recibidas
-            ->orderBy('id', 'desc')
+        $query = Recepcion::where('user_id_destino', $user->id)
+            ->where('estado_id', 1)
+            ->orderBy('created_at', 'desc')
             ->limit(5);
 
-        if ($ultimoId) {
-            $query->where('id', '>', $ultimoId);
+        if ($ultimaFecha) {
+            $query->where('created_at', '>', $ultimaFecha);
         }
 
         $nuevas = $query->get()->map(function ($tarjeta) {
@@ -480,7 +478,8 @@ class RecepcionController extends Controller
                 'role_name' => $tarjeta->role->name,
                 'porcentaje_progreso' => $tarjeta->avance,
                 'solicitud_id_ripped' => KeyRipper::rip($tarjeta->atencion_id),
-                'fecha_relativa' => Carbon::parse($tarjeta->fecha_hora_solicitud)->diffForHumans()
+                'fecha_relativa' => Carbon::parse($tarjeta->fecha_hora_solicitud)->diffForHumans(),
+                'created_at' => $tarjeta->created_at
             ];
         });
 

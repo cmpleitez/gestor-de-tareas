@@ -27,19 +27,18 @@
     09. El operador avanza la solicitud desde su tablero de recibidas a su tablero en progreso y automáticamente se originan las tareas a cumplir segun su skill
     10. El operador va cumpliendo sus tareas una a una y reportandolas como realizadas
 
+
+🟢 el problema es que en la primera carga "recepcion.solicitudes" tengo las colecciones $tarjetas, $recibidas, $progreso y $resueltas.
+    y de hecho ya hay un error porque $tarjetas repite dentro de si el resto de colecciones
+        habria que reparar primero la carga inicial 
+            luego reparar usando variables estandarizadas la carga por intervalo de tiempo
+                ademas el keyripper debe ejecutarse en un controlador y no en el frontend
+                    las variables llave amigable y fecha_relativa debe calcularse dentro del controlador y no en el frontend
+
 🟢 solicitudes / rol gestor: construir proceso para delegar todas las solicitudes recibidas al equipo de trabajo X
 🟢 solicitudes: ordenar el codigo fuente de los js
 🟢 it seems like table order is the opposite of it should be
 🟢 ya en las preuebas con diferentes perfiles, se encontro que la tarjeta debe mostrar todos los operadores que tengan copias de la solicitud
-
-
-...🟢 terminar de afinar el correlativo amigable pues cuando tipoSolicitud llegue a 199 y pase a 200, el extracto va ser = cero
-    entonces en ese caso debería cambiar a uno pero si lo hace se va repetir un numero así:
-        098	001
-        099	001
-        101	001
-        101	001
-
 🟢 control de movimientos: 
     Re = Recepciones; Ep = En progreso; Rt = Resueltas;
     Re -> Ep: Distribuir en base a rol
