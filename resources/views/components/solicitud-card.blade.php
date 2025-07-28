@@ -44,9 +44,8 @@
         data-atencion-id="{{ $solicitud['atencion_id'] }}"
         data-avance="{{ $solicitud['porcentaje_progreso'] }}">
     </div>
-
     
-    <div style="display: flex; align-items: center; justify-content: end; margin-top: 8px; padding-top: 6px;">
+    <div class="users-container" style="display: flex; align-items: center; justify-content: end; margin-top: 8px; padding-top: 6px;">
         @foreach ($solicitud['users'] as $user)
             <div style="margin: 0;" data-toggle="popover" 
                 data-title="{{ $user['name'] }}" 

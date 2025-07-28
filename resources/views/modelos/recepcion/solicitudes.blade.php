@@ -648,11 +648,6 @@
                 </div>
             </div>
         </div>
-
-
-        
-
-
         {{-- PROGRESO --}}
         <div class="col-md-4"> 
             <div class="card border-0 overflow-hidden">
@@ -1295,6 +1290,57 @@
                                     }, 500);
                                 }
                             }
+                            
+                            // Actualizar usuarios destino si están disponibles
+                            if (item.recepciones && item.recepciones.length > 0) {
+                                let $usersContainer = $card.find('.users-container');
+                                if ($usersContainer.length > 0) {
+                                    let usersHtml = '';
+                                    item.recepciones.forEach(function(recepcion) {
+                                        if (recepcion.usuarioDestino) {
+                                            // Determinar colores basados en el estado de la tarjeta
+                                            let estadoColor = 'rgb(170, 95, 34)'; // Color por defecto
+                                            let badgeColor = 'badge-light-warning'; // Badge por defecto
+                                            
+                                            // Ajustar colores según el estado
+                                            if (item.estado_id == 3) { // Resuelta
+                                                estadoColor = '#28a745';
+                                                badgeColor = 'badge-light-success';
+                                            } else if (item.estado_id == 2) { // En progreso
+                                                estadoColor = 'rgb(170, 95, 34)';
+                                                badgeColor = 'badge-light-warning';
+                                            } else if (item.estado_id == 1) { // Recibida
+                                                estadoColor = '#6c757d';
+                                                badgeColor = 'badge-light-secondary';
+                                            }
+                                            
+                                            let userHtml = '<div style="margin: 0;" data-toggle="popover" ' +
+                                                'data-title="' + (recepcion.usuarioDestino.name || 'Sin asignar') + '" ' +
+                                                'data-content="<span style=\'color: ' + estadoColor + ' !important;\' class=\'badge badge-pill ' + badgeColor + '\'>' + (recepcion.role ? recepcion.role.name : 'Sin rol') + '</span> ' +
+                                                '<span style=\'color: ' + estadoColor + ' !important;\' class=\'badge badge-pill ' + badgeColor + '\'>' + (recepcion.area ? recepcion.area.area : 'Sin área') + '</span>" ' +
+                                                'data-trigger="hover" data-placement="top">';
+                                            
+                                            if (recepcion.usuarioDestino.profile_photo_url) {
+                                                userHtml += '<img src="' + recepcion.usuarioDestino.profile_photo_url + '" alt="Usuario" class="avatar" ' +
+                                                    'style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;">';
+                                            } else {
+                                                userHtml += '<div class="avatar" ' +
+                                                    'style="width: 32px; height: 32px; border-radius: 50%; background: #e9ecef; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #6c757d;">' +
+                                                    (recepcion.usuarioDestino.name ? recepcion.usuarioDestino.name[0] : '?') + '</div>';
+                                            }
+                                            userHtml += '</div>';
+                                            usersHtml += userHtml;
+                                        }
+                                    });
+                                    $usersContainer.html(usersHtml);
+                                    
+                                    // Reinicializar popovers para los nuevos elementos
+                                    $usersContainer.find('[data-toggle="popover"]').popover({
+                                        html: true,
+                                        container: 'body'
+                                    });
+                                }
+                            }
                         }
                     });
                 },
@@ -1303,7 +1349,6 @@
                 }
             });
         }
-        setInterval(consultarAvancesTablero, 5000);
         // REFRESCAR TABLERO DE RECIBIDAS
         function generarTarjetaSolicitud(tarjeta, animar = false) {
             const titulo = tarjeta.titulo && tarjeta.detalle ? 
@@ -1337,17 +1382,15 @@
                     
                     <div class="progress-divider" data-atencion-id="${tarjeta.atencion_id}" data-avance="${tarjeta.porcentaje_progreso}"></div>
                     
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px; padding-top: 6px;">
-                        <div style="display: flex; flex-direction: column; justify-content: center; flex: 1;">
-                            <div style="text-align: right; font-size: 10px; color: #6c757d; line-height: 1.2; margin-bottom: 1px;">
-                                ${tarjeta.user_name}
-                            </div>
-                            <div style="text-align: right; padding: 1px 6px; border-radius: 3px; font-size: 9px; font-weight: 500; display: inline-block; margin-left: auto;">
-                                <span style="color: rgb(170, 95, 34) !important;" class="badge badge-pill badge-light-warning">${tarjeta.role_name}</span>
-                                <span style="color: #612d03 !important; font-weight: 400;">del área ${tarjeta.area}</span>
-                            </div>
+                    <div class="users-container" style="display: flex; align-items: center; justify-content: end; margin-top: 8px; padding-top: 6px;">
+                        <div style="margin: 0;" data-toggle="popover" 
+                            data-title="${tarjeta.user_name}" 
+                            data-content="<span style='color: rgb(170, 95, 34) !important;' class='badge badge-pill badge-light-warning'>${tarjeta.role_name}</span> 
+                            <span style='color: rgb(170, 95, 34) !important;' class='badge badge-pill badge-light-warning'>${tarjeta.area}</span>"
+                            data-trigger="hover"
+                            data-placement="top">
+                            ${avatar}
                         </div>
-                        <div style="margin-left: 8px;">${avatar}</div>
                     </div>
                 </div>
             `;
@@ -1398,7 +1441,8 @@
         $(document).ready(function() {
             initializeProgress();
             initKanban();
-            setInterval(cargarNuevasRecibidas, 5000);
+            setInterval(consultarAvancesTablero, 5000);
+            setInterval(cargarNuevasRecibidas, 60000);
             $('[data-toggle="popover"]').popover({ // Inicializar popovers de Bootstrap
                 html: true,
                 container: 'body'

@@ -501,12 +501,44 @@ class RecepcionController extends Controller
             return response()->json([]);
         }
         $estadosTablero = [1, 2, 3]; // 1: Recibida, 2: En progreso, 3: Resuelta // IDs de estados que representan tableros activos (ajusta según tu lógica)
-        $recepciones = Recepcion::where('user_id_destino', $user->id)
+        $recepciones = Recepcion::with('usuarioDestino')->where('user_id_destino', $user->id)
         ->whereIn('estado_id', $estadosTablero)
         ->whereIn('atencion_id', $atencionIds)
         ->select('atencion_id', 'avance', 'estado_id')
         ->get();
-        return response()->json($recepciones);
+        
+        // Agrupar por atencion_id y agregar datos de recepciones
+        $resultado = $recepciones->map(function ($recepcion) {
+            // Obtener todas las recepciones para este atencion_id
+            $todasRecepciones = Recepcion::with(['usuarioDestino', 'role', 'area'])
+                ->where('atencion_id', $recepcion->atencion_id)
+                ->get()
+                ->map(function ($recepcionItem) {
+                    // Procesar la URL de la foto del usuario
+                    $profilePhotoUrl = $recepcionItem->usuarioDestino && $recepcionItem->usuarioDestino->profile_photo_url
+                        ? $recepcionItem->usuarioDestino->profile_photo_url
+                        : asset('app-assets/images/pages/operador.png');
+                    
+                    return [
+                        'usuarioDestino' => [
+                            'id' => $recepcionItem->usuarioDestino->id ?? null,
+                            'name' => $recepcionItem->usuarioDestino->name ?? 'Sin asignar',
+                            'profile_photo_url' => $profilePhotoUrl
+                        ],
+                        'role' => $recepcionItem->role,
+                        'area' => $recepcionItem->area
+                    ];
+                });
+            
+            return [
+                'atencion_id' => $recepcion->atencion_id,
+                'avance' => $recepcion->avance,
+                'estado_id' => $recepcion->estado_id,
+                'recepciones' => $todasRecepciones
+            ];
+        });
+        
+        return response()->json($resultado);
     }
 
 
