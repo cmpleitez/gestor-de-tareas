@@ -31,8 +31,8 @@
                                         <th>Oficina</th>    
                                         <th>Equipo</th>
                                         <th>Usuario</th>
-                                        <th>correo</th>
                                         <th>Rol</th>
+                                        <th>correo</th>
                                         <th class="text-center">Creado</th>
                                         <th class="text-center">Actualizado</th>
                                         @can('autorizar')
@@ -49,8 +49,12 @@
                                             <td>{{ $user->area->oficina->oficina }}</td>
                                             <td>{{ $user->equipos->pluck('equipo')->first() }}</td>
                                             <td>{{ $user->name }}</td>
+                                            <td>
+                                                <span class="badge badge-pill badge-light-warning" style="color: rgb(170, 95, 34) !important;">
+                                                    {{ $user->roles->pluck('name')->first() }}
+                                                </span>
+                                            </td>
                                             <td>{{ $user->email }}</td>
-                                            <td> <span class="badge badge-pill badge-light-warning" style="color: rgb(170, 95, 34) !important;">{{ $user->roles->pluck('name')->first() }}</span></td>
                                             <td class="text-center">{{ $user->created_at->format('d/m/Y') }}</td>
                                             <td class="text-center">{{ $user->updated_at->format('d/m/Y') }}</td>
                                             {{-- ACTIVAR --}}
@@ -136,8 +140,8 @@
                                         <th>Oficina</th>
                                         <th>Equipo</th>
                                         <th>Usuario</th>
-                                        <th>correo</th>
                                         <th>Rol</th>
+                                        <th>correo</th>
                                         <th class="text-center">Creado</th>
                                         <th class="text-center">Actualizado</th>
                                         @can('autorizar')

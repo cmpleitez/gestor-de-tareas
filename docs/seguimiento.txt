@@ -1,4 +1,4 @@
-⭐ Mi estilo de trabajo es así: código limpio y estándar, sin artificios, compactar servicios, reutilizar estilos existentes, priorizar Claude Sonnet 4 y 3.5, así como Grok 4,  Claude Opus y o3 para las respuesta de calidad, y mencionar en cada respuesta tuya el modelo que usaste para la misma. Cuando diga: esta linea o lineas me refiero a que ya hice referencia dichas líneas con CTRL+L, y prefiero que busques primero en la pestaña activa y luego en las demas
+⭐ Mi estilo de trabajo es así: código limpio y estándar, sin artificios, compactar servicios, reutilizar estilos existentes, priorizar Claude Sonnet 4 y 3.5, así como Grok 4,  Claude Opus y o3 para las respuesta de calidad, y mencionar en cada respuesta tuya el modelo que usaste para la misma. Cuando diga: esta linea o lineas me refiero a que ya hice referencia dichas líneas con CTRL+L, y prefiero que busques primero en la pestaña activa y luego en las demás
 ⭐ Entorno del proyecto actual(Gestor de Tareas): 
         Solicitud: está definida por la tabla "atenciones" y su transaccional hija "recepciones" especificamente por el campo "recepciones.atencion_id"; 
         Unidad de trabajo: La unidad general de trabajo es la solicitud y se almacena en la tabla "atenciones"
@@ -28,14 +28,11 @@
     09. El operador avanza la solicitud desde su tablero de recibidas a su tablero en progreso y automáticamente se originan las tareas a cumplir segun su skill
     10. El operador va cumpliendo sus tareas una a una y reportandolas como realizadas
 
-🟢 solicitudes: error en carga de las resueltas
-🟢 agregar todos los usuarios participantes en las tarjetas
-🟢 user.index: agregar columna "rol" con ultimo rol asignado al usuario, 
-    generalizar esto en todas las consultas de user.role
-🟢 solicitudes / rol gestor: construir proceso para delegar todas las solicitudes recibidas al equipo de trabajo X
+🟢 construir movimiento de control de calidad para el gestor
+🟢 actualizar los usuarios participantes cuando se haga drop en el tablero "En progreso"
+🟢 revisar proceso de priorizacion
+🟢 procesos automaticos: exeptuando la derivacion porque no es eficiente que el ciudadano tenga que solicitar a una oficina muy lejana de su residencia
 🟢 solicitudes: ordenar el codigo fuente de los js
-🟢 it seems like table order is the opposite of it should be
-🟢 ya en las preuebas con diferentes perfiles, se encontro que la tarjeta debe mostrar todos los operadores que tengan copias de la solicitud
 🟢 control de movimientos: 
     Re = Recepciones; Ep = En progreso; Rt = Resueltas;
     Re -> Ep: Distribuir en base a rol
@@ -44,17 +41,12 @@
     Ep -> Re: Revertir movimiento
     Rt -> Ep: Revertir movimiento
     Rt -> Re: Revertir movimiento
-        Agregar la excepcion: cuando el gestor pase de "en progreso a resueltas", 
-            permitir el movimiento para que sirva de control de calidad para la solicitud
-🟢 no ordernar lar tarjetas despues de un drop (mantener la priorizacion que hizo el usuario)
-    para resolver esto se debe construir el proceso de priorización
-🟢 tableros kanvan: estudio e incoporporación de reglas técnicas necesarias, asi como filtro según rol, y pruebas con casos de roles multiples
+🟢 verificar y delimitar casos de roles multiples
 🟢 proceso de rechazo de una solicitud o anulación
 🟢 en la mayoria de las vistas se debe agregar un margen arriba de 1 o 2 porque todo esta muy pegado al techo
 🟢 global cruds.edit: si hay historial no se puede editar
-🟢 crear servicio controlado para cambiar el dui a una persona por motivos de error involuntario a la hora de registrar ese dui en el formulario de registro de usuarios
+🟢 servicio controlado: para cambiar el dui a una persona por motivos de error involuntario a la hora de registrar ese dui en el formulario de registro de usuarios
 🟢 register: asegurar el id del usuario con un aumento no automático sino programatico
-🟢 parametrizar bloque de procesamiento actualmente fijado en 10 unidades
 🟢 solicitudes: ajustar el movimiento que hace la tarjeta seleccionada "chossen" o algo asi porque se queda pegada cual si no quisiera moverse
 🟢 solicitud: maquetacion de la asignacion de tareas y mejoramiento de clic a la hora de elegir la tarea
 ✨ inteligencia artificial ayuda segun el texto libre escrito por el beneficiario, a elegir a éste último, la solicitud de catalogo más adecuada, incluye confirmación del beneficiario

@@ -12,6 +12,6 @@ class Atencion extends Model
 
     public function recepciones()
     {
-        return $this->belongsTo(Recepcion::class);
+        return $this->hasMany(Recepcion::class);
     }
 }

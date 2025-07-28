@@ -7,6 +7,7 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/bootstrap-extended.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/pages/app-kanban.css') }}">
     <style>
+
         .solicitud-card {
             background: white;
             border: 1px solid #e3e6f0;
@@ -647,6 +648,11 @@
                 </div>
             </div>
         </div>
+
+
+        
+
+
         {{-- PROGRESO --}}
         <div class="col-md-4"> 
             <div class="card border-0 overflow-hidden">
@@ -1297,7 +1303,7 @@
                 }
             });
         }
-        setInterval(consultarAvancesTablero, 900000);
+        setInterval(consultarAvancesTablero, 5000);
         // REFRESCAR TABLERO DE RECIBIDAS
         function generarTarjetaSolicitud(tarjeta, animar = false) {
             const titulo = tarjeta.titulo && tarjeta.detalle ? 
@@ -1359,26 +1365,19 @@
             let data = {
                 _token: $('meta[name="csrf-token"]').attr('content')
             };
-            
-            // Solo enviar ultima_fecha si es válida
-            if (ultimaFecha && ultimaFecha !== 'null' && ultimaFecha !== 'undefined') {
+            if (ultimaFecha && ultimaFecha !== 'null' && ultimaFecha !== 'undefined') { // Solo enviar ultima_fecha si es válida
                 data.ultima_fecha = ultimaFecha;
             }
-            
             $.post({
                 url: '{{ route("recepcion.nuevas-recibidas") }}',
                 data: data,
                 success: function(nuevas) {
                     if (nuevas.length > 0) {
                         let tarjetasAgregadas = 0;
-                        
                         nuevas.forEach(function(tarjeta) {
-                            // Verificar si la tarjeta ya existe
-                            let tarjetaExistente = $(`#columna-recibidas .solicitud-card[data-id="${tarjeta.recepcion_id}"]`);
-                            
+                            let tarjetaExistente = $(`#columna-recibidas .solicitud-card[data-id="${tarjeta.recepcion_id}"]`); // Verificar si la tarjeta ya existe
                             if (tarjetaExistente.length === 0) {
-                                // Solo agregar si no existe
-                                let html = generarTarjetaSolicitud(tarjeta, true);
+                                let html = generarTarjetaSolicitud(tarjeta, true); // Solo agregar si no existe
                                 let $nueva = $(html);
                                 $('#columna-recibidas').prepend($nueva);
                                 updateProgressByPercentage(tarjeta.atencion_id, tarjeta.porcentaje_progreso);
@@ -1388,11 +1387,8 @@
                                 tarjetasAgregadas++;
                             }
                         });
-                        
-                        // Solo actualizar contadores si se agregaron tarjetas
-                        if (tarjetasAgregadas > 0) {
+                        if (tarjetasAgregadas > 0) { // Solo actualizar contadores si se agregaron tarjetas
                             actualizarContadores();
-                            console.log(`Se agregaron ${tarjetasAgregadas} nuevas tarjetas`);
                         }
                     }
                 }
@@ -1402,7 +1398,11 @@
         $(document).ready(function() {
             initializeProgress();
             initKanban();
-            setInterval(cargarNuevasRecibidas, 900000);
+            setInterval(cargarNuevasRecibidas, 5000);
+            $('[data-toggle="popover"]').popover({ // Inicializar popovers de Bootstrap
+                html: true,
+                container: 'body'
+            });
         });
 
     </script>

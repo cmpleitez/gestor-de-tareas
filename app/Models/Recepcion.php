@@ -53,7 +53,7 @@ class Recepcion extends Model
 
     public function atencion()
     {
-        return $this->hasOne(Atencion::class);
+        return $this->belongsTo(Atencion::class);
     }
 
     public function actividades()

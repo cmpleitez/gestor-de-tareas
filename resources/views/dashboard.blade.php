@@ -11,7 +11,8 @@
     <meta name="author" content="">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Gestor de tareas {{ config('app.version') }}</title>
+    {{-- <title>Gestor de tareas {{ config('app.version') }}</title> --}}
+    <title>{{ auth()->user()->getRoleNames()->first() }} - GT{{ config('app.version') }}</title>
     <link rel="apple-touch-icon" href="{{ asset('app-assets/images/ico/apple-icon-120.png') }}">
     <link rel="shortcut icon" type="image/svg+xml" href="{{ asset('app-assets/images/ico/favicon.svg') }}">
     <link href="https://fonts.googleapis.com/css?family=Rubik:300,400,500,600%7CIBM+Plex+Sans:300,400,500,600,700"
@@ -45,6 +46,9 @@
     <!-- END: Page CSS-->
 
     <style>
+        .avatar {
+            margin: 0px;
+        }
         .badge-pill {
             padding-right: 0.7rem !important;
             padding-left: 0.7rem !important;
@@ -342,10 +346,10 @@
                                     </script>
                                     <span class="user-status" style="color: #0056b3; font-weight: 600;">
                                         @if(auth()->check())
-                                            Conectado como
+                                            Conectado como 
                                             @php $roles = auth()->user()->getRoleNames(); @endphp
                                             @if($roles->isNotEmpty())
-                                                {{ $roles[0] }}
+                                                {{ $roles->first() }}
                                             @endif
                                         @else
                                             <span style="color: #d90429; font-weight: 600;">Desconectado</span>
@@ -552,7 +556,9 @@
         $(document).ready(function () {
             //Captura de alertas del backend
             @if (Session::has('success'))
-                toastr.success("{{ Session::get('success') }}");
+                toastr.success("{{ Session::get('success') }}", '', {
+                    positionClass: 'toast-top-left'
+                });
             @endif
 
             @if (Session::has('error'))

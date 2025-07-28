@@ -23,36 +23,49 @@ class RecepcionController extends Controller
         $user = auth()->user()->load('area');
         $recepciones = Recepcion::where('user_id_destino', $user->id)
         ->with(['solicitud', 'estado', 'usuarioDestino', 'area', 'role'])
-        ->limit(5)
+        ->orderBy('created_at', 'desc')
+        ->limit(3)
         ->get();
         $tarjetas = $recepciones->map(function ($tarjeta) {
+            $usuariosDestino = Recepcion::with(['usuarioDestino', 'role', 'area']) // Obtener todos los usuarios destino para esta atención
+                ->where('atencion_id', $tarjeta->atencion_id)
+                ->get()
+                ->map(function ($recepcion) {
+                    return [
+                        'name' => $recepcion->usuarioDestino->name ?? 'Sin asignar',
+                        'profile_photo_url' => $recepcion->usuarioDestino && $recepcion->usuarioDestino->profile_photo_url
+                            ? $recepcion->usuarioDestino->profile_photo_url
+                            : asset('app-assets/images/pages/operador.png'),
+                        'recepcion_role_name' => $recepcion->role->name ?? 'Sin rol', // Rol de la recepción específica
+                        'area_name' => $recepcion->area->area ?? 'Sin área'
+                    ];
+                });
             return [
                 'atencion_id' => $tarjeta->atencion_id,
-                'titulo' => $tarjeta->solicitud->solicitud,
+                'created_at' => $tarjeta->created_at,
                 'detalle' => $tarjeta->detalle,
                 'estado' => $tarjeta->estado->estado,
                 'estado_id' => $tarjeta->estado->id,
-                'user_foto' => $tarjeta->usuarioDestino && $tarjeta->usuarioDestino->profile_photo_url
-                    ? $tarjeta->usuarioDestino->profile_photo_url
-                    : asset('app-assets/images/pages/operador.png'),
+                'fecha_relativa' => Carbon::parse($tarjeta->created_at)->diffForHumans(),
+                'porcentaje_progreso' => $tarjeta->avance,
+                'recepcion_id' => $tarjeta->id,
+                'role_name' => $tarjeta->role->name,
+                'solicitud_id_ripped' => KeyRipper::rip($tarjeta->atencion_id),
+                'titulo' => $tarjeta->solicitud->solicitud,
+                'users' => $usuariosDestino,
                 'user_name' => $tarjeta->usuarioDestino->name,
                 'area' => $tarjeta->area->area,
-                'role_name' => $tarjeta->role->name,
-                'recepcion_id' => $tarjeta->id,
-                'porcentaje_progreso' => $tarjeta->avance,
-                'solicitud_id_ripped' => KeyRipper::rip($tarjeta->atencion_id),
-                'fecha_relativa' => Carbon::parse($tarjeta->created_at)->diffForHumans(),
-                'created_at' => $tarjeta->created_at,
             ];
         });
         $recibidas = $tarjetas->where('estado_id', 1)->sortBy('created_at');
         $progreso = $tarjetas->where('estado_id', 2)->sortBy('created_at');
         $resueltas = $tarjetas->where('estado_id', 3)->sortBy('created_at');
+        $tarjetas_ordenadas = $tarjetas->sortBy('created_at');
         $data = [
             'recibidas' => $recibidas,
             'progreso' => $progreso,
             'resueltas' => $resueltas,
-            'tarjetas' => $tarjetas,
+            'tarjetas' => $tarjetas_ordenadas,
         ];
         if ($user->hasRole('Recepcionista')) {
             $user->load('area.oficina');
@@ -67,6 +80,53 @@ class RecepcionController extends Controller
             })->where('activo', true)->get();
         }
         return view('modelos.recepcion.solicitudes', $data);
+    }
+    
+    public function nuevasRecibidas(Request $request)
+    {
+        $user = auth()->user()->load('area');
+        $ultimaFecha = $request->input('ultima_fecha', null);
+        $query = Recepcion::where('user_id_destino', $user->id)
+            ->where('estado_id', 1)
+            ->orderBy('created_at', 'desc')
+            ->limit(5);
+        if ($ultimaFecha) {
+            $query->where('created_at', '>', $ultimaFecha);
+        }
+        $nuevas = $query->get()->map(function ($tarjeta) {
+            // Obtener todos los usuarios destino para esta atención
+            $usuariosDestino = Recepcion::with(['usuarioDestino', 'role', 'area'])
+                ->where('atencion_id', $tarjeta->atencion_id)
+                ->get()
+                ->map(function ($recepcion) {
+                    return [
+                        'name' => $recepcion->usuarioDestino->name ?? 'Sin asignar',
+                        'profile_photo_url' => $recepcion->usuarioDestino && $recepcion->usuarioDestino->profile_photo_url
+                            ? $recepcion->usuarioDestino->profile_photo_url
+                            : asset('app-assets/images/pages/operador.png'),
+                        'recepcion_role_name' => $recepcion->role->name ?? 'Sin rol', // Rol de la recepción específica
+                        'area_name' => $recepcion->area->area ?? 'Sin área'
+                    ];
+                });
+
+            return [
+                'recepcion_id' => $tarjeta->id,
+                'atencion_id' => $tarjeta->atencion_id,
+                'titulo' => $tarjeta->solicitud->solicitud ?? '',
+                'detalle' => $tarjeta->detalle,
+                'estado' => $tarjeta->estado->estado,
+                'estado_id' => $tarjeta->estado->id,
+                'users' => $usuariosDestino,
+                'user_name' => $tarjeta->usuarioDestino->name,
+                'area' => $tarjeta->area->area,
+                'role_name' => $tarjeta->role->name,
+                'porcentaje_progreso' => $tarjeta->avance,
+                'solicitud_id_ripped' => KeyRipper::rip($tarjeta->atencion_id),
+                'fecha_relativa' => Carbon::parse($tarjeta->fecha_hora_solicitud)->diffForHumans(),
+                'created_at' => $tarjeta->created_at
+            ];
+        });
+        return response()->json($nuevas);
     }
 
     public function areas(Solicitud $solicitud)
@@ -157,7 +217,7 @@ class RecepcionController extends Controller
             return back()->with('error', 'Ocurrió un error cuando se intentaba enviar la solicitud:' . $e->getMessage());
         }
         DB::commit(); //Finalizando la transacción
-        return redirect()->route('recepcion.create')->with('success', 'La solicitud número "' . $atencion_id . '" ha sido recibida en el area ' . $user->area->area);
+        return redirect()->route('recepcion.create')->with('success', 'La solicitud número "' . $atencion_id . '" ha sido recibida en el area ' . $user->area->area)->with('toast_position', 'top-left');
     }
 
     public function derivar($recepcion_id, $area_id)
@@ -449,38 +509,6 @@ class RecepcionController extends Controller
         return response()->json($recepciones);
     }
 
-    public function nuevasRecibidas(Request $request)
-    {
-        $user = auth()->user();
-        $ultimaFecha = $request->input('ultima_fecha', null);
-        $query = Recepcion::where('user_id_destino', $user->id)
-            ->where('estado_id', 1)
-            ->orderBy('created_at', 'desc')
-            ->limit(5);
-        if ($ultimaFecha) {
-            $query->where('created_at', '>', $ultimaFecha);
-        }
-        $nuevas = $query->get()->map(function ($tarjeta) {
-            return [
-                'recepcion_id' => $tarjeta->id,
-                'atencion_id' => $tarjeta->atencion_id,
-                'titulo' => $tarjeta->solicitud->solicitud ?? '',
-                'detalle' => $tarjeta->detalle,
-                'estado' => $tarjeta->estado->estado,
-                'estado_id' => $tarjeta->estado->id,
-                'user_foto' => $tarjeta->usuarioDestino && $tarjeta->usuarioDestino->profile_photo_url
-                    ? $tarjeta->usuarioDestino->profile_photo_url
-                    : asset('app-assets/images/pages/operador.png'),
-                'user_name' => $tarjeta->usuarioDestino->name,
-                'area' => $tarjeta->area->area,
-                'role_name' => $tarjeta->role->name,
-                'porcentaje_progreso' => $tarjeta->avance,
-                'solicitud_id_ripped' => KeyRipper::rip($tarjeta->atencion_id),
-                'fecha_relativa' => Carbon::parse($tarjeta->fecha_hora_solicitud)->diffForHumans(),
-                'created_at' => $tarjeta->created_at
-            ];
-        });
-        return response()->json($nuevas);
-    }
+
     
 }
