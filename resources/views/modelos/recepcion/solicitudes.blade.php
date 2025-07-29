@@ -781,7 +781,7 @@
                                 $(evt.from).append(evt.item); // Revertir la tarjeta a su posición original
                                 return;
                             }
-                            updatePosition(solicitudId, columnaDestino, evt);
+                            updatePosition(solicitudId, columnaDestino, evt); //Actualizar el drag and drop tanto en el backend como en el frontend
                         }
                         actualizarMensajeColumnaVacia(); // NUEVO: actualizar mensajes de columnas vacías
                     },
@@ -798,26 +798,26 @@
             html: true,
             container: 'body'
         });
-        //ACTUALIZACION DE ESTADO DE LA SOLICITUD
+        //ACTUALIZAR EL MOVIMIENTO DE LA TARJETA EFECTUADO, TANTO EN EL BACKEND Y COMO EN EL FRONTEND
         function updatePosition(solicitudId, nuevaColumna, evt) {
-            let nuevoEstadoId = 1; // Por defecto Recibida
+            let nuevoEstadoId = 1; //Iniciando parametros
             let nombreEstado = 'Recibida';
-            let colorBorde = '#ffc107'; // Amarillo por defecto
+            let colorBorde = '#ffc107';
             switch (nuevaColumna) {
                 case 'columna-recibidas':
-                    nuevoEstadoId = 1; // ID de Recibida
+                    nuevoEstadoId = 1;
                     nombreEstado = 'Recibida';
-                    colorBorde = '#ffc107'; // Amarillo
+                    colorBorde = '#ffc107';
                     break;
                 case 'columna-progreso':
-                    nuevoEstadoId = 2; // ID de En progreso
+                    nuevoEstadoId = 2;
                     nombreEstado = 'En progreso';
-                    colorBorde = '#17a2b8'; // Azul info
+                    colorBorde = '#17a2b8';
                     break;
                 case 'columna-resueltas':
-                    nuevoEstadoId = 3; // ID de Resuelta
+                    nuevoEstadoId = 3;
                     nombreEstado = 'Resuelta';
-                    colorBorde = '#28a745'; // Verde
+                    colorBorde = '#28a745';
                     break;
             }
             let url = ''; //Seleccionando la ruta a la que se va a enviar la solicitud
@@ -828,7 +828,7 @@
                     Swal.fire({
                         position: 'top-end',
                         type: 'warning',
-                        title: 'Selecciona un área destino primero',
+                        title: 'Selecciona un área destino primeroDebes seleccionar un área destino',
                         showConfirmButton: false,
                         timer: 2000,
                         confirmButtonClass: 'btn btn-primary',
@@ -837,7 +837,7 @@
                     $(evt.from).append(evt.item);
                     return;
                 }
-                url = '{{ route('recepcion.derivar', ['recepcion_id' => ':id', 'area_id' => ':area']) }}'
+                url = '{{ route('recepcion.derivar',['recepcion_id'=>':id','area_id'=>':area']) }}'
                     .replace(':id', solicitudId)
                     .replace(':area', selectedValue);
             } else if (userRole === 'Supervisor') { //Asignar
@@ -846,7 +846,7 @@
                     Swal.fire({
                         position: 'top-end',
                         type: 'warning',
-                        title: 'Selecciona un equipo destino primero',
+                        title: 'Debes seleccionar un equipo destino',
                         showConfirmButton: false,
                         timer: 2000,
                         confirmButtonClass: 'btn btn-primary',
@@ -864,7 +864,7 @@
                     Swal.fire({
                         position: 'top-end',
                         type: 'warning',
-                        title: 'Selecciona un operador destino primero',
+                        title: 'Debes seleccionar un operador destino',
                         showConfirmButton: false,
                         timer: 2000,
                         confirmButtonClass: 'btn btn-primary',
@@ -880,7 +880,7 @@
                 url = '{{ route('recepcion.iniciar-tareas', ['recepcion_id' => ':id']) }}'
                     .replace(':id', solicitudId);
             }
-            $.ajax({
+            $.ajax({ //Enviando la solicitud a la ruta seleccionada
                 url: url,
                 method: 'POST',
                 cache: false,
@@ -900,8 +900,7 @@
                         Swal.fire({
                             position: 'top-end',
                             type: 'success',
-                            title: 'Solicitud #' + String(solicitudId).slice(-3) + ' "' +
-                                tituloTarjeta + '" 👉🏻 ' + nombreEstado,
+                            title: 'Solicitud #' + tarjeta.find('.solicitud-id small').text() + ' "' +tituloTarjeta + '"' + nombreEstado,
                             showConfirmButton: false,
                             timer: 3000,
                             confirmButtonClass: 'btn btn-primary',
@@ -1338,34 +1337,27 @@
         function limpiarPopovers() { // Función para limpiar todos los popovers
             $('[data-toggle="popover"]').popover('dispose');
         }
-        // REFRESCAR TABLERO DE RECIBIDAS
+        //CARGA INICIAL DE LAS TARJETAS
         function cargarTarjetasIniciales(tarjetas) {
-            // Cargar tarjetas recibidas
-            if (tarjetas.recibidas && tarjetas.recibidas.length > 0) {
+            if (tarjetas.recibidas && tarjetas.recibidas.length > 0) { // Cargar tarjetas recibidas
                 tarjetas.recibidas.forEach(function(tarjeta) {
                     let html = generarTarjetaSolicitud(tarjeta, false, 'recibidas');
                     $('#columna-recibidas').append(html);
                 });
             }
-            
-            // Cargar tarjetas en progreso
-            if (tarjetas.progreso && tarjetas.progreso.length > 0) {
+            if (tarjetas.progreso && tarjetas.progreso.length > 0) { // Cargar tarjetas en progreso
                 tarjetas.progreso.forEach(function(tarjeta) {
                     let html = generarTarjetaSolicitud(tarjeta, false, 'progreso');
                     $('#columna-progreso').append(html);
                 });
             }
-            
-            // Cargar tarjetas resueltas
-            if (tarjetas.resueltas && tarjetas.resueltas.length > 0) {
+            if (tarjetas.resueltas && tarjetas.resueltas.length > 0) { // Cargar tarjetas resueltas
                 tarjetas.resueltas.forEach(function(tarjeta) {
                     let html = generarTarjetaSolicitud(tarjeta, false, 'resueltas');
                     $('#columna-resueltas').append(html);
                 });
             }
-            
-            // Actualizar contadores y mensajes
-            actualizarContadores();
+            actualizarContadores(); // Actualizar contadores y mensajes
             actualizarMensajeColumnaVacia();
         }
         
@@ -1373,9 +1365,7 @@
             const titulo = tarjeta.titulo && tarjeta.detalle ? 
                 `${tarjeta.titulo} - ${tarjeta.detalle}` : 
                 tarjeta.titulo || tarjeta.detalle || 'Sin título';
-            
-            // Configurar colores según el tipo de tarjeta
-            let borderColor, estadoColor, badgeColor;
+            let borderColor, estadoColor, badgeColor; // Configurar colores según el tipo de tarjeta
             switch(tipo) {
                 case 'recibidas':
                     borderColor = '#ffc107';
@@ -1398,8 +1388,7 @@
                     badgeColor = 'badge-light-warning';
             }
             
-            // Generar HTML de usuarios
-            let usersHtml = '';
+            let usersHtml = ''; // Generar HTML de usuarios
             if (tarjeta.users && tarjeta.users.length > 0) {
                 tarjeta.users.forEach(function(user) {
                     const avatar = user.profile_photo_url ? 
@@ -1418,7 +1407,6 @@
                     `;
                 });
             }
-            
             return `
                 <div class="solicitud-card ${animar ? 'animar-llegada' : ''}" 
                      data-id="${tarjeta.recepcion_id}"
@@ -1457,12 +1445,10 @@
             return fechas.length > 0 ? Math.max(...fechas) : null;
         }
         function cargarNuevasRecibidas() {
-            // Evitar consulta si hay 3 o más tarjetas (parametrizable posteriormente)
-            let cantidadTarjetas = $('#columna-recibidas .solicitud-card').length;
+            let cantidadTarjetas = $('#columna-recibidas .solicitud-card').length; // Evitar consulta si hay 3 o más tarjetas (parametrizable posteriormente)
             if (cantidadTarjetas >= 3) {
                 return; // Salir de la función sin hacer consulta
             }
-            
             let ultimaFecha = obtenerUltimaFechaRecibidas();
             let data = {
                 _token: $('meta[name="csrf-token"]').attr('content')
@@ -1495,8 +1481,7 @@
                     }
                 },
                 error: function(xhr, status, error) {
-                    // Evitar spam de errores en consola
-                    if (xhr.status !== 0) { // Solo log si no es error de red
+                    if (xhr.status !== 0) { // Solo log si no es error de red // Evitar spam de errores en consola
                         console.error('Error cargando nuevas recibidas:', status);
                     }
                 }
@@ -1504,17 +1489,12 @@
         }
         // INICIALIZAR PROGRESO DE LAS TARJETAS, TABLEROS Y CONTADORES
         $(document).ready(function() {
-            // Datos iniciales de las tarjetas
-            const tarjetasIniciales = {
+            const tarjetasIniciales = { // Datos iniciales de las tarjetas
                 recibidas: @json($recibidas),
                 progreso: @json($progreso),
                 resueltas: @json($resueltas)
             };
-            
-            // Cargar tarjetas iniciales
-            cargarTarjetasIniciales(tarjetasIniciales);
-            
-            // Inicializar progreso después de cargar las tarjetas
+            cargarTarjetasIniciales(tarjetasIniciales); // Cargar tarjetas iniciales
             setTimeout(function() {
                 $('.progress-divider').each(function() {
                     let atencionId = $(this).data('atencion-id');
@@ -1524,7 +1504,6 @@
                     }
                 });
             }, 100);
-            
             initKanban();
             setInterval(consultarAvancesTablero, 15000); // 15 segundos
             setInterval(cargarNuevasRecibidas, 30000);   // 30 segundos

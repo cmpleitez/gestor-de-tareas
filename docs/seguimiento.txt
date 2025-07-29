@@ -15,8 +15,7 @@
         ✅ Cuando diga: esta línea o lineas me refiero a que ya hice referencia dichas líneas con CTRL+L,
         ✅ Prefiero que busques primero en la pestaña activa y luego en las demás. 
         ✅ Cuando el modelo IA que se esta consultando se sature y ponga lento, cambiar al siguiente modelo según el orden que he dado al pincipio
-        ✅ Cuando comentes una línea o una serie de líneas hazlo a la izquierda de la línea o de la primera línea, pues los únicos comentarios que van arriba son titulos generales de bloques de lineas
-
+        ✅ Cuando comentes una línea o una serie de líneas hazlo a la izquierda de la línea o de la primera línea, pues los únicos comentarios que van arriba son titulos generales de bloques de lineas y de esos me encargo yo.
 ⭐ Entorno del proyecto actual(Gestor de Tareas): 
         Solicitud: está definida por la tabla "atenciones" y su transaccional hija "recepciones" especificamente por el campo "recepciones.atencion_id"; 
         Unidad de trabajo: La unidad general de trabajo es la solicitud y se almacena en la tabla "atenciones"
