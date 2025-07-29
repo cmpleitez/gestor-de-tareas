@@ -24,7 +24,7 @@ class RecepcionController extends Controller
         $recepciones = Recepcion::where('user_id_destino', $user->id)
         ->with(['solicitud', 'estado', 'usuarioDestino', 'area', 'role'])
         ->orderBy('created_at', 'desc')
-        ->limit(3)
+        ->limit(5)
         ->get();
         $tarjetas = $recepciones->map(function ($tarjeta) {
             $usuariosDestino = Recepcion::with(['usuarioDestino', 'role', 'area']) // Obtener todos los usuarios destino para esta atención
@@ -42,7 +42,7 @@ class RecepcionController extends Controller
                 });
             return [
                 'atencion_id' => $tarjeta->atencion_id,
-                'created_at' => $tarjeta->created_at,
+                'created_at' => $tarjeta->created_at->toISOString(),
                 'detalle' => $tarjeta->detalle,
                 'estado' => $tarjeta->estado->estado,
                 'estado_id' => $tarjeta->estado->id,
@@ -57,15 +57,13 @@ class RecepcionController extends Controller
                 'area' => $tarjeta->area->area,
             ];
         });
-        $recibidas = $tarjetas->where('estado_id', 1)->sortBy('created_at');
-        $progreso = $tarjetas->where('estado_id', 2)->sortBy('created_at');
-        $resueltas = $tarjetas->where('estado_id', 3)->sortBy('created_at');
-        $tarjetas_ordenadas = $tarjetas->sortBy('created_at');
+        $recibidas = $tarjetas->where('estado_id', 1)->sortBy('created_at')->values()->toArray(); // Separar tarjetas por estado (ya están mapeadas) y convertir a arrays con relaciones
+        $progreso = $tarjetas->where('estado_id', 2)->sortBy('created_at')->values()->toArray();
+        $resueltas = $tarjetas->where('estado_id', 3)->sortBy('created_at')->values()->toArray();
         $data = [
             'recibidas' => $recibidas,
             'progreso' => $progreso,
             'resueltas' => $resueltas,
-            'tarjetas' => $tarjetas_ordenadas,
         ];
         if ($user->hasRole('Recepcionista')) {
             $user->load('area.oficina');
@@ -128,6 +126,8 @@ class RecepcionController extends Controller
         });
         return response()->json($nuevas);
     }
+    
+
 
     public function areas(Solicitud $solicitud)
     {

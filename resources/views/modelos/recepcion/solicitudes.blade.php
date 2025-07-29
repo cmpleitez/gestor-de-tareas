@@ -634,7 +634,7 @@
                             <i class="bx bx-archive text-white" style="font-size: 0.9rem;"></i>
                         </div>
                         <h6 class="mb-0 text-white font-weight-600" style="font-size: 0.9rem;">Recibidas</h6>
-                        <span class="badge badge-white ml-auto text-black-50" id="contador-recibidas">{{ $recibidas->count() }}</span>
+                        <span class="badge badge-white ml-auto text-black-50" id="contador-recibidas">{{ count($recibidas) }}</span>
                     </div>
                 </div>
                 <div class="card-body kanban-columna" style="background: #f8f9fa; padding: 1rem;">
@@ -654,7 +654,7 @@
                             <i class="bx bx-time-five text-white" style="font-size: 0.9rem;"></i>
                         </div>
                         <h6 class="mb-0 text-white font-weight-600" style="font-size: 0.9rem;">En Progreso</h6>
-                        <span class="badge badge-white ml-auto text-black-50" id="contador-progreso">{{ $progreso->count() }}</span>
+                        <span class="badge badge-white ml-auto text-black-50" id="contador-progreso">{{ count($progreso) }}</span>
                     </div>
                 </div>
                 <div class="card-body kanban-columna" style="background: #f8f9fa; padding: 1rem;">
@@ -674,7 +674,7 @@
                             <i class="bx bx-check-circle text-white" style="font-size: 0.9rem;"></i>
                         </div>
                         <h6 class="mb-0 text-white font-weight-600" style="font-size: 0.9rem;">Resueltas</h6>
-                        <span class="badge badge-white ml-auto text-black-50" id="contador-resueltas">{{ $resueltas->count() }}</span>
+                        <span class="badge badge-white ml-auto text-black-50" id="contador-resueltas">{{ count($resueltas) }}</span>
                     </div>
                 </div>
                 <div class="card-body kanban-columna" style="background: #f8f9fa; padding: 1rem;">
@@ -1207,7 +1207,7 @@
             $('#contador-resueltas').text(resueltas);
             actualizarMensajeColumnaVacia(); // NUEVO: actualizar mensajes de columnas vacías
         }
-        // REFRESCAR BARRAS DE PROGRESO
+        //REFRESCAR BARRAS DE PROGRESO
         function obtenerAtencionIdsTableros() {
             let ids = [];
             $('.solicitud-card').each(function() {
@@ -1506,7 +1506,7 @@
             }, 100);
             initKanban();
             setInterval(consultarAvancesTablero, 15000); // 15 segundos
-            setInterval(cargarNuevasRecibidas, 30000);   // 30 segundos
+            setInterval(cargarNuevasRecibidas, 15000);   // 15 segundos
             setInterval(limpiarPopovers, 180000);       // 3 minutos
         });
 
