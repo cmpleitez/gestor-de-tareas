@@ -1350,12 +1350,16 @@
                                             usersHtml += userHtml;
                                         }
                                     });
+                                    // Destruir popovers existentes antes de actualizar
+                                    $usersContainer.find('[data-toggle="popover"]').popover('dispose');
+                                    
                                     $usersContainer.html(usersHtml);
                                     
                                     // Reinicializar popovers para los nuevos elementos
                                     $usersContainer.find('[data-toggle="popover"]').popover({
                                         html: true,
-                                        container: 'body'
+                                        container: 'body',
+                                        trigger: 'hover'
                                     });
                                 }
                             }
@@ -1366,6 +1370,9 @@
                     console.error('Error al consultar avances:', error);
                 }
             });
+        }
+        function limpiarPopovers() { // Función para limpiar todos los popovers
+            $('[data-toggle="popover"]').popover('dispose');
         }
         // REFRESCAR TABLERO DE RECIBIDAS
         function generarTarjetaSolicitud(tarjeta, animar = false) {
@@ -1459,9 +1466,11 @@
         $(document).ready(function() {
             initializeProgress();
             initKanban();
-            setInterval(consultarAvancesTablero, 5000);
-            setInterval(cargarNuevasRecibidas, 60000);
-            $('[data-toggle="popover"]').popover({ // Inicializar popovers de Bootstrap
+                    setInterval(consultarAvancesTablero, 5000);
+        setInterval(cargarNuevasRecibidas, 60000);
+        setInterval(limpiarPopovers, 30000); // Limpiar popovers cada 30 segundos
+        
+        $('[data-toggle="popover"]').popover({ // Inicializar popovers de Bootstrap
                 html: true,
                 container: 'body'
             });

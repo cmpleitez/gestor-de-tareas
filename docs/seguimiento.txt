@@ -28,11 +28,10 @@
     09. El operador avanza la solicitud desde su tablero de recibidas a su tablero en progreso y automáticamente se originan las tareas a cumplir segun su skill
     10. El operador va cumpliendo sus tareas una a una y reportandolas como realizadas
 
+🟢 releer el codigo js y ordenarlo y refactorizarlo si es necesario
 🟢 construir movimiento de control de calidad para el gestor
-🟢 actualizar los usuarios participantes cuando se haga drop en el tablero "En progreso"
 🟢 revisar proceso de priorizacion
 🟢 procesos automaticos: exeptuando la derivacion porque no es eficiente que el ciudadano tenga que solicitar a una oficina muy lejana de su residencia
-🟢 solicitudes: ordenar el codigo fuente de los js
 🟢 control de movimientos: 
     Re = Recepciones; Ep = En progreso; Rt = Resueltas;
     Re -> Ep: Distribuir en base a rol
