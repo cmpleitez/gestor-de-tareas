@@ -46,7 +46,10 @@
     09. El operador avanza la solicitud desde su tablero de recibidas a su tablero en progreso y automáticamente se originan las tareas a cumplir segun su skill
     10. El operador va cumpliendo sus tareas una a una y reportandolas como realizadas
 
-...🟢 ordenar el codigo de js
+...🟢 refactorizar:
+        las tarjetas deben se dibujadas por js en todo momento, el problema es que en el inicio las dibuja html y esto multiplica el codigo
+            necesitamos refactorizarlo, html unicamente debe dibujar los tableros luego del resto debe encargarse js justo como lo tenemos actualmente
+                el cambio pa js debe ser que ahora en el inicio tanto como en los intervalos de los escuchadores debe dibujar las tarjetas en el inicio
 
 🟢 revisar la sincronia de colores al mover las tarjetas ya sea manual o automaticamente, o al refrescarlas
 🟢 revisar la logica: descarguese las tarjetas superiores al maximo atencion_id que se encuentre en el tablero, 

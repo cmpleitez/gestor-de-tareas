@@ -639,19 +639,7 @@
                 </div>
                 <div class="card-body kanban-columna" style="background: #f8f9fa; padding: 1rem;">
                     <div id="columna-recibidas" class="sortable-column">
-                        @forelse($recibidas as $solicitud)
-                            <x-solicitud-card 
-                                :solicitud="$solicitud"
-                                borderColor="#ffc107"
-                                estadoColor="rgb(170, 95, 34)"
-                                badgeColor="badge-light-warning"
-                                roleColor="#612d03" />
-                        @empty
-                            <div class="text-center text-muted py-4">
-                                <i class="bx bx-archive text-muted" style="font-size: 1.5rem;"></i>
-                                <div class="mt-2">Sin solicitudes recibidas</div>
-                            </div>
-                        @endforelse
+                        {{-- Las tarjetas se dibujarán con JavaScript --}}
                     </div>
                 </div>
             </div>
@@ -671,19 +659,7 @@
                 </div>
                 <div class="card-body kanban-columna" style="background: #f8f9fa; padding: 1rem;">
                     <div id="columna-progreso" class="sortable-column">
-                        @forelse($progreso as $solicitud)
-                            <x-solicitud-card 
-                                :solicitud="$solicitud"
-                                borderColor="#17a2b8"
-                                estadoColor="#17a2b8"
-                                badgeColor="badge-light-primary"
-                                roleColor="rgb(11, 62, 119)" />
-                        @empty
-                            <div class="text-center text-muted py-4">
-                                <i class="bx bx-time-five text-muted" style="font-size: 1.5rem;"></i>
-                                <div class="mt-2">Sin tareas en progreso</div>
-                            </div>
-                        @endforelse
+                        {{-- Las tarjetas se dibujarán con JavaScript --}}
                     </div>
                 </div>
             </div>
@@ -703,19 +679,7 @@
                 </div>
                 <div class="card-body kanban-columna" style="background: #f8f9fa; padding: 1rem;">
                     <div id="columna-resueltas" class="sortable-column">
-                        @forelse($resueltas as $solicitud)
-                            <x-solicitud-card 
-                                :solicitud="$solicitud"
-                                borderColor="#28a745"
-                                estadoColor="#28a745"
-                                badgeColor="badge-light-success"
-                                roleColor="rgb(10, 95, 30)" />
-                        @empty
-                            <div class="text-center text-muted py-4">
-                                <i class="bx bx-check-circle text-muted" style="font-size: 1.5rem;"></i>
-                                <div class="mt-2">Sin tareas completadas</div>
-                            </div>
-                        @endforelse
+                        {{-- Las tarjetas se dibujarán con JavaScript --}}
                     </div>
                 </div>
             </div>
@@ -814,7 +778,6 @@
                                     positionClass: 'toast-top-right',
                                     timeOut: 1000
                                 });
-
                                 $(evt.from).append(evt.item); // Revertir la tarjeta a su posición original
                                 return;
                             }
@@ -1245,14 +1208,8 @@
             $('#contador-resueltas').text(resueltas);
             actualizarMensajeColumnaVacia(); // NUEVO: actualizar mensajes de columnas vacías
         }
-        function initializeProgress() { // Función para inicializar progreso de todas las tarjetas
-            @foreach ($tarjetas as $tarjeta)
-                updateProgressByPercentage('{{ $tarjeta['atencion_id'] }}', {{ $tarjeta['porcentaje_progreso'] }});
-            @endforeach
-            actualizarMensajeColumnaVacia(); // NUEVO: inicializar mensajes de columnas vacías
-        }
         // REFRESCAR BARRAS DE PROGRESO
-        function obtenerAtencionIdsTableros() { 
+        function obtenerAtencionIdsTableros() {
             let ids = [];
             $('.solicitud-card').each(function() {
                 let atencionId = $(this).attr('data-atencion-id');
@@ -1382,14 +1339,85 @@
             $('[data-toggle="popover"]').popover('dispose');
         }
         // REFRESCAR TABLERO DE RECIBIDAS
-        function generarTarjetaSolicitud(tarjeta, animar = false) {
+        function cargarTarjetasIniciales(tarjetas) {
+            // Cargar tarjetas recibidas
+            if (tarjetas.recibidas && tarjetas.recibidas.length > 0) {
+                tarjetas.recibidas.forEach(function(tarjeta) {
+                    let html = generarTarjetaSolicitud(tarjeta, false, 'recibidas');
+                    $('#columna-recibidas').append(html);
+                });
+            }
+            
+            // Cargar tarjetas en progreso
+            if (tarjetas.progreso && tarjetas.progreso.length > 0) {
+                tarjetas.progreso.forEach(function(tarjeta) {
+                    let html = generarTarjetaSolicitud(tarjeta, false, 'progreso');
+                    $('#columna-progreso').append(html);
+                });
+            }
+            
+            // Cargar tarjetas resueltas
+            if (tarjetas.resueltas && tarjetas.resueltas.length > 0) {
+                tarjetas.resueltas.forEach(function(tarjeta) {
+                    let html = generarTarjetaSolicitud(tarjeta, false, 'resueltas');
+                    $('#columna-resueltas').append(html);
+                });
+            }
+            
+            // Actualizar contadores y mensajes
+            actualizarContadores();
+            actualizarMensajeColumnaVacia();
+        }
+        
+        function generarTarjetaSolicitud(tarjeta, animar = false, tipo = 'recibidas') {
             const titulo = tarjeta.titulo && tarjeta.detalle ? 
                 `${tarjeta.titulo} - ${tarjeta.detalle}` : 
                 tarjeta.titulo || tarjeta.detalle || 'Sin título';
             
-            const avatar = tarjeta.user_foto ? 
-                `<img src="${tarjeta.user_foto}" alt="Usuario" class="avatar" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;">` :
-                `<div class="avatar" style="width: 32px; height: 32px; border-radius: 50%; background: #e9ecef; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #6c757d;">?</div>`;
+            // Configurar colores según el tipo de tarjeta
+            let borderColor, estadoColor, badgeColor;
+            switch(tipo) {
+                case 'recibidas':
+                    borderColor = '#ffc107';
+                    estadoColor = 'rgb(170, 95, 34)';
+                    badgeColor = 'badge-light-warning';
+                    break;
+                case 'progreso':
+                    borderColor = '#17a2b8';
+                    estadoColor = '#17a2b8';
+                    badgeColor = 'badge-light-primary';
+                    break;
+                case 'resueltas':
+                    borderColor = '#28a745';
+                    estadoColor = '#28a745';
+                    badgeColor = 'badge-light-success';
+                    break;
+                default:
+                    borderColor = '#ffc107';
+                    estadoColor = 'rgb(170, 95, 34)';
+                    badgeColor = 'badge-light-warning';
+            }
+            
+            // Generar HTML de usuarios
+            let usersHtml = '';
+            if (tarjeta.users && tarjeta.users.length > 0) {
+                tarjeta.users.forEach(function(user) {
+                    const avatar = user.profile_photo_url ? 
+                        `<img src="${user.profile_photo_url}" alt="Usuario" class="avatar" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;">` :
+                        `<div class="avatar" style="width: 32px; height: 32px; border-radius: 50%; background: #e9ecef; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #6c757d;">${user.name ? user.name[0] : '?'}</div>`;
+                    
+                    usersHtml += `
+                        <div style="margin: 0;" data-toggle="popover" 
+                            data-title="${user.name || 'Sin asignar'}" 
+                            data-content="<span style='color: ${estadoColor} !important;' class='badge badge-pill ${badgeColor}'>${user.recepcion_role_name || 'Sin rol'}</span> 
+                            <span style='color: ${estadoColor} !important;' class='badge badge-pill ${badgeColor}'>${user.area_name || 'Sin área'}</span>"
+                            data-trigger="hover"
+                            data-placement="top">
+                            ${avatar}
+                        </div>
+                    `;
+                });
+            }
             
             return `
                 <div class="solicitud-card ${animar ? 'animar-llegada' : ''}" 
@@ -1397,7 +1425,7 @@
                      data-atencion-id="${tarjeta.atencion_id}"
                      data-estado-id="${tarjeta.estado_id}"
                      data-fecha="${tarjeta.created_at}" 
-                     style="border-left-color: #ffc107;">
+                     style="border-left-color: ${borderColor};">
                     
                     <div class="solicitud-titulo">${titulo}</div>
                     
@@ -1408,21 +1436,14 @@
                         <div class="fecha-solicitud">${tarjeta.fecha_relativa}</div>
                     </div>
                     
-                    <div class="solicitud-estado" style="font-size: 11px; color: rgb(170, 95, 34) !important; margin-top: 5px;">
+                    <div class="solicitud-estado" style="font-size: 11px; color: ${estadoColor} !important; margin-top: 5px;">
                         Estado: ${tarjeta.estado}
                     </div>
                     
                     <div class="progress-divider" data-atencion-id="${tarjeta.atencion_id}" data-avance="${tarjeta.porcentaje_progreso}"></div>
                     
                     <div class="users-container" style="display: flex; align-items: center; justify-content: end; margin-top: 8px; padding-top: 6px;">
-                        <div style="margin: 0;" data-toggle="popover" 
-                            data-title="${tarjeta.user_name}" 
-                            data-content="<span style='color: rgb(170, 95, 34) !important;' class='badge badge-pill badge-light-warning'>${tarjeta.role_name}</span> 
-                            <span style='color: rgb(170, 95, 34) !important;' class='badge badge-pill badge-light-warning'>${tarjeta.area}</span>"
-                            data-trigger="hover"
-                            data-placement="top">
-                            ${avatar}
-                        </div>
+                        ${usersHtml}
                     </div>
                 </div>
             `;
@@ -1458,7 +1479,7 @@
                         nuevas.forEach(function(tarjeta) {
                             let tarjetaExistente = $(`#columna-recibidas .solicitud-card[data-id="${tarjeta.recepcion_id}"]`); // Verificar si la tarjeta ya existe
                             if (tarjetaExistente.length === 0) {
-                                let html = generarTarjetaSolicitud(tarjeta, true); // Solo agregar si no existe
+                                let html = generarTarjetaSolicitud(tarjeta, true, 'recibidas'); // Solo agregar si no existe
                                 let $nueva = $(html);
                                 $('#columna-recibidas').prepend($nueva);
                                 updateProgressByPercentage(tarjeta.atencion_id, tarjeta.porcentaje_progreso);
@@ -1483,7 +1504,27 @@
         }
         // INICIALIZAR PROGRESO DE LAS TARJETAS, TABLEROS Y CONTADORES
         $(document).ready(function() {
-            initializeProgress();
+            // Datos iniciales de las tarjetas
+            const tarjetasIniciales = {
+                recibidas: @json($recibidas),
+                progreso: @json($progreso),
+                resueltas: @json($resueltas)
+            };
+            
+            // Cargar tarjetas iniciales
+            cargarTarjetasIniciales(tarjetasIniciales);
+            
+            // Inicializar progreso después de cargar las tarjetas
+            setTimeout(function() {
+                $('.progress-divider').each(function() {
+                    let atencionId = $(this).data('atencion-id');
+                    let avance = $(this).data('avance');
+                    if (atencionId && avance !== undefined) {
+                        updateProgressByPercentage(atencionId, avance);
+                    }
+                });
+            }, 100);
+            
             initKanban();
             setInterval(consultarAvancesTablero, 15000); // 15 segundos
             setInterval(cargarNuevasRecibidas, 30000);   // 30 segundos
