@@ -242,7 +242,7 @@ $(document).ready(function () {
         // Read more about handling dismissals
         result.dismiss === Swal.DismissReason.timer
       ) {
-        console.log('I was closed by the timer')
+        // Timer closed the modal
       }
     })
   });
@@ -304,7 +304,6 @@ $(document).ready(function () {
         return fetch("//api.github.com/users/" + login + "")
           .then(function (response) {
             if (!response.ok) {
-              console.log(response)
               throw new Error(response.statusText)
             }
             return response.json()

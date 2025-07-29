@@ -541,6 +541,5 @@ class RecepcionController extends Controller
         return response()->json($resultado);
     }
 
-
     
 }

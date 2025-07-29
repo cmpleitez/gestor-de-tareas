@@ -66,7 +66,6 @@
     },
     'beforeDeleteSchedule': function (e) {
       // schedule delete
-      console.log('beforeDeleteSchedule', e);
       cal.deleteSchedule(e.schedule.id, e.schedule.calendarId);
     },
     'clickTimezonesCollapseBtn': function (timezonesCollapsed) {

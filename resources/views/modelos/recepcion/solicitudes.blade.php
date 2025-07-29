@@ -464,6 +464,14 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
 
+        .sortable-chosen {
+            opacity: 0.9 !important;
+            transform: scale(1.02) rotate(1deg);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            z-index: 1000 !important;
+            position: relative;
+        }
+
         .sortable-ghost {
             opacity: 0.3;
             background-color: #f1f3f5;
@@ -772,11 +780,13 @@
                     ghostClass: 'sortable-ghost', 
                     chosenClass: 'sortable-chosen', 
                     dragClass: 'sortable-drag', 
-                    forceFallback: true, 
-                    fallbackOnBody: true,
+                    forceFallback: false, 
+                    fallbackOnBody: false,
                     fallbackClass: 'sortable-fallback',
-                    preventFallback: true,
+                    preventFallback: false,
                     supportPointer: true,
+                    delay: 100,
+                    delayOnTouchOnly: true,
                     onChoose: function(evt) { // Prevenir selección de texto
                         evt.preventDefault();
                         evt.stopPropagation();
@@ -821,6 +831,10 @@
                 });
             });
         }
+        $('[data-toggle="popover"]').popover({ // Inicializar popovers de Bootstrap
+            html: true,
+            container: 'body'
+        });
         //ACTUALIZACION DE ESTADO DE LA SOLICITUD
         function updatePosition(solicitudId, nuevaColumna, evt) {
             let nuevoEstadoId = 1; // Por defecto Recibida
@@ -1275,19 +1289,20 @@
                             if (estadoFrontend !== estadoBackend) {
                                 $card.attr('data-estado-id', estadoBackend);
                                 if (estadoBackend === 3) {
-                                    // Verificar si el rol del usuario destino NO es Gestor
-                                    let debeTrasladar = true;
+                                    let debeTrasladar = true; // Verificar si el rol del usuario destino NO es Gestor
+                                    // Solo verificar el rol del usuario que está trabajando actualmente en la tarjeta
                                     if (item.recepciones && item.recepciones.length > 0) {
-                                        item.recepciones.forEach(function(recepcion) {
-                                            if (recepcion.role && recepcion.role.name === 'Gestor') {
-                                                debeTrasladar = false;
-                                            }
+                                        // Buscar la recepción que corresponde al usuario actual
+                                        let recepcionActual = item.recepciones.find(function(recepcion) {
+                                            return recepcion.usuarioDestino && recepcion.usuarioDestino.id === item.usuario_actual_id;
                                         });
+                                        
+                                        if (recepcionActual && recepcionActual.role && recepcionActual.role.name === 'Gestor') {
+                                            debeTrasladar = false;
+                                        }
                                     }
-                                    
                                     if (debeTrasladar) {
-                                        // Solo trasladar si el rol del usuario destino NO es Gestor
-                                        $card.addClass('animar-traslado');
+                                        $card.addClass('animar-traslado'); // Solo trasladar si el rol del usuario destino NO es Gestor
                                         setTimeout(function() {
                                             $card.removeClass('animar-traslado');
                                             $('#columna-resueltas').append($card);
@@ -1301,27 +1316,21 @@
                                             actualizarContadores();
                                         }, 500);
                                     } else {
-                                        // Para rol Gestor, solo actualizar el estado visual sin mover la tarjeta
-                                        $card.css('border-left-color', '#28a745');
+                                        $card.css('border-left-color', '#28a745'); // Para rol Gestor, solo actualizar el estado visual sin mover la tarjeta
                                         $card.find('.solicitud-estado').text('Estado: Resuelta');
                                         $card.find('.solicitud-estado').css('color', '#28a745');
                                     }
                                 }
                             }
-                            
-                            // Actualizar usuarios destino si están disponibles
                             if (item.recepciones && item.recepciones.length > 0) {
                                 let $usersContainer = $card.find('.users-container');
                                 if ($usersContainer.length > 0) {
                                     let usersHtml = '';
                                     item.recepciones.forEach(function(recepcion) {
                                         if (recepcion.usuarioDestino) {
-                                            // Determinar colores basados en el estado de la tarjeta
-                                            let estadoColor = 'rgb(170, 95, 34)'; // Color por defecto
+                                            let estadoColor = 'rgb(170, 95, 34)'; // Color por defecto // Determinar colores basados en el estado de la tarjeta
                                             let badgeColor = 'badge-light-warning'; // Badge por defecto
-                                            
-                                            // Ajustar colores según el estado
-                                            if (item.estado_id == 3) { // Resuelta
+                                            if (item.estado_id == 3) { // Resuelta // Ajustar colores según el estado
                                                 estadoColor = '#28a745';
                                                 badgeColor = 'badge-light-success';
                                             } else if (item.estado_id == 2) { // En progreso
@@ -1331,7 +1340,6 @@
                                                 estadoColor = '#6c757d';
                                                 badgeColor = 'badge-light-secondary';
                                             }
-                                            
                                             let userHtml = '<div style="margin: 0;" data-toggle="popover" ' +
                                                 'data-title="' + (recepcion.usuarioDestino.name || 'Sin asignar') + '" ' +
                                                 'data-content="<span style=\'color: ' + estadoColor + ' !important;\' class=\'badge badge-pill ' + badgeColor + '\'>' + (recepcion.role ? recepcion.role.name : 'Sin rol') + '</span> ' +
@@ -1350,13 +1358,9 @@
                                             usersHtml += userHtml;
                                         }
                                     });
-                                    // Destruir popovers existentes antes de actualizar
-                                    $usersContainer.find('[data-toggle="popover"]').popover('dispose');
-                                    
+                                    $usersContainer.find('[data-toggle="popover"]').popover('dispose'); // Destruir popovers existentes antes de actualizar
                                     $usersContainer.html(usersHtml);
-                                    
-                                    // Reinicializar popovers para los nuevos elementos
-                                    $usersContainer.find('[data-toggle="popover"]').popover({
+                                    $usersContainer.find('[data-toggle="popover"]').popover({ // Reinicializar popovers para los nuevos elementos
                                         html: true,
                                         container: 'body',
                                         trigger: 'hover'
@@ -1367,7 +1371,10 @@
                     });
                 },
                 error: function(xhr, status, error) {
-                    console.error('Error al consultar avances:', error);
+                    // Evitar spam de errores en consola
+                    if (xhr.status !== 0) { // Solo log si no es error de red
+                        console.error('Error al consultar avances:', status);
+                    }
                 }
             });
         }
@@ -1429,6 +1436,12 @@
             return fechas.length > 0 ? Math.max(...fechas) : null;
         }
         function cargarNuevasRecibidas() {
+            // Evitar consulta si hay 3 o más tarjetas (parametrizable posteriormente)
+            let cantidadTarjetas = $('#columna-recibidas .solicitud-card').length;
+            if (cantidadTarjetas >= 3) {
+                return; // Salir de la función sin hacer consulta
+            }
+            
             let ultimaFecha = obtenerUltimaFechaRecibidas();
             let data = {
                 _token: $('meta[name="csrf-token"]').attr('content')
@@ -1459,6 +1472,12 @@
                             actualizarContadores();
                         }
                     }
+                },
+                error: function(xhr, status, error) {
+                    // Evitar spam de errores en consola
+                    if (xhr.status !== 0) { // Solo log si no es error de red
+                        console.error('Error cargando nuevas recibidas:', status);
+                    }
                 }
             });
         }
@@ -1466,14 +1485,9 @@
         $(document).ready(function() {
             initializeProgress();
             initKanban();
-                    setInterval(consultarAvancesTablero, 5000);
-        setInterval(cargarNuevasRecibidas, 60000);
-        setInterval(limpiarPopovers, 30000); // Limpiar popovers cada 30 segundos
-        
-        $('[data-toggle="popover"]').popover({ // Inicializar popovers de Bootstrap
-                html: true,
-                container: 'body'
-            });
+            setInterval(consultarAvancesTablero, 15000); // 15 segundos
+            setInterval(cargarNuevasRecibidas, 30000);   // 30 segundos
+            setInterval(limpiarPopovers, 180000);       // 3 minutos
         });
 
     </script>

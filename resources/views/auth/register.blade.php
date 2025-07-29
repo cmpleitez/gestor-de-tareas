@@ -421,7 +421,6 @@
                 preventSubmit: true,
                 submitError: function($form, event, errors) {
                     // Manejar errores de envío aquí
-                    console.log(errors);
                 },
                 submitSuccess: function($form, event) {
                     // No usar event.preventDefault() aquí para permitir el envío normal

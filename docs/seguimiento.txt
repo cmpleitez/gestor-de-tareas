@@ -1,4 +1,22 @@
-⭐ Mi estilo de trabajo es así: código limpio y estándar, sin artificios, compactar servicios, reutilizar estilos existentes, priorizar Claude Sonnet 4 y 3.5, así como Grok 4,  Claude Opus y o3 para las respuesta de calidad, y mencionar en cada respuesta tuya el modelo que usaste para la misma. Cuando diga: esta linea o lineas me refiero a que ya hice referencia dichas líneas con CTRL+L, y prefiero que busques primero en la pestaña activa y luego en las demás. Cuando el modelo IA que se esta consultando se sature y ponga lento, cambiar al siguiente modelo según el orden que he dado al pincipio de este texto
+⭐ Mi estilo de trabajo es así: código limpio y estándar, sin artificios, compactar servicios y reutilizar estilos existentes. 
+    Necesito que cumplas con las siguientes reglas para logarr resultados eficientes y optimos:
+        ✅ Para las respuestas que requieren calidad en el desempeño de los modelos IA: 
+            Priorizar principalmente los siguientes modelos en orden de disponibilidad, que dispongan de agente y en el orden de su correlativo:
+                    1°. Claude sonnet 4
+                    3°. o4-mini
+                    4°. o3-mini
+                    5°. Gemini 2.5 pro max
+                    6°. Grok 4
+        ✅ Para las respuestas que requieren mucha más complejidad a parte de calidad priorizar:
+            1°. Claude Opus
+            3°. o3
+        ✅ Para las respuestas rápidas usa el resto de modelos a discreción de disponibilidad
+        ✅ Luego debes mencionar en cada respuesta tuya el modelo que usaste para la misma. 
+        ✅ Cuando diga: esta línea o lineas me refiero a que ya hice referencia dichas líneas con CTRL+L,
+        ✅ Prefiero que busques primero en la pestaña activa y luego en las demás. 
+        ✅ Cuando el modelo IA que se esta consultando se sature y ponga lento, cambiar al siguiente modelo según el orden que he dado al pincipio
+        ✅ Cuando comentes una línea o una serie de líneas hazlo a la izquierda de la línea o de la primera línea, pues los únicos comentarios que van arriba son titulos generales de bloques de lineas
+
 ⭐ Entorno del proyecto actual(Gestor de Tareas): 
         Solicitud: está definida por la tabla "atenciones" y su transaccional hija "recepciones" especificamente por el campo "recepciones.atencion_id"; 
         Unidad de trabajo: La unidad general de trabajo es la solicitud y se almacena en la tabla "atenciones"
@@ -28,6 +46,18 @@
     09. El operador avanza la solicitud desde su tablero de recibidas a su tablero en progreso y automáticamente se originan las tareas a cumplir segun su skill
     10. El operador va cumpliendo sus tareas una a una y reportandolas como realizadas
 
+...🟢 ordenar el codigo de js
+
+🟢 revisar la sincronia de colores al mover las tarjetas ya sea manual o automaticamente, o al refrescarlas
+🟢 revisar la logica: descarguese las tarjetas superiores al maximo atencion_id que se encuentre en el tablero, 
+    ya que de esta manera ya no se ven las tarjetas anteriores cuando el ususario prioriza una
+🟢 en el tablero de en progreso si se cargaron 3 tarjetas con el escuchador, con la carga manual desaparecen
+🟢 solicitud: maquetacion de la asignacion de tareas y mejoramiento de clic a la hora de elegir la tarea
+🟢 verificar el aumento del contador en el campo de texto de solicitud.create
+🟢 cuando he hecho drag y la tarjeta esta fuera del tablero el escuchador hace caso omiso de ella y la vuelve a cargar en el tablero del que ha sido extraida
+🟢 entrega de resolución de una solicitud
+
+🟢 register: asegurar el id del usuario con un aumento no automático sino programatico
 🟢 releer el codigo js y ordenarlo y refactorizarlo si es necesario
 🟢 construir movimiento de control de calidad para el gestor
 🟢 revisar proceso de priorizacion
@@ -45,9 +75,7 @@
 🟢 en la mayoria de las vistas se debe agregar un margen arriba de 1 o 2 porque todo esta muy pegado al techo
 🟢 global cruds.edit: si hay historial no se puede editar
 🟢 servicio controlado: para cambiar el dui a una persona por motivos de error involuntario a la hora de registrar ese dui en el formulario de registro de usuarios
-🟢 register: asegurar el id del usuario con un aumento no automático sino programatico
-🟢 solicitudes: ajustar el movimiento que hace la tarjeta seleccionada "chossen" o algo asi porque se queda pegada cual si no quisiera moverse
-🟢 solicitud: maquetacion de la asignacion de tareas y mejoramiento de clic a la hora de elegir la tarea
+
 ✨ inteligencia artificial ayuda segun el texto libre escrito por el beneficiario, a elegir a éste último, la solicitud de catalogo más adecuada, incluye confirmación del beneficiario
 
 🟠 rage agains the machine & limp bizkit & korn & alice in chains
