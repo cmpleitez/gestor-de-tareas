@@ -1275,19 +1275,37 @@
                             if (estadoFrontend !== estadoBackend) {
                                 $card.attr('data-estado-id', estadoBackend);
                                 if (estadoBackend === 3) {
-                                    $card.addClass('animar-traslado');
-                                    setTimeout(function() {
-                                        $card.removeClass('animar-traslado');
-                                        $('#columna-resueltas').append($card);
-                                        $card.addClass('animar-llegada');
+                                    // Verificar si el rol del usuario destino NO es Gestor
+                                    let debeTrasladar = true;
+                                    if (item.recepciones && item.recepciones.length > 0) {
+                                        item.recepciones.forEach(function(recepcion) {
+                                            if (recepcion.role && recepcion.role.name === 'Gestor') {
+                                                debeTrasladar = false;
+                                            }
+                                        });
+                                    }
+                                    
+                                    if (debeTrasladar) {
+                                        // Solo trasladar si el rol del usuario destino NO es Gestor
+                                        $card.addClass('animar-traslado');
                                         setTimeout(function() {
-                                            $card.removeClass('animar-llegada');
+                                            $card.removeClass('animar-traslado');
+                                            $('#columna-resueltas').append($card);
+                                            $card.addClass('animar-llegada');
+                                            setTimeout(function() {
+                                                $card.removeClass('animar-llegada');
+                                            }, 500);
+                                            $card.css('border-left-color', '#28a745');
+                                            $card.find('.solicitud-estado').text('Estado: Resuelta');
+                                            $card.find('.solicitud-estado').css('color', '#28a745');
+                                            actualizarContadores();
                                         }, 500);
+                                    } else {
+                                        // Para rol Gestor, solo actualizar el estado visual sin mover la tarjeta
                                         $card.css('border-left-color', '#28a745');
                                         $card.find('.solicitud-estado').text('Estado: Resuelta');
                                         $card.find('.solicitud-estado').css('color', '#28a745');
-                                        actualizarContadores();
-                                    }, 500);
+                                    }
                                 }
                             }
                             
