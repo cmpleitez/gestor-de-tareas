@@ -45,14 +45,11 @@
     09. El operador avanza la solicitud desde su tablero de recibidas a su tablero en progreso y automáticamente se originan las tareas a cumplir segun su skill
     10. El operador va cumpliendo sus tareas una a una y reportandolas como realizadas
 
-🟢 reordenar la indentaciond el codigo, buscar un indentador automatico porque el actual no sirve
+🟢 reordenar la indentacion del codigo, buscar un indentador automatico porque el actual no sirve
 🟢 evaluar si se debe aplicar el codigo amigable ripperkey al numero de tarea
 🟢 revisar la sincronia de colores al mover las tarjetas ya sea manual o automaticamente, o al refrescarlas
 🟢 revisar la logica: descarguese las tarjetas superiores al maximo atencion_id que se encuentre en el tablero, 
     ya que de esta manera ya no se ven las tarjetas anteriores cuando el usuario prioriza una
-
-🟢 solicitud: maquetacion de la asignacion de tareas y mejoramiento de clic a la hora de elegir la tarea
-
 🟢 cuando he hecho drag y la tarjeta esta fuera del tablero el escuchador hace caso omiso de ella y la vuelve a cargar en el tablero del que ha sido extraida
 🟢 entrega y resolución de una solicitud
 🟢 register: asegurar el id del usuario con un aumento no automático sino programatico

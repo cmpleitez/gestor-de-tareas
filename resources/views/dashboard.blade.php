@@ -49,15 +49,40 @@
         .avatar {
             margin: 0px;
         }
+        
         .badge-pill {
-            padding-right: 0.7rem !important;
-            padding-left: 0.7rem !important;
+            padding-right: 0.7rem;
+            padding-left: 0.7rem;
         }
 
         .badge {
-            padding: 0.2rem 1rem;
-            font-size: 0.7rem;
-            font-weight: 410 !important;
+            font-size: 0.6rem;
+        }
+
+        .badge-primary {
+            background-color: #007bff !important;
+            color: #ffffff !important;
+        }
+
+        .badge-secondary {
+            background-color: #6c757d !important;
+            color: #ffffff !important;
+        }
+
+        .badge-success {
+            background-color: #28a745 !important;
+            color: #ffffff !important;
+        }
+
+        .badge-danger {
+            background-color: #dc3545 !important;
+            color: #ffffff !important;
+        }
+
+        .badge-warning {
+            background-color: #ffc107 !important;
+            color: #212529 !important;
+            font-weight: 500 !important;
         }
 
         html body.navbar-sticky .app-content .content-wrapper {

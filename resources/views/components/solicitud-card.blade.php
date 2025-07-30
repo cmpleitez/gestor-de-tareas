@@ -2,7 +2,7 @@
 'solicitud',
 'borderColor' => '#ffc107',
 'estadoColor' => 'rgb(170, 95, 34)',
-'badgeColor' => 'badge-light-warning',
+'badgeColor' => 'badge-secondary',
 'roleColor' => '#612d03'
 ])
 
@@ -49,8 +49,8 @@
         @foreach ($solicitud['users'] as $user)
             <div style="margin: 0;" data-toggle="popover" 
                 data-title="{{ $user['name'] }}" 
-                data-content="<span style='color: {{ $estadoColor }} !important;' class='badge badge-pill {{ $badgeColor }}'>{{ $user['recepcion_role_name'] }}</span> 
-                <span style='color: {{ $estadoColor }} !important;' class='badge badge-pill {{ $badgeColor }}'>{{ $user['area_name'] }}</span>"
+                data-content="<span class='badge badge-pill {{ $badgeColor }}'>{{ $user['recepcion_role_name'] }}</span> 
+                <span class='badge badge-pill {{ $badgeColor }}'>{{ $user['area_name'] }}</span>"
                 data-trigger="hover"
                 data-placement="top">
                 @if ($user['profile_photo_url'])

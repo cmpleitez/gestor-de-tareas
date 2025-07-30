@@ -625,7 +625,8 @@
         }
         $('[data-toggle="popover"]').popover({ // Inicializar popovers de Bootstrap
             html: true,
-            container: 'body'
+            container: 'body',
+            trigger: 'hover'
         });
         //ACTUALIZAR EL MOVIMIENTO DE LA TARJETA EFECTUADO, TANTO EN EL BACKEND Y COMO EN EL FRONTEND
         function updatePosition(solicitudId, nuevaColumna, evt) {
@@ -1113,21 +1114,18 @@
                                     item.recepciones.forEach(function(recepcion) {
                                         if (recepcion.usuarioDestino) {
                                             let estadoColor = 'rgb(170, 95, 34)'; // Color por defecto // Determinar colores basados en el estado de la tarjeta
-                                            let badgeColor = 'badge-light-warning'; // Badge por defecto
-                                            if (item.estado_id == 3) { // Resuelta // Ajustar colores según el estado
-                                                estadoColor = '#28a745';
-                                                badgeColor = 'badge-light-success';
+                                            let badgeColor = 'badge-secondary'; // Badge por defecto
+                                            if (item.estado_id == 3) { // Resuelta
+                                                badgeColor = 'badge-success';
                                             } else if (item.estado_id == 2) { // En progreso
-                                                estadoColor = 'rgb(170, 95, 34)';
-                                                badgeColor = 'badge-light-warning';
+                                                badgeColor = 'badge-primary';
                                             } else if (item.estado_id == 1) { // Recibida
-                                                estadoColor = '#6c757d';
-                                                badgeColor = 'badge-light-secondary';
+                                                badgeColor = 'badge-secondary';
                                             }
                                             let userHtml = '<div style="margin: 0;" data-toggle="popover" ' +
                                                 'data-title="' + (recepcion.usuarioDestino.name || 'Sin asignar') + '" ' +
-                                                'data-content="<span style=\'color: ' + estadoColor + ' !important;\' class=\'badge badge-pill ' + badgeColor + '\'>' + (recepcion.role ? recepcion.role.name : 'Sin rol') + '</span> ' +
-                                                '<span style=\'color: ' + estadoColor + ' !important;\' class=\'badge badge-pill ' + badgeColor + '\'>' + (recepcion.area ? recepcion.area.area : 'Sin área') + '</span>" ' +
+                                                'data-content="<span class=\'badge badge-pill ' + badgeColor + '\'>' + (recepcion.role ? recepcion.role.name : 'Sin rol') + '</span> ' +
+                                                '<span class=\'badge badge-pill ' + badgeColor + '\'>' + (recepcion.area ? recepcion.area.area : 'Sin área') + '</span>" ' +
                                                 'data-trigger="hover" data-placement="top">';
                                             
                                             if (recepcion.usuarioDestino.profile_photo_url) {
@@ -1162,8 +1160,8 @@
                 }
             });
         }
-        function limpiarPopovers() { // Función para limpiar todos los popovers
-            $('[data-toggle="popover"]').popover('dispose');
+        function limpiarPopovers() { // Función para limpiar popovers abiertos
+            $('[data-toggle="popover"]').popover('hide');
         }
         //FUNCIONES PARA LA CARGA INICIAL DE LAS TARJETAS
         function cargarTarjetasIniciales(tarjetas) {
@@ -1187,6 +1185,13 @@
             }
             actualizarContadores(); // Actualizar contadores y mensajes
             actualizarMensajeColumnaVacia();
+            
+            // Inicializar popovers para las tarjetas cargadas
+            $('[data-toggle="popover"]').popover({
+                html: true,
+                container: 'body',
+                trigger: 'hover'
+            });
         }
         function generarTarjetaSolicitud(tarjeta, animar = false, tipo = 'recibidas') {
             const titulo = tarjeta.titulo && tarjeta.detalle ? 
@@ -1195,24 +1200,16 @@
             let borderColor, estadoColor, badgeColor; // Configurar colores según el tipo de tarjeta
             switch(tipo) {
                 case 'recibidas':
-                    borderColor = '#ffc107';
-                    estadoColor = 'rgb(170, 95, 34)';
-                    badgeColor = 'badge-light-warning';
+                    badgeColor = 'badge-secondary';
                     break;
                 case 'progreso':
-                    borderColor = '#17a2b8';
-                    estadoColor = '#17a2b8';
-                    badgeColor = 'badge-light-primary';
+                    badgeColor = 'badge-primary';
                     break;
                 case 'resueltas':
-                    borderColor = '#28a745';
-                    estadoColor = '#28a745';
-                    badgeColor = 'badge-light-success';
+                    badgeColor = 'badge-success';
                     break;
                 default:
-                    borderColor = '#ffc107';
-                    estadoColor = 'rgb(170, 95, 34)';
-                    badgeColor = 'badge-light-warning';
+                    badgeColor = 'badge-secondary';
             }
             
             let usersHtml = ''; // Generar HTML de usuarios
@@ -1225,8 +1222,8 @@
                     usersHtml += `
                         <div style="margin: 0;" data-toggle="popover" 
                             data-title="${user.name || 'Sin asignar'}" 
-                            data-content="<span style='color: ${estadoColor} !important;' class='badge badge-pill ${badgeColor}'>${user.recepcion_role_name || 'Sin rol'}</span> 
-                            <span style='color: ${estadoColor} !important;' class='badge badge-pill ${badgeColor}'>${user.area_name || 'Sin área'}</span>"
+                            data-content="<span class='badge badge-pill ${badgeColor}'>${user.recepcion_role_name || 'Sin rol'}</span> 
+                            <span class='badge badge-pill ${badgeColor}'>${user.area_name || 'Sin área'}</span>"
                             data-trigger="hover"
                             data-placement="top">
                             ${avatar}
@@ -1303,6 +1300,13 @@
                         });
                         if (tarjetasAgregadas > 0) { // Solo actualizar contadores si se agregaron tarjetas
                             actualizarContadores();
+                            
+                            // Inicializar popovers para las nuevas tarjetas
+                            $('[data-toggle="popover"]').popover({
+                                html: true,
+                                container: 'body',
+                                trigger: 'hover'
+                            });
                         }
                     }
                 },
@@ -1331,8 +1335,8 @@
                 });
             }, 100);
             initKanban();
-            setInterval(consultarAvancesTablero, 300000); // 5 minutos
-            setInterval(cargarNuevasRecibidas, 5000);   // 5 segundos
+            setInterval(consultarAvancesTablero, 15000); // 15 segundos
+            setInterval(cargarNuevasRecibidas, 15000);   // 15 segundos
             setInterval(limpiarPopovers, 300000);       // 5 minutos
         });
 
