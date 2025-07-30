@@ -85,6 +85,27 @@
             font-weight: 500 !important;
         }
 
+        /* Clases para bordes de tarjetas según estado */
+        .border-badge-secondary {
+            border-left-color: #6c757d !important;
+        }
+
+        .border-badge-primary {
+            border-left-color: #3498db !important;
+        }
+
+        .border-badge-success {
+            border-left-color: #28a745 !important;
+        }
+
+        .border-badge-danger {
+            border-left-color: #dc3545 !important;
+        }
+
+        .border-badge-warning {
+            border-left-color: #ffc107 !important;
+        }
+
         html body.navbar-sticky .app-content .content-wrapper {
             padding: 3.8rem 2.2rem 0;
             margin-top: 3rem;
@@ -790,7 +811,7 @@
     <script>
         $(document).ready(function () {
             //Captura de alertas del backend
-            @if (Session::has('success'))
+            @if(Session::has('success'))
                 toastr.success("{{ Session::get('success') }}", '', {
                     positionClass: 'toast-top-left'
                 });

@@ -47,7 +47,6 @@
 
 🟢 reordenar la indentacion del codigo, buscar un indentador automatico porque el actual no sirve
 🟢 evaluar si se debe aplicar el codigo amigable ripperkey al numero de tarea
-🟢 revisar la sincronia de colores al mover las tarjetas ya sea manual o automaticamente, o al refrescarlas
 🟢 revisar la logica: descarguese las tarjetas superiores al maximo atencion_id que se encuentre en el tablero, 
     ya que de esta manera ya no se ven las tarjetas anteriores cuando el usuario prioriza una
 🟢 cuando he hecho drag y la tarjeta esta fuera del tablero el escuchador hace caso omiso de ella y la vuelve a cargar en el tablero del que ha sido extraida

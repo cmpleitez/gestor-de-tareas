@@ -32,7 +32,7 @@
         .solicitud-id {
             font-size: 11px;
             color:rgb(255, 255, 255);
-            background:rgb(175, 178, 180);
+            background: #87898b;
             padding: 2px 6px;
             border-radius: 3px;
             display: inline-block;
@@ -632,22 +632,26 @@
         function updatePosition(solicitudId, nuevaColumna, evt) {
             let nuevoEstadoId = 1; //Iniciando parametros
             let nombreEstado = 'Recibida';
-            let colorBorde = '#ffc107';
+            let colorBorde = 'badge-secondary';
+            let estadoColor = 'rgb(170, 95, 34)'; // Color por defecto
             switch (nuevaColumna) {
                 case 'columna-recibidas':
                     nuevoEstadoId = 1;
                     nombreEstado = 'Recibida';
-                    colorBorde = '#ffc107';
+                    colorBorde = 'badge-secondary';
+                    estadoColor = 'rgb(170, 95, 34)';
                     break;
                 case 'columna-progreso':
                     nuevoEstadoId = 2;
                     nombreEstado = 'En progreso';
-                    colorBorde = '#17a2b8';
+                    colorBorde = 'badge-primary';
+                    estadoColor = '#17a2b8';
                     break;
                 case 'columna-resueltas':
                     nuevoEstadoId = 3;
                     nombreEstado = 'Resuelta';
-                    colorBorde = '#28a745';
+                    colorBorde = 'badge-success';
+                    estadoColor = '#28a745';
                     break;
             }
             let url = ''; //Seleccionando la ruta a la que se va a enviar la solicitud
@@ -722,10 +726,32 @@
                         const tarjeta = $(`#${nuevaColumna} .solicitud-card[data-id="${solicitudId}"]`);
                         const tituloTarjeta = tarjeta.find('.solicitud-titulo').text() || 'Sin título';
                         if (tarjeta.length > 0) {
-                            tarjeta.css('border-left-color', colorBorde);
+                            // Actualizar estilos básicos de la tarjeta
+                            tarjeta.removeClass('border-badge-secondary border-badge-primary border-badge-success border-badge-danger border-badge-warning');
+                            tarjeta.addClass('border-' + colorBorde);
                             tarjeta.find('.solicitud-estado').text('Estado: ' + nombreEstado);
-                            tarjeta.find('.solicitud-estado').css('color', colorBorde);
+                            tarjeta.find('.solicitud-estado').css('color', estadoColor + ' !important');
                             tarjeta.attr('data-estado-id', nuevoEstadoId);
+                            
+                            // Determinar clase de badge según el nuevo estado
+                            let badgeColor = 'badge-secondary'; // Por defecto
+                            if (nuevoEstadoId == 3) { // Resuelta
+                                badgeColor = 'badge-success';
+                            } else if (nuevoEstadoId == 2) { // En progreso
+                                badgeColor = 'badge-primary';
+                            } else if (nuevoEstadoId == 1) { // Recibida
+                                badgeColor = 'badge-secondary';
+                            }
+                            
+                            // Actualizar badges en los popovers
+                            tarjeta.find('[data-toggle="popover"]').each(function() {
+                                let $popover = $(this);
+                                let currentContent = $popover.attr('data-content');
+                                if (currentContent) {
+                                    let newContent = currentContent.replace(/badge-\w+/g, badgeColor);
+                                    $popover.attr('data-content', newContent);
+                                }
+                            });
                         }
                         Swal.fire({
                             position: 'top-end',
@@ -775,6 +801,9 @@
                 }
             });
         }
+        
+
+        
         //MOSTRAR TAREAS EN SIDEBAR
         $(document).on('click', '.solicitud-card', function() {
             const $card = $(this);
@@ -1200,15 +1229,23 @@
             let borderColor, estadoColor, badgeColor; // Configurar colores según el tipo de tarjeta
             switch(tipo) {
                 case 'recibidas':
+                    borderColor = 'badge-secondary'; // Usar nombre estándar
+                    estadoColor = 'rgb(170, 95, 34)'; // Color por defecto
                     badgeColor = 'badge-secondary';
                     break;
                 case 'progreso':
+                    borderColor = 'badge-primary'; // Usar nombre estándar
+                    estadoColor = '#17a2b8';
                     badgeColor = 'badge-primary';
                     break;
                 case 'resueltas':
+                    borderColor = 'badge-success'; // Usar nombre estándar
+                    estadoColor = '#28a745';
                     badgeColor = 'badge-success';
                     break;
                 default:
+                    borderColor = 'badge-secondary';
+                    estadoColor = 'rgb(170, 95, 34)';
                     badgeColor = 'badge-secondary';
             }
             
@@ -1232,12 +1269,11 @@
                 });
             }
             return `
-                <div class="solicitud-card ${animar ? 'animar-llegada' : ''}" 
+                <div class="solicitud-card ${animar ? 'animar-llegada' : ''} border-${borderColor}" 
                      data-id="${tarjeta.recepcion_id}"
                      data-atencion-id="${tarjeta.atencion_id}"
                      data-estado-id="${tarjeta.estado_id}"
-                     data-fecha="${tarjeta.created_at}" 
-                     style="border-left-color: ${borderColor};">
+                     data-fecha="${tarjeta.created_at}">
                     
                     <div class="solicitud-titulo">${titulo}</div>
                     
