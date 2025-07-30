@@ -47,13 +47,12 @@
                                     @enderror
                                 </div>
                             </div>
-
                             <div class="row"> {{-- Detalles --}}
                                 <div class="col-12">
                                     <div class="form-group">
                                         <label for="textarea-counter">Detalles</label>
-                                        <textarea class="form-control" id="textarea-counter" name="detalle" rows="3" required minlength="9"
-                                            maxlength="255" data-validation-required-message="El campo detalle es requerido"
+                                        <textarea class="form-control char-textarea" id="textarea-counter" name="detalle" rows="3" required minlength="9"
+                                            maxlength="255" data-length="255" data-validation-required-message="El campo detalle es requerido"
                                             data-validation-minlength-message="El campo detalle debe tener al menos 9 caracteres"
                                             data-validation-maxlength-message="El campo detalle debe tener menos de 255 caracteres"
                                             placeholder="Detalles de la solicitud (mínimo 9 caracteres)">{{ old('detalle') }}</textarea>
@@ -67,7 +66,6 @@
                                     </div>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                     {{-- GUARDAR --}}

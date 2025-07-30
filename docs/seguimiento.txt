@@ -45,23 +45,18 @@
     09. El operador avanza la solicitud desde su tablero de recibidas a su tablero en progreso y automáticamente se originan las tareas a cumplir segun su skill
     10. El operador va cumpliendo sus tareas una a una y reportandolas como realizadas
 
-...🟢 refactorizar:
-        las tarjetas deben se dibujadas por js en todo momento, el problema es que en el inicio las dibuja html y esto multiplica el codigo
-            necesitamos refactorizarlo, html unicamente debe dibujar los tableros luego del resto debe encargarse js justo como lo tenemos actualmente
-                el cambio pa js debe ser que ahora en el inicio tanto como en los intervalos de los escuchadores debe dibujar las tarjetas en el inicio
-
+🟢 reordenar la indentaciond el codigo, buscar un indentador automatico porque el actual no sirve
+🟢 evaluar si se debe aplicar el codigo amigable ripperkey al numero de tarea
 🟢 revisar la sincronia de colores al mover las tarjetas ya sea manual o automaticamente, o al refrescarlas
 🟢 revisar la logica: descarguese las tarjetas superiores al maximo atencion_id que se encuentre en el tablero, 
-    ya que de esta manera ya no se ven las tarjetas anteriores cuando el ususario prioriza una
-🟢 en el tablero de en progreso si se cargaron 3 tarjetas con el escuchador, con la carga manual desaparecen
-🟢 solicitud: maquetacion de la asignacion de tareas y mejoramiento de clic a la hora de elegir la tarea
-🟢 verificar el aumento del contador en el campo de texto de solicitud.create
-🟢 cuando he hecho drag y la tarjeta esta fuera del tablero el escuchador hace caso omiso de ella y la vuelve a cargar en el tablero del que ha sido extraida
-🟢 entrega de resolución de una solicitud
+    ya que de esta manera ya no se ven las tarjetas anteriores cuando el usuario prioriza una
 
+🟢 solicitud: maquetacion de la asignacion de tareas y mejoramiento de clic a la hora de elegir la tarea
+
+🟢 cuando he hecho drag y la tarjeta esta fuera del tablero el escuchador hace caso omiso de ella y la vuelve a cargar en el tablero del que ha sido extraida
+🟢 entrega y resolución de una solicitud
 🟢 register: asegurar el id del usuario con un aumento no automático sino programatico
-🟢 releer el codigo js y ordenarlo y refactorizarlo si es necesario
-🟢 construir movimiento de control de calidad para el gestor
+🟢 construir de control de calidad para el gestor
 🟢 revisar proceso de priorizacion
 🟢 procesos automaticos: exeptuando la derivacion porque no es eficiente que el ciudadano tenga que solicitar a una oficina muy lejana de su residencia
 🟢 control de movimientos: 

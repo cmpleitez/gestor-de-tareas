@@ -7,7 +7,6 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/bootstrap-extended.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/pages/app-kanban.css') }}">
     <style>
-
         .solicitud-card {
             background: white;
             border: 1px solid #e3e6f0;
@@ -59,13 +58,11 @@
             font-variant-numeric: tabular-nums;
         }
 
-        /* Estilos para drag & drop */
         .kanban-columna {
             min-height: 400px;
             padding: 10px;
         }
 
-        /* Hacer que todas las columnas tengan la misma altura */
         .row {
             display: flex !important;
             align-items: stretch !important;
@@ -89,23 +86,19 @@
 
         .sortable-column {
             min-height: 380px;
-            /* Área de drop fija y grande */
             border: 2px dashed transparent;
             border-radius: 8px;
             transition: all 0.3s ease;
             flex: 1;
-            /* Ocupa todo el espacio disponible */
             display: flex;
             flex-direction: column;
         }
 
         .sortable-column:empty {
             border-color: #e9ecef;
-            /* Borde visible cuando está vacía */
             background: #f8f9fa;
         }
 
-        /* Estilos mejorados para las tarjetas */
         .solicitud-card {
             background: white;
             border: 1px solid #e3e6f0;
@@ -119,7 +112,6 @@
             position: relative;
         }
 
-        /* Línea de progreso parametrizada */
         .progress-divider {
             height: 3px;
             width: 100%;
@@ -154,9 +146,7 @@
             position: fixed;
             top: 0;
             right: -100%;
-            /* Oculto fuera de pantalla independientemente del ancho */
             width: clamp(200px, 32vw, 432px);
-            /* Máx 432 px, mínimo 304 px, 32 % viewport */
             height: 100%;
             background: #fff;
             z-index: 1000;
@@ -170,18 +160,15 @@
             right: 0;
         }
 
-        /* Contenido del sidebar con scroll */
         #sidebar-card-body {
             flex: 1 !important;
             overflow-y: auto !important;
-            padding: 2rem !important;
+            padding: 3rem !important;
             max-height: calc(100vh - 60px) !important;
-            /* Altura menos header */
             display: flex !important;
             flex-direction: column !important;
         }
 
-        /* Personalizar scrollbar del sidebar */
         #sidebar-card-body::-webkit-scrollbar {
             width: 8px;
         }
@@ -200,58 +187,10 @@
             background: #a8a8a8;
         }
 
-        /* Bloquear scroll de la página principal cuando sidebar está abierto */
         body.sidebar-open {
             overflow: hidden;
         }
 
-        /* Optimización de items para el sidebar */
-        #sidebar-card-body .item-selector {
-            padding: 12px 45px 12px 16px !important;
-            margin-bottom: 10px !important;
-            position: relative !important;
-            min-height: auto !important;
-            height: auto !important;
-            border: 1px solid #e3e6f0 !important;
-            border-radius: 8px !important;
-            background: white !important;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
-        }
-
-        #sidebar-card-body .item-body {
-            display: block !important;
-            width: 100% !important;
-            padding-right: 0 !important;
-        }
-
-        #sidebar-card-body .item-info {
-            width: 100% !important;
-            flex: none !important;
-        }
-
-        #sidebar-card-body .item-name {
-            font-size: 0.9rem !important;
-            line-height: 1.5 !important;
-            word-wrap: break-word !important;
-            overflow-wrap: break-word !important;
-            white-space: normal !important;
-            width: 100% !important;
-            margin-bottom: 6px !important;
-            display: block !important;
-            color: #2c3e50 !important;
-            font-weight: 500 !important;
-        }
-
-        #sidebar-card-body .item-desc {
-            font-size: 0.8rem !important;
-            margin-top: 0 !important;
-            color: #6c757d !important;
-            width: 100% !important;
-            white-space: normal !important;
-            text-align: left !important;
-        }
-
-        /* Responsive para pantallas más pequeñas */
         @media (max-width: 768px) {
             .kanban-sidebar {
                 right: -100%;
@@ -266,7 +205,6 @@
             color: #2c3e50;
         }
 
-        /* Mejoras en los encabezados de las columnas */
         .card {
             border-radius: 8px !important;
             overflow: hidden;
@@ -314,100 +252,11 @@
         }
 
         .item-selector {
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 1px solid #e3e6f0;
-            border-radius: 8px;
-            background: white;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            position: relative;
-            padding: 20px;
             width: 92%;
             height: 100%;
         }
 
-        .item-selector:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            border-color: #007bff;
-        }
-
-        .item-selector.selected {
-            border-color: #007bff;
-            box-shadow: 0 4px 16px rgba(0, 123, 255, 0.2);
-        }
-
-        /* Triángulo de color en esquina superior derecha */
-        .item-selector::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 0;
-            height: 0;
-            border-style: solid;
-            border-width: 0 20px 20px 0;
-            border-color: transparent #221627 transparent transparent;
-            border-radius: 0 8px 0 0;
-        }
-
-        .item-selector .item-body {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .item-selector .item-info {
-            flex: 1;
-        }
-
-        .item-selector .item-name {
-            font-weight: 600;
-            font-size: 0.95rem;
-            color: #2c3e50;
-            margin-bottom: 4px;
-        }
-
-        .item-selector .item-desc {
-            font-size: 0.8rem;
-            color: #6c757d;
-        }
-
-        .item-selector .radio-indicator {
-            width: 20px;
-            height: 20px;
-            border: 2px solid #dee2e6;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            background: white;
-        }
-
-        .item-selector.selected .radio-indicator {
-            border-color: #007bff;
-            background: #007bff;
-        }
-
-        .item-selector.selected .radio-indicator::after {
-            content: '';
-            width: 8px;
-            height: 8px;
-            background: white;
-            border-radius: 50%;
-        }
-
-        /* Estilos para checkbox de tareas del sidebar */
         .checkbox-indicator {
-            width: 18px;
-            height: 18px;
-            border: 2px solid #dee2e6;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
             background: white;
             position: absolute;
             top: 12px;
@@ -415,19 +264,6 @@
             z-index: 10;
         }
 
-        .checkbox-indicator.checked {
-            border-color: #007bff;
-            background: #007bff;
-        }
-
-        .checkbox-indicator.checked::after {
-            content: '✓';
-            color: white;
-            font-size: 11px;
-            font-weight: bold;
-        }
-
-        /* Forzar sin sombra en el acordeón */
         .collapse-header,
         .collapse-header *,
         .accordion,
@@ -441,13 +277,6 @@
         .kanban-sidebar,
         .kanban-sidebar * {
             max-width: none !important;
-        }
-
-        #sidebar-card-body .item-name,
-        #sidebar-card-body .item-desc {
-            white-space: normal !important;
-            overflow: visible !important;
-            word-break: break-word !important;
         }
 
         .solicitud-card {
@@ -527,7 +356,7 @@
                                         @endif
                                     </h6>
                                     <small class="text-white-50" style="font-size: 0.8rem;">
-                                        Selecciona el destino para derivar solicitudes
+                                        Selecciona el item destino para impulsar las solicitudes
                                     </small>
                                 </div>
                             </div>
@@ -543,10 +372,10 @@
                             <div class="card-body" style="background: #f8f9fa; padding: 1rem;">
                                 @if (auth()->user()->hasRole('Recepcionista') && isset($areas))
                                     {{-- RECEPCIONISTA --}}
-                                    <div class="row" style="display: flex; align-items: stretch;">
+                                                                        <div class="row" style="display: flex; align-items: stretch;">
                                         @foreach ($areas as $area)
                                             <div class="col-md-3">
-                                                <div class="item-selector {{ $area->id == auth()->user()->area_id ? 'selected' : '' }}"
+                                                <div class="selectable-item {{ $area->id == auth()->user()->area_id ? 'selected' : '' }}"
                                                     onclick="selectItem('area_{{ $area->id }}')">
                                                     <div class="item-body">
                                                         <div class="item-info">
@@ -565,15 +394,15 @@
                                     </div>
                                 @elseif (auth()->user()->hasRole('Supervisor') && isset($equipos))
                                     {{-- SUPERVISOR --}}
-                                    <div class="row" style="display: flex; align-items: stretch;">
+                                                                        <div class="row" style="display: flex; align-items: stretch;">
                                         @foreach ($equipos as $equipo)
                                             <div class="col-md-3">
-                                                <div class="item-selector {{ $equipo->id == auth()->user()->equipos->first()->id ? 'selected' : '' }}"
+                                                <div class="selectable-item {{ $equipo->id == auth()->user()->equipos->first()->id ? 'selected' : '' }}"
                                                     onclick="selectItem('equipo_{{ $equipo->id }}')">
                                                     <div class="item-body">
                                                         <div class="item-info">
                                                             <div class="item-name">{{ $equipo->equipo }}</div>
-                                                            <div class="item-desc">Grupo de trabajo</div>
+                                                            <div class="item-desc">Equipo de trabajo</div>
                                                         </div>
                                                         <div class="radio-indicator"></div>
                                                     </div>
@@ -587,11 +416,11 @@
                                     </div>
                                 @elseif (auth()->user()->hasRole('Gestor') && isset($operadores))
                                     {{-- GESTOR --}}
-                                    <div class="row" style="display: flex; align-items: stretch;">
+                                                                        <div class="row" style="display: flex; align-items: stretch;">
                                         @php $operador_por_defecto = $operadores->random(); @endphp
                                         @foreach ($operadores as $operador)
                                             <div class="col-md-3">
-                                                <div class="item-selector {{ $operador_por_defecto->id == $operador->id ? 'selected' : '' }}"
+                                                <div class="selectable-item {{ $operador_por_defecto->id == $operador->id ? 'selected' : '' }}"
                                                     onclick="selectItem('operador_{{ $operador->id }}')">
                                                     <div class="item-body">
                                                         <div class="item-info">
@@ -718,7 +547,7 @@
             userRole = 'Operador';
         @endif
         function selectItem(radioId) { // Función para seleccionar items
-            document.querySelectorAll('.item-selector').forEach(selector => { // Desmarcar todos los selectores
+            document.querySelectorAll('.selectable-item').forEach(selector => { // Desmarcar todos los selectores
                 selector.classList.remove('selected');
             });
             const selectedElement = document.querySelector(
@@ -828,7 +657,7 @@
                     Swal.fire({
                         position: 'top-end',
                         type: 'warning',
-                        title: 'Selecciona un área destino primeroDebes seleccionar un área destino',
+                        title: 'Debes seleccionar un área destino',
                         showConfirmButton: false,
                         timer: 2000,
                         confirmButtonClass: 'btn btn-primary',
@@ -994,7 +823,7 @@
                     estadoIcon = 'bx-check-circle';
                 }
                 tareasHtml += `
-                    <div class="item-selector ${tarea.estado_id == 3 ? 'selected' : ''}" onclick="selectTask('task_${tarea.actividad_id}')">
+                    <div class="selectable-item ${tarea.estado_id == 3 ? 'selected' : ''}" onclick="selectTask('task_${tarea.actividad_id}')">
                         <div class="checkbox-indicator ${tarea.estado_id == 3 ? 'checked' : ''}" id="checkbox_${tarea.actividad_id}"></div>
                         <div class="item-body">
                             <div class="item-info">
@@ -1014,15 +843,15 @@
         function selectTask(taskId) { // Función para seleccionar tareas
             const checkbox = document.getElementById(taskId); // Marcar/desmarcar el checkbox
             const visualCheckbox = document.querySelector(`[onclick="selectTask('${taskId}')"] .checkbox-indicator`);
-            const itemSelector = document.querySelector(`[onclick="selectTask('${taskId}')"]`);
-            if (checkbox && visualCheckbox && itemSelector) {
+            const selectableItem = document.querySelector(`[onclick="selectTask('${taskId}')"]`);
+            if (checkbox && visualCheckbox && selectableItem) {
                 checkbox.checked = !checkbox.checked;
                 if (checkbox.checked) {
                     visualCheckbox.classList.add('checked');
-                    itemSelector.classList.add('selected');
+                    selectableItem.classList.add('selected');
                 } else {
                     visualCheckbox.classList.remove('checked');
-                    itemSelector.classList.remove('selected');
+                    selectableItem.classList.remove('selected');
                 }
                 const actividadId = taskId.replace('task_', ''); // AJAX para actualizar estado
                 const nuevoEstado = checkbox.checked ? 'Resuelta' : 'En progreso';
@@ -1125,7 +954,7 @@
             $('#heading5 h6 .font-weight-600').text(operadorNombre);
             $('#accordion5').collapse('hide');
         });
-        //ACTUALIZAR PROGRESO DE LAS TAREAS
+        //FUNCIONES PARA ACTUALIZAR BARRAS DE PROGRESO
         function updateProgressByPercentage(atencionId, porcentaje) {
             let naranja, amarillo, verde, celeste;
             if (porcentaje == 0) { 
@@ -1207,7 +1036,6 @@
             $('#contador-resueltas').text(resueltas);
             actualizarMensajeColumnaVacia(); // NUEVO: actualizar mensajes de columnas vacías
         }
-        //REFRESCAR BARRAS DE PROGRESO
         function obtenerAtencionIdsTableros() {
             let ids = [];
             $('.solicitud-card').each(function() {
@@ -1337,7 +1165,7 @@
         function limpiarPopovers() { // Función para limpiar todos los popovers
             $('[data-toggle="popover"]').popover('dispose');
         }
-        //CARGA INICIAL DE LAS TARJETAS
+        //FUNCIONES PARA LA CARGA INICIAL DE LAS TARJETAS
         function cargarTarjetasIniciales(tarjetas) {
             if (tarjetas.recibidas && tarjetas.recibidas.length > 0) { // Cargar tarjetas recibidas
                 tarjetas.recibidas.forEach(function(tarjeta) {
@@ -1360,7 +1188,6 @@
             actualizarContadores(); // Actualizar contadores y mensajes
             actualizarMensajeColumnaVacia();
         }
-        
         function generarTarjetaSolicitud(tarjeta, animar = false, tipo = 'recibidas') {
             const titulo = tarjeta.titulo && tarjeta.detalle ? 
                 `${tarjeta.titulo} - ${tarjeta.detalle}` : 
@@ -1441,7 +1268,6 @@
                 let fecha = $(this).attr('data-fecha');
                 return fecha && fecha !== 'null' && fecha !== 'undefined' ? fecha : null;
             }).get().filter(fecha => fecha !== null);
-            
             return fechas.length > 0 ? Math.max(...fechas) : null;
         }
         function cargarNuevasRecibidas() {
@@ -1487,7 +1313,7 @@
                 }
             });
         }
-        // INICIALIZAR PROGRESO DE LAS TARJETAS, TABLEROS Y CONTADORES
+        //COMANDOS PARA CARGAR Y ACTUALIZAR LOS ELEMENTOS DE LA PÁGINA
         $(document).ready(function() {
             const tarjetasIniciales = { // Datos iniciales de las tarjetas
                 recibidas: @json($recibidas),
@@ -1505,9 +1331,9 @@
                 });
             }, 100);
             initKanban();
-            setInterval(consultarAvancesTablero, 15000); // 15 segundos
-            setInterval(cargarNuevasRecibidas, 15000);   // 15 segundos
-            setInterval(limpiarPopovers, 180000);       // 3 minutos
+            setInterval(consultarAvancesTablero, 300000); // 5 minutos
+            setInterval(cargarNuevasRecibidas, 5000);   // 5 segundos
+            setInterval(limpiarPopovers, 300000);       // 5 minutos
         });
 
     </script>

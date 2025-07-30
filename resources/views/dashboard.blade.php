@@ -237,6 +237,216 @@
         .toast-progress {
             background-color: rgba(255, 255, 255, .5) !important;
         }
+
+        /* ===== CLASES REUTILIZABLES PARA ELEMENTOS SELECCIONABLES ===== */
+        
+        /* Clase base para elementos seleccionables */
+        .selectable-item {
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid #e3e6f0;
+            border-radius: 8px;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            position: relative;
+            padding: 20px;
+            margin-bottom: 1rem;
+        }
+
+        /* Efectos hover y selección unificados para todos los elementos */
+        .selectable-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+            border-color: #007bff;
+        }
+
+        .selectable-item.selected {
+            border-color: #007bff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .selectable-item.selected:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+            border-color: #007bff;
+        }
+
+
+
+        /* Triángulo de color en esquina superior derecha */
+        .selectable-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 0 20px 20px 0;
+            border-color: transparent #221627 transparent transparent;
+            border-radius: 0 8px 0 0;
+        }
+
+        /* Estilos para elementos internos de selectable-item */
+        .selectable-item .item-body {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .selectable-item .item-info {
+            flex: 1;
+        }
+
+        .selectable-item .item-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #2c3e50;
+            margin-bottom: 4px;
+        }
+
+        .selectable-item .item-desc {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+
+        /* Indicadores de selección */
+        .radio-indicator {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #dee2e6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .selectable-item.selected .radio-indicator {
+            border-color: #007bff;
+            background: #007bff;
+        }
+
+        .selectable-item.selected .radio-indicator::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+        }
+
+        /* Checkbox indicator */
+        .checkbox-indicator {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #dee2e6;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .selectable-item.selected .checkbox-indicator {
+            border-color: #007bff;
+            background: #007bff;
+        }
+
+        .selectable-item.selected .checkbox-indicator::after {
+            content: '✓';
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        /* ===== CLASES ESPECÍFICAS PARA TAREAS ===== */
+        
+        .tareas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+            padding: 1rem 0;
+        }
+
+        .tarea-card {
+            height: 160px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .tarea-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .tarea-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #7367f0, #9c8cfc);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .tarea-checkbox {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tarea-checkbox-input {
+            width: 18px;
+            height: 18px;
+            margin: 0;
+            cursor: pointer;
+            border: 2px solid #dee2e6;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .tarea-card.selected .tarea-checkbox-input {
+            border-color: #007bff;
+            background: #007bff;
+        }
+
+        .tarea-content {
+            flex: 1;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #2c3e50;
+            margin-bottom: 4px;
+            word-wrap: break-word;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        
+        @media (max-width: 768px) {
+            .tareas-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 0.75rem;
+            }
+            
+            .tarea-card {
+                height: 140px;
+                padding: 1rem;
+            }
+        }
     </style>
 
     @section('css')

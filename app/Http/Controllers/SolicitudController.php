@@ -15,7 +15,6 @@ class SolicitudController extends Controller
         return view('modelos.solicitud.index', compact('solicitudes'));
     }
 
-
     public function create()
     {
         return view('modelos.solicitud.create');
@@ -26,7 +25,6 @@ class SolicitudController extends Controller
         Solicitud::create($request->validated());
         return redirect()->route('solicitud')->with('success', 'Solicitud creada correctamente');
     }
-
 
     public function edit(Solicitud $solicitud)
     {
@@ -39,7 +37,6 @@ class SolicitudController extends Controller
         return redirect()->route('solicitud')->with('success', 'Solicitud actualizada correctamente');  
     }
 
-
     public function asignarTareas(Solicitud $solicitud)
     {
         $tareas = Tarea::where('activo', true)->get();
@@ -51,7 +48,6 @@ class SolicitudController extends Controller
         $solicitud->tareas()->sync($request->tareas);
         return redirect()->route('solicitud')->with('success', 'Tareas actualizadas correctamente');
     }
-
 
     public function show(string $id)
     {

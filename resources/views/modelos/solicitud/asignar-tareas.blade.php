@@ -5,7 +5,7 @@
 
 @section('contenedor')
     <div class="row justify-content-center">
-        <div class="col-md-6">
+        <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
                     <div class="row">
@@ -28,30 +28,24 @@
                     @method('PUT')
                     <div class="card-content">
                         <div class="card-body">
-                            <div style="display: flex; flex-wrap: wrap; align-items: flex-start;">
+                            <div class="tareas-grid">
                                 @foreach ($tareas as $tarea)
-                                    <div style="display: flex; flex-direction: column; align-items: center; margin-right: 10px;">
-                                        <div style="background-color: #fdf7f7; border-top-left-radius: 50px; 
-                                        border-bottom-left-radius: 50px; border-top-right-radius: 5px; 
-                                        border-bottom-right-radius: 20px; width: 10rem; display: flex; 
-                                        align-items: center; margin-right: 2rem; border: 1px solid rgb(213, 216, 216);">
-                                            <div class="badge-circle badge-circle-md badge-circle-primary"
-                                                style="margin-left: -0.2rem;">
+                                    <div class="tarea-card selectable-item" onclick="toggleCheckbox('{{ $loop->index }}')">
+                                        <div class="tarea-header">
+                                            <div class="tarea-icon">
                                                 <i class="bx bx-task"></i>
                                             </div>
-                                            <div class="form-check form-check-inline" style="margin-right: 0; padding-left: 10px;">
+                                            <div class="tarea-checkbox">
                                                 @if ($solicitud->tareas->contains($tarea->id))
-                                                    <input type="checkbox" name="tareas[]" class="form-check-input" 
-                                                    style="margin-right: 0; margin-left: 0; transform: scale(1.2);" id="{{ $loop->index }}" 
-                                                    value="{{ $tarea->id }}" checked>
+                                                    <input type="checkbox" name="tareas[]" class="form-check-input tarea-checkbox-input" 
+                                                    id="{{ $loop->index }}" value="{{ $tarea->id }}" checked>
                                                 @else
-                                                    <input type="checkbox" name="tareas[]" class="form-check-input" 
-                                                    style="margin-right: 0; margin-left: 0; transform: scale(1.2);" id="{{ $loop->index }}"
-                                                    value="{{ $tarea->id }}">
+                                                    <input type="checkbox" name="tareas[]" class="form-check-input tarea-checkbox-input" 
+                                                    id="{{ $loop->index }}" value="{{ $tarea->id }}">
                                                 @endif
                                             </div>
                                         </div>
-                                        <div style="text-align: justify; word-wrap: break-word; max-width: 100px; font-size: 0.8rem;">
+                                        <div class="tarea-content">
                                             {{ $tarea->tarea }}
                                         </div>
                                     </div>
@@ -69,4 +63,38 @@
 @stop
 
 @section('js')
+    <script>
+        function toggleCheckbox(id) {
+            const checkbox = document.getElementById(id);
+            const card = checkbox.closest('.tarea-card');
+            
+            if (checkbox) {
+                checkbox.checked = !checkbox.checked;
+                
+                // Actualizar estado visual de la tarjeta
+                if (checkbox.checked) {
+                    card.classList.add('selected');
+                } else {
+                    card.classList.remove('selected');
+                }
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkboxes = document.querySelectorAll('.tarea-checkbox-input');
+            
+            // Inicializar estado visual de las tarjetas
+            checkboxes.forEach(function(checkbox) {
+                const card = checkbox.closest('.tarea-card');
+                if (checkbox.checked) {
+                    card.classList.add('selected');
+                }
+                
+                // Prevenir propagación del click en el checkbox
+                checkbox.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            });
+        });
+    </script>
 @stop
