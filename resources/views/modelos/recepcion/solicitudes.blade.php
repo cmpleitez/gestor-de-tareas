@@ -7,6 +7,12 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/bootstrap-extended.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/pages/app-kanban.css') }}">
     <style>
+
+        .btn i {
+            position: relative;
+            top: 1px;
+        }
+
         .solicitud-card {
             background: white;
             border: 1px solid #e3e6f0;
@@ -468,8 +474,21 @@
                             <i class="bx bx-archive text-white" style="font-size: 0.9rem;"></i>
                         </div>
                         <h6 class="mb-0 text-white font-weight-600" style="font-size: 0.9rem;">Recibidas</h6>
-                        <span class="badge badge-white ml-auto text-black-50"
-                            id="contador-recibidas">{{ count($recibidas) }}</span>
+                        <div class="ml-auto d-flex align-items-center">
+                            @if(auth()->user()->hasRole('Gestor'))
+                                <button type="button" 
+                                    class="btn btn-sm btn-outline-light mr-2" 
+                                    id="btn-distribuir-todas"
+                                    data-toggle="tooltip" 
+                                    data-placement="top" 
+                                    title="Distribuir todas las solicitudes"
+                                    style="border: 1px solid rgba(255,255,255,0.3); background: transparent; padding: 4px 8px; font-size: 0.8rem;">
+                                    <i class="bx bxs-send" style="font-size: 0.8rem;"></i>
+                                </button>
+                            @endif
+                            <span class="badge badge-white text-black-50"
+                                id="contador-recibidas">{{ count($recibidas) }}</span>
+                        </div>
                     </div>
                 </div>
                 <div class="card-body kanban-columna" style="background: #f8f9fa; padding: 1rem;">
@@ -646,6 +665,124 @@
             container: 'body',
             trigger: 'hover'
         });
+
+        // Inicializar tooltips
+        $('[data-toggle="tooltip"]').tooltip();
+
+        // Manejar click del botón delegar todas
+        $(document).on('click', '#btn-distribuir-todas', function() {
+            
+            // Recolectar todas las tarjetas que se encuentren en la bandeja "recibidas"
+            let recepcionIds = [];
+            $('#columna-recibidas .solicitud-card').each(function() {
+                let recepcionId = $(this).data('id');
+                if (recepcionId && recepcionId !== 'null' && recepcionId !== 'undefined') {
+                    recepcionIds.push(recepcionId);
+                }
+            });
+
+
+
+            if (recepcionIds.length === 0) {
+                Swal.fire({
+                    position: 'top-end',
+                    type: 'warning',
+                    title: 'No hay solicitudes en la bandeja de recibidas',
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+                return;
+            }
+            Swal.fire({
+                title: '¿Delegar todas las solicitudes?',
+                text: `Esta acción delegará ${recepcionIds.length} solicitudes recibidas.`,
+                type: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, delegar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.value === true) {
+
+                    $.ajax({
+                        url: '{{ route('recepcion.delegar-todas') }}',
+                        method: 'POST',
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                            recepcion_ids: recepcionIds
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                // Mostrar mensaje principal de éxito
+                                Swal.fire({
+                                    position: 'top-end',
+                                    type: 'success',
+                                    title: response.message,
+                                    showConfirmButton: false,
+                                    timer: 3000
+                                });
+                                
+                                // Mover tarjetas delegadas exitosamente al tablero "En progreso"
+                                if (response.tarjetas_delegadas && response.tarjetas_delegadas.length > 0) {
+                                    response.tarjetas_delegadas.forEach(function(recepcionId) {
+                                        const tarjeta = $(`.solicitud-card[data-id="${recepcionId}"]`);
+                                        if (tarjeta.length > 0) {
+                                            // Mover la tarjeta al tablero "En progreso"
+                                            $('#columna-progreso').append(tarjeta);
+                                            
+                                            // Actualizar el color del estado
+                                            const estadoElement = tarjeta.find('.solicitud-estado');
+                                            estadoElement.css({
+                                                'color': '#17a2b8',
+                                                'font-size': '0.8em',
+                                                'margin-top': '5px'
+                                            });
+                                        }
+                                    });
+                                }
+                                
+                                // Mostrar solo los primeros 5 errores con toastr sin tiempo de cierre
+                                if (response.errores && response.errores.length > 0) {
+                                    const primerosErrores = response.errores.slice(0, 5);
+                                    primerosErrores.forEach(function(error) {
+                                        toastr.error(error, '', {
+                                            timeOut: 0,
+                                            extendedTimeOut: 0,
+                                            closeButton: true,
+                                            preventDuplicates: false,
+                                            newestOnTop: true,
+                                            autoDismiss: false,
+                                            tapToDismiss: false,
+                                            hideDuration: 0,
+                                            showDuration: 0
+                                        });
+                                    });
+                                }
+                            } else {
+                                Swal.fire({
+                                    position: 'top-end',
+                                    type: 'error',
+                                    title: response.message,
+                                    showConfirmButton: false,
+                                    timer: 3000
+                                });
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            Swal.fire({
+                                position: 'top-end',
+                                type: 'error',
+                                title: 'Error al delegar solicitudes',
+                                showConfirmButton: false,
+                                timer: 3000
+                            });
+                        }
+                    });
+                }
+            });
+        });
+
         //ACTUALIZAR EL MOVIMIENTO DE LA TARJETA, TANTO EN EL BACKEND Y COMO EN EL FRONTEND
         function updatePosition(solicitudId, nuevaColumna, evt) {
             let nuevoEstadoId = 1; //Iniciando parametros
@@ -743,7 +880,6 @@
                     if (response.success) {
                         const tarjeta = $(`.solicitud-card[data-id="${solicitudId}"]`);
                         const tituloTarjeta = tarjeta.find('.solicitud-titulo').text() || 'Sin título';
-
                         if (tarjeta.length > 0) {
                             // Actualizar estilos básicos de la tarjeta
                             tarjeta.removeClass(
@@ -778,15 +914,10 @@
                                 }
                             });
                         }
-                        Swal.fire({
-                            position: 'top-end',
-                            type: 'success',
-                            title: 'Solicitud #' + tarjeta.find('.solicitud-id small').text() + ' "' +
-                                tituloTarjeta + '"' + nombreEstado,
-                            showConfirmButton: false,
-                            timer: 3000,
-                            confirmButtonClass: 'btn btn-primary',
-                            buttonsStyling: false
+                        toastr.success(response.message, '', {
+                            positionClass: 'toast-top-right',
+                            closeButton: true,
+                            timeOut: 15000
                         });
                     } else {
                         Swal.fire({

@@ -50,7 +50,9 @@
 🟢 register: asegurar el id del usuario con un aumento no automático sino programatico
 🟢 construir de control de calidad para el gestor
 🟢 revisar proceso de priorizacion
-🟢 procesos automaticos: exeptuando la derivacion porque no es eficiente que el ciudadano tenga que solicitar a una oficina muy lejana de su residencia
+
+...🟢 procesos automaticos: exeptuando la derivacion porque no es eficiente que el ciudadano tenga que solicitar a una oficina muy lejana de su residencia
+🟢 corregir el problema de lentitud de red que se origina despues de suceder un error de sistema: Slow network is detected.
 🟢 verificar y delimitar casos de roles multiples
 🟢 proceso de rechazo de una solicitud o anulación
 🟢 en la mayoria de las vistas se debe agregar un margen arriba de 1 o 2 porque todo esta muy pegado al techo

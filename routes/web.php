@@ -118,6 +118,7 @@ Route::middleware([
             Route::post('reportar-tarea/{actividad_id}', [RecepcionController::class, 'reportarTarea'])->name('recepcion.reportar-tarea');
             Route::post('avance-tablero', [RecepcionController::class, 'avanceTablero'])->name('recepcion.avance-tablero');
             Route::post('nuevas-recibidas', [RecepcionController::class, 'nuevasRecibidas'])->name('recepcion.nuevas-recibidas');
+            Route::post('delegar-todas', [RecepcionController::class, 'delegarTodas'])->name('recepcion.delegar-todas');
         });
     });
 

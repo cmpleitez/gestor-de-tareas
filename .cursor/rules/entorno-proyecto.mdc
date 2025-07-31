@@ -9,3 +9,7 @@ alwaysApply: true
     recepcionista -> supervisor -> gestor -> equipo (en modo lote de trabajo) u operador (modo por unidad de trabajo)
 ✅Impulsos: son los avances de usuario a usuario que suceden en la solicitud
 ✅Tareas: son partes integrales de la solicitud las cuales son procesadas por el area operativa originando varios de los estados de avance.
+✅ beneficiario: el usuario que tenga este rol
+✅ usuario calificado: es aquel que tiene asignada la solicitud que está solicitando el beneficiario
+
+
