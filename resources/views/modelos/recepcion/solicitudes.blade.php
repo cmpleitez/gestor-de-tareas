@@ -486,7 +486,7 @@
                                     <i class="bx bxs-send" style="font-size: 0.8rem;"></i>
                                 </button>
                             @endif
-                            <span class="badge badge-white text-black-50"
+                            <span class="badge badge-white text-dark"
                                 id="contador-recibidas">{{ count($recibidas) }}</span>
                         </div>
                     </div>
@@ -508,7 +508,7 @@
                             <i class="bx bx-time-five text-white" style="font-size: 0.9rem;"></i>
                         </div>
                         <h6 class="mb-0 text-white font-weight-600" style="font-size: 0.9rem;">En Progreso</h6>
-                        <span class="badge badge-white ml-auto text-black-50"
+                        <span class="badge badge-white ml-auto text-dark"
                             id="contador-progreso">{{ count($progreso) }}</span>
                     </div>
                 </div>
@@ -529,7 +529,7 @@
                             <i class="bx bx-check-circle text-white" style="font-size: 0.9rem;"></i>
                         </div>
                         <h6 class="mb-0 text-white font-weight-600" style="font-size: 0.9rem;">Resueltas</h6>
-                        <span class="badge badge-white ml-auto text-black-50"
+                        <span class="badge badge-white ml-auto text-dark"
                             id="contador-resueltas">{{ count($resueltas) }}</span>
                     </div>
                 </div>
