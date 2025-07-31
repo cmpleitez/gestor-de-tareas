@@ -475,13 +475,13 @@
                         </div>
                         <h6 class="mb-0 text-white font-weight-600" style="font-size: 0.9rem;">Recibidas</h6>
                         <div class="ml-auto d-flex align-items-center">
-                            @if(auth()->user()->hasRole('Gestor'))
+                            @if(auth()->user()->hasRole('Gestor') || auth()->user()->hasRole('Supervisor'))
                                 <button type="button" 
                                     class="btn btn-sm btn-outline-light mr-2" 
                                     id="btn-distribuir-todas"
                                     data-toggle="tooltip" 
                                     data-placement="top" 
-                                    title="Distribuir todas las solicitudes"
+                                    title="Impulsar todas las solicitudes"
                                     style="border: 1px solid rgba(255,255,255,0.3); background: transparent; padding: 4px 8px; font-size: 0.8rem;">
                                     <i class="bx bxs-send" style="font-size: 0.8rem;"></i>
                                 </button>
@@ -671,18 +671,13 @@
 
         // Manejar click del botón delegar todas
         $(document).on('click', '#btn-distribuir-todas', function() {
-            
-            // Recolectar todas las tarjetas que se encuentren en la bandeja "recibidas"
-            let recepcionIds = [];
+            let recepcionIds = []; // Recolectar todas las tarjetas que se encuentren en la bandeja "recibidas"
             $('#columna-recibidas .solicitud-card').each(function() {
                 let recepcionId = $(this).data('id');
                 if (recepcionId && recepcionId !== 'null' && recepcionId !== 'undefined') {
                     recepcionIds.push(recepcionId);
                 }
             });
-
-
-
             if (recepcionIds.length === 0) {
                 Swal.fire({
                     position: 'top-end',
@@ -694,8 +689,8 @@
                 return;
             }
             Swal.fire({
-                title: '¿Delegar todas las solicitudes?',
-                text: `Esta acción delegará ${recepcionIds.length} solicitudes recibidas.`,
+                title: '¿Distribuir todas las solicitudes?',
+                text: 'Esta acción distribuirá ${recepcionIds.length} solicitudes recibidas.',
                 type: 'question',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
@@ -703,10 +698,18 @@
                 confirmButtonText: 'Sí, delegar',
                 cancelButtonText: 'Cancelar'
             }).then((result) => {
+
                 if (result.value === true) {
+                    // Determinar la URL según el rol del usuario
+                    let url = '';
+                    @if(auth()->user()->hasRole('Gestor'))
+                        url = '{{ route('recepcion.delegar-todas') }}';
+                    @elseif(auth()->user()->hasRole('Supervisor'))
+                        url = '{{ route('recepcion.asignar-todas') }}';
+                    @endif
 
                     $.ajax({
-                        url: '{{ route('recepcion.delegar-todas') }}',
+                        url: url,
                         method: 'POST',
                         data: {
                             _token: $('meta[name="csrf-token"]').attr('content'),
@@ -723,9 +726,10 @@
                                     timer: 3000
                                 });
                                 
-                                // Mover tarjetas delegadas exitosamente al tablero "En progreso"
-                                if (response.tarjetas_delegadas && response.tarjetas_delegadas.length > 0) {
-                                    response.tarjetas_delegadas.forEach(function(recepcionId) {
+                                // Mover tarjetas procesadas exitosamente al tablero "En progreso"
+                                const tarjetasProcesadas = response.tarjetas_delegadas || response.tarjetas_asignadas || [];
+                                if (tarjetasProcesadas.length > 0) {
+                                    tarjetasProcesadas.forEach(function(recepcionId) {
                                         const tarjeta = $(`.solicitud-card[data-id="${recepcionId}"]`);
                                         if (tarjeta.length > 0) {
                                             // Mover la tarjeta al tablero "En progreso"

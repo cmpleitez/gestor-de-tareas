@@ -330,6 +330,69 @@ class RecepcionController extends Controller
             return response()->json(['success' => false, 'message' => 'Ocurrió un error al asignar la solicitud:' . $e->getMessage()]);
         }
     }
+    public function asignarTodas(Request $request)
+    {
+        // Obtener los IDs de las tarjetas desde el frontend
+        $recepcionIds = $request->input('recepcion_ids', []);
+        if (empty($recepcionIds)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No hay solicitudes recibidas para asignar',
+            ]);
+        }
+        // Obtener las recepciones basadas en los IDs enviados desde el frontend
+        $recepciones = Recepcion::whereIn('id', $recepcionIds)
+        ->where('user_id_destino', auth()->user()->id)
+        ->where('estado_id', 1) // Estado "Recibida"
+        ->get();
+        $asignacionesExitosas = 0;
+        $asignacionesFallidas = 0;
+        $errores = [];
+
+        // Procesar cada recepción
+        foreach ($recepciones as $recepcion) {
+            try {
+                //Elegir un usuario con rol "Gestor" que pertenezca al area de la solicitud
+                $gestores = User::role('Gestor')->where('area_id', $recepcion->area_id)->get();
+                if ($gestores->isEmpty()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'No hay gestores disponibles para asignar las solicitudes',
+                    ]);
+                }
+                //Elegir un gestor aleatorio
+                $gestorSeleccionado = $gestores->random();
+
+                //Usar el método asignar como sub-proceso
+                $response = $this->asignar($recepcion->id, $gestorSeleccionado->id);
+                if ($response->getData()->success) {
+                    $asignacionesExitosas++;
+                    // Actualizar el estado de la recepción original a "En progreso"
+                    $recepcion->estado_id = Estado::where('estado', 'En progreso')->first()->id;
+                    $recepcion->save();
+                } else {
+                    $asignacionesFallidas++;
+                    $errores[] = "Recepción ID {$recepcion->id} - Solicitud {$recepcion->atencion_id}: " . $response->getData()->message;
+                }
+
+            } catch (\Exception $e) {
+                $asignacionesFallidas++;
+                $errores[] = "Recepción ID {$recepcion->id} - Solicitud {$recepcion->atencion_id}: Error - " . $e->getMessage();
+            }
+        }
+        $mensaje = "Asignación masiva efectuada. ";
+        $mensaje .= "Exitosas: {$asignacionesExitosas}, ";
+        $mensaje .= "Fallidas: {$asignacionesFallidas}";
+        return response()->json([
+            'success' => true,
+            'message' => $mensaje,
+            'asignaciones_exitosas' => $asignacionesExitosas,
+            'asignaciones_fallidas' => $asignacionesFallidas,
+            'total_procesadas' => $recepciones->count(),
+            'errores' => $errores,
+            'tarjetas_asignadas' => $recepciones->where('estado_id', 2)->pluck('id')->toArray()
+        ]);
+    }
 
     public function delegar($recepcion_id, $user_id)
     {
@@ -382,6 +445,71 @@ class RecepcionController extends Controller
             DB::rollBack();
             return response()->json(['success' => false, 'message' => 'Ocurrió un error al delegar la solicitud:' . $e->getMessage()]);
         }
+    }
+
+    public function delegarTodas(Request $request)
+    {
+        // Obtener los IDs de las tarjetas desde el frontend
+        $recepcionIds = $request->input('recepcion_ids', []);
+
+        if (empty($recepcionIds)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No hay solicitudes recibidas para delegar',
+            ]);
+        }
+
+        // Obtener las recepciones basadas en los IDs enviados desde el frontend
+        $recepciones = Recepcion::whereIn('id', $recepcionIds)
+            ->where('user_id_destino', auth()->user()->id)
+            ->where('estado_id', 1) // Estado "Recibida"
+            ->get();
+        $delegacionesExitosas = 0;
+        $delegacionesFallidas = 0;
+        $errores = [];
+        // Procesar cada recepción
+        foreach ($recepciones as $recepcion) {
+            try {
+                //Obtener usuarios con rol "Operador" del area de la solicitud
+                $operadores = User::role('Operador')->where('area_id', $recepcion->area_id)->get();
+                if ($operadores->count() == 0) {
+                    $delegacionesFallidas++;
+                    $errores[] = "Recepción ID {$recepcion->id} - Solicitud {$recepcion->atencion_id}: No tiene usuarios calificados disponibles";
+                    continue;
+                }
+                //Seleccionar usuario aleatorio si hay más de uno
+                $operadorSeleccionado = $operadores->random();
+                //Usar el método delegar como sub-proceso
+                $response = $this->delegar($recepcion->id, $operadorSeleccionado->id);
+                if ($response->getData()->success) {
+                    $delegacionesExitosas++;
+                    // Actualizar el estado de la recepción original a "En progreso"
+                    $recepcion->estado_id = Estado::where('estado', 'En progreso')->first()->id;
+                    $recepcion->save();
+                } else {
+                    $delegacionesFallidas++;
+                    $errores[] = "Recepción ID {$recepcion->id} - Solicitud {$recepcion->atencion_id}: " . $response->getData()->message;
+                }
+            } catch (\Exception $e) {
+                $delegacionesFallidas++;
+                $errores[] = "Recepción ID {$recepcion->id} - Solicitud {$recepcion->atencion_id}: Error - " . $e->getMessage();
+            }
+        }
+
+        // Preparar mensaje de respuesta
+        $mensaje = "Delegación masiva efectuada. ";
+        $mensaje .= "Exitosas: {$delegacionesExitosas}, ";
+        $mensaje .= "Fallidas: {$delegacionesFallidas}";
+
+        return response()->json([
+            'success' => true,
+            'message' => $mensaje,
+            'delegaciones_exitosas' => $delegacionesExitosas,
+            'delegaciones_fallidas' => $delegacionesFallidas,
+            'total_procesadas' => $recepciones->count(),
+            'errores' => $errores,
+            'tarjetas_delegadas' => $recepciones->where('estado_id', 2)->pluck('id')->toArray()
+        ]);
     }
 
     public function iniciarTareas(string $recepcion_id)
@@ -537,71 +665,6 @@ class RecepcionController extends Controller
         });
 
         return response()->json($resultado);
-    }
-
-    public function delegarTodas(Request $request)
-    {
-        // Obtener los IDs de las tarjetas desde el frontend
-        $recepcionIds = $request->input('recepcion_ids', []);
-        
-        if (empty($recepcionIds)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'No hay solicitudes recibidas para delegar'
-            ]);
-        }
-
-        // Obtener las recepciones basadas en los IDs enviados desde el frontend
-        $recepcionesRecibidas = Recepcion::whereIn('id', $recepcionIds)
-            ->where('user_id_destino', auth()->user()->id)
-            ->where('estado_id', 1) // Estado "Recibida"
-            ->get();
-        $delegacionesExitosas = 0;
-        $delegacionesFallidas = 0;
-        $errores = [];
-        // Procesar cada recepción
-        foreach ($recepcionesRecibidas as $recepcion) {
-            try {
-                // 1. Obtener usuarios calificados para esta solicitud
-                $recepcion = Recepcion::with('solicitud.usuarios')->where('id', $recepcion->id)->first();
-                $operadores = $recepcion->solicitud->usuarios->filter(function($usuario) {
-                    return $usuario->roles->contains('name', 'Operador');
-                });
-                if ($operadores->count() == 0) {
-                    $delegacionesFallidas++;
-                    $errores[] = "Recepción ID {$recepcion->id} - Solicitud {$recepcion->atencion_id}: No tiene usuarios calificados disponibles";
-                    continue;
-                }
-                // 2. Seleccionar usuario aleatorio si hay más de uno
-                $operadorSeleccionado = $operadores->random();
-                // 3. Usar el método delegar como sub-proceso
-                $response = $this->delegar($recepcion->id, $operadorSeleccionado->id);
-                if ($response->getData()->success) {
-                    $delegacionesExitosas++;
-                } else {
-                    $delegacionesFallidas++;
-                    $errores[] = "Recepción ID {$recepcion->id} - Solicitud {$recepcion->atencion_id}: " . $response->getData()->message;
-                }
-            } catch (\Exception $e) {
-                $delegacionesFallidas++;
-                $errores[] = "Recepción ID {$recepcion->id} - Solicitud {$recepcion->atencion_id}: Error - " . $e->getMessage();
-            }
-        }
-
-        // Preparar mensaje de respuesta
-        $mensaje = "Delegación masiva completada. ";
-        $mensaje .= "Exitosas: {$delegacionesExitosas}, ";
-        $mensaje .= "Fallidas: {$delegacionesFallidas}";
-
-        return response()->json([
-            'success' => true,
-            'message' => $mensaje,
-            'delegaciones_exitosas' => $delegacionesExitosas,
-            'delegaciones_fallidas' => $delegacionesFallidas,
-            'total_procesadas' => $recepcionesRecibidas->count(),
-            'errores' => $errores,
-            'tarjetas_delegadas' => $recepcionesRecibidas->where('estado_id', 2)->pluck('id')->toArray()
-        ]);
     }
 
 }

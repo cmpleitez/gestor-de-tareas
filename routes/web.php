@@ -119,6 +119,7 @@ Route::middleware([
             Route::post('avance-tablero', [RecepcionController::class, 'avanceTablero'])->name('recepcion.avance-tablero');
             Route::post('nuevas-recibidas', [RecepcionController::class, 'nuevasRecibidas'])->name('recepcion.nuevas-recibidas');
             Route::post('delegar-todas', [RecepcionController::class, 'delegarTodas'])->name('recepcion.delegar-todas');
+            Route::post('asignar-todas', [RecepcionController::class, 'asignarTodas'])->name('recepcion.asignar-todas');
         });
     });
 
