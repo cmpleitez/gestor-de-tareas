@@ -45,16 +45,17 @@
     09. El operador avanza la solicitud desde su tablero de recibidas a su tablero en progreso y automáticamente se originan las tareas a cumplir segun su skill
     10. El operador va cumpliendo sus tareas una a una y reportandolas como realizadas
 
-🟢 reordenar la indentacion del codigo, buscar un indentador automatico porque el actual no sirve
-🟢 evaluar si se debe aplicar el codigo amigable ripperkey al numero de tarea
-🟢 revisar la logica: descarguese las tarjetas superiores al maximo atencion_id que se encuentre en el tablero, 
-    ya que de esta manera ya no se ven las tarjetas anteriores cuando el usuario prioriza una
-🟢 cuando he hecho drag y la tarjeta esta fuera del tablero el escuchador hace caso omiso de ella y la vuelve a cargar en el tablero del que ha sido extraida
+
 🟢 entrega y resolución de una solicitud
 🟢 register: asegurar el id del usuario con un aumento no automático sino programatico
 🟢 construir de control de calidad para el gestor
 🟢 revisar proceso de priorizacion
 🟢 procesos automaticos: exeptuando la derivacion porque no es eficiente que el ciudadano tenga que solicitar a una oficina muy lejana de su residencia
+🟢 verificar y delimitar casos de roles multiples
+🟢 proceso de rechazo de una solicitud o anulación
+🟢 en la mayoria de las vistas se debe agregar un margen arriba de 1 o 2 porque todo esta muy pegado al techo
+🟢 global cruds.edit: si hay historial no se puede editar
+🟢 servicio controlado: para cambiar el dui a una persona por motivos de error involuntario a la hora de registrar ese dui en el formulario de registro de usuarios
 🟢 control de movimientos: 
     Re = Recepciones; Ep = En progreso; Rt = Resueltas;
     Re -> Ep: Distribuir en base a rol
@@ -63,12 +64,6 @@
     Ep -> Re: Revertir movimiento
     Rt -> Ep: Revertir movimiento
     Rt -> Re: Revertir movimiento
-🟢 verificar y delimitar casos de roles multiples
-🟢 proceso de rechazo de una solicitud o anulación
-🟢 en la mayoria de las vistas se debe agregar un margen arriba de 1 o 2 porque todo esta muy pegado al techo
-🟢 global cruds.edit: si hay historial no se puede editar
-🟢 servicio controlado: para cambiar el dui a una persona por motivos de error involuntario a la hora de registrar ese dui en el formulario de registro de usuarios
-
 ✨ inteligencia artificial ayuda segun el texto libre escrito por el beneficiario, a elegir a éste último, la solicitud de catalogo más adecuada, incluye confirmación del beneficiario
 
 🟠 rage agains the machine & limp bizkit & korn & alice in chains

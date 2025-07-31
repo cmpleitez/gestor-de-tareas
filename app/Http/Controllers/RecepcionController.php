@@ -1,20 +1,21 @@
 <?php
 namespace App\Http\Controllers;
-use Illuminate\Http\Request;
+
+use App\Models\Actividad;
+use App\Models\Area;
+use App\Models\Atencion;
+use App\Models\Equipo;
+use App\Models\Estado;
 use App\Models\Recepcion;
 use App\Models\Solicitud;
 use App\Models\User;
 use App\Services\KeyMaker;
-use Spatie\Permission\Models\Role;
-use App\Models\Area;
-use Illuminate\Support\Facades\DB;
-use App\Models\Equipo;
-use App\Models\Actividad;
-use App\Models\Atencion;
-use App\Models\Estado;
-use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
 use App\Services\KeyRipper;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Spatie\Permission\Models\Role;
 
 class RecepcionController extends Controller
 {
@@ -22,10 +23,10 @@ class RecepcionController extends Controller
     {
         $user = auth()->user()->load('area');
         $recepciones = Recepcion::where('user_id_destino', $user->id)
-        ->with(['solicitud', 'estado', 'usuarioDestino', 'area', 'role'])
-        ->orderBy('created_at', 'desc')
-        ->limit(5)
-        ->get();
+            ->with(['solicitud', 'estado', 'usuarioDestino', 'area', 'role'])
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
         $tarjetas = $recepciones->map(function ($tarjeta) {
             $usuariosDestino = Recepcion::with(['usuarioDestino', 'role', 'area']) // Obtener todos los usuarios destino para esta atención
                 ->where('atencion_id', $tarjeta->atencion_id)
@@ -34,10 +35,10 @@ class RecepcionController extends Controller
                     return [
                         'name' => $recepcion->usuarioDestino->name ?? 'Sin asignar',
                         'profile_photo_url' => $recepcion->usuarioDestino && $recepcion->usuarioDestino->profile_photo_url
-                            ? $recepcion->usuarioDestino->profile_photo_url
-                            : asset('app-assets/images/pages/operador.png'),
+                        ? $recepcion->usuarioDestino->profile_photo_url
+                        : asset('app-assets/images/pages/operador.png'),
                         'recepcion_role_name' => $recepcion->role->name ?? 'Sin rol', // Rol de la recepción específica
-                        'area_name' => $recepcion->area->area ?? 'Sin área'
+                        'area_name' => $recepcion->area->area ?? 'Sin área',
                     ];
                 });
             return [
@@ -79,20 +80,19 @@ class RecepcionController extends Controller
         }
         return view('modelos.recepcion.solicitudes', $data);
     }
-    
+
     public function nuevasRecibidas(Request $request)
     {
         $user = auth()->user()->load('area');
-        $ultimaFecha = $request->input('ultima_fecha', null);
+        $recepcionIdsExistentes = $request->input('recepcion_ids', []);
         $query = Recepcion::where('user_id_destino', $user->id)
             ->where('estado_id', 1)
             ->orderBy('created_at', 'desc')
             ->limit(5);
-        if ($ultimaFecha) {
-            $query->where('created_at', '>', $ultimaFecha);
+        if (!empty($recepcionIdsExistentes)) {
+            $query->whereNotIn('id', $recepcionIdsExistentes);
         }
         $nuevas = $query->get()->map(function ($tarjeta) {
-            // Obtener todos los usuarios destino para esta atención
             $usuariosDestino = Recepcion::with(['usuarioDestino', 'role', 'area'])
                 ->where('atencion_id', $tarjeta->atencion_id)
                 ->get()
@@ -100,13 +100,12 @@ class RecepcionController extends Controller
                     return [
                         'name' => $recepcion->usuarioDestino->name ?? 'Sin asignar',
                         'profile_photo_url' => $recepcion->usuarioDestino && $recepcion->usuarioDestino->profile_photo_url
-                            ? $recepcion->usuarioDestino->profile_photo_url
-                            : asset('app-assets/images/pages/operador.png'),
+                        ? $recepcion->usuarioDestino->profile_photo_url
+                        : asset('app-assets/images/pages/operador.png'),
                         'recepcion_role_name' => $recepcion->role->name ?? 'Sin rol', // Rol de la recepción específica
-                        'area_name' => $recepcion->area->area ?? 'Sin área'
+                        'area_name' => $recepcion->area->area ?? 'Sin área',
                     ];
                 });
-
             return [
                 'recepcion_id' => $tarjeta->id,
                 'atencion_id' => $tarjeta->atencion_id,
@@ -121,13 +120,11 @@ class RecepcionController extends Controller
                 'porcentaje_progreso' => $tarjeta->avance,
                 'solicitud_id_ripped' => KeyRipper::rip($tarjeta->atencion_id),
                 'fecha_relativa' => Carbon::parse($tarjeta->fecha_hora_solicitud)->diffForHumans(),
-                'created_at' => $tarjeta->created_at
+                'created_at' => $tarjeta->created_at,
             ];
         });
         return response()->json($nuevas);
     }
-    
-
 
     public function areas(Solicitud $solicitud)
     {
@@ -138,7 +135,7 @@ class RecepcionController extends Controller
             })->get();
         return response()->json([
             'areas' => $areas,
-            'cantidad_operadores' => $areas->count()
+            'cantidad_operadores' => $areas->count(),
         ]);
     }
 
@@ -152,7 +149,7 @@ class RecepcionController extends Controller
         })->get();
         return response()->json([
             'equipos' => $equipos,
-            'unidades' => $equipos->count()
+            'unidades' => $equipos->count(),
         ]);
     }
 
@@ -167,7 +164,7 @@ class RecepcionController extends Controller
         $operadores_activos = User::role('Operador')->where('activo', true)->get();
         return response()->json([
             'operadores' => $operadores,
-            'operadores_activos' => $operadores_activos
+            'operadores_activos' => $operadores_activos,
         ]);
     }
 
@@ -243,7 +240,7 @@ class RecepcionController extends Controller
         if ($supervisores->isEmpty()) {
             return response()->json(['success' => false, 'message' => 'No hay supervisor disponible para esta área'], 422);
         }
-        $supervisor = $supervisores->random();                
+        $supervisor = $supervisores->random();
         try {
             //Derivando la solicitud
             DB::beginTransaction();
@@ -292,7 +289,7 @@ class RecepcionController extends Controller
         $role_id = Role::where('name', 'Gestor')->first()->id;
         $asignada = Recepcion::where('atencion_id', $recepcion->atencion_id)->where('role_id', $role_id)->first();
         if ($asignada) {
-            return response()->json(['success' => false, 'message' => 'La solicitud con número de atención ' . $asignada->atencion_id . ' ya ha sido asignada al '.$asignada->role->name .' '. $asignada->usuarioDestino->name . ' en el área ' . $asignada->area->area]);
+            return response()->json(['success' => false, 'message' => 'La solicitud con número de atención ' . $asignada->atencion_id . ' ya ha sido asignada al ' . $asignada->role->name . ' ' . $asignada->usuarioDestino->name . ' en el área ' . $asignada->area->area]);
         }
         //Seleccionando el gestor
         $gestores = User::role('Gestor')->whereHas('area', function ($query) use ($recepcion) {
@@ -350,13 +347,13 @@ class RecepcionController extends Controller
         if (!$operador_habilitado) {
             return response()->json(['success' => false, 'message' => 'El operador no tiene el nivel de habilidades necesario para resolver la solicitud'], 422);
         }
-        $copia_operador = Recepcion::with('estado')->where('atencion_id', $recepcion->atencion_id)->whereHas('role', function($q) {
+        $copia_operador = Recepcion::with('estado')->where('atencion_id', $recepcion->atencion_id)->whereHas('role', function ($q) {
             $q->where('name', 'Operador');
         })->first();
         $role_id = Role::where('name', 'Operador')->first()->id; //Validando el número de atención
         $delegada = Recepcion::where('atencion_id', $recepcion->atencion_id)->where('role_id', $role_id)->first();
         if ($delegada) {
-            return response()->json(['success' => false, 'message' => 'La solicitud con número de atención ' . $delegada->atencion_id . ' ya ha sido delegada al '.$delegada->role->name .' '. $delegada->usuarioDestino->name . ' en el área ' . $delegada->area->area]);
+            return response()->json(['success' => false, 'message' => 'La solicitud con número de atención ' . $delegada->atencion_id . ' ya ha sido delegada al ' . $delegada->role->name . ' ' . $delegada->usuarioDestino->name . ' en el área ' . $delegada->area->area]);
         }
         //Delegando la solicitud
         DB::beginTransaction();
@@ -375,7 +372,7 @@ class RecepcionController extends Controller
             $new_recepcion->atencion_id = $recepcion->atencion_id;
             $new_recepcion->detalle = $recepcion->detalle;
             $new_recepcion->activo = false;
-            $new_recepcion->save();         
+            $new_recepcion->save();
             $recepcion->activo = true; //Validar solicitud y actualizar estado - Copia Gestor
             $recepcion->estado_id = Estado::where('estado', 'En progreso')->first()->id;
             $recepcion->save();
@@ -400,7 +397,7 @@ class RecepcionController extends Controller
         //Iniciando las tareas
         DB::beginTransaction();
         try {
-            foreach ($recepcion->solicitud->tareas as $tarea) { 
+            foreach ($recepcion->solicitud->tareas as $tarea) {
                 $actividad = new Actividad();
                 $actividad->id = (new KeyMaker())->generate('Actividad', $recepcion->solicitud_id);
                 $actividad->recepcion_id = $recepcion->id;
@@ -433,7 +430,8 @@ class RecepcionController extends Controller
                 'tarea' => $actividad->tarea->tarea,
                 'estado' => $actividad->estado->estado,
                 'estado_id' => $actividad->estado_id,
-                'actividad_id' => $actividad->id
+                'actividad_id' => $actividad->id,
+                'actividad_id_ripped' => KeyRipper::rip($actividad->id),
             ];
         });
         return response()->json(['tareas' => $tareas]);
@@ -462,9 +460,9 @@ class RecepcionController extends Controller
         $actividadesResueltas = Actividad::where('recepcion_id', $recepcionId)
             ->where('estado_id', 3) // ID 3 = Resuelta según la BD
             ->count();
-        $porcentajeProgreso = $totalActividades > 0 
-            ? round(($actividadesResueltas / $totalActividades) * 100, 2)
-            : 0;
+        $porcentajeProgreso = $totalActividades > 0
+        ? round(($actividadesResueltas / $totalActividades) * 100, 2)
+        : 0;
         Recepcion::where('atencion_id', $atencionId)->update(['avance' => $porcentajeProgreso]); // Actualizar el campo avance en todas las recepciones con el mismo atencion_id
         $todasResueltas = ($actividadesResueltas === $totalActividades); // Verificar si todas las tareas están resueltas
         $solicitudActualizada = false;
@@ -480,17 +478,17 @@ class RecepcionController extends Controller
             $solicitudActualizada = true;
         }
         return response()->json([
-            'success' => true, 
+            'success' => true,
             'message' => 'Estado de la tarea actualizado correctamente',
             'recepcion_id' => $actividad->recepcion_id,
             'atencion_id' => $atencionId,
             'progreso' => [
                 'total_actividades' => $totalActividades,
                 'actividades_resueltas' => $actividadesResueltas,
-                'porcentaje' => $porcentajeProgreso
+                'porcentaje' => $porcentajeProgreso,
             ],
             'todas_resueltas' => $todasResueltas,
-            'solicitud_actualizada' => $solicitudActualizada
+            'solicitud_actualizada' => $solicitudActualizada,
         ]);
     }
     public function avanceTablero(Request $request)
@@ -502,11 +500,11 @@ class RecepcionController extends Controller
         }
         $estadosTablero = [1, 2, 3]; // 1: Recibida, 2: En progreso, 3: Resuelta // IDs de estados que representan tableros activos (ajusta según tu lógica)
         $recepciones = Recepcion::with('usuarioDestino')->where('user_id_destino', $user->id)
-        ->whereIn('estado_id', $estadosTablero)
-        ->whereIn('atencion_id', $atencionIds)
-        ->select('atencion_id', 'avance', 'estado_id')
-        ->get();
-        
+            ->whereIn('estado_id', $estadosTablero)
+            ->whereIn('atencion_id', $atencionIds)
+            ->select('atencion_id', 'avance', 'estado_id')
+            ->get();
+
         // Agrupar por atencion_id y agregar datos de recepciones
         $resultado = $recepciones->map(function ($recepcion) {
             // Obtener todas las recepciones para este atencion_id
@@ -516,30 +514,29 @@ class RecepcionController extends Controller
                 ->map(function ($recepcionItem) {
                     // Procesar la URL de la foto del usuario
                     $profilePhotoUrl = $recepcionItem->usuarioDestino && $recepcionItem->usuarioDestino->profile_photo_url
-                        ? $recepcionItem->usuarioDestino->profile_photo_url
-                        : asset('app-assets/images/pages/operador.png');
-                    
+                    ? $recepcionItem->usuarioDestino->profile_photo_url
+                    : asset('app-assets/images/pages/operador.png');
+
                     return [
                         'usuarioDestino' => [
                             'id' => $recepcionItem->usuarioDestino->id ?? null,
                             'name' => $recepcionItem->usuarioDestino->name ?? 'Sin asignar',
-                            'profile_photo_url' => $profilePhotoUrl
+                            'profile_photo_url' => $profilePhotoUrl,
                         ],
                         'role' => $recepcionItem->role,
-                        'area' => $recepcionItem->area
+                        'area' => $recepcionItem->area,
                     ];
                 });
-            
+
             return [
                 'atencion_id' => $recepcion->atencion_id,
                 'avance' => $recepcion->avance,
                 'estado_id' => $recepcion->estado_id,
-                'recepciones' => $todasRecepciones
+                'recepciones' => $todasRecepciones,
             ];
         });
-        
+
         return response()->json($resultado);
     }
 
-    
 }

@@ -31,7 +31,7 @@
 
         .solicitud-id {
             font-size: 11px;
-            color:rgb(255, 255, 255);
+            color: rgb(255, 255, 255);
             background: #87898b;
             padding: 2px 6px;
             border-radius: 3px;
@@ -45,7 +45,7 @@
 
         .fecha-solicitud {
             font-size: 10px;
-            color:rgb(160, 158, 158);
+            color: rgb(160, 158, 158);
             padding: 2px 6px;
             border-radius: 3px;
             display: inline-block;
@@ -118,10 +118,11 @@
             border-radius: 1.5px;
             margin: 8px 0 6px 0;
             background: linear-gradient(to right,
-            #ff8c00 0%, #ff8c00 var(--naranja, 15%),
-            #ffd700 var(--naranja, 15%), #ffd700 calc(var(--naranja, 15%) + var(--amarillo, 25%)),
-            #28a745 calc(var(--naranja, 15%) + var(--amarillo, 25%)), #28a745 calc(var(--naranja, 15%) + var(--amarillo, 25%) + var(--verde, 35%)),
-            #17a2b8 calc(var(--naranja, 15%) + var(--amarillo, 25%) + var(--verde, 35%)), #17a2b8 100%); transition: all 0.3s ease;
+                    #ff8c00 0%, #ff8c00 var(--naranja, 15%),
+                    #ffd700 var(--naranja, 15%), #ffd700 calc(var(--naranja, 15%) + var(--amarillo, 25%)),
+                    #28a745 calc(var(--naranja, 15%) + var(--amarillo, 25%)), #28a745 calc(var(--naranja, 15%) + var(--amarillo, 25%) + var(--verde, 35%)),
+                    #17a2b8 calc(var(--naranja, 15%) + var(--amarillo, 25%) + var(--verde, 35%)), #17a2b8 100%);
+            transition: all 0.3s ease;
         }
 
         .kanban-overlay {
@@ -290,13 +291,13 @@
         .sortable-drag {
             opacity: 0.8 !important;
             transform: rotate(3deg);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
         .sortable-chosen {
             opacity: 0.9 !important;
             transform: scale(1.02) rotate(1deg);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
             z-index: 1000 !important;
             position: relative;
         }
@@ -306,19 +307,23 @@
             background-color: #f1f3f5;
             border: 2px dashed #007bff;
         }
+
         .solicitud-card.animar-traslado {
-            transition: transform 0.5s cubic-bezier(.4,2,.6,1), opacity 0.5s;
+            transition: transform 0.5s cubic-bezier(.4, 2, .6, 1), opacity 0.5s;
             opacity: 0;
             transform: translateX(60px) scale(0.97);
         }
+
         .solicitud-card.animar-llegada {
-            animation: llegadaTarjeta 0.5s cubic-bezier(.4,2,.6,1);
+            animation: llegadaTarjeta 0.5s cubic-bezier(.4, 2, .6, 1);
         }
+
         @keyframes llegadaTarjeta {
             0% {
                 opacity: 0;
                 transform: translateX(-60px) scale(0.97);
             }
+
             100% {
                 opacity: 1;
                 transform: translateX(0) scale(1);
@@ -332,129 +337,129 @@
     <div class="row">
         <div class="col-12">
             @if (!auth()->user()->hasRole('Operador'))
-            <div class="accordion" id="accordionWrapa2">
-                <div class="card collapse-header border-0 overflow-hidden">
-                    <div id="heading5" class="card-header" data-toggle="collapse" data-target="#accordion5"
-                        aria-expanded="false" aria-controls="accordion5" role="tablist"
-                        style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); border: none; margin: 0; cursor: pointer; transition: all 0.3s ease;">
-                        <div class="d-flex align-items-center justify-content-between w-100">
-                            <div class="d-flex align-items-center">
-                                <div class="d-flex align-items-center" style="padding: 0.75rem;">
-                                    <i class="bx bx-target-lock text-white" style="font-size: 1.1rem;"></i>
+                <div class="accordion" id="accordionWrapa2">
+                    <div class="card collapse-header border-0 overflow-hidden">
+                        <div id="heading5" class="card-header" data-toggle="collapse" data-target="#accordion5"
+                            aria-expanded="false" aria-controls="accordion5" role="tablist"
+                            style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); border: none; margin: 0; cursor: pointer; transition: all 0.3s ease;">
+                            <div class="d-flex align-items-center justify-content-between w-100">
+                                <div class="d-flex align-items-center">
+                                    <div class="d-flex align-items-center" style="padding: 0.75rem;">
+                                        <i class="bx bx-target-lock text-white" style="font-size: 1.1rem;"></i>
+                                    </div>
+                                    <div class="d-flex flex-column align-items-start justify-content-center">
+                                        <h6 class="mb-0 text-white font-weight-500"
+                                            style="font-size: 1rem; letter-spacing: 0.3px;">
+                                            @if (auth()->user()->hasRole('Recepcionista'))
+                                                <span class="font-weight-600">{{ auth()->user()->area->area }}</span>
+                                            @elseif(auth()->user()->hasRole('Supervisor'))
+                                                <span
+                                                    class="font-weight-600">{{ auth()->user()->equipos()->first()->equipo }}</span>
+                                            @elseif(auth()->user()->hasRole('Gestor'))
+                                                @php $operador_por_defecto = $operadores->random(); @endphp
+                                                <span class="font-weight-600">{{ $operador_por_defecto->name }}</span>
+                                            @endif
+                                        </h6>
+                                        <small class="text-white-50" style="font-size: 0.8rem;">
+                                            Selecciona el item destino para impulsar las solicitudes
+                                        </small>
+                                    </div>
                                 </div>
-                                <div class="d-flex flex-column align-items-start justify-content-center">
-                                    <h6 class="mb-0 text-white font-weight-500"
-                                        style="font-size: 1rem; letter-spacing: 0.3px;">
-                                        @if (auth()->user()->hasRole('Recepcionista'))
-                                            <span class="font-weight-600">{{ auth()->user()->area->area }}</span>
-                                        @elseif(auth()->user()->hasRole('Supervisor'))
-                                            <span
-                                                class="font-weight-600">{{ auth()->user()->equipos()->first()->equipo }}</span>
-                                        @elseif(auth()->user()->hasRole('Gestor'))
-                                            @php $operador_por_defecto = $operadores->random(); @endphp
-                                            <span class="font-weight-600">{{ $operador_por_defecto->name }}</span>
-                                        @endif
-                                    </h6>
-                                    <small class="text-white-50" style="font-size: 0.8rem;">
-                                        Selecciona el item destino para impulsar las solicitudes
-                                    </small>
+                                <div>
+                                    <i class="bx bx-chevron-down text-white accordion-arrow"
+                                        style="font-size: 1rem; transition: transform 0.3s ease;"></i>
                                 </div>
-                            </div>
-                            <div>
-                                <i class="bx bx-chevron-down text-white accordion-arrow"
-                                    style="font-size: 1rem; transition: transform 0.3s ease;"></i>
                             </div>
                         </div>
-                    </div>
-                    <div id="accordion5" role="tabpanel" data-parent="#accordionWrapa2" aria-labelledby="heading5"
-                        class="collapse">
-                        <div class="card-content">
-                            <div class="card-body" style="background: #f8f9fa; padding: 1rem;">
-                                @if (auth()->user()->hasRole('Recepcionista') && isset($areas))
-                                    {{-- RECEPCIONISTA --}}
-                                                                        <div class="row" style="display: flex; align-items: stretch;">
-                                        @foreach ($areas as $area)
-                                            <div class="col-md-3">
-                                                <div class="selectable-item {{ $area->id == auth()->user()->area_id ? 'selected' : '' }}"
-                                                    onclick="selectItem('area_{{ $area->id }}')">
-                                                    <div class="item-body">
-                                                        <div class="item-info">
-                                                            <div class="item-name">{{ $area->area }}</div>
-                                                            <div class="item-desc">Área de trabajo</div>
+                        <div id="accordion5" role="tabpanel" data-parent="#accordionWrapa2" aria-labelledby="heading5"
+                            class="collapse">
+                            <div class="card-content">
+                                <div class="card-body" style="background: #f8f9fa; padding: 1rem;">
+                                    @if (auth()->user()->hasRole('Recepcionista') && isset($areas))
+                                        {{-- RECEPCIONISTA --}}
+                                        <div class="row" style="display: flex; align-items: stretch;">
+                                            @foreach ($areas as $area)
+                                                <div class="col-md-3">
+                                                    <div class="selectable-item {{ $area->id == auth()->user()->area_id ? 'selected' : '' }}"
+                                                        onclick="selectItem('area_{{ $area->id }}')">
+                                                        <div class="item-body">
+                                                            <div class="item-info">
+                                                                <div class="item-name">{{ $area->area }}</div>
+                                                                <div class="item-desc">Área de trabajo</div>
+                                                            </div>
+                                                            <div class="radio-indicator"></div>
                                                         </div>
-                                                        <div class="radio-indicator"></div>
+                                                        <input type="radio" id="area_{{ $area->id }}"
+                                                            name="area_destino" value="{{ $area->id }}"
+                                                            {{ $area->id == auth()->user()->area_id ? 'checked' : '' }}
+                                                            style="display: none;">
                                                     </div>
-                                                    <input type="radio" id="area_{{ $area->id }}" name="area_destino"
-                                                        value="{{ $area->id }}"
-                                                        {{ $area->id == auth()->user()->area_id ? 'checked' : '' }}
-                                                        style="display: none;">
                                                 </div>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                @elseif (auth()->user()->hasRole('Supervisor') && isset($equipos))
-                                    {{-- SUPERVISOR --}}
-                                                                        <div class="row" style="display: flex; align-items: stretch;">
-                                        @foreach ($equipos as $equipo)
-                                            <div class="col-md-3">
-                                                <div class="selectable-item {{ $equipo->id == auth()->user()->equipos->first()->id ? 'selected' : '' }}"
-                                                    onclick="selectItem('equipo_{{ $equipo->id }}')">
-                                                    <div class="item-body">
-                                                        <div class="item-info">
-                                                            <div class="item-name">{{ $equipo->equipo }}</div>
-                                                            <div class="item-desc">Equipo de trabajo</div>
+                                            @endforeach
+                                        </div>
+                                    @elseif (auth()->user()->hasRole('Supervisor') && isset($equipos))
+                                        {{-- SUPERVISOR --}}
+                                        <div class="row" style="display: flex; align-items: stretch;">
+                                            @foreach ($equipos as $equipo)
+                                                <div class="col-md-3">
+                                                    <div class="selectable-item {{ $equipo->id == auth()->user()->equipos->first()->id ? 'selected' : '' }}"
+                                                        onclick="selectItem('equipo_{{ $equipo->id }}')">
+                                                        <div class="item-body">
+                                                            <div class="item-info">
+                                                                <div class="item-name">{{ $equipo->equipo }}</div>
+                                                                <div class="item-desc">Equipo de trabajo</div>
+                                                            </div>
+                                                            <div class="radio-indicator"></div>
                                                         </div>
-                                                        <div class="radio-indicator"></div>
+                                                        <input type="radio" id="equipo_{{ $equipo->id }}"
+                                                            name="equipo_destino" value="{{ $equipo->id }}"
+                                                            {{ $equipo->id == auth()->user()->equipos->first()->id ? 'checked' : '' }}
+                                                            style="display: none;">
                                                     </div>
-                                                    <input type="radio" id="equipo_{{ $equipo->id }}"
-                                                        name="equipo_destino" value="{{ $equipo->id }}"
-                                                        {{ $equipo->id == auth()->user()->equipos->first()->id ? 'checked' : '' }}
-                                                        style="display: none;">
                                                 </div>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                @elseif (auth()->user()->hasRole('Gestor') && isset($operadores))
-                                    {{-- GESTOR --}}
-                                                                        <div class="row" style="display: flex; align-items: stretch;">
-                                        @php $operador_por_defecto = $operadores->random(); @endphp
-                                        @foreach ($operadores as $operador)
-                                            <div class="col-md-3">
-                                                <div class="selectable-item {{ $operador_por_defecto->id == $operador->id ? 'selected' : '' }}"
-                                                    onclick="selectItem('operador_{{ $operador->id }}')">
-                                                    <div class="item-body">
-                                                        <div class="item-info">
-                                                            <div class="item-name">{{ $operador->name }}</div>
-                                                            <div class="item-desc">Operador calificado</div>
+                                            @endforeach
+                                        </div>
+                                    @elseif (auth()->user()->hasRole('Gestor') && isset($operadores))
+                                        {{-- GESTOR --}}
+                                        <div class="row" style="display: flex; align-items: stretch;">
+                                            @php $operador_por_defecto = $operadores->random(); @endphp
+                                            @foreach ($operadores as $operador)
+                                                <div class="col-md-3">
+                                                    <div class="selectable-item {{ $operador_por_defecto->id == $operador->id ? 'selected' : '' }}"
+                                                        onclick="selectItem('operador_{{ $operador->id }}')">
+                                                        <div class="item-body">
+                                                            <div class="item-info">
+                                                                <div class="item-name">{{ $operador->name }}</div>
+                                                                <div class="item-desc">Operador calificado</div>
+                                                            </div>
+                                                            <div class="radio-indicator"></div>
                                                         </div>
-                                                        <div class="radio-indicator"></div>
+                                                        <input type="radio" id="operador_{{ $operador->id }}"
+                                                            name="operador_destino" value="{{ $operador->id }}"
+                                                            {{ $operador_por_defecto->id == $operador->id ? 'checked' : '' }}
+                                                            style="display: none;">
                                                     </div>
-                                                    <input type="radio" id="operador_{{ $operador->id }}"
-                                                        name="operador_destino" value="{{ $operador->id }}"
-                                                        {{ $operador_por_defecto->id == $operador->id ? 'checked' : '' }}
-                                                        style="display: none;">
                                                 </div>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                @else
-                                    <div class="text-center text-muted py-4">
-                                        <i class="bx bx-info-circle" style="font-size: 2rem;"></i>
-                                        <p class="mt-2 mb-0">No hay elementos disponibles para tu rol.</p>
-                                    </div>
-                                @endif
+                                            @endforeach
+                                        </div>
+                                    @else
+                                        <div class="text-center text-muted py-4">
+                                            <i class="bx bx-info-circle" style="font-size: 2rem;"></i>
+                                            <p class="mt-2 mb-0">No hay elementos disponibles para tu rol.</p>
+                                        </div>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
             @endif
         </div>
     </div>
     {{-- TABLEROS KANBAN --}}
     <div class="row" style="display: flex; align-items: stretch;">
         {{-- RECIBIDAS --}}
-        <div class="col-md-4"> 
+        <div class="col-md-4">
             <div class="card border-0 overflow-hidden">
                 <div class="card-header"
                     style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); border: none; margin: 0;">
@@ -463,7 +468,8 @@
                             <i class="bx bx-archive text-white" style="font-size: 0.9rem;"></i>
                         </div>
                         <h6 class="mb-0 text-white font-weight-600" style="font-size: 0.9rem;">Recibidas</h6>
-                        <span class="badge badge-white ml-auto text-black-50" id="contador-recibidas">{{ count($recibidas) }}</span>
+                        <span class="badge badge-white ml-auto text-black-50"
+                            id="contador-recibidas">{{ count($recibidas) }}</span>
                     </div>
                 </div>
                 <div class="card-body kanban-columna" style="background: #f8f9fa; padding: 1rem;">
@@ -474,7 +480,7 @@
             </div>
         </div>
         {{-- PROGRESO --}}
-        <div class="col-md-4"> 
+        <div class="col-md-4">
             <div class="card border-0 overflow-hidden">
                 <div class="card-header"
                     style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); border: none; margin: 0;">
@@ -483,7 +489,8 @@
                             <i class="bx bx-time-five text-white" style="font-size: 0.9rem;"></i>
                         </div>
                         <h6 class="mb-0 text-white font-weight-600" style="font-size: 0.9rem;">En Progreso</h6>
-                        <span class="badge badge-white ml-auto text-black-50" id="contador-progreso">{{ count($progreso) }}</span>
+                        <span class="badge badge-white ml-auto text-black-50"
+                            id="contador-progreso">{{ count($progreso) }}</span>
                     </div>
                 </div>
                 <div class="card-body kanban-columna" style="background: #f8f9fa; padding: 1rem;">
@@ -494,7 +501,7 @@
             </div>
         </div>
         {{-- RESUELTAS --}}
-        <div class="col-md-4"> 
+        <div class="col-md-4">
             <div class="card border-0 overflow-hidden">
                 <div class="card-header"
                     style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); border: none; margin: 0;">
@@ -503,7 +510,8 @@
                             <i class="bx bx-check-circle text-white" style="font-size: 0.9rem;"></i>
                         </div>
                         <h6 class="mb-0 text-white font-weight-600" style="font-size: 0.9rem;">Resueltas</h6>
-                        <span class="badge badge-white ml-auto text-black-50" id="contador-resueltas">{{ count($resueltas) }}</span>
+                        <span class="badge badge-white ml-auto text-black-50"
+                            id="contador-resueltas">{{ count($resueltas) }}</span>
                     </div>
                 </div>
                 <div class="card-body kanban-columna" style="background: #f8f9fa; padding: 1rem;">
@@ -568,12 +576,12 @@
                 const elemento = document.getElementById(columnaId);
                 if (!elemento) return;
                 new Sortable(elemento, {
-                    group: 'kanban', 
-                    animation: 150, 
-                    ghostClass: 'sortable-ghost', 
-                    chosenClass: 'sortable-chosen', 
-                    dragClass: 'sortable-drag', 
-                    forceFallback: false, 
+                    group: 'kanban',
+                    animation: 150,
+                    ghostClass: 'sortable-ghost',
+                    chosenClass: 'sortable-chosen',
+                    dragClass: 'sortable-drag',
+                    forceFallback: false,
                     fallbackOnBody: false,
                     fallbackClass: 'sortable-fallback',
                     preventFallback: false,
@@ -593,26 +601,36 @@
                         evt.to.style.borderColor = '#d1ecf1'; // Azul muy tenue
                         evt.to.style.backgroundColor = '#f8fdff'; // Fondo casi imperceptible
                     },
-                    onEnd: function(evt) { 
-                        document.querySelectorAll('.sortable-column').forEach(col => { // Restaurar apariencia de las columnas
-                            col.style.borderColor = col.children.length === 0 ? '#e9ecef' : 'transparent';
-                            col.style.backgroundColor = col.children.length === 0 ? '#f8f9fa' : 'transparent';
-                        });
+                    onEnd: function(evt) {
+                        document.querySelectorAll('.sortable-column').forEach(
+                            col => { // Restaurar apariencia de las columnas
+                                col.style.borderColor = col.children.length === 0 ? '#e9ecef' :
+                                    'transparent';
+                                col.style.backgroundColor = col.children.length === 0 ? '#f8f9fa' :
+                                    'transparent';
+                            });
                         const solicitudId = evt.item.dataset.id;
                         const columnaOrigen = evt.from.id;
                         const columnaDestino = evt.to.id;
-                        if (columnaOrigen !== columnaDestino) { // Verificar si realmente cambió de columna
-                            if (columnaOrigen !== 'columna-recibidas' || columnaDestino !== 'columna-progreso') { // Validar movimiento único desde columna-recibidas hacia columna-progreso
+                        if (columnaOrigen !==
+                            columnaDestino) { // Verificar si realmente cambió de columna
+                            if (columnaOrigen !== 'columna-recibidas' || columnaDestino !==
+                                'columna-progreso'
+                            ) { // Validar movimiento único desde columna-recibidas hacia columna-progreso
                                 toastr.error('Movimiento no disponible', 'warning', {
                                     positionClass: 'toast-top-right',
                                     timeOut: 1000
                                 });
-                                $(evt.from).append(evt.item); // Revertir la tarjeta a su posición original
+                                $(evt.from).append(evt
+                                    .item); // Revertir la tarjeta a su posición original
                                 return;
                             }
-                            updatePosition(solicitudId, columnaDestino, evt); //Actualizar el drag and drop tanto en el backend como en el frontend
+                            updatePosition(solicitudId, columnaDestino,
+                                evt
+                            ); //Actualizar el drag and drop tanto en el backend como en el frontend
                         }
-                        actualizarMensajeColumnaVacia(); // NUEVO: actualizar mensajes de columnas vacías
+                        actualizarMensajeColumnaVacia
+                            (); // NUEVO: actualizar mensajes de columnas vacías
                     },
                     onStart: function(evt) { // Estilos para evitar selección
                         evt.target.style.userSelect = 'none';
@@ -628,7 +646,7 @@
             container: 'body',
             trigger: 'hover'
         });
-        //ACTUALIZAR EL MOVIMIENTO DE LA TARJETA EFECTUADO, TANTO EN EL BACKEND Y COMO EN EL FRONTEND
+        //ACTUALIZAR EL MOVIMIENTO DE LA TARJETA, TANTO EN EL BACKEND Y COMO EN EL FRONTEND
         function updatePosition(solicitudId, nuevaColumna, evt) {
             let nuevoEstadoId = 1; //Iniciando parametros
             let nombreEstado = 'Recibida';
@@ -639,7 +657,7 @@
                     nuevoEstadoId = 1;
                     nombreEstado = 'Recibida';
                     colorBorde = 'badge-secondary';
-                    estadoColor = 'rgb(170, 95, 34)';
+                    estadoColor = '#2c3e50';
                     break;
                 case 'columna-progreso':
                     nuevoEstadoId = 2;
@@ -671,7 +689,7 @@
                     $(evt.from).append(evt.item);
                     return;
                 }
-                url = '{{ route('recepcion.derivar',['recepcion_id'=>':id','area_id'=>':area']) }}'
+                url = '{{ route('recepcion.derivar', ['recepcion_id' => ':id', 'area_id' => ':area']) }}'
                     .replace(':id', solicitudId)
                     .replace(':area', selectedValue);
             } else if (userRole === 'Supervisor') { //Asignar
@@ -723,16 +741,23 @@
                 },
                 success: function(response) {
                     if (response.success) {
-                        const tarjeta = $(`#${nuevaColumna} .solicitud-card[data-id="${solicitudId}"]`);
+                        const tarjeta = $(`.solicitud-card[data-id="${solicitudId}"]`);
                         const tituloTarjeta = tarjeta.find('.solicitud-titulo').text() || 'Sin título';
+
                         if (tarjeta.length > 0) {
                             // Actualizar estilos básicos de la tarjeta
-                            tarjeta.removeClass('border-badge-secondary border-badge-primary border-badge-success border-badge-danger border-badge-warning');
+                            tarjeta.removeClass(
+                                'border-badge-secondary border-badge-primary border-badge-success border-badge-danger border-badge-warning'
+                            );
                             tarjeta.addClass('border-' + colorBorde);
                             tarjeta.find('.solicitud-estado').text('Estado: ' + nombreEstado);
-                            tarjeta.find('.solicitud-estado').css('color', estadoColor + ' !important');
+                            tarjeta.find('.solicitud-estado').css({
+                                'color': estadoColor,
+                                'font-size': '11px',
+                                'margin-top': '5px'
+                            });
                             tarjeta.attr('data-estado-id', nuevoEstadoId);
-                            
+
                             // Determinar clase de badge según el nuevo estado
                             let badgeColor = 'badge-secondary'; // Por defecto
                             if (nuevoEstadoId == 3) { // Resuelta
@@ -742,7 +767,7 @@
                             } else if (nuevoEstadoId == 1) { // Recibida
                                 badgeColor = 'badge-secondary';
                             }
-                            
+
                             // Actualizar badges en los popovers
                             tarjeta.find('[data-toggle="popover"]').each(function() {
                                 let $popover = $(this);
@@ -756,7 +781,8 @@
                         Swal.fire({
                             position: 'top-end',
                             type: 'success',
-                            title: 'Solicitud #' + tarjeta.find('.solicitud-id small').text() + ' "' +tituloTarjeta + '"' + nombreEstado,
+                            title: 'Solicitud #' + tarjeta.find('.solicitud-id small').text() + ' "' +
+                                tituloTarjeta + '"' + nombreEstado,
                             showConfirmButton: false,
                             timer: 3000,
                             confirmButtonClass: 'btn btn-primary',
@@ -801,9 +827,6 @@
                 }
             });
         }
-        
-
-        
         //MOSTRAR TAREAS EN SIDEBAR
         $(document).on('click', '.solicitud-card', function() {
             const $card = $(this);
@@ -858,7 +881,7 @@
                         <div class="item-body">
                             <div class="item-info">
                                 <div class="item-name">${tarea.tarea}</div>
-                                <div class="item-desc">${tarea.actividad_id}</div>
+                                <div class="item-desc">T-${tarea.actividad_id_ripped}</div>
                             </div>
                         </div>
                         <input type="checkbox" id="task_${tarea.actividad_id}" name="tarea_completada" 
@@ -898,15 +921,20 @@
                             if (response.todas_resueltas && response
                                 .solicitud_actualizada) { // Verificar si todas las tareas están resueltas
                                 const tarjeta = $(
-                                `.solicitud-card[data-id="${response.recepcion_id}"]`); // Mover la tarjeta al tablero de resueltas
+                                    `.solicitud-card[data-id="${response.recepcion_id}"]`
+                                ); // Mover la tarjeta al tablero de resueltas
                                 if (tarjeta.length > 0) {
                                     tarjeta.css('border-left-color',
-                                    '#28a745'); // Actualizar el estado visual de la tarjeta
+                                        '#28a745'); // Actualizar el estado visual de la tarjeta
                                     tarjeta.find('.solicitud-estado').text('Estado: Resuelta');
-                                    tarjeta.find('.solicitud-estado').css('color', '#28a745');
+                                    tarjeta.find('.solicitud-estado').css({
+                                        'color': '#28a745',
+                                        'font-size': '11px',
+                                        'margin-top': '5px'
+                                    });
                                     tarjeta.attr('data-estado-id', 3);
                                     $('#columna-resueltas').append(
-                                    tarjeta); // Mover la tarjeta al tablero de resueltas
+                                        tarjeta); // Mover la tarjeta al tablero de resueltas
                                     actualizarContadores();
                                     Swal.fire({ // Mostrar mensaje de éxito
                                         position: 'top-end',
@@ -987,7 +1015,7 @@
         //FUNCIONES PARA ACTUALIZAR BARRAS DE PROGRESO
         function updateProgressByPercentage(atencionId, porcentaje) {
             let naranja, amarillo, verde, celeste;
-            if (porcentaje == 0) { 
+            if (porcentaje == 0) {
                 naranja = 65;
                 amarillo = 30;
                 verde = 5;
@@ -1023,7 +1051,8 @@
                 verde = 0;
                 celeste = 100;
             }
-            const progressBars = $(`[data-atencion-id="${atencionId}"]`); // Actualizar todas las barras de progreso con el mismo atencion_id
+            const progressBars = $(
+                `[data-atencion-id="${atencionId}"]`); // Actualizar todas las barras de progreso con el mismo atencion_id
             if (progressBars.length > 0) {
                 progressBars.css({
                     '--naranja': naranja + '%',
@@ -1033,8 +1062,7 @@
             }
         }
         function actualizarMensajeColumnaVacia() { // NUEVO: Mostrar u ocultar mensaje de columna vacía
-            const columnas = [
-                {
+            const columnas = [{
                     id: 'columna-recibidas',
                     mensaje: '<div class="text-center text-muted py-4"><i class="bx bx-archive text-muted" style="font-size: 1.5rem;"></i><div class="mt-2">Sin solicitudes recibidas</div></div>'
                 },
@@ -1050,7 +1078,7 @@
             columnas.forEach(function(col) {
                 const columna = document.getElementById(col.id);
                 if (!columna) return;
-                
+
                 $(columna).find('.text-center.text-muted.py-4').remove(); // Eliminar mensajes existentes
                 if ($(columna).find('.solicitud-card').length === 0) { // Si no hay tarjetas, agregar el mensaje
                     $(columna).append(col.mensaje);
@@ -1082,17 +1110,20 @@
                 return; // No hay tarjetas en los tableros
             }
             $.post({
-                url: '{{ route("recepcion.avance-tablero") }}',
-                data: { 
-                    atencion_ids: atencionIds, 
-                    _token: $('meta[name="csrf-token"]').attr('content') 
+                url: '{{ route('recepcion.avance-tablero') }}',
+                data: {
+                    atencion_ids: atencionIds,
+                    _token: $('meta[name="csrf-token"]').attr('content')
                 },
                 success: function(data) {
-                    data.forEach(function(item) { // Comparar avances y estado_id del backend con los del frontend
-                        let $divider = $('.progress-divider[data-atencion-id="' + item.atencion_id + '"]');
+                    data.forEach(function(
+                        item) { // Comparar avances y estado_id del backend con los del frontend
+                        let $divider = $('.progress-divider[data-atencion-id="' + item.atencion_id +
+                            '"]');
                         let $card = $('.solicitud-card[data-atencion-id="' + item.atencion_id + '"]');
                         if ($divider.length > 0 && $card.length > 0) {
-                            let avanceFrontend = parseFloat($divider.attr('data-avance') || '0'); // Avance
+                            let avanceFrontend = parseFloat($divider.attr('data-avance') ||
+                                '0'); // Avance
                             let avanceBackend = parseFloat(item.avance || '0');
                             if (avanceFrontend !== avanceBackend) {
                                 $divider.attr('data-avance', avanceBackend);
@@ -1103,20 +1134,26 @@
                             if (estadoFrontend !== estadoBackend) {
                                 $card.attr('data-estado-id', estadoBackend);
                                 if (estadoBackend === 3) {
-                                    let debeTrasladar = true; // Verificar si el rol del usuario destino NO es Gestor
+                                    let debeTrasladar =
+                                        true; // Verificar si el rol del usuario destino NO es Gestor
                                     // Solo verificar el rol del usuario que está trabajando actualmente en la tarjeta
                                     if (item.recepciones && item.recepciones.length > 0) {
                                         // Buscar la recepción que corresponde al usuario actual
-                                        let recepcionActual = item.recepciones.find(function(recepcion) {
-                                            return recepcion.usuarioDestino && recepcion.usuarioDestino.id === item.usuario_actual_id;
+                                        let recepcionActual = item.recepciones.find(function(
+                                            recepcion) {
+                                            return recepcion.usuarioDestino && recepcion
+                                                .usuarioDestino.id === item.usuario_actual_id;
                                         });
-                                        
-                                        if (recepcionActual && recepcionActual.role && recepcionActual.role.name === 'Gestor') {
+
+                                        if (recepcionActual && recepcionActual.role && recepcionActual
+                                            .role.name === 'Gestor') {
                                             debeTrasladar = false;
                                         }
                                     }
                                     if (debeTrasladar) {
-                                        $card.addClass('animar-traslado'); // Solo trasladar si el rol del usuario destino NO es Gestor
+                                        $card.addClass(
+                                            'animar-traslado'
+                                        ); // Solo trasladar si el rol del usuario destino NO es Gestor
                                         setTimeout(function() {
                                             $card.removeClass('animar-traslado');
                                             $('#columna-resueltas').append($card);
@@ -1125,14 +1162,25 @@
                                                 $card.removeClass('animar-llegada');
                                             }, 500);
                                             $card.css('border-left-color', '#28a745');
-                                            $card.find('.solicitud-estado').text('Estado: Resuelta');
-                                            $card.find('.solicitud-estado').css('color', '#28a745');
+                                            $card.find('.solicitud-estado').text(
+                                                'Estado: Resuelta');
+                                            $card.find('.solicitud-estado').css({
+                                                'color': '#28a745',
+                                                'font-size': '11px',
+                                                'margin-top': '5px'
+                                            });
                                             actualizarContadores();
                                         }, 500);
                                     } else {
-                                        $card.css('border-left-color', '#28a745'); // Para rol Gestor, solo actualizar el estado visual sin mover la tarjeta
+                                        $card.css('border-left-color',
+                                            '#28a745'
+                                        ); // Para rol Gestor, solo actualizar el estado visual sin mover la tarjeta
                                         $card.find('.solicitud-estado').text('Estado: Resuelta');
-                                        $card.find('.solicitud-estado').css('color', '#28a745');
+                                        $card.find('.solicitud-estado').css({
+                                            'color': '#28a745',
+                                            'font-size': '11px',
+                                            'margin-top': '5px'
+                                        });
                                     }
                                 }
                             }
@@ -1142,8 +1190,10 @@
                                     let usersHtml = '';
                                     item.recepciones.forEach(function(recepcion) {
                                         if (recepcion.usuarioDestino) {
-                                            let estadoColor = 'rgb(170, 95, 34)'; // Color por defecto // Determinar colores basados en el estado de la tarjeta
-                                            let badgeColor = 'badge-secondary'; // Badge por defecto
+                                            let estadoColor =
+                                                'rgb(170, 95, 34)'; // Color por defecto // Determinar colores basados en el estado de la tarjeta
+                                            let badgeColor =
+                                                'badge-secondary'; // Badge por defecto
                                             if (item.estado_id == 3) { // Resuelta
                                                 badgeColor = 'badge-success';
                                             } else if (item.estado_id == 2) { // En progreso
@@ -1151,31 +1201,43 @@
                                             } else if (item.estado_id == 1) { // Recibida
                                                 badgeColor = 'badge-secondary';
                                             }
-                                            let userHtml = '<div style="margin: 0;" data-toggle="popover" ' +
-                                                'data-title="' + (recepcion.usuarioDestino.name || 'Sin asignar') + '" ' +
-                                                'data-content="<span class=\'badge badge-pill ' + badgeColor + '\'>' + (recepcion.role ? recepcion.role.name : 'Sin rol') + '</span> ' +
-                                                '<span class=\'badge badge-pill ' + badgeColor + '\'>' + (recepcion.area ? recepcion.area.area : 'Sin área') + '</span>" ' +
+                                            let userHtml =
+                                                '<div style="margin: 0;" data-toggle="popover" ' +
+                                                'data-title="' + (recepcion.usuarioDestino
+                                                    .name || 'Sin asignar') + '" ' +
+                                                'data-content="<span class=\'badge badge-pill ' +
+                                                badgeColor + '\'>' + (recepcion.role ? recepcion
+                                                    .role.name : 'Sin rol') + '</span> ' +
+                                                '<span class=\'badge badge-pill ' + badgeColor +
+                                                '\'>' + (recepcion.area ? recepcion.area.area :
+                                                    'Sin área') + '</span>" ' +
                                                 'data-trigger="hover" data-placement="top">';
-                                            
+
                                             if (recepcion.usuarioDestino.profile_photo_url) {
-                                                userHtml += '<img src="' + recepcion.usuarioDestino.profile_photo_url + '" alt="Usuario" class="avatar" ' +
+                                                userHtml += '<img src="' + recepcion
+                                                    .usuarioDestino.profile_photo_url +
+                                                    '" alt="Usuario" class="avatar" ' +
                                                     'style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;">';
                                             } else {
                                                 userHtml += '<div class="avatar" ' +
                                                     'style="width: 32px; height: 32px; border-radius: 50%; background: #e9ecef; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #6c757d;">' +
-                                                    (recepcion.usuarioDestino.name ? recepcion.usuarioDestino.name[0] : '?') + '</div>';
+                                                    (recepcion.usuarioDestino.name ? recepcion
+                                                        .usuarioDestino.name[0] : '?') +
+                                                    '</div>';
                                             }
                                             userHtml += '</div>';
                                             usersHtml += userHtml;
                                         }
                                     });
-                                    $usersContainer.find('[data-toggle="popover"]').popover('dispose'); // Destruir popovers existentes antes de actualizar
+                                    $usersContainer.find('[data-toggle="popover"]').popover(
+                                        'dispose'); // Destruir popovers existentes antes de actualizar
                                     $usersContainer.html(usersHtml);
-                                    $usersContainer.find('[data-toggle="popover"]').popover({ // Reinicializar popovers para los nuevos elementos
-                                        html: true,
-                                        container: 'body',
-                                        trigger: 'hover'
-                                    });
+                                    $usersContainer.find('[data-toggle="popover"]')
+                                        .popover({ // Reinicializar popovers para los nuevos elementos
+                                            html: true,
+                                            container: 'body',
+                                            trigger: 'hover'
+                                        });
                                 }
                             }
                         }
@@ -1214,23 +1276,21 @@
             }
             actualizarContadores(); // Actualizar contadores y mensajes
             actualizarMensajeColumnaVacia();
-            
-            // Inicializar popovers para las tarjetas cargadas
-            $('[data-toggle="popover"]').popover({
+            $('[data-toggle="popover"]').popover({ // Inicializar popovers para las tarjetas cargadas
                 html: true,
                 container: 'body',
                 trigger: 'hover'
             });
         }
         function generarTarjetaSolicitud(tarjeta, animar = false, tipo = 'recibidas') {
-            const titulo = tarjeta.titulo && tarjeta.detalle ? 
-                `${tarjeta.titulo} - ${tarjeta.detalle}` : 
+            const titulo = tarjeta.titulo && tarjeta.detalle ?
+                `${tarjeta.titulo} - ${tarjeta.detalle}` :
                 tarjeta.titulo || tarjeta.detalle || 'Sin título';
             let borderColor, estadoColor, badgeColor; // Configurar colores según el tipo de tarjeta
-            switch(tipo) {
+            switch (tipo) {
                 case 'recibidas':
                     borderColor = 'badge-secondary'; // Usar nombre estándar
-                    estadoColor = 'rgb(170, 95, 34)'; // Color por defecto
+                    estadoColor = '#2c3e50'; // Color que coincide con el header del tablero
                     badgeColor = 'badge-secondary';
                     break;
                 case 'progreso':
@@ -1245,17 +1305,16 @@
                     break;
                 default:
                     borderColor = 'badge-secondary';
-                    estadoColor = 'rgb(170, 95, 34)';
+                    estadoColor = '#2c3e50';
                     badgeColor = 'badge-secondary';
             }
-            
             let usersHtml = ''; // Generar HTML de usuarios
             if (tarjeta.users && tarjeta.users.length > 0) {
                 tarjeta.users.forEach(function(user) {
-                    const avatar = user.profile_photo_url ? 
+                    const avatar = user.profile_photo_url ?
                         `<img src="${user.profile_photo_url}" alt="Usuario" class="avatar" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;">` :
                         `<div class="avatar" style="width: 32px; height: 32px; border-radius: 50%; background: #e9ecef; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #6c757d;">${user.name ? user.name[0] : '?'}</div>`;
-                    
+
                     usersHtml += `
                         <div style="margin: 0;" data-toggle="popover" 
                             data-title="${user.name || 'Sin asignar'}" 
@@ -1284,7 +1343,7 @@
                         <div class="fecha-solicitud">${tarjeta.fecha_relativa}</div>
                     </div>
                     
-                    <div class="solicitud-estado" style="font-size: 11px; color: ${estadoColor} !important; margin-top: 5px;">
+                    <div class="solicitud-estado" style="font-size: 11px; color: ${estadoColor}; margin-top: 5px;">
                         Estado: ${tarjeta.estado}
                     </div>
                     
@@ -1296,38 +1355,44 @@
                 </div>
             `;
         }
-        function obtenerUltimaFechaRecibidas() {
-            let fechas = $('#columna-recibidas .solicitud-card').map(function() {
-                let fecha = $(this).attr('data-fecha');
-                return fecha && fecha !== 'null' && fecha !== 'undefined' ? fecha : null;
-            }).get().filter(fecha => fecha !== null);
-            return fechas.length > 0 ? Math.max(...fechas) : null;
+        function obtenerRecepcionIdsExistentes() {
+            let ids = [];
+            $('.solicitud-card').each(function() {
+                let recepcionId = $(this).data('id');
+                if (recepcionId && recepcionId !== 'null' && recepcionId !== 'undefined') {
+                    ids.push(recepcionId);
+                }
+            });
+            return ids;
         }
         function cargarNuevasRecibidas() {
-            let cantidadTarjetas = $('#columna-recibidas .solicitud-card').length; // Evitar consulta si hay 3 o más tarjetas (parametrizable posteriormente)
+            let cantidadTarjetas = $('#columna-recibidas .solicitud-card')
+                .length; // Evitar consulta si hay 3 o más tarjetas (parametrizable posteriormente)
             if (cantidadTarjetas >= 3) {
                 return; // Salir de la función sin hacer consulta
             }
-            let ultimaFecha = obtenerUltimaFechaRecibidas();
+            let recepcionIdsExistentes = obtenerRecepcionIdsExistentes();
             let data = {
-                _token: $('meta[name="csrf-token"]').attr('content')
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                recepcion_ids: recepcionIdsExistentes
             };
-            if (ultimaFecha && ultimaFecha !== 'null' && ultimaFecha !== 'undefined') { // Solo enviar ultima_fecha si es válida
-                data.ultima_fecha = ultimaFecha;
-            }
             $.post({
-                url: '{{ route("recepcion.nuevas-recibidas") }}',
+                url: '{{ route('recepcion.nuevas-recibidas') }}',
                 data: data,
                 success: function(nuevas) {
                     if (nuevas.length > 0) {
                         let tarjetasAgregadas = 0;
                         nuevas.forEach(function(tarjeta) {
-                            let tarjetaExistente = $(`#columna-recibidas .solicitud-card[data-id="${tarjeta.recepcion_id}"]`); // Verificar si la tarjeta ya existe
+                            let tarjetaExistente = $(
+                                `#columna-recibidas .solicitud-card[data-id="${tarjeta.recepcion_id}"]`
+                            ); // Verificar si la tarjeta ya existe
                             if (tarjetaExistente.length === 0) {
-                                let html = generarTarjetaSolicitud(tarjeta, true, 'recibidas'); // Solo agregar si no existe
+                                let html = generarTarjetaSolicitud(tarjeta, true,
+                                    'recibidas'); // Solo agregar si no existe
                                 let $nueva = $(html);
                                 $('#columna-recibidas').prepend($nueva);
-                                updateProgressByPercentage(tarjeta.atencion_id, tarjeta.porcentaje_progreso);
+                                updateProgressByPercentage(tarjeta.atencion_id, tarjeta
+                                    .porcentaje_progreso);
                                 setTimeout(function() {
                                     $nueva.removeClass('animar-llegada');
                                 }, 500);
@@ -1336,7 +1401,7 @@
                         });
                         if (tarjetasAgregadas > 0) { // Solo actualizar contadores si se agregaron tarjetas
                             actualizarContadores();
-                            
+
                             // Inicializar popovers para las nuevas tarjetas
                             $('[data-toggle="popover"]').popover({
                                 html: true,
@@ -1347,7 +1412,8 @@
                     }
                 },
                 error: function(xhr, status, error) {
-                    if (xhr.status !== 0) { // Solo log si no es error de red // Evitar spam de errores en consola
+                    if (xhr.status !==
+                        0) { // Solo log si no es error de red // Evitar spam de errores en consola
                         console.error('Error cargando nuevas recibidas:', status);
                     }
                 }
@@ -1372,9 +1438,8 @@
             }, 100);
             initKanban();
             setInterval(consultarAvancesTablero, 15000); // 15 segundos
-            setInterval(cargarNuevasRecibidas, 15000);   // 15 segundos
-            setInterval(limpiarPopovers, 300000);       // 5 minutos
+            setInterval(cargarNuevasRecibidas, 15000); // 15 segundos
+            setInterval(limpiarPopovers, 300000); // 5 minutos
         });
-
     </script>
 @endsection
