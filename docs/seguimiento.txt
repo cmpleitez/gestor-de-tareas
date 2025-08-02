@@ -45,7 +45,7 @@
     09. El operador avanza la solicitud desde su tablero de recibidas a su tablero en progreso y automáticamente se originan las tareas a cumplir segun su skill
     10. El operador va cumpliendo sus tareas una a una y reportandolas como realizadas
 
-
+🟢 aplicar el codigo simple a los mensajes del janvan
 🟢 entrega y resolución de una solicitud
 🟢 register: asegurar el id del usuario con un aumento no automático sino programatico
 🟢 construir de control de calidad para el gestor
