@@ -28,8 +28,9 @@
                                 <thead>
                                     <tr>
                                         <th>Area</th>
-                                        <th>Oficina</th>    
+                                        <th>Oficina</th>
                                         <th>Equipo</th>
+                                        <th>DUI</th>
                                         <th>Usuario</th>
                                         <th>Rol</th>
                                         <th>correo</th>
@@ -48,6 +49,7 @@
                                             <td>{{ $user->area->area }}</td>
                                             <td>{{ $user->area->oficina->oficina }}</td>
                                             <td>{{ $user->equipos->pluck('equipo')->first() }}</td>
+                                            <td>{{ $user->dui }}</td>
                                             <td>{{ $user->name }}</td>
                                             <td>
                                                 <span class="badge badge-pill badge-light-warning" style="color: rgb(170, 95, 34) !important;">
@@ -139,6 +141,7 @@
                                         <th>Area</th>
                                         <th>Oficina</th>
                                         <th>Equipo</th>
+                                        <th>DUI</th>
                                         <th>Usuario</th>
                                         <th>Rol</th>
                                         <th>correo</th>

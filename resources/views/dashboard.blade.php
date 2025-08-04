@@ -25,7 +25,6 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/vendors/css/extensions/dragula.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/vendors/css/forms/select/select2.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/vendors/css/extensions/toastr.css') }}">
-
     <link rel="stylesheet" type="text/css"
         href="{{ asset('app-assets/vendors/css/tables/datatable/datatables.min.css') }}">
     <!-- END: Vendor CSS-->
@@ -773,6 +772,7 @@
     <script src="{{ asset('app-assets/fonts/LivIconsEvo/js/LivIconsEvo.tools.js') }}"></script>
     <script src="{{ asset('app-assets/fonts/LivIconsEvo/js/LivIconsEvo.defaults.js') }}"></script>
     <script src="{{ asset('app-assets/fonts/LivIconsEvo/js/LivIconsEvo.min.js') }}"></script>
+    <script src="{{ asset('app-assets/vendors/js/extensions/numeral/numeral.js') }}"></script>
     <!-- BEGIN Vendor JS-->
 
     <!-- BEGIN: Page Vendor JS-->
@@ -812,27 +812,24 @@
         $(document).ready(function () {
             //Captura de alertas del backend
             @if(Session::has('success'))
-                toastr.success("{{ Session::get('success') }}", '', {
-                    positionClass: 'toast-top-left'
-                });
+                toastr.success("{{ Session::get('success') }}");
             @endif
-
             @if (Session::has('error'))
                 toastr.error("{{ Session::get('error') }}", '', {
                     timeOut: 0,
                     extendedTimeOut: 0,
-                    closeButton: true
+                    closeButton: true,
                 });
             @endif
-
             @if (Session::has('warning'))
                 toastr.warning("{{ Session::get('warning') }}");
             @endif
-
             @if (Session::has('info'))
                 toastr.info("{{ Session::get('info') }}");
             @endif
-
+            @if (Session::has('danger'))
+                toastr.error("{{ Session::get('danger') }}");
+            @endif
             // Inicializar DataTable
             if ($.fn.DataTable) {
                 var table = $('.zero-configuration').DataTable({

@@ -211,10 +211,10 @@ class RecepcionController extends Controller
             $recepcion->save();
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Ocurrió un error cuando se intentaba enviar la solicitud:' . $e->getMessage());
+            return back()->with('error', 'Ocurrió un error cuando se intentaba enviar la solicitud:' . $e->getMessage())->with('toast_position', 'top-center');
         }
         DB::commit(); //Finalizando la transacción
-        return redirect()->route('recepcion.create')->with('success', 'La solicitud número "' . $atencion_id . '" ha sido recibida en el area ' . $user->area->area)->with('toast_position', 'top-left');
+        return redirect()->route('recepcion.create')->with('success', 'La solicitud número "' . KeyRipper::rip($atencion_id) . '" ha sido recibida en el area ' . $user->area->area)->with('toast_position', 'top-center');
     }
 
     public function derivar($recepcion_id, $area_id)

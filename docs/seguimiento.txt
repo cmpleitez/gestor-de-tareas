@@ -29,7 +29,15 @@
 🟠 Error 500 esta dando por falta de optimize
 🟠 se reviso que areas y oficinas estan al revez en el diagrama de datos, en realidad las areas dependen de las oficinas, pues cada oficina puede tener una copia total o parcial del organigrama de areas de la sede central
 🟠 ante un traslado de equipo a equipo, o de area a area, las solicitudes permaneceran pegadas al operador propietario, mientras no sean transferidas a otro operador
-🟠 se maneja como rol actual el ultimo asignado el (first()) segun created_at
+🟠 control de movimientos: 
+    Re = Recepciones; Ep = En progreso; Rt = Resueltas;
+    Re -> Ep: Distribuir en base a rol
+    Re -> Rt: Revertir movimiento
+    Ep -> Re: Revertir movimiento
+    Ep -> Re: Revertir movimiento
+    Rt -> Ep: Revertir movimiento
+    Rt -> Re: Revertir movimiento
+✨ inteligencia artificial ayuda segun el texto libre escrito por el beneficiario, a elegir a éste último, la solicitud de catalogo más adecuada, incluye confirmación del beneficiario
 🟠 PROCEDIMIENTO:
     1. El beneficiario envia solicitud al recepcionista de la oficina a la que está suscrito, del distrito y zona a los que pertenece segun residencia
     2. La solicitud entra en el rango de maniobra: oficina
@@ -45,28 +53,22 @@
     09. El operador avanza la solicitud desde su tablero de recibidas a su tablero en progreso y automáticamente se originan las tareas a cumplir segun su skill
     10. El operador va cumpliendo sus tareas una a una y reportandolas como realizadas
 
-🟢 aplicar el codigo simple a los mensajes del janvan
-🟢 entrega y resolución de una solicitud
-🟢 register: asegurar el id del usuario con un aumento no automático sino programatico
-🟢 construir de control de calidad para el gestor
-🟢 revisar proceso de priorizacion
+🟠 duis validos:
+023456783
+012345678
+123456784
 
-...🟢 procesos automaticos: exeptuando la derivacion porque no es eficiente que el ciudadano tenga que solicitar a una oficina muy lejana de su residencia
+
+🟢 entrega y resolución de una solicitud
 🟢 corregir el problema de lentitud de red que se origina despues de suceder un error de sistema: Slow network is detected.
 🟢 verificar y delimitar casos de roles multiples
 🟢 proceso de rechazo de una solicitud o anulación
-🟢 en la mayoria de las vistas se debe agregar un margen arriba de 1 o 2 porque todo esta muy pegado al techo
 🟢 global cruds.edit: si hay historial no se puede editar
 🟢 servicio controlado: para cambiar el dui a una persona por motivos de error involuntario a la hora de registrar ese dui en el formulario de registro de usuarios
-🟢 control de movimientos: 
-    Re = Recepciones; Ep = En progreso; Rt = Resueltas;
-    Re -> Ep: Distribuir en base a rol
-    Re -> Rt: Revertir movimiento
-    Ep -> Re: Revertir movimiento
-    Ep -> Re: Revertir movimiento
-    Rt -> Ep: Revertir movimiento
-    Rt -> Re: Revertir movimiento
-✨ inteligencia artificial ayuda segun el texto libre escrito por el beneficiario, a elegir a éste último, la solicitud de catalogo más adecuada, incluye confirmación del beneficiario
+🟢 implementar un nuevo campo para distinguir el rol principal  para el uso de la gestion de tareas
+🟢 register: asegurar el id del usuario con un aumento no automático sino programatico
+🟢 construir de control de calidad para el gestor
+🟢 revisar proceso de priorizacion
 
 🟠 rage agains the machine & limp bizkit & korn & alice in chains
     ...limp bizkit: im broke

@@ -1572,8 +1572,8 @@
                 });
             }, 100);
             initKanban();
-            setInterval(consultarAvancesTablero, 15000); // 15 segundos
-            setInterval(cargarNuevasRecibidas, 15000); // 15 segundos
+            setInterval(consultarAvancesTablero, 300000); // 5 minutos
+            setInterval(cargarNuevasRecibidas, 300000); // 5 minutos
             setInterval(limpiarPopovers, 300000); // 5 minutos
         });
     </script>
