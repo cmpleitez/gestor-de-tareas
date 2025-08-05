@@ -34,6 +34,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'email',
         'password',
         'area_id',
+        'role_id',
         'profile_photo_path'
     ];
 
@@ -119,13 +120,31 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     public function actividadesRecibidas()
-    {   
+    {
         return $this->belongsToMany(Tarea::class, 'actividades', 'user_id_origen');
     }
 
     public function actividadesEnviadas()
     {
         return $this->belongsToMany(Tarea::class, 'actividades', 'user_id_destino');
+    }
+
+    // Relación con el rol principal
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    // Método para obtener el rol principal
+    public function getMainRoleAttribute()
+    {
+        return $this->role ? $this->role->name : null;
+    }
+
+    // Método para obtener el primer rol (compatibilidad con roles múltiples)
+    public function getFirstRoleAttribute()
+    {
+        return $this->roles->first() ? $this->roles->first()->name : null;
     }
 
 }

@@ -1,30 +1,3 @@
-⭐ Mi estilo de trabajo es así: código limpio y estándar, sin artificios, compactar servicios y reutilizar estilos existentes. 
-    Necesito que cumplas con las siguientes reglas para logarr resultados eficientes y optimos:
-        ✅ Para las respuestas que requieren calidad en el desempeño de los modelos IA: 
-            Priorizar principalmente los siguientes modelos en orden de disponibilidad, que dispongan de agente y en el orden de su correlativo:
-                    1°. Claude sonnet 4
-                    3°. o4-mini
-                    4°. o3-mini
-                    5°. Gemini 2.5 pro max
-                    6°. Grok 4
-        ✅ Para las respuestas que requieren mucha más complejidad a parte de calidad priorizar:
-            1°. Claude Opus
-            3°. o3
-        ✅ Para las respuestas rápidas usa el resto de modelos a discreción de disponibilidad
-        ✅ Luego debes mencionar en cada respuesta tuya el modelo que usaste para la misma. 
-        ✅ Cuando diga: esta línea o lineas me refiero a que ya hice referencia dichas líneas con CTRL+L,
-        ✅ Prefiero que busques primero en la pestaña activa y luego en las demás. 
-        ✅ Cuando el modelo IA que se esta consultando se sature y ponga lento, cambiar al siguiente modelo según el orden que he dado al pincipio
-        ✅ Cuando comentes una línea o una serie de líneas hazlo a la izquierda de la línea o de la primera línea, pues los únicos comentarios que van arriba son titulos generales de bloques de lineas y de esos me encargo yo.
-⭐ Entorno del proyecto actual(Gestor de Tareas): 
-        Solicitud: está definida por la tabla "atenciones" y su transaccional hija "recepciones" especificamente por el campo "recepciones.atencion_id"; 
-        Unidad de trabajo: La unidad general de trabajo es la solicitud y se almacena en la tabla "atenciones"
-        Usuario propietario: es quien esta referenciado desde el campo "recepciones.user_id_destino" hacia la tabla padre "users"; 
-        Copia de la solicitud: esta definida por la tabla transaccional "recepciones" y su llave primaria "id"
-        Flujo de trabajo: los usuarios con distintos perfiles van remitiendo copias de la solicitud en el orden: 
-            recepcionista -> supervisor -> gestor -> equipo (en modo lote de trabajo) u operador (modo por unidad de trabajo)
-        Impulsos: son los avances de usuario a usuario que suceden en la solicitud
-        Tareas: son partes integrales de la solicitud las cuales son procesadas por el area operativa originando varios de los estados de avance.
 🟠 solicitudes: que desaparezca de recibidas cuando pasa a en progreso, no cuando el origen y destino es el mismo.
 🟠 Error 500 esta dando por falta de optimize
 🟠 se reviso que areas y oficinas estan al revez en el diagrama de datos, en realidad las areas dependen de las oficinas, pues cada oficina puede tener una copia total o parcial del organigrama de areas de la sede central
@@ -57,18 +30,23 @@
 023456783
 012345678
 123456784
+234567890
+345678901
 
-
-🟢 entrega y resolución de una solicitud
-🟢 corregir el problema de lentitud de red que se origina despues de suceder un error de sistema: Slow network is detected.
-🟢 verificar y delimitar casos de roles multiples
+🟢 implementar un nuevo campo para distinguir el rol principal  para el uso de la gestion de tareas
+        verificar y delimitar casos de roles multiples
+🟢 construir de control de calidad para el gestor
 🟢 proceso de rechazo de una solicitud o anulación
+🟢 entrega de una solicitud al beneficiario
+🟢 revisar proceso de priorizacion
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+🟢 corregir el problema de lentitud de red que se origina despues de suceder un error de sistema: Slow network is detected.
 🟢 global cruds.edit: si hay historial no se puede editar
 🟢 servicio controlado: para cambiar el dui a una persona por motivos de error involuntario a la hora de registrar ese dui en el formulario de registro de usuarios
-🟢 implementar un nuevo campo para distinguir el rol principal  para el uso de la gestion de tareas
 🟢 register: asegurar el id del usuario con un aumento no automático sino programatico
-🟢 construir de control de calidad para el gestor
-🟢 revisar proceso de priorizacion
+
 
 🟠 rage agains the machine & limp bizkit & korn & alice in chains
     ...limp bizkit: im broke

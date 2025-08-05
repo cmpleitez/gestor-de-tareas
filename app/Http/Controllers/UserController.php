@@ -56,26 +56,26 @@ class UserController extends Controller
         //GUARDANDO
         try {
             DB::beginTransaction();
-                $user->update($validated); //Crear el registro en la base de datos
-                ini_set('max_execution_time', 60);
-                ini_set('memory_limit', '256M');
-                if (isset($request['profile_photo_path']) && $request['profile_photo_path']->isValid()) {
-                    $imageFile = $request['profile_photo_path'];
-                    $imageName = $user->id . '.' . $imageFile->getClientOriginalExtension();
-                    $path = Storage::disk('public')->putFileAs('profile-photos', $request['profile_photo_path'], $imageName);
-                    $user->profile_photo_path = $path;
-                    $user->save(); //Actualizar el link en base de datos
-                    try { 
-                        $fullPath = Storage::disk('public')->path($path); //Adaptación de la imagen al perfil del usuario
-                        $manager = new ImageManager(Driver::class);
-                        $image = $manager->read($fullPath);
-                        $image->scale(width: 64, height: 96);
-                        $image->save($fullPath);
-                    } catch (Exception $e) {
-                        Storage::disk('public')->delete($path);
-                        throw new Exception('Error al procesar la imagen: ' . $e->getMessage());
-                    }
+            $user->update($validated); //Crear el registro en la base de datos
+            ini_set('max_execution_time', 60);
+            ini_set('memory_limit', '256M');
+            if (isset($request['profile_photo_path']) && $request['profile_photo_path']->isValid()) {
+                $imageFile = $request['profile_photo_path'];
+                $imageName = $user->id . '.' . $imageFile->getClientOriginalExtension();
+                $path = Storage::disk('public')->putFileAs('profile-photos', $request['profile_photo_path'], $imageName);
+                $user->profile_photo_path = $path;
+                $user->save(); //Actualizar el link en base de datos
+                try {
+                    $fullPath = Storage::disk('public')->path($path); //Adaptación de la imagen al perfil del usuario
+                    $manager = new ImageManager(Driver::class);
+                    $image = $manager->read($fullPath);
+                    $image->scale(width: 64, height: 96);
+                    $image->save($fullPath);
+                } catch (Exception $e) {
+                    Storage::disk('public')->delete($path);
+                    throw new Exception('Error al procesar la imagen: ' . $e->getMessage());
                 }
+            }
             DB::commit();
             return redirect()->route('user')->with('success', $mensaje);
         } catch (QueryException $e) {
@@ -109,6 +109,14 @@ class UserController extends Controller
         try {
             DB::beginTransaction();
             $user->syncRoles($submittedRoles);
+
+            // Actualizar el rol principal (role_id)
+            $roleId = $request->input('role_id');
+            if ($roleId) {
+                $user->role_id = $roleId;
+                $user->save();
+            }
+
             DB::commit();
         } catch (Exception $e) {
             DB::rollback();
@@ -157,8 +165,8 @@ class UserController extends Controller
         }
         try {
             DB::beginTransaction();
-                $user->delete();
-                Storage::disk('public')->delete($user->profile_photo_path);
+            $user->delete();
+            Storage::disk('public')->delete($user->profile_photo_path);
             DB::commit();
         } catch (Exception $e) {
             DB::rollback();

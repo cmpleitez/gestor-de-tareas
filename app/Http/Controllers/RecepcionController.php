@@ -35,8 +35,8 @@ class RecepcionController extends Controller
                     return [
                         'name' => $recepcion->usuarioDestino->name ?? 'Sin asignar',
                         'profile_photo_url' => $recepcion->usuarioDestino && $recepcion->usuarioDestino->profile_photo_url
-                        ? $recepcion->usuarioDestino->profile_photo_url
-                        : asset('app-assets/images/pages/operador.png'),
+                            ? $recepcion->usuarioDestino->profile_photo_url
+                            : asset('app-assets/images/pages/operador.png'),
                         'recepcion_role_name' => $recepcion->role->name ?? 'Sin rol', // Rol de la recepción específica
                         'area_name' => $recepcion->area->area ?? 'Sin área',
                     ];
@@ -74,7 +74,9 @@ class RecepcionController extends Controller
                 $query->where('id', $user->area_id);
             })->get();
         } elseif ($user->hasRole('Gestor')) {
-            $data['operadores'] = User::role('Operador')->whereHas('area', function ($query) use ($user) {
+            $data['operadores'] = User::whereHas('roles', function ($query) {
+                $query->where('name', 'Operador');
+            })->whereHas('area', function ($query) use ($user) {
                 $query->where('id', $user->area_id);
             })->where('activo', true)->get();
         }
@@ -100,8 +102,8 @@ class RecepcionController extends Controller
                     return [
                         'name' => $recepcion->usuarioDestino->name ?? 'Sin asignar',
                         'profile_photo_url' => $recepcion->usuarioDestino && $recepcion->usuarioDestino->profile_photo_url
-                        ? $recepcion->usuarioDestino->profile_photo_url
-                        : asset('app-assets/images/pages/operador.png'),
+                            ? $recepcion->usuarioDestino->profile_photo_url
+                            : asset('app-assets/images/pages/operador.png'),
                         'recepcion_role_name' => $recepcion->role->name ?? 'Sin rol', // Rol de la recepción específica
                         'area_name' => $recepcion->area->area ?? 'Sin área',
                     ];
@@ -156,12 +158,16 @@ class RecepcionController extends Controller
     public function operadores(Solicitud $solicitud)
     {
         $user = auth()->user()->load('area');
-        $operadores = User::role('Operador')->whereHas('area', function ($query) use ($user) {
+        $operadores = User::whereHas('roles', function ($query) {
+            $query->where('name', 'Operador');
+        })->whereHas('area', function ($query) use ($user) {
             $query->where('id', $user->area_id);
         })->whereHas('solicitudes', function ($query) use ($solicitud) {
             $query->where('solicitudes.id', $solicitud->id);
         })->get();
-        $operadores_activos = User::role('Operador')->where('activo', true)->get();
+        $operadores_activos = User::whereHas('roles', function ($query) {
+            $query->where('name', 'Operador');
+        })->where('activo', true)->get();
         return response()->json([
             'operadores' => $operadores,
             'operadores_activos' => $operadores_activos,
@@ -178,7 +184,9 @@ class RecepcionController extends Controller
     {
         //Seleccionando un recepcionista aleatorio de la oficina destino
         $user = auth()->user()->load('area.oficina.zona.distrito');
-        $recepcionistas = User::role('Recepcionista')->whereHas('area', function ($query) use ($user) {
+        $recepcionistas = User::whereHas('roles', function ($query) {
+            $query->where('name', 'Recepcionista');
+        })->whereHas('area', function ($query) use ($user) {
             $query->where('oficina_id', $user->area->oficina_id);
         })->get();
         if ($recepcionistas->isEmpty()) {
@@ -234,7 +242,9 @@ class RecepcionController extends Controller
             return response()->json(['success' => false, 'message' => 'La solicitud con número de atención ' . $derivada->atencion_id . ' ya ha sido derivada a ' . $derivada->usuarioDestino->name . ' en el área ' . $derivada->area->area]);
         }
         //Seleccionando el supervisor
-        $supervisores = User::role('Supervisor')->whereHas('area', function ($query) use ($area) {
+        $supervisores = User::whereHas('roles', function ($query) {
+            $query->where('name', 'Supervisor');
+        })->whereHas('area', function ($query) use ($area) {
             $query->where('id', $area->id);
         })->get();
         if ($supervisores->isEmpty()) {
@@ -292,7 +302,9 @@ class RecepcionController extends Controller
             return response()->json(['success' => false, 'message' => 'La solicitud con número de atención ' . $asignada->atencion_id . ' ya ha sido asignada al ' . $asignada->role->name . ' ' . $asignada->usuarioDestino->name . ' en el área ' . $asignada->area->area]);
         }
         //Seleccionando el gestor
-        $gestores = User::role('Gestor')->whereHas('area', function ($query) use ($recepcion) {
+        $gestores = User::whereHas('roles', function ($query) {
+            $query->where('name', 'Gestor');
+        })->whereHas('area', function ($query) use ($recepcion) {
             $query->where('id', $recepcion->area_id);
         })->whereHas('equipos', function ($query) use ($equipo) {
             $query->where('equipos.id', $equipo->id);
@@ -342,9 +354,9 @@ class RecepcionController extends Controller
         }
         // Obtener las recepciones basadas en los IDs enviados desde el frontend
         $recepciones = Recepcion::whereIn('id', $recepcionIds)
-        ->where('user_id_destino', auth()->user()->id)
-        ->where('estado_id', 1) // Estado "Recibida"
-        ->get();
+            ->where('user_id_destino', auth()->user()->id)
+            ->where('estado_id', 1) // Estado "Recibida"
+            ->get();
         $asignacionesExitosas = 0;
         $asignacionesFallidas = 0;
         $errores = [];
@@ -353,7 +365,9 @@ class RecepcionController extends Controller
         foreach ($recepciones as $recepcion) {
             try {
                 //Elegir un usuario con rol "Gestor" que pertenezca al area de la solicitud
-                $gestores = User::role('Gestor')->where('area_id', $recepcion->area_id)->get();
+                $gestores = User::whereHas('roles', function ($query) {
+                    $query->where('name', 'Gestor');
+                })->where('area_id', $recepcion->area_id)->get();
                 if ($gestores->isEmpty()) {
                     return response()->json([
                         'success' => false,
@@ -471,7 +485,9 @@ class RecepcionController extends Controller
         foreach ($recepciones as $recepcion) {
             try {
                 //Obtener usuarios con rol "Operador" del area de la solicitud
-                $operadores = User::role('Operador')->where('area_id', $recepcion->area_id)->get();
+                $operadores = User::whereHas('roles', function ($query) {
+                    $query->where('name', 'Operador');
+                })->where('area_id', $recepcion->area_id)->get();
                 if ($operadores->count() == 0) {
                     $delegacionesFallidas++;
                     $errores[] = "Recepción ID {$recepcion->id} - Solicitud {$recepcion->atencion_id}: No tiene usuarios calificados disponibles";
@@ -589,8 +605,8 @@ class RecepcionController extends Controller
             ->where('estado_id', 3) // ID 3 = Resuelta según la BD
             ->count();
         $porcentajeProgreso = $totalActividades > 0
-        ? round(($actividadesResueltas / $totalActividades) * 100, 2)
-        : 0;
+            ? round(($actividadesResueltas / $totalActividades) * 100, 2)
+            : 0;
         Recepcion::where('atencion_id', $atencionId)->update(['avance' => $porcentajeProgreso]); // Actualizar el campo avance en todas las recepciones con el mismo atencion_id
         $todasResueltas = ($actividadesResueltas === $totalActividades); // Verificar si todas las tareas están resueltas
         $solicitudActualizada = false;
@@ -642,8 +658,8 @@ class RecepcionController extends Controller
                 ->map(function ($recepcionItem) {
                     // Procesar la URL de la foto del usuario
                     $profilePhotoUrl = $recepcionItem->usuarioDestino && $recepcionItem->usuarioDestino->profile_photo_url
-                    ? $recepcionItem->usuarioDestino->profile_photo_url
-                    : asset('app-assets/images/pages/operador.png');
+                        ? $recepcionItem->usuarioDestino->profile_photo_url
+                        : asset('app-assets/images/pages/operador.png');
 
                     return [
                         'usuarioDestino' => [

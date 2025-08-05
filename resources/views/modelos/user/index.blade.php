@@ -53,7 +53,7 @@
                                             <td>{{ $user->name }}</td>
                                             <td>
                                                 <span class="badge badge-pill badge-light-warning" style="color: rgb(170, 95, 34) !important;">
-                                                    {{ $user->roles->pluck('name')->first() }}
+                                                    {{ $user->main_role ?? $user->roles->pluck('name')->first() }}
                                                 </span>
                                             </td>
                                             <td>{{ $user->email }}</td>

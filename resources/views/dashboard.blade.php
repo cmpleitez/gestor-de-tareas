@@ -12,7 +12,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     {{-- <title>Gestor de tareas {{ config('app.version') }}</title> --}}
-    <title>{{ auth()->user()->getRoleNames()->first() }} - GT{{ config('app.version') }}</title>
+    <title>{{ auth()->user()->main_role }} - GT{{ config('app.version') }}</title>
     <link rel="apple-touch-icon" href="{{ asset('app-assets/images/ico/apple-icon-120.png') }}">
     <link rel="shortcut icon" type="image/svg+xml" href="{{ asset('app-assets/images/ico/favicon.svg') }}">
     <link href="https://fonts.googleapis.com/css?family=Rubik:300,400,500,600%7CIBM+Plex+Sans:300,400,500,600,700"
@@ -283,9 +283,6 @@
             background-color: rgba(255, 255, 255, .5) !important;
         }
 
-        /* ===== CLASES REUTILIZABLES PARA ELEMENTOS SELECCIONABLES ===== */
-        
-        /* Clase base para elementos seleccionables */
         .selectable-item {
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -296,9 +293,14 @@
             position: relative;
             padding: 20px;
             margin-bottom: 1rem;
+            width: 304px;
+            min-width: 304px;
+            max-width: 304px;
+            height: auto;
+            min-height: 120px;
+            flex-shrink: 0;
         }
 
-        /* Efectos hover y selección unificados para todos los elementos */
         .selectable-item:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
@@ -315,11 +317,7 @@
             box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
             border-color: #007bff;
         }
-
-
-
-        /* Triángulo de color en esquina superior derecha */
-        .selectable-item::before {
+        .selectable-item::before { /* Triángulo de color en esquina superior derecha */
             content: '';
             position: absolute;
             top: 0;
@@ -348,11 +346,29 @@
             font-size: 0.95rem;
             color: #2c3e50;
             margin-bottom: 4px;
+            /* Manejo de texto multilínea con truncamiento */
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            word-wrap: break-word;
+            line-height: 1.3;
+            max-height: 3.9em; /* 3 líneas * 1.3 line-height */
         }
 
         .selectable-item .item-desc {
             font-size: 0.8rem;
             color: #6c757d;
+            /* Manejo de texto con truncamiento */
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            word-wrap: break-word;
+            line-height: 1.2;
+            max-height: 1.92em; /* 2 líneas * 1.2 line-height */
         }
 
         /* Indicadores de selección */
@@ -405,6 +421,63 @@
             font-size: 12px;
             font-weight: bold;
             line-height: 1;
+        }
+
+        /* Radio indicator */
+        .radio-indicator {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #dee2e6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .selectable-item.selected .radio-indicator {
+            border-color: #007bff;
+            background: #007bff;
+        }
+
+        .selectable-item.selected .radio-indicator::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+        }
+
+        /* Estilos específicos para formularios de edición */
+        .card-body .selectable-item {
+            width: 220px;
+            min-width: 220px;
+            max-width: 220px;
+            padding: 15px;
+            margin: 0;
+            flex-shrink: 0;
+        }
+
+        .card-body .selectable-item .item-name {
+            font-size: 0.9rem;
+            -webkit-line-clamp: 2;
+            max-height: 2.6em;
+        }
+
+        .card-body .selectable-item .item-desc {
+            font-size: 0.75rem;
+            -webkit-line-clamp: 1;
+            max-height: 1.2em;
+        }
+
+        /* ===== CONTENEDOR PARA ELEMENTOS SELECCIONABLES ===== */
+        
+        .selectable-items-container {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            gap: 20px;
         }
 
         /* ===== CLASES ESPECÍFICAS PARA TAREAS ===== */
@@ -500,7 +573,6 @@
 <!-- END: Head-->
 
 <!-- BEGIN: Body-->
-
 <body class="vertical-layout vertical-menu-modern boxicon-layout no-card-shadow 2-columns navbar-sticky footer-static"
     data-open="click" data-menu="vertical-menu-modern" data-col="2-columns">
     <!-- BEGIN: Header-->
@@ -602,10 +674,7 @@
                                     <span class="user-status" style="color: #0056b3; font-weight: 600;">
                                         @if(auth()->check())
                                             Conectado como 
-                                            @php $roles = auth()->user()->getRoleNames(); @endphp
-                                            @if($roles->isNotEmpty())
-                                                {{ $roles->first() }}
-                                            @endif
+                                            {{ auth()->user()->main_role }}
                                         @else
                                             <span style="color: #d90429; font-weight: 600;">Desconectado</span>
                                         @endif

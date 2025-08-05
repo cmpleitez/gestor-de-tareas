@@ -27,32 +27,23 @@
                     @csrf
                     <div class="card-content">
                         <div class="card-body">
-                            <div style="display: flex; flex-wrap: wrap; align-items: flex-start;">
+                            <div class="selectable-items-container">
                                 @foreach ($equipos as $equipo)
-                                    <div style="display: flex; flex-direction: column; align-items: center; margin-right: 10px;">
-                                        <div style="background-color: #fdf7f7; border-top-left-radius: 50px; 
-                                        border-bottom-left-radius: 50px; border-top-right-radius: 5px; 
-                                        border-bottom-right-radius: 20px; width: 5rem; display: flex; 
-                                        align-items: center; margin-right: 2rem; border: 1px solid rgb(213, 216, 216);">
-                                            <div class="badge-circle badge-circle-md badge-circle-primary"
-                                                style="margin-left: -0.2rem;">
-                                                <i class="bx bxs-group"></i>
-                                            </div>
-                                            <div class="form-check form-check-inline" style="margin-right: 0; padding-left: 10px;">
-                                                @if ($user->equipos->contains($equipo->id))
-                                                    <input type="checkbox" name="equipos[]" class="form-check-input" 
-                                                    style="margin-right: 0; margin-left: 0; transform: scale(1.2);" id="{{ $loop->index }}" 
-                                                    value="{{ $equipo->id }}" checked>
-                                                @else
-                                                    <input type="checkbox" name="equipos[]" class="form-check-input" 
-                                                    style="margin-right: 0; margin-left: 0; transform: scale(1.2);" id="{{ $loop->index }}"
-                                                    value="{{ $equipo->id }}">
-                                                @endif
+                                    <div class="selectable-item {{ $user->equipos->contains($equipo->id) ? 'selected' : '' }}" 
+                                         onclick="toggleEquipo('equipo_{{ $equipo->id }}')">
+                                        <div class="checkbox-indicator {{ $user->equipos->contains($equipo->id) ? 'checked' : '' }}" 
+                                             id="checkbox_equipo_{{ $equipo->id }}"></div>
+                                        <div class="item-body">
+                                            <div class="item-info">
+                                                <div class="item-name">{{ $equipo->equipo }}</div>
+                                                <div class="item-desc">Equipo</div>
                                             </div>
                                         </div>
-                                        <div style="text-align: center; word-wrap: break-word; max-width: 100px; font-size: 0.8rem;">
-                                            {{ $equipo->equipo }}
-                                        </div>
+                                        <input type="checkbox" name="equipos[]" 
+                                               id="equipo_{{ $equipo->id }}" 
+                                               value="{{ $equipo->id }}" 
+                                               {{ $user->equipos->contains($equipo->id) ? 'checked' : '' }}
+                                               style="display: none;">
                                     </div>
                                 @endforeach
                             </div>
@@ -68,4 +59,24 @@
 @stop
 
 @section('js')
+<script>
+    // Función para alternar la selección de equipos
+    function toggleEquipo(checkboxId) {
+        const checkbox = document.getElementById(checkboxId);
+        const selectableItem = checkbox.closest('.selectable-item');
+        const checkboxIndicator = selectableItem.querySelector('.checkbox-indicator');
+        
+        // Alternar el estado del checkbox
+        checkbox.checked = !checkbox.checked;
+        
+        // Actualizar la apariencia visual
+        if (checkbox.checked) {
+            selectableItem.classList.add('selected');
+            checkboxIndicator.classList.add('checked');
+        } else {
+            selectableItem.classList.remove('selected');
+            checkboxIndicator.classList.remove('checked');
+        }
+    }
+</script>
 @stop
