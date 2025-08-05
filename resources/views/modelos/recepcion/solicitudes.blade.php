@@ -100,29 +100,9 @@
         flex-direction: column;
     }
 
-    /* Estilos específicos para touchscreen */
-    .solicitud-card {
-        touch-action: none;
-        /* Prevenir scroll nativo en touch */
-        -webkit-touch-callout: none;
-        /* Prevenir menú contextual en iOS */
-        -webkit-user-select: none;
-        /* Prevenir selección en Safari */
-        -moz-user-select: none;
-        /* Prevenir selección en Firefox */
-        -ms-user-select: none;
-        /* Prevenir selección en IE */
-        user-select: none;
-        /* Prevenir selección de texto */
-    }
-
-
-
-
-
     /* Mejorar feedback visual en touch */
     .sortable-ghost {
-        opacity: 0.3 !important;
+        opacity: 0.5 !important;
         background: #f8f9fa !important;
         visibility: visible !important;
     }
@@ -133,46 +113,6 @@
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
         visibility: visible !important;
         display: block !important;
-    }
-
-    /* Estilo específico para el elemento que se está arrastrando */
-    .sortable-drag {
-        opacity: 1 !important;
-        transform: rotate(2deg) !important;
-        z-index: 1000 !important;
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
-        visibility: visible !important;
-        display: block !important;
-        pointer-events: auto !important;
-        background: white !important;
-        border: 1px solid #e3e6f0 !important;
-        border-radius: 8px !important;
-        padding: 16px !important;
-        margin-bottom: 12px !important;
-        border-left: 4px solid #007bff !important;
-        position: relative !important;
-        width: auto !important;
-        height: auto !important;
-    }
-
-    /* Prevenir zoom en touch */
-    @media (max-width: 768px) {
-        .solicitud-card {
-            font-size: 14px;
-        }
-
-        .solicitud-titulo {
-            font-size: 13px;
-        }
-
-        .solicitud-id {
-            font-size: 10px;
-        }
-    }
-
-    .sortable-column:empty {
-        border-color: #e9ecef;
-        background: #f8f9fa;
     }
 
     .solicitud-card {
@@ -613,34 +553,7 @@
 <script src="{{ asset('app-assets/vendors/js/jkanban/Sortable.min.js') }}"></script>
 <script src="{{ asset('app-assets/vendors/js/jkanban/jkanban.min.js') }}"></script>
 <script>
-    // Configuración para mejorar experiencia táctil
-        document.addEventListener('DOMContentLoaded', function() {
-            // Prevenir zoom en dispositivos táctiles
-            let lastTouchEnd = 0;
-            document.addEventListener('touchend', function (event) {
-                const now = (new Date()).getTime();
-                if (now - lastTouchEnd <= 300) {
-                    event.preventDefault();
-                }
-                lastTouchEnd = now;
-            }, false);
-
-            // Prevenir selección de texto en elementos arrastrables
-            document.addEventListener('selectstart', function(e) {
-                if (e.target.classList.contains('solicitud-card')) {
-                    e.preventDefault();
-                }
-            });
-
-            // Mejorar respuesta táctil
-            document.addEventListener('touchstart', function(e) {
-                if (e.target.classList.contains('solicitud-card')) {
-                    e.target.style.touchAction = 'none';
-                }
-            }, { passive: false });
-        });
-
-        //SELECCIONANDO EL ITEM DESTINATARIO
+    //SELECCIONANDO EL ITEM DESTINATARIO
         let userRole = '';
         @if (auth()->user()->hasRole('Recepcionista'))
             userRole = 'Recepcionista';
@@ -678,45 +591,7 @@
                     ghostClass: 'sortable-ghost',
                     chosenClass: 'sortable-chosen',
                     dragClass: 'sortable-drag',
-                    // Configuración mejorada para touchscreen
-                    forceFallback: false, // Volver a false para visibilidad normal
-                    fallbackOnBody: false, // Volver a false para visibilidad normal
-                    fallbackClass: 'sortable-fallback',
-                    preventFallback: false,
-                    supportPointer: true,
-                    // Configuración específica para touch
-                    delay: 100, // Reducir delay para mejor respuesta
-                    delayOnTouchOnly: true,
-                    touchStartThreshold: 5, // Aumentar umbral para evitar activaciones accidentales
-                    // Configuración adicional para mejor experiencia táctil
-                    scroll: true, // Habilitar scroll durante drag
-                    scrollSensitivity: 30, // Sensibilidad del scroll
-                    scrollSpeed: 10, // Velocidad del scroll
-                    onChoose: function(evt) { // Prevenir selección de texto
-                        evt.preventDefault();
-                        evt.stopPropagation();
-                        // Agregar clase para indicar que se está arrastrando
-                        evt.item.classList.add('dragging');
-                    },
-                    onMove: function(evt) { // Configuraciones adicionales para mejorar el drag
-                        evt.preventDefault();
-                        evt.stopPropagation();
-                        document.querySelectorAll('.sortable-column').forEach(col => {
-                            col.style.borderColor = 'transparent';
-                        });
-                        evt.to.style.borderColor = '#d1ecf1'; // Azul muy tenue
-                        evt.to.style.backgroundColor = '#f8fdff'; // Fondo casi imperceptible
-                    },
                     onEnd: function(evt) {
-                        // Remover clase de arrastre
-                        evt.item.classList.remove('dragging');
-                        document.querySelectorAll('.sortable-column').forEach(
-                            col => { // Restaurar apariencia de las columnas
-                                col.style.borderColor = col.children.length === 0 ? '#e9ecef' :
-                                    'transparent';
-                                col.style.backgroundColor = col.children.length === 0 ? '#f8f9fa' :
-                                    'transparent';
-                            });
                         const solicitudId = evt.item.dataset.id;
                         const columnaOrigen = evt.from.id;
                         const columnaDestino = evt.to.id;
@@ -737,16 +612,7 @@
                                 evt
                             ); //Actualizar el drag and drop tanto en el backend como en el frontend
                         }
-                        actualizarMensajeColumnaVacia
-                            (); // NUEVO: actualizar mensajes de columnas vacías
-                    },
-                    onStart: function(evt) { // Estilos para evitar selección
-                        evt.target.style.userSelect = 'none';
-                        evt.target.style.webkitUserSelect = 'none';
-                        evt.target.style.mozUserSelect = 'none';
-                        evt.target.style.msUserSelect = 'none';
-                        // Agregar estilos específicos para touch
-                        evt.target.style.touchAction = 'none';
+                        actualizarMensajeColumnaVacia();
                     }
                 });
             });
