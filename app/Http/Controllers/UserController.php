@@ -100,7 +100,11 @@ class UserController extends Controller
 
     public function rolesUpdate(Request $request, User $user)
     {
-        $submittedRoles = $request->input('roles', []);
+        $validated = $request->validate([
+            'roles' => 'required|array',
+            'role_id' => 'required|numeric|exists:roles,id',
+        ]);
+        $submittedRoles = $validated['roles'];
         if ($user->hasRole('SuperAdmin')) {
             if (!in_array('SuperAdmin', $submittedRoles)) {
                 $submittedRoles[] = 'SuperAdmin';
@@ -109,14 +113,11 @@ class UserController extends Controller
         try {
             DB::beginTransaction();
             $user->syncRoles($submittedRoles);
-
-            // Actualizar el rol principal (role_id)
-            $roleId = $request->input('role_id');
+            $roleId = $validated['role_id'];
             if ($roleId) {
                 $user->role_id = $roleId;
                 $user->save();
             }
-
             DB::commit();
         } catch (Exception $e) {
             DB::rollback();
