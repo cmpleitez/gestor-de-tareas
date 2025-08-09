@@ -3,15 +3,17 @@ alwaysApply: true
 ---
 ✅ Para las respuestas que requieren calidad en el desempeño de los modelos IA: 
     Priorizar principalmente los siguientes modelos en orden de disponibilidad, que dispongan de agente y en el orden de su correlativo:
-            1°. Claude sonnet 4
-            2°. Grok 4 
-            3°. o4-mini
-            4°. o3-mini
-            5°. Gemini 2.5 pro max
+            1°. Gpt-5
+            2°. Claude sonnet 4
+            3°. Grok 4
+            4°. o4-mini
+            5°. o3-mini
+            6°. Gemini 2.5 pro max
 ✅ Para las respuestas que requieren mucha más complejidad a parte de calidad priorizar:
     1°. Claude Opus
     2°. o3
-✅ Para las respuestas rápidas usa el resto de modelos a discreción de disponibilidad.
+✅ Para las respuestas rápidas usa el resto de modelos a discreción de disponibilidad comenzando por:
+    1º. Gpt-5-fast
 ✅ Debes mencionar en cada respuesta tuya el modelo que usaste para la misma.
 ✅ Cuando diga: esta línea o lineas me refiero a que ya hice referencia dichas líneas con CTRL+L o he hecho referencia a un archivo en especifico
 ✅ Busca primero en la pestaña activa y luego en las demás. 
