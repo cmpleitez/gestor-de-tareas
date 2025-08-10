@@ -47,6 +47,10 @@
 🟢 servicio controlado: para cambiar el dui a una persona por motivos de error involuntario a la hora de registrar ese dui en el formulario de registro de usuarios
 🟢 register: asegurar el id del usuario con un aumento no automático sino programatico
 
+...🟢 despliegue en azure app service
+    ...hay soporte diposnible por $30 al mes
+    ...B2 (Basic): 200 ACU ≈ 2 vCPU
+    ...creando app service
 
 🟠 rage agains the machine & limp bizkit & korn & alice in chains
     ...limp bizkit: im broke
