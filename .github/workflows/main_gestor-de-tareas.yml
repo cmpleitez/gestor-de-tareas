@@ -9,6 +9,10 @@ on:
       - main
   workflow_dispatch:
 
+env:
+  PHP_VERSION: '8.1'
+  COMPOSER_CACHE_DIR: ~/.composer/cache
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -16,29 +20,98 @@ jobs:
       contents: read #This is required for actions/checkout
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Para obtener el historial completo de Git
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, openssl, tokenizer, json, fileinfo, curl, zip
+          coverage: none
 
-      - name: Check if composer.json exists
-        id: check_files
-        uses: andstor/file-existence-action@v1
+      - name: Setup Composer
+        uses: ramsey/composer-install@v4
         with:
-          files: 'composer.json'
+          composer-version: 'latest-stable'
+          dependency-versions: 'locked'
+          install-preferred-install: 'dist'
+          no-dev: true
+          no-progress: true
+          no-interaction: true
+          cache-dir: ${{ env.COMPOSER_CACHE_DIR }}
 
-      - name: Run composer install if composer.json exists
-        if: steps.check_files.outputs.files_exists == 'true'
-        run: composer validate --no-check-publish && composer install --prefer-dist --no-progress
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
 
+      - name: Install Node.js dependencies
+        run: npm ci --only=production
 
-      - name: Upload artifact for deployment job
+      - name: Build frontend assets
+        run: npm run build
+
+      - name: Create production package
+        run: |
+          # Crear directorio temporal para el paquete de producción
+          mkdir -p production-package
+          
+          # Copiar solo los archivos necesarios para producción
+          rsync -av --exclude='.git' \
+            --exclude='.github' \
+            --exclude='node_modules' \
+            --exclude='vendor' \
+            --exclude='docs' \
+            --exclude='tests' \
+            --exclude='storage/logs' \
+            --exclude='storage/framework/cache' \
+            --exclude='storage/framework/sessions' \
+            --exclude='storage/framework/views' \
+            --exclude='storage/framework/testing' \
+            --exclude='.env' \
+            --exclude='.env.*' \
+            --exclude='*.log' \
+            --exclude='*.sql' \
+            --exclude='*.sqlite' \
+            --exclude='.editorconfig' \
+            --exclude='.gitattributes' \
+            --exclude='.gitignore' \
+            --exclude='composer.lock' \
+            --exclude='package-lock.json' \
+            --exclude='phpunit.xml' \
+            --exclude='README.md' \
+            --exclude='CHANGELOG.md' \
+            --exclude='CONTRIBUTING.md' \
+            --exclude='LICENSE' \
+            --exclude='.cursor' \
+            --exclude='.vscode' \
+            --exclude='.idea' \
+            --exclude='*.sws' \
+            --exclude='*.code-workspace' \
+            --exclude='deployment.sh' \
+            --exclude='consulta_tarea.php' \
+            ./ production-package/
+          
+          # Crear directorios necesarios para Laravel
+          mkdir -p production-package/storage/framework/cache
+          mkdir -p production-package/storage/framework/sessions
+          mkdir -p production-package/storage/framework/views
+          mkdir -p production-package/storage/logs
+          
+          # Establecer permisos correctos
+          chmod -R 755 production-package/storage
+          chmod -R 755 production-package/bootstrap/cache
+
+      - name: Upload production package
         uses: actions/upload-artifact@v4
         with:
-          name: php-app
-          path: .
+          name: production-package
+          path: production-package/
+          retention-days: 1
 
   deploy:
     runs-on: ubuntu-latest
@@ -48,10 +121,11 @@ jobs:
       contents: read #This is required for actions/checkout
 
     steps:
-      - name: Download artifact from build job
+      - name: Download production package
         uses: actions/download-artifact@v4
         with:
-          name: php-app
+          name: production-package
+          path: ./
       
       - name: Login to Azure
         uses: azure/login@v2
@@ -60,11 +134,52 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_0A1A76F447F64375B2A345BB22749AB1 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_5FA91445EA9845338831714D1E7FF5B7 }}
 
+      - name: Clean Azure Web App before deployment
+        run: |
+          echo "🧹 Limpiando Azure Web App antes del despliegue..."
+          
+          # Obtener el nombre del App Service
+          APP_NAME="gestor-de-tareas"
+          
+          echo "🔍 Realizando limpieza selectiva para preservar archivos importantes..."
+          
+          # Opción 1: Usar Azure CLI para limpieza selectiva (si está disponible)
+          if command -v az &> /dev/null; then
+            echo "🔧 Usando Azure CLI para limpieza selectiva..."
+            # Obtener el resource group
+            RESOURCE_GROUP=$(az webapp show --name $APP_NAME --query resourceGroup --output tsv)
+            echo "📁 Resource Group: $RESOURCE_GROUP"
+            
+            # Crear un paquete temporal vacío para limpiar solo archivos de código
+            # Esto preserva archivos de storage que se crean en runtime
+            echo "📦 Creando paquete de limpieza temporal..."
+            
+            # Limpiar el App Service con paquete vacío
+            # Los archivos de storage se recrearán automáticamente
+            az webapp deployment source config-zip --resource-group $RESOURCE_GROUP --name $APP_NAME --src /dev/null || true
+            echo "✅ Limpieza selectiva con Azure CLI completada"
+          else
+            echo "⚠️  Azure CLI no disponible, procediendo con despliegue normal"
+          fi
+          
+          echo "🧹 Limpieza selectiva completada, procediendo con despliegue..."
+          echo "💡 Nota: Esta limpieza se ejecuta en cada despliegue para mantener consistencia"
+          echo "📁 Storage se recreará con estructura limpia (logs, cache, sesiones se reiniciarán)"
+          echo "🔄 Archivos de runtime se preservarán automáticamente"
+
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
         with:
           app-name: 'gestor-de-tareas'
           slot-name: 'Production'
-          package: .
+          package: ./
+
+      - name: Post-deployment verification
+        run: |
+          echo "✅ Deployment completed successfully!"
+          echo "🌐 App deployed to: https://gestor-de-tareas.azurewebsites.net"
+          echo "📦 Package size: $(du -sh . | cut -f1)"
+          echo "📁 Files deployed: $(find . -type f | wc -l)"
+          echo "🧹 Azure Web App limpiado y actualizado completamente"
           

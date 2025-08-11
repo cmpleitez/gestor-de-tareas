@@ -223,20 +223,6 @@ class DatabaseSeeder extends Seeder
             'updated_at' => Carbon::now(),
         ]);
 
-        //USUARIOS
-        DB::table('users')->insert([
-            'area_id'           => 1,
-            'role_id'           => 1,
-            'name'              => 'Hari Seldom',
-            'dui'               => '012345678',
-            'email'             => 'hari.seldom.sv@gmail.com',
-            'email_verified_at' => Carbon::now(),
-            'password'          => bcrypt('123456789'),
-            'remember_token'    => Str::random(10),
-            'created_at'        => Carbon::now(),
-            'updated_at'        => Carbon::now(),
-        ]);
-
         //EQUIPOS
         DB::table('equipos')->insert([
             'equipo'              => 'Desarrollo de sistemas informáticos y aplicaciones web',
@@ -288,8 +274,19 @@ class DatabaseSeeder extends Seeder
         $role = Role::create(['name' => 'Beneficiario', 'icon' => 'bx bxs-user']);
         $role->givePermissionTo(['ver', 'crear', 'editar']);
 
-        $user = User::findOrFail(1);
-        $user->assignRole('SuperAdmin');
+        //USUARIOS
+        DB::table('users')->insert([
+            'area_id'           => 1,
+            'role_id'           => 1,
+            'name'              => 'Hari Seldom',
+            'dui'               => '012345678',
+            'email'             => 'hari.seldom.sv@gmail.com',
+            'email_verified_at' => Carbon::now(),
+            'password'          => bcrypt('123456789'),
+            'remember_token'    => Str::random(10),
+            'created_at'        => Carbon::now(),
+            'updated_at'        => Carbon::now(),
+        ]);
 
         //ENROLANDO AL ADMINISTRADOR
         $user = User::findOrFail(1);
