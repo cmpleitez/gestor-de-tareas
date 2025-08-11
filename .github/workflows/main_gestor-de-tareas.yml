@@ -36,9 +36,6 @@ jobs:
       - name: Install Node.js dependencies
         run: npm ci --only=production
 
-      - name: Build frontend assets
-        run: npm run build
-
       - name: Create production package
         run: |
           # Crear directorio temporal para el paquete de producción
