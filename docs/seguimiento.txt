@@ -52,6 +52,7 @@
     ...B2 (Basic): 200 ACU ≈ 2 vCPU
     ...creando app service
     ...avance: ya migre la bd pero los seeders no corren y como tambien se arruinó la conf. local no puedo probar en lo cal para luego probar en la nube
+        ...SQLSTATE[23000]: [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]The INSERT statement conflicted with the FOREIGN KEY constraint "users_role_id_foreign". The conflict occurred in database "gestor-de-tareas", table "dbo.roles", column 'id'. (Connection: sqlsrv, SQL: insert into [users] ([area_id], [role_id], [name], [dui], [email], [email_verified_at], [password], [remember_token], [created_at], [updated_at]) values (1, 1, Hari Seldom, 012345678, hari.seldom.sv@gmail.com, 2025-08-10 21:43:20.666, $2y$12$9tcd3ktEuHsAXfJygFPLoO7TgDSOme8xxLLg2V9RBZfwhMUXKRLvq, wtWHRvjaLs, 2025-08-10 21:43:20.890, 2025-08-10 21:43:20.890))
 
 🟠 rage agains the machine & limp bizkit & korn & alice in chains
     ...limp bizkit: im broke
