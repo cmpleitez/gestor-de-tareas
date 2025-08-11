@@ -19,17 +19,35 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, openssl, tokenizer, json, fileinfo, curl, zip
+
+      - name: Install Composer dependencies
+        run: composer install --no-dev --optimize-autoloader
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install Node.js dependencies
+        run: npm ci --only=production
+
+      - name: Build frontend assets
+        run: npm run build
+
       - name: Create production package
         run: |
           # Crear directorio temporal para el paquete de producción
           mkdir -p production-package
           
           # Copiar solo los archivos necesarios para producción
-          # Azure ya tiene PHP, Node.js y Composer, solo necesitamos el código
+          # INCLUYENDO vendor/ y node_modules/ compilados
           rsync -av --exclude='.git' \
             --exclude='.github' \
-            --exclude='node_modules' \
-            --exclude='vendor' \
             --exclude='docs' \
             --exclude='tests' \
             --exclude='storage/logs' \
@@ -90,11 +108,29 @@ jobs:
           slot-name: 'Production'
           package: ./
 
+      - name: Run database migrations and seeders
+        run: |
+          echo "🗄️  Configurando base de datos..."
+          
+          # Esperar un momento para que Azure termine el despliegue
+          sleep 30
+          
+          # Ejecutar migraciones
+          echo "📊 Ejecutando migraciones..."
+          php artisan migrate --force
+          
+          # Ejecutar seeders
+          echo "🌱 Ejecutando seeders..."
+          php artisan db:seed --force
+          
+          echo "✅ Base de datos configurada correctamente"
+
       - name: Post-deployment verification
         run: |
           echo "✅ Deployment completed successfully!"
           echo "🌐 App deployed to: https://gestor-de-tareas.azurewebsites.net"
           echo "📦 Package size: $(du -sh . | cut -f1)"
           echo "📁 Files deployed: $(find . -type f | wc -l)"
-          echo "💡 Azure instalará automáticamente las dependencias PHP y Node.js"
+          echo "💡 Azure instaló automáticamente las dependencias PHP y Node.js"
+          echo "🗄️  Base de datos configurada con migraciones y seeders"
           
