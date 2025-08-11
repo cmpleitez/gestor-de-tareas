@@ -11,7 +11,7 @@ class SolicitudController extends Controller
 {
     public function index()
     {
-        $solicitudes = Solicitud::all();
+        $solicitudes = Solicitud::orderBy('id', 'desc')->paginate(15);
         return view('modelos.solicitud.index', compact('solicitudes'));
     }
 
@@ -56,14 +56,14 @@ class SolicitudController extends Controller
 
     public function destroy(Solicitud $solicitud)
     {
-        if ($solicitud->usuarios->count() > 0) {
+        if ($solicitud->usuarios()->exists()) {
             return back()->with('error', 'La solicitud "' . $solicitud->solicitud . '" no puede ser eliminada porque tiene usuarios asociados');
         }
         
-        if($solicitud->tareas->count() > 0) {
+        if($solicitud->tareas()->exists()) {
             return back()->with('error', 'La solicitud "' . $solicitud->solicitud . '" no puede ser eliminada porque tiene tareas asociadas');
         }
-        if($solicitud->usuariosOrigenes->count() > 0 || $solicitud->usuariosDestinos->count() > 0) {
+        if($solicitud->usuariosOrigenes()->exists() || $solicitud->usuariosDestinos()->exists()) {
             return back()->with('error', 'La solicitud "' . $solicitud->solicitud . '" no puede ser eliminada porque tiene transacciones asociadas');
         }
         try {

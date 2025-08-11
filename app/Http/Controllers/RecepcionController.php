@@ -27,20 +27,27 @@ class RecepcionController extends Controller
             ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get();
-        $tarjetas = $recepciones->map(function ($tarjeta) {
-            $usuariosDestino = Recepcion::with(['usuarioDestino', 'role', 'area']) // Obtener todos los usuarios destino para esta atención
-                ->where('atencion_id', $tarjeta->atencion_id)
-                ->get()
-                ->map(function ($recepcion) {
+
+        $atencionIds = $recepciones->pluck('atencion_id')->unique();
+        $usuariosDestinoPorAtencion = Recepcion::with(['usuarioDestino', 'role', 'area'])
+            ->whereIn('atencion_id', $atencionIds)
+            ->get()
+            ->groupBy('atencion_id')
+            ->map(function ($grupo) {
+                return $grupo->map(function ($recepcion) {
                     return [
                         'name' => $recepcion->usuarioDestino->name ?? 'Sin asignar',
                         'profile_photo_url' => $recepcion->usuarioDestino && $recepcion->usuarioDestino->profile_photo_url
                             ? $recepcion->usuarioDestino->profile_photo_url
                             : asset('app-assets/images/pages/operador.png'),
-                        'recepcion_role_name' => $recepcion->role->name ?? 'Sin rol', // Rol de la recepción específica
+                        'recepcion_role_name' => $recepcion->role->name ?? 'Sin rol',
                         'area_name' => $recepcion->area->area ?? 'Sin área',
                     ];
-                });
+                })->values();
+            });
+
+        $tarjetas = $recepciones->map(function ($tarjeta) use ($usuariosDestinoPorAtencion) {
+            $usuariosDestino = $usuariosDestinoPorAtencion->get($tarjeta->atencion_id, collect());
             return [
                 'atencion_id' => $tarjeta->atencion_id,
                 'created_at' => $tarjeta->created_at->toISOString(),
@@ -58,7 +65,7 @@ class RecepcionController extends Controller
                 'area' => $tarjeta->area->area,
             ];
         });
-        $recibidas = $tarjetas->where('estado_id', 1)->sortBy('created_at')->values()->toArray(); // Separar tarjetas por estado (ya están mapeadas) y convertir a arrays con relaciones
+        $recibidas = $tarjetas->where('estado_id', 1)->sortBy('created_at')->values()->toArray();
         $progreso = $tarjetas->where('estado_id', 2)->sortBy('created_at')->values()->toArray();
         $resueltas = $tarjetas->where('estado_id', 3)->sortBy('created_at')->values()->toArray();
         $data = [
@@ -94,20 +101,28 @@ class RecepcionController extends Controller
         if (!empty($recepcionIdsExistentes)) {
             $query->whereNotIn('id', $recepcionIdsExistentes);
         }
-        $nuevas = $query->get()->map(function ($tarjeta) {
-            $usuariosDestino = Recepcion::with(['usuarioDestino', 'role', 'area'])
-                ->where('atencion_id', $tarjeta->atencion_id)
-                ->get()
-                ->map(function ($recepcion) {
+        $tarjetas = $query->get();
+
+        $atencionIds = $tarjetas->pluck('atencion_id')->unique();
+        $usuariosDestinoPorAtencion = Recepcion::with(['usuarioDestino', 'role', 'area'])
+            ->whereIn('atencion_id', $atencionIds)
+            ->get()
+            ->groupBy('atencion_id')
+            ->map(function ($grupo) {
+                return $grupo->map(function ($recepcion) {
                     return [
                         'name' => $recepcion->usuarioDestino->name ?? 'Sin asignar',
                         'profile_photo_url' => $recepcion->usuarioDestino && $recepcion->usuarioDestino->profile_photo_url
                             ? $recepcion->usuarioDestino->profile_photo_url
                             : asset('app-assets/images/pages/operador.png'),
-                        'recepcion_role_name' => $recepcion->role->name ?? 'Sin rol', // Rol de la recepción específica
+                        'recepcion_role_name' => $recepcion->role->name ?? 'Sin rol',
                         'area_name' => $recepcion->area->area ?? 'Sin área',
                     ];
-                });
+                })->values();
+            });
+
+        $nuevas = $tarjetas->map(function ($tarjeta) use ($usuariosDestinoPorAtencion) {
+            $usuariosDestino = $usuariosDestinoPorAtencion->get($tarjeta->atencion_id, collect());
             return [
                 'recepcion_id' => $tarjeta->id,
                 'atencion_id' => $tarjeta->atencion_id,
@@ -364,21 +379,25 @@ class RecepcionController extends Controller
         // Procesar cada recepción
         foreach ($recepciones as $recepcion) {
             try {
-                //Elegir un usuario con rol "Gestor" que pertenezca al area de la solicitud
-                $gestores = User::whereHas('roles', function ($query) {
-                    $query->where('name', 'Gestor');
-                })->where('area_id', $recepcion->area_id)->get();
-                if ($gestores->isEmpty()) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'No hay gestores disponibles para asignar las solicitudes',
-                    ]);
-                }
-                //Elegir un gestor aleatorio
-                $gestorSeleccionado = $gestores->random();
+                // Elegir un equipo que tenga al menos un Gestor en el área de la solicitud
+                $equipos = Equipo::whereHas('usuarios', function ($q) use ($recepcion) {
+                    $q->where('area_id', $recepcion->area_id)
+                      ->whereHas('roles', function ($r) {
+                          $r->where('name', 'Gestor');
+                      });
+                })->get();
 
-                //Usar el método asignar como sub-proceso
-                $response = $this->asignar($recepcion->id, $gestorSeleccionado->id);
+                if ($equipos->isEmpty()) {
+                    $asignacionesFallidas++;
+                    $errores[] = "Recepción ID {$recepcion->id} - Solicitud {$recepcion->atencion_id}: No hay equipos disponibles para asignar";
+                    continue;
+                }
+
+                // Elegir un equipo aleatorio
+                $equipoSeleccionado = $equipos->random();
+
+                // Usar el método asignar como sub-proceso
+                $response = $this->asignar($recepcion->id, $equipoSeleccionado->id);
                 if ($response->getData()->success) {
                     $asignacionesExitosas++;
                     // Actualizar el estado de la recepción original a "En progreso"
@@ -416,10 +435,10 @@ class RecepcionController extends Controller
             return response()->json(['success' => false, 'message' => 'No se encontró la recepción solicitada'], 404);
         }
         $user = User::find($user_id);
-        $user->load('solicitudes');
         if (!$user) {
             return response()->json(['success' => false, 'message' => 'No se encontró el usuario solicitado'], 404);
         }
+        $user->load('solicitudes');
         $operador_habilitado = $user->solicitudes->where('id', $recepcion->solicitud_id)->first(); //Validando que el operador tenga el nivel de habilidades necesario para resolver la solicitud
         if (!$operador_habilitado) {
             return response()->json(['success' => false, 'message' => 'El operador no tiene el nivel de habilidades necesario para resolver la solicitud'], 422);
@@ -612,7 +631,7 @@ class RecepcionController extends Controller
         $solicitudActualizada = false;
         if ($todasResueltas && $nuevoEstado === 'Resuelta') { // Actualizar el estado de la solicitud a "Resuelta"
             $estadoResuelta = Estado::where('estado', 'Resuelta')->first();
-            $recepciones = Recepcion::where('atencion_id', $atencionId)->get();
+            $recepciones = Recepcion::with('role')->where('atencion_id', $atencionId)->get();
             foreach ($recepciones as $recepcion) { // Actualizar todas las copias a resuelta exceptuando el usuario con rol "Gestor"
                 if ($recepcion->role->name !== 'Gestor') {
                     $recepcion->estado_id = $estadoResuelta->id;
@@ -642,21 +661,19 @@ class RecepcionController extends Controller
         if (!is_array($atencionIds) || empty($atencionIds)) {
             return response()->json([]);
         }
-        $estadosTablero = [1, 2, 3]; // 1: Recibida, 2: En progreso, 3: Resuelta // IDs de estados que representan tableros activos (ajusta según tu lógica)
+        $estadosTablero = [1, 2, 3]; // 1: Recibida, 2: En progreso, 3: Resuelta
         $recepciones = Recepcion::with('usuarioDestino')->where('user_id_destino', $user->id)
             ->whereIn('estado_id', $estadosTablero)
             ->whereIn('atencion_id', $atencionIds)
             ->select('atencion_id', 'avance', 'estado_id')
             ->get();
 
-        // Agrupar por atencion_id y agregar datos de recepciones
-        $resultado = $recepciones->map(function ($recepcion) {
-            // Obtener todas las recepciones para este atencion_id
-            $todasRecepciones = Recepcion::with(['usuarioDestino', 'role', 'area'])
-                ->where('atencion_id', $recepcion->atencion_id)
-                ->get()
-                ->map(function ($recepcionItem) {
-                    // Procesar la URL de la foto del usuario
+        $todosPorAtencion = Recepcion::with(['usuarioDestino', 'role', 'area'])
+            ->whereIn('atencion_id', $recepciones->pluck('atencion_id')->unique())
+            ->get()
+            ->groupBy('atencion_id')
+            ->map(function ($grupo) {
+                return $grupo->map(function ($recepcionItem) {
                     $profilePhotoUrl = $recepcionItem->usuarioDestino && $recepcionItem->usuarioDestino->profile_photo_url
                         ? $recepcionItem->usuarioDestino->profile_photo_url
                         : asset('app-assets/images/pages/operador.png');
@@ -670,13 +687,15 @@ class RecepcionController extends Controller
                         'role' => $recepcionItem->role,
                         'area' => $recepcionItem->area,
                     ];
-                });
+                })->values();
+            });
 
+        $resultado = $recepciones->map(function ($recepcion) use ($todosPorAtencion) {
             return [
                 'atencion_id' => $recepcion->atencion_id,
                 'avance' => $recepcion->avance,
                 'estado_id' => $recepcion->estado_id,
-                'recepciones' => $todasRecepciones,
+                'recepciones' => $todosPorAtencion->get($recepcion->atencion_id, collect()),
             ];
         });
 
