@@ -11,7 +11,7 @@ class TareaController extends Controller
 {
     public function index()
     {
-        $tareas = Tarea::all();
+        $tareas = Tarea::orderBy('id', 'desc')->paginate(15);
         return view('modelos.tarea.index', compact('tareas'));
     }
 
@@ -44,8 +44,9 @@ class TareaController extends Controller
 
     public function destroy(Tarea $tarea)
     {
-        if ($tarea->solicitudes->count() > 0) {
-            return back()->with('error', 'La tarea no puede ser eliminada porque está asignada a la solicitud: ' . $tarea->solicitudes->first()->solicitud);
+        if ($tarea->solicitudes()->exists()) {
+            $firstSolicitud = $tarea->solicitudes()->select('solicitud')->first();
+            return back()->with('error', 'La tarea no puede ser eliminada porque está asignada a la solicitud: ' . ($firstSolicitud->solicitud ?? ''));
         }
         try {
             $tarea->delete();

@@ -48,6 +48,8 @@
 🟢 register: asegurar el id del usuario con un aumento no automático sino programatico
 
 ...🟢 despliegue en azure app service
+    ...tengo una alerta de costos de $60 en inicio/azure subscripcion 1/analisis de costos
+        ...y un infome de costos por servicio: administracion de costos y facturacion/analisis de costos/agrupar por servicio name / seleccionar tipo tabla
     ...hay soporte diposnible por $30 al mes
     ...B2 (Basic): 200 ACU ≈ 2 vCPU
     ...creando app service

@@ -11,7 +11,7 @@ class EquipoController extends Controller
 {
     public function index()
     {
-        $equipos = Equipo::all();
+        $equipos = Equipo::orderBy('id', 'desc')->paginate(15);
         return view('modelos.equipo.index', compact('equipos'));
     }
 
@@ -44,7 +44,7 @@ class EquipoController extends Controller
 
     public function destroy(Equipo $equipo)
     {
-        if ($equipo->users->count() > 0) {
+        if ($equipo->users()->exists()) {
             return back()->with('error', 'El equipo no puede ser eliminado porque tiene usuarios asignados.');
         }
         try {

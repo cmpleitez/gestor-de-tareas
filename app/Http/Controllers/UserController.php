@@ -155,19 +155,21 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
-        if ($user->equipos->count() > 0) {
+        if ($user->equipos()->exists()) {
             return back()->with('error', 'El usuario no puede ser eliminado porque tiene equipos asignados.');
         }
-        if ($user->solicitudesRecibidas->count() > 0) {
+        if ($user->solicitudesRecibidas()->exists()) {
             return back()->with('error', 'El usuario no puede ser eliminado porque tiene solicitudes recibidas.');
         }
-        if ($user->solicitudesEnviadas->count() > 0) {
+        if ($user->solicitudesEnviadas()->exists()) {
             return back()->with('error', 'El usuario no puede ser eliminado porque tiene solicitudes enviadas.');
         }
         try {
             DB::beginTransaction();
             $user->delete();
-            Storage::disk('public')->delete($user->profile_photo_path);
+            if ($user->profile_photo_path) {
+                Storage::disk('public')->delete($user->profile_photo_path);
+            }
             DB::commit();
         } catch (Exception $e) {
             DB::rollback();
