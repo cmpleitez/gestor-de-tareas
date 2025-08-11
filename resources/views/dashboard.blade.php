@@ -12,7 +12,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     {{-- <title>Gestor de tareas {{ config('app.version') }}</title> --}}
-    <title>{{ auth()->user()->main_role }} - GT{{ config('app.version') }}</title>
+    <title>{{ auth()->user()->main_role }} - GT{{ config('app.version') }} A</title>
     <link rel="apple-touch-icon" href="{{ asset('app-assets/images/ico/apple-icon-120.png') }}">
     <link rel="shortcut icon" type="image/svg+xml" href="{{ asset('app-assets/images/ico/favicon.svg') }}">
     <link href="https://fonts.googleapis.com/css?family=Rubik:300,400,500,600%7CIBM+Plex+Sans:300,400,500,600,700"
