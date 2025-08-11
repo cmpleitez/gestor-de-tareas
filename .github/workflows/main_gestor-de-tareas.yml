@@ -59,15 +59,23 @@ jobs:
             --exclude='consulta_tarea.php' \
             ./ production-package/
           
-          # Crear directorios necesarios para Laravel
+          # Crear directorios necesarios para Laravel con permisos correctos
           mkdir -p production-package/storage/framework/cache
           mkdir -p production-package/storage/framework/sessions
           mkdir -p production-package/storage/framework/views
           mkdir -p production-package/storage/logs
+          mkdir -p production-package/bootstrap/cache
           
-          # Establecer permisos correctos
-          chmod -R 755 production-package/storage
-          chmod -R 755 production-package/bootstrap/cache
+          # Establecer permisos correctos (777 para desarrollo, 755 para producción)
+          chmod -R 777 production-package/storage
+          chmod -R 777 production-package/bootstrap/cache
+          
+          # Crear archivos .gitkeep para mantener directorios en Git
+          touch production-package/storage/framework/cache/.gitkeep
+          touch production-package/storage/framework/sessions/.gitkeep
+          touch production-package/storage/framework/views/.gitkeep
+          touch production-package/storage/logs/.gitkeep
+          touch production-package/bootstrap/cache/.gitkeep
 
       - name: Upload production package
         uses: actions/upload-artifact@v4
