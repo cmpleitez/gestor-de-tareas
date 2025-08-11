@@ -9,10 +9,6 @@ on:
       - main
   workflow_dispatch:
 
-env:
-  PHP_VERSION: '8.1'
-  COMPOSER_CACHE_DIR: ~/.composer/cache
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -22,38 +18,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # Para obtener el historial completo de Git
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ env.PHP_VERSION }}
-          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, openssl, tokenizer, json, fileinfo, curl, zip
-          coverage: none
-
-      - name: Setup Composer
-        uses: ramsey/composer-install@v4
-        with:
-          composer-version: 'latest-stable'
-          dependency-versions: 'locked'
-          install-preferred-install: 'dist'
-          no-dev: true
-          no-progress: true
-          no-interaction: true
-          cache-dir: ${{ env.COMPOSER_CACHE_DIR }}
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          cache: 'npm'
-
-      - name: Install Node.js dependencies
-        run: npm ci --only=production
-
-      - name: Build frontend assets
-        run: npm run build
 
       - name: Create production package
         run: |
@@ -61,6 +25,7 @@ jobs:
           mkdir -p production-package
           
           # Copiar solo los archivos necesarios para producción
+          # Azure ya tiene PHP, Node.js y Composer, solo necesitamos el código
           rsync -av --exclude='.git' \
             --exclude='.github' \
             --exclude='node_modules' \
@@ -71,25 +36,8 @@ jobs:
             --exclude='storage/framework/cache' \
             --exclude='storage/framework/sessions' \
             --exclude='storage/framework/views' \
-            --exclude='storage/framework/testing' \
             --exclude='.env' \
-            --exclude='.env.*' \
             --exclude='*.log' \
-            --exclude='*.sql' \
-            --exclude='*.sqlite' \
-            --exclude='.editorconfig' \
-            --exclude='.gitattributes' \
-            --exclude='.gitignore' \
-            --exclude='composer.lock' \
-            --exclude='package-lock.json' \
-            --exclude='phpunit.xml' \
-            --exclude='README.md' \
-            --exclude='CHANGELOG.md' \
-            --exclude='CONTRIBUTING.md' \
-            --exclude='LICENSE' \
-            --exclude='.cursor' \
-            --exclude='.vscode' \
-            --exclude='.idea' \
             --exclude='*.sws' \
             --exclude='*.code-workspace' \
             --exclude='deployment.sh' \
@@ -134,39 +82,6 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_0A1A76F447F64375B2A345BB22749AB1 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_5FA91445EA9845338831714D1E7FF5B7 }}
 
-      - name: Clean Azure Web App before deployment
-        run: |
-          echo "🧹 Limpiando Azure Web App antes del despliegue..."
-          
-          # Obtener el nombre del App Service
-          APP_NAME="gestor-de-tareas"
-          
-          echo "🔍 Realizando limpieza selectiva para preservar archivos importantes..."
-          
-          # Opción 1: Usar Azure CLI para limpieza selectiva (si está disponible)
-          if command -v az &> /dev/null; then
-            echo "🔧 Usando Azure CLI para limpieza selectiva..."
-            # Obtener el resource group
-            RESOURCE_GROUP=$(az webapp show --name $APP_NAME --query resourceGroup --output tsv)
-            echo "📁 Resource Group: $RESOURCE_GROUP"
-            
-            # Crear un paquete temporal vacío para limpiar solo archivos de código
-            # Esto preserva archivos de storage que se crean en runtime
-            echo "📦 Creando paquete de limpieza temporal..."
-            
-            # Limpiar el App Service con paquete vacío
-            # Los archivos de storage se recrearán automáticamente
-            az webapp deployment source config-zip --resource-group $RESOURCE_GROUP --name $APP_NAME --src /dev/null || true
-            echo "✅ Limpieza selectiva con Azure CLI completada"
-          else
-            echo "⚠️  Azure CLI no disponible, procediendo con despliegue normal"
-          fi
-          
-          echo "🧹 Limpieza selectiva completada, procediendo con despliegue..."
-          echo "💡 Nota: Esta limpieza se ejecuta en cada despliegue para mantener consistencia"
-          echo "📁 Storage se recreará con estructura limpia (logs, cache, sesiones se reiniciarán)"
-          echo "🔄 Archivos de runtime se preservarán automáticamente"
-
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
@@ -181,5 +96,5 @@ jobs:
           echo "🌐 App deployed to: https://gestor-de-tareas.azurewebsites.net"
           echo "📦 Package size: $(du -sh . | cut -f1)"
           echo "📁 Files deployed: $(find . -type f | wc -l)"
-          echo "🧹 Azure Web App limpiado y actualizado completamente"
+          echo "💡 Azure instalará automáticamente las dependencias PHP y Node.js"
           
