@@ -51,6 +51,7 @@
     ...hay soporte diposnible por $30 al mes
     ...B2 (Basic): 200 ACU ≈ 2 vCPU
     ...creando app service
+    ...avance: ya migre la bd pero los seeders no corren y como tambien se arruinó la conf. local no puedo probar en lo cal para luego probar en la nube
 
 🟠 rage agains the machine & limp bizkit & korn & alice in chains
     ...limp bizkit: im broke
