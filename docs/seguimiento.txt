@@ -47,42 +47,14 @@
 🟢 servicio controlado: para cambiar el dui a una persona por motivos de error involuntario a la hora de registrar ese dui en el formulario de registro de usuarios
 🟢 register: asegurar el id del usuario con un aumento no automático sino programatico
 
-...🟢 despliegue en azure app service
-    ...tengo una alerta de costos de $60 en inicio/azure subscripcion 1/analisis de costos
-        ...y un infome de costos por servicio: administracion de costos y facturacion/analisis de costos/agrupar por servicio name / seleccionar tipo tabla
-    ...hay soporte diposnible por $30 al mes
-    ...B2 (Basic): 200 ACU ≈ 2 vCPU
-    ...creando app service
-    ...avance: ya migre la bd pero los seeders no corren y como tambien se arruinó la conf. local no puedo probar en lo cal para luego probar en la nube
-        ...SQLSTATE[23000]: [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]The INSERT statement conflicted with the FOREIGN KEY constraint "users_role_id_foreign". The conflict occurred in database "gestor-de-tareas", table "dbo.roles", column 'id'. (Connection: sqlsrv, SQL: insert into [users] ([area_id], [role_id], [name], [dui], [email], [email_verified_at], [password], [remember_token], [created_at], [updated_at]) values (1, 1, Hari Seldom, 012345678, hari.seldom.sv@gmail.com, 2025-08-10 21:43:20.666, $2y$12$9tcd3ktEuHsAXfJygFPLoO7TgDSOme8xxLLg2V9RBZfwhMUXKRLvq, wtWHRvjaLs, 2025-08-10 21:43:20.890, 2025-08-10 21:43:20.890))
-    activar el correo de proeba mailtrap
-    mequedeen: 
-            ok creoque hare eso mañana : )
+...🟢 prueba de despliegue en laravel forge
+    he creado dos cuentas de pago una para laravel forge y otra para digital ocean
+        se ha creando una vm en laravel forge (forge.laravel.com)
+        pendiente cambiar los seeders a sintaxis mysql 8
+        activar motor de mysql en laragon y probar funcionamiento de la web app
 
-            ---
 
-            **Cursor**
-
-            ¡Perfecto! Es una excelente decisión. Hemos avanzado mucho hoy:
-
-            ## **🚀 Resumen de lo logrado:**
-
-            ### **✅ Completado:**
-            - **Configuramos GitHub Actions** con los secrets correctos de Azure
-            - **Creamos credenciales federadas** para la autenticación
-            - **Configuramos CI/CD** en Azure
-            - **Solucionamos el problema de caché** de Laravel
-            - **Identificamos** que faltan las variables de entorno
-
-            ### **🔄 Para mañana:**
-            - **Configurar variables de entorno** en Azure App Service
-            - **Probar la conexión** a la base de datos
-            - **Ejecutar migraciones** y seeders
-
-            ## **💡 Recomendación:**
-            Descansa bien y mañana será más fácil terminar la configuración. ¡Buen trabajo hoy!
-
-            **Modelo usado**: GPT-5-fast
+   
 
 🟠 rage agains the machine & limp bizkit & korn & alice in chains
     ...limp bizkit: im broke
