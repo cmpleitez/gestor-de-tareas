@@ -50,8 +50,8 @@
 ...🟢 prueba de despliegue en laravel forge
     he creado dos cuentas de pago una para laravel forge y otra para digital ocean
         se ha creando una vm en laravel forge (forge.laravel.com)
-
-   
+            Deploy keys use an SSH key to grant readonly or write access to a single repository. They are not protected by a passphrase and can be a security risk if your server is compromised. If you have a complex project or want more fine-grain control over permissions, consider using GitHub Apps instead.
+  
 
 🟠 rage agains the machine & limp bizkit & korn & alice in chains
     ...limp bizkit: im broke
