@@ -50,9 +50,6 @@
 ...🟢 prueba de despliegue en laravel forge
     he creado dos cuentas de pago una para laravel forge y otra para digital ocean
         se ha creando una vm en laravel forge (forge.laravel.com)
-        pendiente cambiar los seeders a sintaxis mysql 8
-        activar motor de mysql en laragon y probar funcionamiento de la web app
-
 
    
 

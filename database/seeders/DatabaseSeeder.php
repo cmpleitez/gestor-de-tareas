@@ -211,13 +211,19 @@ class DatabaseSeeder extends Seeder
 
         //AREAS
         DB::table('areas')->insert([
-            'area' => 'Innovación',
+            'area' => 'Ventas',
             'oficina_id' => 1,
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);        
         DB::table('areas')->insert([
-            'area' => 'Desarrollo de sistemas informáticos y aplicaciones web',
+            'area' => 'Diseño',
+            'oficina_id' => 1,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+        DB::table('areas')->insert([
+            'area' => 'Taller',
             'oficina_id' => 1,
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
@@ -225,12 +231,12 @@ class DatabaseSeeder extends Seeder
 
         //EQUIPOS
         DB::table('equipos')->insert([
-            'equipo'              => 'Desarrollo de sistemas informáticos y aplicaciones web',
+            'equipo'              => 'Amortiguadores',
             'created_at'        => Carbon::now(),
             'updated_at'        => Carbon::now(),
         ]);
         DB::table('equipos')->insert([
-            'equipo'              => 'Innovación',
+            'equipo'              => 'Electricidad y Luces',
             'created_at'        => Carbon::now(),
             'updated_at'        => Carbon::now(),
         ]);
@@ -278,11 +284,11 @@ class DatabaseSeeder extends Seeder
         DB::table('users')->insert([
             'area_id'           => 1,
             'role_id'           => 1,
-            'name'              => 'Hari Seldom',
+            'name'              => 'Superadmin',
             'dui'               => '012345678',
-            'email'             => 'hari.seldom.sv@gmail.com',
+            'email'             => 'cpleitez.2024@gmail.com',
             'email_verified_at' => Carbon::now(),
-            'password'          => bcrypt('123456789'),
+            'password'          => bcrypt('p@5t15al5abana'),
             'remember_token'    => Str::random(10),
             'created_at'        => Carbon::now(),
             'updated_at'        => Carbon::now(),
@@ -331,12 +337,12 @@ class DatabaseSeeder extends Seeder
 
         //CREACION DE SOLICITUDES
         DB::table('solicitudes')->insert([
-            'solicitud' => 'Demo uno',
+            'solicitud' => 'Instalación de amortiguadores',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
         DB::table('solicitudes')->insert([
-            'solicitud' => 'Demo dos',
+            'solicitud' => 'Instalación de cluces para neblinas',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
