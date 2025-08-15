@@ -1,13 +1,21 @@
 {
-  "resources/css/app.css": {
-    "file": "assets/app-D6ydzGhi.css",
-    "src": "resources/css/app.css",
+  "public/app-assets/css/app.css": {
+    "file": "assets/app-B0BBp6GT.css",
+    "src": "public/app-assets/css/app.css",
     "isEntry": true
   },
-  "resources/js/app.js": {
-    "file": "assets/app-T1DpEqax.js",
+  "public/app-assets/images/logo/frest-logo.png": {
+    "file": "assets/frest-logo-CT90MVwB.png",
+    "src": "public/app-assets/images/logo/frest-logo.png"
+  },
+  "public/app-assets/images/pages/auth-bg.jpg": {
+    "file": "assets/auth-bg-BfwAZq35.jpg",
+    "src": "public/app-assets/images/pages/auth-bg.jpg"
+  },
+  "public/app-assets/js/app.js": {
+    "file": "assets/app-4h19t09s.js",
     "name": "app",
-    "src": "resources/js/app.js",
+    "src": "public/app-assets/js/app.js",
     "isEntry": true
   }
 }
