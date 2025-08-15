@@ -282,11 +282,11 @@
                                 </div>
                                 <div class="col-sm-12"> {{-- Fotografia --}}
                                     <div class="form-group">
-                                        <label>Fotografia del Operador <small class="text-muted">(Máximo 2MB, solo JPEG/PNG)</small></label>
+                                        <label>Fotografia del Operador <small class="text-muted">(Máximo 512KB, solo JPEG/PNG)</small></label>
                                         <input type="file" name="profile_photo_path" class="form-control" style="padding-bottom: 35px;" 
                                                accept="image/jpeg,image/jpg,image/png" 
-                                               onchange="validateFileSize(this, 2)">
-                                        <small class="form-text text-muted">Formatos permitidos: JPEG, JPG, PNG. Tamaño máximo: 2MB</small>
+                                               onchange="validateFileSize(this, 0.5)">
+                                        <small class="form-text text-muted">Formatos permitidos: JPEG, JPG, PNG. Tamaño máximo: 512KB</small>
                                     </div>
                                     @error('profile_photo_path')
                                         <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
