@@ -42,7 +42,7 @@ return [
             'encryption' => env('MAIL_ENCRYPTION', 'tls'),
             'username' => env('MAIL_USERNAME'),
             'password' => env('MAIL_PASSWORD'),
-            'timeout' => null,
+            'timeout' => 60, // 60 segundos para evitar timeouts
             'local_domain' => env('MAIL_EHLO_DOMAIN'),
         ],
 
@@ -52,17 +52,16 @@ return [
 
         'postmark' => [
             'transport' => 'postmark',
-            // 'message_stream_id' => null,
-            // 'client' => [
-            //     'timeout' => 5,
-            // ],
+            'client' => [
+                'timeout' => 60,
+            ],
         ],
 
         'mailgun' => [
             'transport' => 'mailgun',
-            // 'client' => [
-            //     'timeout' => 5,
-            // ],
+            'client' => [
+                'timeout' => 60,
+            ],
         ],
 
         'sendmail' => [
@@ -98,6 +97,9 @@ return [
         'sendgrid' => [
             'transport' => 'sendgrid',
             'driver' => env('MAIL_DRIVER', 'sendgrid'),
+            'client' => [
+                'timeout' => 60,
+            ],
         ],
     ],
 

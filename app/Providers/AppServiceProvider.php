@@ -19,6 +19,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Configurar timeouts más largos para evitar 504 Gateway Timeout
+        config([
+            'mail.mailers.smtp.timeout' => 60,
+            'mail.mailers.postmark.client.timeout' => 60,
+            'mail.mailers.mailgun.client.timeout' => 60,
+            'mail.mailers.sendgrid.client.timeout' => 60,
+        ]);
     }
 }
