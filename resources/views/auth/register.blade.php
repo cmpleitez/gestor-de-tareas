@@ -11,36 +11,32 @@
 
     <title>Gestor de tareas {{ config('app.version') }}</title>
 
-    <link rel="apple-touch-icon" href="/app-assets/images/ico/apple-icon-120.png">
+    <link rel="apple-touch-icon" href="{{ asset('resources/css/app-assets/images/icons/favicon-32x32.png') }}">
 
-    <link rel="shortcut icon" type="image/svg+xml" href="/app-assets/images/ico/favicon.svg">
+    <link rel="shortcut icon" type="image/svg+xml" href="{{ asset('resources/css/app-assets/images/icons/favicon-32x32.png') }}">
 
 
     <link href="https://fonts.googleapis.com/css?family=Rubik:300,400,500,600%7CIBM+Plex+Sans:300,400,500,600,700"
         rel="stylesheet">
 
-    <!-- BEGIN: Vendor CSS-->
-    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/vendors.min.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/charts/apexcharts.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/extensions/dragula.min.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/forms/select/select2.min.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/extensions/toastr.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/tables/datatable/datatables.min.css">
-    <!-- END: Vendor CSS-->
-
-    <!-- BEGIN: Theme CSS-->
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/bootstrap.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/bootstrap-extended.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/colors.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/components.css">
-    <!-- END: Theme CSS-->
-
-    <!-- BEGIN: Page CSS-->
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/core/menu/menu-types/vertical-menu.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/pages/dashboard-analytics.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/forms/validation/form-validation.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/extensions/toastr.css">
-    <!-- END: Page CSS-->
+    <!-- BEGIN: All CSS-->
+    @vite([
+        'resources/css/app-assets/vendors/css/vendors.min.css',
+        'resources/css/app-assets/vendors/css/charts/apexcharts.css',
+        'resources/css/app-assets/vendors/css/extensions/dragula.min.css',
+        'resources/css/app-assets/vendors/css/forms/select/select2.min.css',
+        'resources/css/app-assets/vendors/css/extensions/toastr.css',
+        'resources/css/app-assets/vendors/css/tables/datatable/datatables.min.css',
+        'resources/css/app-assets/css/bootstrap.css',
+        'resources/css/app-assets/css/bootstrap-extended.css',
+        'resources/css/app-assets/css/colors.css',
+        'resources/css/app-assets/css/components.css',
+        'resources/css/app-assets/css/core/menu/menu-types/vertical-menu.css',
+        'resources/css/app-assets/css/pages/dashboard-analytics.css',
+        'resources/css/app-assets/css/plugins/forms/validation/form-validation.css',
+        'resources/css/app-assets/css/plugins/extensions/toastr.css'
+    ])
+    <!-- END: All CSS-->
 
     <style>
         body {
@@ -218,7 +214,7 @@
     <!-- LOGO -->
     <div class="row justify-content-center mb-3 mt-3">
         <div class="col-auto">
-            <img src="/app-assets/images/logo/logo.png" alt="Logo" style="height: 100px; width: auto; object-fit: contain;">
+            <img src="{{ asset('resources/css/app-assets/images/logo/logo.png') }}" alt="Logo" style="height: 100px; width: auto; object-fit: contain;">
         </div>
     </div>
     <!-- FORMULARIO -->
@@ -286,8 +282,11 @@
                                 </div>
                                 <div class="col-sm-12"> {{-- Fotografia --}}
                                     <div class="form-group">
-                                        <label>Fotografia del Operador</label>
-                                        <input type="file" name="profile_photo_path" class="form-control" style="padding-bottom: 35px;" accept="image/*">
+                                        <label>Fotografia del Operador <small class="text-muted">(Máximo 2MB, solo JPEG/PNG)</small></label>
+                                        <input type="file" name="profile_photo_path" class="form-control" style="padding-bottom: 35px;" 
+                                               accept="image/jpeg,image/jpg,image/png" 
+                                               onchange="validateFileSize(this, 2)">
+                                        <small class="form-text text-muted">Formatos permitidos: JPEG, JPG, PNG. Tamaño máximo: 2MB</small>
                                     </div>
                                     @error('profile_photo_path')
                                         <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
@@ -390,25 +389,21 @@
     </footer>
     <!-- END: Footer-->
 
-    <!-- BEGIN: Vendor JS-->
-    <script src="/app-assets/vendors/js/vendors.min.js"></script>
-    <script src="/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.tools.js"></script>
-    <script src="/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.defaults.js"></script>
-    <script src="/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.min.js"></script>
-    <!-- BEGIN Vendor JS-->
-
-    <!-- BEGIN: Page Vendor JS-->
-    <script src="/app-assets/vendors/js/forms/validation/jqBootstrapValidation.js"></script>
-    <script src="/app-assets/vendors/js/forms/select/select2.full.min.js"></script>
-    <!-- END: Page Vendor JS-->
-
-    <!-- BEGIN: Theme JS-->
-    <script src="/app-assets/js/scripts/configs/vertical-menu-light.js"></script>
-    <script src="/app-assets/js/core/app-menu.js"></script>
-    <script src="/app-assets/js/core/app.js"></script>
-    <script src="/app-assets/js/scripts/components.js"></script>
-    <script src="/app-assets/js/scripts/footer.js"></script>
-    <!-- END: Theme JS-->
+    <!-- BEGIN: All JavaScript-->
+    @vite([
+        'resources/js/vendors/js/vendors.min.js',
+        'resources/js/fonts/LivIconsEvo/js/LivIconsEvo.tools.js',
+        'resources/js/fonts/LivIconsEvo/js/LivIconsEvo.defaults.js',
+        'resources/js/fonts/LivIconsEvo/js/LivIconsEvo.min.js',
+        'resources/js/vendors/js/forms/validation/jqBootstrapValidation.js',
+        'resources/js/vendors/js/forms/select/select2.full.min.js',
+        'resources/js/scripts/configs/vertical-menu-light.js',
+        'resources/js/core/app-menu.js',
+        'resources/js/core/app.js',
+        'resources/js/scripts/components.js',
+        'resources/js/scripts/footer.js'
+    ])
+    <!-- END: All JavaScript-->
 
     <!-- BEGIN: Page JS-->
     <script>
@@ -430,6 +425,28 @@
                     return $(this).is(":visible");
                 }
             });
+
+            // Función para validar tamaño de archivo
+            window.validateFileSize = function(input, maxSizeMB) {
+                const file = input.files[0];
+                if (file) {
+                    const fileSizeMB = file.size / (1024 * 1024);
+                    if (fileSizeMB > maxSizeMB) {
+                        alert('El archivo es demasiado grande. El tamaño máximo permitido es ' + maxSizeMB + 'MB.');
+                        input.value = '';
+                        return false;
+                    }
+                    
+                    // Validar tipo de archivo
+                    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+                    if (!allowedTypes.includes(file.type)) {
+                        alert('Solo se permiten archivos JPEG, JPG o PNG.');
+                        input.value = '';
+                        return false;
+                    }
+                }
+                return true;
+            };
         });
     </script>
     <!-- END: Page JS-->

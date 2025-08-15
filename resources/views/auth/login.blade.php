@@ -12,28 +12,24 @@
         content="gestión, tareas, calidad, control, fluidez, atención al cliente">
     <meta name="author" content=".">
     <title>Gestor de tareas {{ config('app.version') }}</title>
-    <link rel="apple-touch-icon" href="/app-assets/images/ico/apple-icon-120.png">
-    <link rel="shortcut icon" type="image/x-icon" href="/app-assets/images/ico/favicon.ico">
+    <link rel="apple-touch-icon" href="{{ asset('resources/css/app-assets/images/icons/favicon-32x32.png') }}">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('resources/css/app-assets/images/icons/favicon-32x32.png') }}">
     <link href="https://fonts.googleapis.com/css?family=Rubik:300,400,500,600%7CIBM+Plex+Sans:300,400,500,600,700"
         rel="stylesheet">
 
-    <!-- BEGIN: Vendor CSS-->
-    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/vendors.min.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/extensions/toastr.css">
-    <!-- END: Vendor CSS-->
-
-    <!-- BEGIN: Theme CSS-->
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/bootstrap.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/bootstrap-extended.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/colors.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/components.css">
-    <!-- END: Theme CSS-->
-
-    <!-- BEGIN: Page CSS-->
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/core/menu/menu-types/vertical-menu.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/pages/authentication.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/extensions/toastr.css">
-    <!-- END: Page CSS-->
+    <!-- BEGIN: All CSS-->
+    @vite([
+        'resources/css/app-assets/vendors/css/vendors.min.css',
+        'resources/css/app-assets/vendors/css/extensions/toastr.css',
+        'resources/css/app-assets/css/bootstrap.css',
+        'resources/css/app-assets/css/bootstrap-extended.css',
+        'resources/css/app-assets/css/colors.css',
+        'resources/css/app-assets/css/components.css',
+        'resources/css/app-assets/css/core/menu/menu-types/vertical-menu.css',
+        'resources/css/app-assets/css/pages/authentication.css',
+        'resources/css/app-assets/css/plugins/extensions/toastr.css'
+    ])
+    <!-- END: All CSS-->
 
 </head>
 <!-- END: Head-->
@@ -59,7 +55,7 @@
                                 <div class="col-md-6 col-12 px-0">
                                     <div class="card disable-rounded-right mb-0 p-2 h-100 d-flex justify-content-center">
                                         <div class="d-flex justify-content-center">
-                                            <img src="/app-assets/images/logo/logo.png" alt="Logo" class="height-100" style="width: auto; object-fit: contain;">
+                                            <img src="{{ asset('resources/css/app-assets/images/logo/logo.png') }}" alt="Logo" class="height-100" style="width: auto; object-fit: contain;">
                                         </div>
                                         <div class="card-header">
                                             <div class="card-title m-0 p-0">
@@ -108,7 +104,7 @@
                                 </div>
                                 <!-- right section image -->
                                 <div class="col-md-6 p-0 m-0">
-                                    <img src="/app-assets/images/pages/login.jpg" alt="branding logo" style="width: 100%; height: 100%; object-fit: cover;">
+                                    <img src="{{ asset('resources/css/app-assets/images/pages/login.jpg') }}" alt="branding logo" style="width: 100%; height: 100%; object-fit: cover;">
                                 </div>
                             </div>
                         </div>
@@ -122,27 +118,24 @@
     <!-- END: Content-->
 
 
-    <!-- BEGIN: Vendor JS-->
-    <script src="/app-assets/vendors/js/vendors.min.js"></script>
-    <script src="/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.tools.js"></script>
-    <script src="/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.defaults.js"></script>
-    <script src="/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.min.js"></script>
-    <!-- BEGIN Vendor JS-->
-
-    <!-- BEGIN: Page Vendor JS-->
-    <script src="/app-assets/vendors/js/extensions/toastr.min.js"></script>
-    <!-- END: Page Vendor JS-->
-
-    <!-- BEGIN: Theme JS-->
-    <script src="/app-assets/js/core/app-menu.js"></script>
-    <script src="/app-assets/js/core/app.js"></script>
-    <script src="/app-assets/js/scripts/components.js"></script>
-    <script src="/app-assets/js/scripts/footer.js"></script>
-    <!-- END: Theme JS-->
-
-    <!-- BEGIN: Page JS-->
-    <script src="/app-assets/js/scripts/extensions/toastr.js"></script>
-    <!-- END: Page JS-->
+    <!-- BEGIN: Critical JavaScript (Emergency Load) -->
+    <script src="{{ asset('resources/css/app-assets/vendors/js/vendors.min.js') }}"></script>
+    <script src="{{ asset('resources/css/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.tools.js') }}"></script>
+    <script src="{{ asset('resources/css/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.defaults.js') }}"></script>
+    <script src="{{ asset('resources/css/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.min.js') }}"></script>
+    <script src="{{ asset('resources/css/app-assets/vendors/js/extensions/toastr.min.js') }}"></script>
+    <script src="{{ asset('resources/css/app-assets/vendors/js/ui/unison.min.js') }}"></script>
+    <!-- END: Critical JavaScript (Emergency Load) -->
+    
+    <!-- BEGIN: Application JavaScript -->
+    @vite([
+        'resources/js/js/core/app-menu.js',
+        'resources/js/js/core/app.js',
+        'resources/js/js/scripts/components.js',
+        'resources/js/js/scripts/footer.js',
+        'resources/js/js/scripts/extensions/toastr.js'
+    ])
+    <!-- END: Application JavaScript -->
 
     @if ($errors->has('email') || $errors->has('password'))
         <script>

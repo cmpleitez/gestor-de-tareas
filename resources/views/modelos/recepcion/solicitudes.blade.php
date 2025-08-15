@@ -2,11 +2,11 @@
 
 @section('css')
 <!-- SweetAlert2 CSS Local -->
-<link rel="stylesheet" type="text/css" href="{{ asset('app-assets/vendors/css/extensions/sweetalert2.min.css') }}">
-<!-- Bootstrap Extended CSS para compatibilidad con SweetAlert2 -->
-<link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/bootstrap-extended.css') }}">
-<link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/pages/app-kanban.css') }}">
-<link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/touch-kanban.css') }}">
+@vite([
+    'resources/css/app-assets/vendors/css/extensions/sweetalert2.min.css',
+    'resources/css/app-assets/css/bootstrap-extended.css',
+    'resources/css/app-assets/css/pages/app-kanban.css'
+])
 <style>
     .btn i {
         position: relative;
@@ -304,12 +304,6 @@
         cursor: move;
     }
 
-
-
-
-
-
-
     .solicitud-card.animar-traslado {
         transition: transform 0.5s cubic-bezier(.4, 2, .6, 1), opacity 0.5s;
         opacity: 0;
@@ -549,9 +543,11 @@
 @endsection
 
 @section('js')
-<script src="{{ asset('app-assets/vendors/js/extensions/sweetalert2.all.min.js') }}"></script>
-<script src="{{ asset('app-assets/vendors/js/jkanban/Sortable.min.js') }}"></script>
-<script src="{{ asset('app-assets/vendors/js/jkanban/jkanban.min.js') }}"></script>
+<!-- BEGIN: Critical JavaScript (Emergency Load) -->
+<script src="{{ asset('resources/css/app-assets/vendors/js/extensions/sweetalert2.all.min.js') }}"></script>
+<script src="{{ asset('resources/css/app-assets/vendors/js/jkanban/Sortable.min.js') }}"></script>
+<script src="{{ asset('resources/css/app-assets/vendors/js/jkanban/jkanban.min.js') }}"></script>
+<!-- END: Critical JavaScript (Emergency Load) -->
 <script>
     //SELECCIONANDO EL ITEM DESTINATARIO
         let userRole = '';

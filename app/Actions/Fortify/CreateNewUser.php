@@ -32,7 +32,11 @@ class CreateNewUser implements CreatesNewUsers
             'area_id' => ['required', 'exists:areas,id'],
             'password' => $this->passwordRules(),
             'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
-            'profile_photo_path' => ['nullable', 'image', 'max:10240'],
+            'profile_photo_path' => ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:2048'], // Solo JPEG/PNG, 2MB máximo
+        ], [
+            'profile_photo_path.max' => 'La imagen no debe superar los 2MB.',
+            'profile_photo_path.mimes' => 'Solo se permiten imágenes en formato JPEG o PNG.',
+            'profile_photo_path.image' => 'El archivo debe ser una imagen válida.'
         ])->validate();
         
         //dd($validated); // Depuración: mostrar el array validado
@@ -55,7 +59,7 @@ class CreateNewUser implements CreatesNewUsers
                         $manager = new ImageManager(Driver::class);
                         $image = $manager->read($fullPath);
                         $image->scale(width: 64, height: 96);
-                        $image->save($fullPath);
+                        $image->save($fullPath, quality: 80); // Reducir calidad a 80%
                     } catch (Exception $e) {
                         Storage::disk('public')->delete($path);
                         throw new Exception('Error al procesar la imagen: ' . $e->getMessage());

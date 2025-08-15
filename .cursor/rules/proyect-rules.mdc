@@ -17,7 +17,7 @@ alwaysApply: true
 ✅ Debes mencionar en cada respuesta tuya el modelo que usaste para la misma.
 ✅ Cuando diga: esta línea o lineas me refiero a que ya hice referencia dichas líneas con CTRL+L o he hecho referencia a un archivo en especifico
 ✅ Busca primero en la pestaña activa y luego en las demás. 
-✅ Cuando el modelo IA que se está consultando se sature y se ponga lento, cambiar al siguiente modelo según el orden que he dado anteriormente en esta regla
+✅ Cuando el modelo IA que se está consultando agregue a cola la pregunta porque esta saturado, cambiar al siguiente modelo según el orden que he dado anteriormente en esta regla
 ✅ Cuando comentes una línea o una serie de líneas hazlo a la izquierda de la línea o de la primera línea, pues los únicos comentarios que van arriba son titulos generales de bloques de lineas y de esos me encargo yo.
 ✅ código limpio y estándar
 ✅ No uso de artificios
