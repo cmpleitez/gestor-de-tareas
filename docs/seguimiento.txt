@@ -47,6 +47,7 @@
 🟢 servicio controlado: para cambiar el dui a una persona por motivos de error involuntario a la hora de registrar ese dui en el formulario de registro de usuarios
 🟢 register: asegurar el id del usuario con un aumento no automático sino programatico
 
+
 ...🟢 prueba de despliegue en laravel forge
     he creado dos cuentas de pago una para laravel forge y otra para digital ocean
         se ha creando una vm en laravel forge (forge.laravel.com)

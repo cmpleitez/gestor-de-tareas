@@ -1,5 +1,5 @@
-import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
+import { defineConfig } from 'vite';
 
 export default defineConfig({
     plugins: [
@@ -12,6 +12,7 @@ export default defineConfig({
                 'resources/css/app-assets/css/components.css',
                 'resources/css/app-assets/css/core/menu/menu-types/vertical-menu.css',
                 'resources/css/app-assets/css/pages/dashboard-analytics.css',
+                'resources/css/app-assets/css/pages/authentication.css',
                 'resources/css/app-assets/css/plugins/forms/validation/form-validation.css',
                 'resources/css/app-assets/css/plugins/extensions/toastr.css',
                 'resources/css/app-assets/vendors/css/vendors.min.css',
