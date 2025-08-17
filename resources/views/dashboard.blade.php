@@ -14,27 +14,28 @@
     {{-- <title>Gestor de tareas {{ config('app.version') }}</title> --}}
     <title>{{ auth()->user()->main_role }} - GT{{ config('app.version') }}</title>
     <link rel="apple-touch-icon" href="{{ asset('resources/css/app-assets/images/icons/favicon-32x32.png') }}">
-    <link rel="shortcut icon" type="image/svg+xml" href="{{ asset('resources/css/app-assets/images/icons/favicon-32x32.png') }}">
+    <link rel="shortcut icon" type="image/svg+xml"
+        href="{{ asset('resources/css/app-assets/images/icons/favicon-32x32.png') }}">
     <link href="https://fonts.googleapis.com/css?family=Rubik:300,400,500,600%7CIBM+Plex+Sans:300,400,500,600,700"
         rel="stylesheet">
 
     <!-- BEGIN: Vendor CSS-->
     @vite([
-        'resources/css/app-assets/vendors/css/vendors.min.css',
-        'resources/css/app-assets/vendors/css/charts/apexcharts.css',
-        'resources/css/app-assets/vendors/css/animate/animate.css',
-        'resources/css/app-assets/vendors/css/extensions/dragula.min.css',
-        'resources/css/app-assets/vendors/css/forms/select/select2.min.css',
-        'resources/css/app-assets/vendors/css/extensions/toastr.css',
-        'resources/css/app-assets/vendors/css/tables/datatable/datatables.min.css',
-        'resources/css/app-assets/css/bootstrap.css',
-        'resources/css/app-assets/css/bootstrap-extended.css',
-        'resources/css/app-assets/css/colors.css',
-        'resources/css/app-assets/css/components.css',
-        'resources/css/app-assets/css/core/menu/menu-types/vertical-menu.css',
-        'resources/css/app-assets/css/pages/dashboard-analytics.css',
-        'resources/css/app-assets/css/plugins/forms/validation/form-validation.css',
-        'resources/css/app-assets/css/plugins/extensions/toastr.css'
+    'resources/css/app-assets/vendors/css/vendors.min.css',
+    'resources/css/app-assets/vendors/css/charts/apexcharts.css',
+    'resources/css/app-assets/vendors/css/animate/animate.css',
+    'resources/css/app-assets/vendors/css/extensions/dragula.min.css',
+    'resources/css/app-assets/vendors/css/forms/select/select2.min.css',
+    'resources/css/app-assets/vendors/css/extensions/toastr.css',
+    'resources/css/app-assets/vendors/css/tables/datatable/datatables.min.css',
+    'resources/css/app-assets/css/bootstrap.css',
+    'resources/css/app-assets/css/bootstrap-extended.css',
+    'resources/css/app-assets/css/colors.css',
+    'resources/css/app-assets/css/components.css',
+    'resources/css/app-assets/css/core/menu/menu-types/vertical-menu.css',
+    'resources/css/app-assets/css/pages/dashboard-analytics.css',
+    'resources/css/app-assets/css/plugins/forms/validation/form-validation.css',
+    'resources/css/app-assets/css/plugins/extensions/toastr.css'
     ])
     <!-- END: All CSS-->
 
@@ -42,7 +43,7 @@
         .avatar {
             margin: 0px;
         }
-        
+
         .badge-pill {
             padding-right: 0.7rem;
             padding-left: 0.7rem;
@@ -311,7 +312,9 @@
             box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
             border-color: #007bff;
         }
-        .selectable-item::before { /* Triángulo de color en esquina superior derecha */
+
+        .selectable-item::before {
+            /* Triángulo de color en esquina superior derecha */
             content: '';
             position: absolute;
             top: 0;
@@ -348,7 +351,8 @@
             text-overflow: ellipsis;
             word-wrap: break-word;
             line-height: 1.3;
-            max-height: 3.9em; /* 3 líneas * 1.3 line-height */
+            max-height: 3.9em;
+            /* 3 líneas * 1.3 line-height */
         }
 
         .selectable-item .item-desc {
@@ -362,7 +366,8 @@
             text-overflow: ellipsis;
             word-wrap: break-word;
             line-height: 1.2;
-            max-height: 1.92em; /* 2 líneas * 1.2 line-height */
+            max-height: 1.92em;
+            /* 2 líneas * 1.2 line-height */
         }
 
         /* Indicadores de selección */
@@ -466,7 +471,7 @@
         }
 
         /* ===== CONTENEDOR PARA ELEMENTOS SELECCIONABLES ===== */
-        
+
         .selectable-items-container {
             display: flex;
             flex-wrap: wrap;
@@ -475,7 +480,7 @@
         }
 
         /* ===== CLASES ESPECÍFICAS PARA TAREAS ===== */
-        
+
         .tareas-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -547,13 +552,13 @@
         }
 
         /* ===== RESPONSIVE ===== */
-        
+
         @media (max-width: 768px) {
             .tareas-grid {
                 grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
                 gap: 0.75rem;
             }
-            
+
             .tarea-card {
                 height: 140px;
                 padding: 1rem;
@@ -567,6 +572,7 @@
 <!-- END: Head-->
 
 <!-- BEGIN: Body-->
+
 <body class="vertical-layout vertical-menu-modern boxicon-layout no-card-shadow 2-columns navbar-sticky footer-static"
     data-open="click" data-menu="vertical-menu-modern" data-col="2-columns">
     <!-- BEGIN: Header-->
@@ -617,8 +623,8 @@
                                     <span class="user-status text-gray-600 d-flex align-items-center"
                                         onclick="copyToClipboard(event, '{{ auth()->user()->email }}')">
                                         <i class="bx bx-copy" style="cursor: pointer; padding-right: 0.5rem;"></i>
-                                        <span
-                                            class="hover:text-gray-900 !important transition-colors duration-200">{{ auth()->user()->email }}</span>
+                                        <span class="hover:text-gray-900 !important transition-colors duration-200">{{
+                                            auth()->user()->email }}</span>
                                     </span>
                                     <script>
                                         function copyToClipboard(event, text) {
@@ -667,23 +673,23 @@
                                     </script>
                                     <span class="user-status" style="color: #0056b3; font-weight: 600;">
                                         @if(auth()->check())
-                                            Conectado como 
-                                            {{ auth()->user()->main_role }}
+                                        Conectado como
+                                        {{ auth()->user()->main_role }}
                                         @else
-                                            <span style="color: #d90429; font-weight: 600;">Desconectado</span>
+                                        <span style="color: #d90429; font-weight: 600;">Desconectado</span>
                                         @endif
                                     </span>
                                 </div>
                                 <div class="avatar">
                                     @if (auth()->check())
-                                        @php $photoPath = auth()->user()->profile_photo_path; @endphp
-                                        @if ($photoPath && Storage::disk('public')->exists($photoPath))
-                                            <img src="{{ Storage::url($photoPath) }}" alt="avatar"
-                                                style="height: 45px; width: 45px; object-fit: cover;">
-                                                                                 @else
-                                             <img src="{{ asset('resources/css/app-assets/images/pages/operador.png') }}" alt="avatar"
-                                                 style="height: 45px; width: 45px; object-fit: contain;">
-                                         @endif
+                                    @php $photoPath = auth()->user()->profile_photo_path; @endphp
+                                    @if ($photoPath && Storage::disk('public')->exists($photoPath))
+                                    <img src="{{ Storage::url($photoPath) }}" alt="avatar"
+                                        style="height: 45px; width: 45px; object-fit: cover;">
+                                    @else
+                                    <img src="{{ asset('resources/css/app-assets/images/pages/operador.png') }}"
+                                        alt="avatar" style="height: 45px; width: 45px; object-fit: contain;">
+                                    @endif
                                     @endif
                                 </div>
                             </a>
@@ -715,10 +721,10 @@
             <ul class="nav navbar-nav flex-row">
                 <li class="nav-item mr-auto open">
                     <a class="navbar-brand align-items-baseline" href="{{ route('dashboard') }}">
-                                                 <div class="brand-logo">
-                             <img src="{{ asset('resources/css/app-assets/images/icons/favicon-32x32.png') }}" alt="logo"
-                                 style="width: 2.5rem; height: 2rem; object-fit: contain;">
-                         </div>
+                        <div class="brand-logo">
+                            <img src="{{ asset('resources/css/app-assets/images/icons/favicon-32x32.png') }}" alt="logo"
+                                style="width: 2.5rem; height: 2rem; object-fit: contain;">
+                        </div>
                         <h2 class="brand-text mb-0"></h2>
                     </a>
                 </li>
@@ -832,35 +838,40 @@
 
     <!-- BEGIN: Critical JavaScript (Emergency Load) -->
     @vite([
-        'resources/css/app-assets/vendors/js/vendors.min.js',
-        'resources/css/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.tools.js',
-        'resources/css/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.defaults.js',
-        'resources/css/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.min.js',
-        'resources/css/app-assets/vendors/js/extensions/numeral/numeral.js',
-        'resources/css/app-assets/vendors/js/extensions/dragula.min.js',
-        'resources/css/app-assets/vendors/js/forms/validation/jqBootstrapValidation.js',
-        'resources/css/app-assets/vendors/js/forms/select/select2.full.min.js',
-        'resources/css/app-assets/vendors/js/extensions/toastr.min.js',
-        'resources/css/app-assets/vendors/js/tables/datatable/datatables.min.js',
-        'resources/css/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js',
-        'resources/css/app-assets/vendors/js/tables/datatable/dataTables.buttons.min.js',
-        'resources/css/app-assets/vendors/js/tables/datatable/buttons.html5.min.js',
-        'resources/css/app-assets/vendors/js/tables/datatable/buttons.print.min.js',
-        'resources/css/app-assets/vendors/js/tables/datatable/buttons.bootstrap.min.js',
-        'resources/css/app-assets/vendors/js/tables/datatable/pdfmake.min.js',
-        'resources/css/app-assets/vendors/js/tables/datatable/vfs_fonts.js'
+    'resources/css/app-assets/vendors/js/vendors.min.js'
     ])
     <!-- END: Critical JavaScript (Emergency Load) -->
-    
+
+    <!-- BEGIN: Vendor JavaScript -->
+    @vite([
+    'resources/css/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.tools.js',
+    'resources/css/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.defaults.js',
+    'resources/css/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.min.js',
+    'resources/css/app-assets/vendors/js/extensions/numeral/numeral.js',
+    'resources/css/app-assets/vendors/js/extensions/dragula.min.js',
+    'resources/css/app-assets/vendors/js/forms/validation/jqBootstrapValidation.js',
+    'resources/css/app-assets/vendors/js/forms/select/select2.full.min.js',
+    'resources/css/app-assets/vendors/js/extensions/toastr.min.js',
+    'resources/css/app-assets/vendors/js/tables/datatable/datatables.min.js',
+    'resources/css/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js',
+    'resources/css/app-assets/vendors/js/tables/datatable/dataTables.buttons.min.js',
+    'resources/css/app-assets/vendors/js/tables/datatable/buttons.html5.min.js',
+    'resources/css/app-assets/vendors/js/tables/datatable/buttons.print.min.js',
+    'resources/css/app-assets/vendors/js/tables/datatable/buttons.bootstrap.min.js',
+    'resources/css/app-assets/vendors/js/tables/datatable/pdfmake.min.js',
+    'resources/css/app-assets/vendors/js/tables/datatable/vfs_fonts.js'
+    ])
+    <!-- END: Vendor JavaScript -->
+
     <!-- BEGIN: Application JavaScript -->
     @vite([
-        'resources/js/js/core/app-menu.js',
-        'resources/js/js/core/app.js',
-        'resources/js/js/scripts/components.js',
-        'resources/js/js/scripts/footer.js',
-        'resources/js/js/scripts/forms/validation/form-validation.js',
-        'resources/js/js/scripts/forms/select/form-select2.js',
-        'resources/js/js/scripts/extensions/toastr.js'
+    'resources/js/js/core/app-menu.js',
+    'resources/js/js/core/app.js',
+    'resources/js/js/scripts/components.js',
+    'resources/js/js/scripts/footer.js',
+    'resources/js/js/scripts/forms/validation/form-validation.js',
+    'resources/js/js/scripts/forms/select/form-select2.js',
+    'resources/js/js/scripts/extensions/toastr.js'
     ])
     <!-- END: Application JavaScript -->
 
