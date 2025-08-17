@@ -11,8 +11,12 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
+        <!-- CSS -->
+        <link href="{{ asset('assets/app-assets/css/app.css') }}" rel="stylesheet">
+        
         <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <script src="{{ asset('assets/js/js/core/libraries/jquery.min.js') }}"></script>
+        <script src="{{ asset('assets/js/app.js') }}"></script>
 
         <!-- Styles -->
         @livewireStyles

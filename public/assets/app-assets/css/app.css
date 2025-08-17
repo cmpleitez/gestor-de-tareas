@@ -1,0 +1,45 @@
+/* Importar estilos de Bootstrap */
+@import 'bootstrap.css';
+
+/* Importar estilos de colores */
+@import 'colors.css';
+
+/* Importar estilos de componentes */
+@import 'components.css';
+
+/* Importar estilos personalizados de la aplicación */
+/* Aquí puedes agregar estilos específicos de tu aplicación */
+
+/* Variables CSS globales */
+:root {
+    --primary-color: #6366f1;
+    --secondary-color: #6b7280;
+    --success-color: #22c55e;
+    --danger-color: #ef4444;
+    --warning-color: #f59e0b;
+    --info-color: #3b82f6;
+}
+
+/* Estilos base de la aplicación */
+body {
+    font-family: 'Figtree', ui-sans-serif, system-ui, sans-serif;
+    line-height: 1.6;
+    color: #374151;
+}
+
+/* Estilos para formularios */
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+}
+
+/* Estilos para botones */
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: #4f46e5;
+    border-color: #4f46e5;
+}

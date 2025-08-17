@@ -2,11 +2,9 @@
 
 @section('css')
 <!-- SweetAlert2 CSS Local -->
-@vite([
-'resources/css/app-assets/vendors/css/extensions/sweetalert2.min.css',
-'resources/css/app-assets/css/bootstrap-extended.css',
-'resources/css/app-assets/css/pages/app-kanban.css'
-])
+<link href="{{ asset('assets/app-assets/vendors/css/extensions/sweetalert2.min.css') }}" rel="stylesheet">
+<link href="{{ asset('assets/app-assets/css/bootstrap-extended.css') }}" rel="stylesheet">
+<link href="{{ asset('assets/app-assets/css/pages/app-kanban.css') }}" rel="stylesheet">
 <style>
     .btn i {
         position: relative;
@@ -544,11 +542,9 @@
 
 @section('js')
 <!-- BEGIN: Critical JavaScript (Emergency Load) -->
-@vite([
-'resources/css/app-assets/vendors/js/extensions/sweetalert2.all.min.js',
-'resources/css/app-assets/vendors/js/jkanban/Sortable.min.js',
-'resources/css/app-assets/vendors/js/jkanban/jkanban.min.js'
-])
+<script src="{{ asset('assets/app-assets/vendors/js/extensions/sweetalert2.all.min.js') }}"></script>
+<script src="{{ asset('assets/app-assets/vendors/js/jkanban/Sortable.min.js') }}"></script>
+<script src="{{ asset('assets/app-assets/vendors/js/jkanban/jkanban.min.js') }}"></script>
 <!-- END: Critical JavaScript (Emergency Load) -->
 <script>
     //SELECCIONANDO EL ITEM DESTINATARIO

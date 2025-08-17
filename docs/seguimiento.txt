@@ -27,8 +27,8 @@
     10. El operador va cumpliendo sus tareas una a una y reportandolas como realizadas
 
 🟠 duis validos:
-023456783
 012345678
+023456783
 123456784
 234567890
 345678901
@@ -50,9 +50,7 @@
 
 ...🟢 prueba de despliegue en laravel forge
     he creado dos cuentas de pago una para laravel forge y otra para digital ocean
-        se ha creando una vm en laravel forge (forge.laravel.com)
-            Deploy keys use an SSH key to grant readonly or write access to a single repository. They are not protected by a passphrase and can be a security risk if your server is compromised. If you have a complex project or want more fine-grain control over permissions, consider using GitHub Apps instead.
-  
+        ...resolviendo el problema del despliegue de librerias de estilos y js
 
 🟠 rage agains the machine & limp bizkit & korn & alice in chains
     ...limp bizkit: im broke

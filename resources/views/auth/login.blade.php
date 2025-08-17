@@ -18,17 +18,15 @@
         rel="stylesheet">
 
     <!-- BEGIN: All CSS-->
-    @vite([
-    'resources/css/app-assets/vendors/css/vendors.min.css',
-    'resources/css/app-assets/vendors/css/extensions/toastr.css',
-    'resources/css/app-assets/css/bootstrap.css',
-    'resources/css/app-assets/css/bootstrap-extended.css',
-    'resources/css/app-assets/css/colors.css',
-    'resources/css/app-assets/css/components.css',
-    'resources/css/app-assets/css/core/menu/menu-types/vertical-menu.css',
-    'resources/css/app-assets/css/pages/authentication.min.css',
-    'resources/css/app-assets/css/plugins/extensions/toastr.css'
-    ])
+    <link href="{{ asset('assets/app-assets/vendors/css/vendors.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/app-assets/vendors/css/extensions/toastr.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/app-assets/css/bootstrap.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/app-assets/css/bootstrap-extended.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/app-assets/css/colors.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/app-assets/css/components.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/app-assets/css/core/menu/menu-types/vertical-menu.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/app-assets/css/pages/authentication.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/app-assets/css/plugins/extensions/toastr.css') }}" rel="stylesheet">
     <!-- END: All CSS-->
 
 </head>
@@ -129,25 +127,24 @@
     <!-- END: Content-->
 
 
+    <!-- jQuery y dependencias principales -->
+    <script src="{{ asset('assets/js/js/core/libraries/jquery.min.js') }}"></script>
+
     <!-- BEGIN: Critical JavaScript (Emergency Load) -->
-    @vite([
-    'resources/css/app-assets/vendors/js/vendors.min.js',
-    'resources/css/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.tools.js',
-    'resources/css/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.defaults.js',
-    'resources/css/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.min.js',
-    'resources/css/app-assets/vendors/js/extensions/toastr.min.js',
-    'resources/css/app-assets/vendors/js/ui/unison.min.js'
-    ])
+    <script src="{{ asset('assets/app-assets/vendors/js/vendors.min.js') }}"></script>
+    <script src="{{ asset('assets/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.tools.js') }}"></script>
+    <script src="{{ asset('assets/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.defaults.js') }}"></script>
+    <script src="{{ asset('assets/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.min.js') }}"></script>
+    <script src="{{ asset('assets/app-assets/vendors/js/extensions/toastr.min.js') }}"></script>
+    <script src="{{ asset('assets/app-assets/vendors/js/ui/unison.min.js') }}"></script>
     <!-- END: Critical JavaScript (Emergency Load) -->
 
     <!-- BEGIN: Application JavaScript -->
-    @vite([
-    'resources/js/js/core/app-menu.js',
-    'resources/js/js/core/app.js',
-    'resources/js/js/scripts/components.js',
-    'resources/js/js/scripts/footer.js',
-    'resources/js/js/scripts/extensions/toastr.js'
-    ])
+    <script src="{{ asset('assets/js/js/core/app-menu.js') }}"></script>
+    <script src="{{ asset('assets/js/js/core/app.js') }}"></script>
+    <script src="{{ asset('assets/js/js/scripts/components.js') }}"></script>
+    <script src="{{ asset('assets/js/js/scripts/footer.js') }}"></script>
+    <script src="{{ asset('assets/js/js/scripts/extensions/toastr.js') }}"></script>
     <!-- END: Application JavaScript -->
 
     @if ($errors->has('email') || $errors->has('password'))

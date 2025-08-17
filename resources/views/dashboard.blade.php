@@ -20,23 +20,21 @@
         rel="stylesheet">
 
     <!-- BEGIN: Vendor CSS-->
-    @vite([
-    'resources/css/app-assets/vendors/css/vendors.min.css',
-    'resources/css/app-assets/vendors/css/charts/apexcharts.css',
-    'resources/css/app-assets/vendors/css/animate/animate.css',
-    'resources/css/app-assets/vendors/css/extensions/dragula.min.css',
-    'resources/css/app-assets/vendors/css/forms/select/select2.min.css',
-    'resources/css/app-assets/vendors/css/extensions/toastr.css',
-    'resources/css/app-assets/vendors/css/tables/datatable/datatables.min.css',
-    'resources/css/app-assets/css/bootstrap.css',
-    'resources/css/app-assets/css/bootstrap-extended.css',
-    'resources/css/app-assets/css/colors.css',
-    'resources/css/app-assets/css/components.css',
-    'resources/css/app-assets/css/core/menu/menu-types/vertical-menu.css',
-    'resources/css/app-assets/css/pages/dashboard-analytics.css',
-    'resources/css/app-assets/css/plugins/forms/validation/form-validation.css',
-    'resources/css/app-assets/css/plugins/extensions/toastr.css'
-    ])
+    <link href="{{ asset('assets/app-assets/vendors/css/vendors.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/app-assets/vendors/css/charts/apexcharts.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/app-assets/vendors/css/animate/animate.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/app-assets/vendors/css/extensions/dragula.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/app-assets/vendors/css/forms/select/select2.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/app-assets/vendors/css/extensions/toastr.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/app-assets/vendors/css/tables/datatable/datatables.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/app-assets/css/bootstrap.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/app-assets/css/bootstrap-extended.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/app-assets/css/colors.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/app-assets/css/components.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/app-assets/css/core/menu/menu-types/vertical-menu.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/app-assets/css/pages/dashboard-analytics.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/app-assets/css/plugins/forms/validation/form-validation.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/app-assets/css/plugins/extensions/toastr.css') }}" rel="stylesheet">
     <!-- END: All CSS-->
 
     <style>
@@ -836,43 +834,40 @@
     </footer>
     <!-- END: Footer-->
 
+    <!-- jQuery y dependencias principales -->
+    <script src="{{ asset('assets/js/js/core/libraries/jquery.min.js') }}"></script>
+
     <!-- BEGIN: Critical JavaScript (Emergency Load) -->
-    @vite([
-    'resources/css/app-assets/vendors/js/vendors.min.js'
-    ])
+    <script src="{{ asset('assets/app-assets/vendors/js/vendors.min.js') }}"></script>
     <!-- END: Critical JavaScript (Emergency Load) -->
 
     <!-- BEGIN: Vendor JavaScript -->
-    @vite([
-    'resources/css/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.tools.js',
-    'resources/css/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.defaults.js',
-    'resources/css/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.min.js',
-    'resources/css/app-assets/vendors/js/extensions/numeral/numeral.js',
-    'resources/css/app-assets/vendors/js/extensions/dragula.min.js',
-    'resources/css/app-assets/vendors/js/forms/validation/jqBootstrapValidation.js',
-    'resources/css/app-assets/vendors/js/forms/select/select2.full.min.js',
-    'resources/css/app-assets/vendors/js/extensions/toastr.min.js',
-    'resources/css/app-assets/vendors/js/tables/datatable/datatables.min.js',
-    'resources/css/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js',
-    'resources/css/app-assets/vendors/js/tables/datatable/dataTables.buttons.min.js',
-    'resources/css/app-assets/vendors/js/tables/datatable/buttons.html5.min.js',
-    'resources/css/app-assets/vendors/js/tables/datatable/buttons.print.min.js',
-    'resources/css/app-assets/vendors/js/tables/datatable/buttons.bootstrap.min.js',
-    'resources/css/app-assets/vendors/js/tables/datatable/pdfmake.min.js',
-    'resources/css/app-assets/vendors/js/tables/datatable/vfs_fonts.js'
-    ])
+    <script src="{{ asset('assets/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.tools.js') }}"></script>
+    <script src="{{ asset('assets/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.defaults.js') }}"></script>
+    <script src="{{ asset('assets/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.min.js') }}"></script>
+    <script src="{{ asset('assets/app-assets/vendors/js/extensions/numeral/numeral.js') }}"></script>
+    <script src="{{ asset('assets/app-assets/vendors/js/extensions/dragula.min.js') }}"></script>
+    <script src="{{ asset('assets/app-assets/vendors/js/forms/validation/jqBootstrapValidation.js') }}"></script>
+    <script src="{{ asset('assets/app-assets/vendors/js/forms/select/select2.full.min.js') }}"></script>
+    <script src="{{ asset('assets/app-assets/vendors/js/extensions/toastr.min.js') }}"></script>
+    <script src="{{ asset('assets/app-assets/vendors/js/tables/datatable/datatables.min.js') }}"></script>
+    <script src="{{ asset('assets/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('assets/app-assets/vendors/js/tables/datatable/dataTables.buttons.min.js') }}"></script>
+    <script src="{{ asset('assets/app-assets/vendors/js/tables/datatable/buttons.html5.min.js') }}"></script>
+    <script src="{{ asset('assets/app-assets/vendors/js/tables/datatable/buttons.print.min.js') }}"></script>
+    <script src="{{ asset('assets/app-assets/vendors/js/tables/datatable/buttons.bootstrap.min.js') }}"></script>
+    <script src="{{ asset('assets/app-assets/vendors/js/tables/datatable/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('assets/app-assets/vendors/js/tables/datatable/vfs_fonts.js') }}"></script>
     <!-- END: Vendor JavaScript -->
 
     <!-- BEGIN: Application JavaScript -->
-    @vite([
-    'resources/js/js/core/app-menu.js',
-    'resources/js/js/core/app.js',
-    'resources/js/js/scripts/components.js',
-    'resources/js/js/scripts/footer.js',
-    'resources/js/js/scripts/forms/validation/form-validation.js',
-    'resources/js/js/scripts/forms/select/form-select2.js',
-    'resources/js/js/scripts/extensions/toastr.js'
-    ])
+    <script src="{{ asset('assets/js/js/core/app-menu.js') }}"></script>
+    <script src="{{ asset('assets/js/js/core/app.js') }}"></script>
+    <script src="{{ asset('assets/js/js/scripts/components.js') }}"></script>
+    <script src="{{ asset('assets/js/js/scripts/footer.js') }}"></script>
+    <script src="{{ asset('assets/js/js/scripts/forms/validation/form-validation.js') }}"></script>
+    <script src="{{ asset('assets/js/js/scripts/forms/select/form-select2.js') }}"></script>
+    <script src="{{ asset('assets/js/js/scripts/extensions/toastr.js') }}"></script>
     <!-- END: Application JavaScript -->
 
     <!-- ... otros scripts ... -->
@@ -902,7 +897,7 @@
             if ($.fn.DataTable) {
                 var table = $('.zero-configuration').DataTable({
                     "language": {
-                        "url": "/app-assets/Spanish.json"
+                        "url": "/assets/app-assets/Spanish.json"
                     },
                     "responsive": true,
                     "autoWidth": false,
