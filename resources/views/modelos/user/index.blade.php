@@ -1,180 +1,180 @@
 @extends('dashboard')
 
 @section('css')
-    <!-- BEGIN: Vendor CSS-->
-    @vite([
-        'resources/css/app-assets/vendors/css/tables/datatable/datatables.min.css'
-    ])
-    <!-- END: Vendor CSS-->
+<!-- BEGIN: Vendor CSS-->
+@vite([
+'resources/css/app-assets/vendors/css/tables/datatable/datatables.min.css'
+])
+<!-- END: Vendor CSS-->
 @stop
 
 @section('contenedor')
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
 
-                    <div class="col-md-12 d-flex justify-content-between" style="padding: 0;">
-                        <div class="col-md-11" style="padding: 0;">
-                            <h4 class="card-title">USUARIOS DEL SISTEMA</h4>
-                            <p class="card-text">Las personas autorizadas para operar el sistema desempeñando roles
-                                específicos</p>
-                        </div>
+                <div class="col-md-12 d-flex justify-content-between" style="padding: 0;">
+                    <div class="col-md-11" style="padding: 0;">
+                        <h4 class="card-title">USUARIOS DEL SISTEMA</h4>
+                        <p class="card-text">Las personas autorizadas para operar el sistema desempeñando roles
+                            específicos</p>
                     </div>
-
                 </div>
-                <div class="card-content">
-                    <div class="card-body card-dashboard">
-                        <div class="table-responsive mt-1">
-                            <table id="datatable" class="table zero-configuration table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Area</th>
-                                        <th>Oficina</th>
-                                        <th>Equipo</th>
-                                        <th>DUI</th>
-                                        <th>Usuario</th>
-                                        <th>Rol</th>
-                                        <th>correo</th>
-                                        <th class="text-center">Creado</th>
-                                        <th class="text-center">Actualizado</th>
-                                        @can('autorizar')
-                                            <th class="text-center">Estado</th>
-                                        @endcan
-                                        <th class="text-center">Tablero de control</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($users as $user)
-                                        <tr>
-                                            {{-- CAMPOS --}}
-                                            <td>{{ $user->area->area }}</td>
-                                            <td>{{ $user->area->oficina->oficina }}</td>
-                                            <td>{{ $user->equipos->pluck('equipo')->first() }}</td>
-                                            <td>{{ $user->dui }}</td>
-                                            <td>{{ $user->name }}</td>
-                                            <td>
-                                                <span class="badge badge-pill badge-light-warning" style="color: rgb(170, 95, 34) !important;">
-                                                    {{ $user->main_role ?? $user->roles->pluck('name')->first() }}
-                                                </span>
-                                            </td>
-                                            <td>{{ $user->email }}</td>
-                                            <td class="text-center">{{ $user->created_at->format('d/m/Y') }}</td>
-                                            <td class="text-center">{{ $user->updated_at->format('d/m/Y') }}</td>
-                                            {{-- ACTIVAR --}}
+
+            </div>
+            <div class="card-content">
+                <div class="card-body card-dashboard">
+                    <div class="table-responsive mt-1">
+                        <table id="datatable" class="table zero-configuration table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Area</th>
+                                    <th>Oficina</th>
+                                    <th>Equipo</th>
+                                    <th>DUI</th>
+                                    <th>Usuario</th>
+                                    <th>Rol</th>
+                                    <th>correo</th>
+                                    <th class="text-center">Creado</th>
+                                    <th class="text-center">Actualizado</th>
+                                    @can('autorizar')
+                                    <th class="text-center">Estado</th>
+                                    @endcan
+                                    <th class="text-center">Tablero de control</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($users as $user)
+                                <tr>
+                                    {{-- CAMPOS --}}
+                                    <td>{{ $user->area->area }}</td>
+                                    <td>{{ $user->area->oficina->oficina }}</td>
+                                    <td>{{ $user->equipos->pluck('equipo')->first() }}</td>
+                                    <td>{{ $user->dui }}</td>
+                                    <td>{{ $user->name }}</td>
+                                    <td>
+                                        <span class="badge badge-pill badge-light-warning"
+                                            style="color: rgb(170, 95, 34) !important;">
+                                            {{ $user->main_role ?? $user->roles->pluck('name')->first() }}
+                                        </span>
+                                    </td>
+                                    <td>{{ $user->email }}</td>
+                                    <td class="text-center">{{ $user->created_at->format('d/m/Y') }}</td>
+                                    <td class="text-center">{{ $user->updated_at->format('d/m/Y') }}</td>
+                                    {{-- ACTIVAR --}}
+                                    @can('autorizar')
+                                    <td class="text-center">
+                                        <form action="{{ route('user.activate', $user->id) }}" method="POST"
+                                            style="display: inline;">
+                                            @csrf
+                                            <div class="custom-control custom-switch"
+                                                style="transform: scale(0.6); margin: 0;" data-toggle="tooltip"
+                                                data-placement="top" data-animation="false" data-trigger="hover"
+                                                data-html="true"
+                                                data-title="<i class='bx bxs-error-circle'></i> {{ $user->activo ? 'Desactivar' : 'Activar' }} {{ $user->name }}">
+                                                <input id="activate_{{ $user->id }}" type="checkbox"
+                                                    class="custom-control-input" @if ($user->activo) checked @endif
+                                                onchange="this.form.submit();">
+                                                <label class="custom-control-label"
+                                                    for="activate_{{ $user->id }}"></label>
+                                            </div>
+                                        </form>
+                                    </td>
+                                    @endcan
+                                    {{-- TABLERO DE CONTROL --}}
+                                    @if ($user->activo)
+                                    <td class="text-center">
+                                        <div class="btn-group" role="group" aria-label="label">
                                             @can('autorizar')
-                                                <td class="text-center">
-                                                    <form action="{{ route('user.activate', $user->id) }}" method="POST"
-                                                        style="display: inline;">
-                                                        @csrf
-                                                        <div class="custom-control custom-switch"
-                                                            style="transform: scale(0.6); margin: 0;" data-toggle="tooltip"
-                                                            data-placement="top" data-animation="false" data-trigger="hover"
-                                                            data-html="true"
-                                                            data-title="<i class='bx bxs-error-circle'></i> {{ $user->activo ? 'Desactivar' : 'Activar' }} {{ $user->name }}">
-                                                            <input id="activate_{{ $user->id }}" type="checkbox"
-                                                                class="custom-control-input"
-                                                                @if ($user->activo) checked @endif
-                                                                onchange="this.form.submit();">
-                                                            <label class="custom-control-label"
-                                                                for="activate_{{ $user->id }}"></label>
-                                                        </div>
-                                                    </form>
-                                                </td>
+                                            {{-- Actualizar habilidades --}}
+                                            <a href="{{ route('user.solicitudes-edit', $user->id) }}" role="button"
+                                                data-toggle="tooltip" data-placement="top" data-animation="false"
+                                                data-trigger="hover" data-html="true"
+                                                data-title="<i class='bx bxs-group'></i> Actualizar habilidades de {{ $user->name }}"
+                                                class="button_show">
+                                                <i class="bx bx-slider-alt"></i>
+                                            </a>
+                                            {{-- Asignar a equipos --}}
+                                            <a href="{{ route('user.equipos-edit', $user->id) }}" role="button"
+                                                data-toggle="tooltip" data-placement="top" data-animation="false"
+                                                data-trigger="hover" data-html="true"
+                                                data-title="<i class='bx bxs-group'></i> Equipos de {{ $user->name }}"
+                                                class="button_show">
+                                                <i class="bx bxs-group"></i>
+                                            </a>
+                                            {{-- Asignar roles --}}
+                                            <a href="{{ route('user.roles-edit', $user->id) }}" role="button"
+                                                data-toggle="tooltip" data-placement="top" data-animation="false"
+                                                data-trigger="hover" data-html="true"
+                                                data-title="<i class='bx bxs-error-circle'></i> Roles de {{ $user->name }}"
+                                                class="button_keys">
+                                                <i class="bx bxs-key"></i>
+                                            </a>
                                             @endcan
-                                            {{-- TABLERO DE CONTROL --}}
-                                            @if ($user->activo)
-                                                <td class="text-center">
-                                                    <div class="btn-group" role="group" aria-label="label">
-                                                        @can('autorizar')
-                                                            {{-- Actualizar habilidades --}}
-                                                            <a href="{{ route('user.solicitudes-edit', $user->id) }}"
-                                                                role="button" data-toggle="tooltip" data-placement="top"
-                                                                data-animation="false" data-trigger="hover" data-html="true"
-                                                                data-title="<i class='bx bxs-group'></i> Actualizar habilidades de {{ $user->name }}"
-                                                                class="button_show">
-                                                                <i class="bx bx-slider-alt"></i>
-                                                            </a>
-                                                            {{-- Asignar a equipos --}}
-                                                            <a href="{{ route('user.equipos-edit', $user->id) }}"
-                                                                role="button" data-toggle="tooltip" data-placement="top"
-                                                                data-animation="false" data-trigger="hover" data-html="true"
-                                                                data-title="<i class='bx bxs-group'></i> Equipos de {{ $user->name }}"
-                                                                class="button_show">
-                                                                <i class="bx bxs-group"></i>
-                                                            </a>
-                                                            {{-- Asignar roles --}}
-                                                            <a href="{{ route('user.roles-edit', $user->id) }}" role="button"
-                                                                data-toggle="tooltip" data-placement="top"
-                                                                data-animation="false" data-trigger="hover" data-html="true"
-                                                                data-title="<i class='bx bxs-error-circle'></i> Roles de {{ $user->name }}"
-                                                                class="button_keys">
-                                                                <i class="bx bxs-key"></i>
-                                                            </a>
-                                                        @endcan
-                                                        {{-- Editar --}}
-                                                        @can('editar')
-                                                            <a href="{{ route('user.edit', $user->id) }}" role="button"
-                                                                data-toggle="tooltip" data-placement="top"
-                                                                data-animation="false" data-trigger="hover" data-html="true"
-                                                                data-title="<i class='bx bxs-error-circle'></i> Editar datos de {{ $user->name }}"
-                                                                class="button_edit align-center">
-                                                                <i class="bx bxs-edit-alt"></i>
-                                                            </a>
-                                                        @endcan
-                                                        {{-- Eliminar --}}
-                                                        @can('eliminar')
-                                                            <a href="{{ route('user.destroy', $user->id) }}" role="button"
-                                                                data-toggle="tooltip" data-placement="top"
-                                                                data-animation="false" data-trigger="hover" data-html="true"
-                                                                data-title="<i class='bx bxs-eraser'></i> Eliminar {{ $user->name }}"
-                                                                class="button_delete align-center">
-                                                                <i class="bx bxs-eraser"></i>
-                                                            </a>
-                                                        @endcan
-                                                    </div>
-                                                </td>
-                                            @endif
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <th>Area</th>
-                                        <th>Oficina</th>
-                                        <th>Equipo</th>
-                                        <th>DUI</th>
-                                        <th>Usuario</th>
-                                        <th>Rol</th>
-                                        <th>correo</th>
-                                        <th class="text-center">Creado</th>
-                                        <th class="text-center">Actualizado</th>
-                                        @can('autorizar')
-                                            <th class="text-center">Estado</th>
-                                        @endcan
-                                        <th class="text-center">Tablero de control</th>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
+                                            {{-- Editar --}}
+                                            @can('editar')
+                                            <a href="{{ route('user.edit', $user->id) }}" role="button"
+                                                data-toggle="tooltip" data-placement="top" data-animation="false"
+                                                data-trigger="hover" data-html="true"
+                                                data-title="<i class='bx bxs-error-circle'></i> Editar datos de {{ $user->name }}"
+                                                class="button_edit align-center">
+                                                <i class="bx bxs-edit-alt"></i>
+                                            </a>
+                                            @endcan
+                                            {{-- Eliminar --}}
+                                            @can('eliminar')
+                                            <a href="{{ route('user.destroy', $user->id) }}" role="button"
+                                                data-toggle="tooltip" data-placement="top" data-animation="false"
+                                                data-trigger="hover" data-html="true"
+                                                data-title="<i class='bx bxs-eraser'></i> Eliminar {{ $user->name }}"
+                                                class="button_delete align-center">
+                                                <i class="bx bxs-eraser"></i>
+                                            </a>
+                                            @endcan
+                                        </div>
+                                    </td>
+                                    @endif
+                                </tr>
+                                @endforeach
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>Area</th>
+                                    <th>Oficina</th>
+                                    <th>Equipo</th>
+                                    <th>DUI</th>
+                                    <th>Usuario</th>
+                                    <th>Rol</th>
+                                    <th>correo</th>
+                                    <th class="text-center">Creado</th>
+                                    <th class="text-center">Actualizado</th>
+                                    @can('autorizar')
+                                    <th class="text-center">Estado</th>
+                                    @endcan
+                                    <th class="text-center">Tablero de control</th>
+                                </tr>
+                            </tfoot>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 @stop
 
 @section('js')
-    <!-- BEGIN: Page Vendor JS-->
-    @vite([
-        'resources/js/vendors/js/tables/datatable/datatables.min.js',
-        'resources/js/vendors/js/tables/datatable/dataTables.bootstrap4.min.js',
-        'resources/js/vendors/js/tables/datatable/dataTables.buttons.min.js',
-        'resources/js/vendors/js/tables/datatable/buttons.html5.min.js',
-        'resources/js/vendors/js/tables/datatable/buttons.print.min.js',
-        'resources/js/vendors/js/tables/datatable/buttons.bootstrap.min.js',
-        'resources/js/vendors/js/tables/datatable/pdfmake.min.js',
-        'resources/js/vendors/js/tables/datatable/vfs_fonts.js'
-    ])
-    <!-- END: Page Vendor JS-->
+<!-- BEGIN: Page Vendor JS-->
+@vite([
+'resources/css/app-assets/vendors/js/tables/datatable/datatables.min.js',
+'resources/css/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js',
+'resources/css/app-assets/vendors/js/tables/datatable/dataTables.buttons.min.js',
+'resources/css/app-assets/vendors/js/tables/datatable/buttons.html5.min.js',
+'resources/css/app-assets/vendors/js/tables/datatable/buttons.print.min.js',
+'resources/css/app-assets/vendors/js/tables/datatable/buttons.bootstrap.min.js',
+'resources/css/app-assets/vendors/js/tables/datatable/pdfmake.min.js',
+'resources/css/app-assets/vendors/js/tables/datatable/vfs_fonts.js'
+])
+<!-- END: Page Vendor JS-->
 @stop

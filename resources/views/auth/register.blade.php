@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html class="loading" lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-textdirection="ltr">
 <!-- BEGIN: Head-->
+
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -13,7 +14,8 @@
 
     <link rel="apple-touch-icon" href="{{ asset('resources/css/app-assets/images/icons/favicon-32x32.png') }}">
 
-    <link rel="shortcut icon" type="image/svg+xml" href="{{ asset('resources/css/app-assets/images/icons/favicon-32x32.png') }}">
+    <link rel="shortcut icon" type="image/svg+xml"
+        href="{{ asset('resources/css/app-assets/images/icons/favicon-32x32.png') }}">
 
 
     <link href="https://fonts.googleapis.com/css?family=Rubik:300,400,500,600%7CIBM+Plex+Sans:300,400,500,600,700"
@@ -21,20 +23,20 @@
 
     <!-- BEGIN: All CSS-->
     @vite([
-        'resources/css/app-assets/vendors/css/vendors.min.css',
-        'resources/css/app-assets/vendors/css/charts/apexcharts.css',
-        'resources/css/app-assets/vendors/css/extensions/dragula.min.css',
-        'resources/css/app-assets/vendors/css/forms/select/select2.min.css',
-        'resources/css/app-assets/vendors/css/extensions/toastr.css',
-        'resources/css/app-assets/vendors/css/tables/datatable/datatables.min.css',
-        'resources/css/app-assets/css/bootstrap.css',
-        'resources/css/app-assets/css/bootstrap-extended.css',
-        'resources/css/app-assets/css/colors.css',
-        'resources/css/app-assets/css/components.css',
-        'resources/css/app-assets/css/core/menu/menu-types/vertical-menu.css',
-        'resources/css/app-assets/css/pages/dashboard-analytics.css',
-        'resources/css/app-assets/css/plugins/forms/validation/form-validation.css',
-        'resources/css/app-assets/css/plugins/extensions/toastr.css'
+    'resources/css/app-assets/vendors/css/vendors.min.css',
+    'resources/css/app-assets/vendors/css/charts/apexcharts.css',
+    'resources/css/app-assets/vendors/css/extensions/dragula.min.css',
+    'resources/css/app-assets/vendors/css/forms/select/select2.min.css',
+    'resources/css/app-assets/vendors/css/extensions/toastr.css',
+    'resources/css/app-assets/vendors/css/tables/datatable/datatables.min.css',
+    'resources/css/app-assets/css/bootstrap.css',
+    'resources/css/app-assets/css/bootstrap-extended.css',
+    'resources/css/app-assets/css/colors.css',
+    'resources/css/app-assets/css/components.css',
+    'resources/css/app-assets/css/core/menu/menu-types/vertical-menu.css',
+    'resources/css/app-assets/css/pages/dashboard-analytics.css',
+    'resources/css/app-assets/css/plugins/forms/validation/form-validation.css',
+    'resources/css/app-assets/css/plugins/extensions/toastr.css'
     ])
     <!-- END: All CSS-->
 
@@ -209,12 +211,14 @@
     @show
 </head>
 <!-- END: Head-->
+
 <body class="vertical-layout boxicon-layout no-card-shadow footer-static">
 
     <!-- LOGO -->
     <div class="row justify-content-center mb-3 mt-3">
         <div class="col-auto">
-            <img src="{{ asset('resources/css/app-assets/images/logo/logo.png') }}" alt="Logo" style="height: 100px; width: auto; object-fit: contain;">
+            <img src="{{ asset('resources/css/app-assets/images/logo/logo.png') }}" alt="Logo"
+                style="height: 100px; width: auto; object-fit: contain;">
         </div>
     </div>
     <!-- FORMULARIO -->
@@ -237,9 +241,10 @@
                         </div>
                     </div>
                 </div>
-                <form class="form-horizontal" action="{{ route('register') }}" method="POST" enctype="multipart/form-data" novalidate> {{-- Contenido --}}
+                <form class="form-horizontal" action="{{ route('register') }}" method="POST"
+                    enctype="multipart/form-data" novalidate> {{-- Contenido --}}
                     @csrf
-                    <div class="card-content"> 
+                    <div class="card-content">
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-sm-12"> {{-- Nombre --}}
@@ -251,11 +256,13 @@
                                                 data-validation-required-message="El nombre es requerido"
                                                 data-validation-containsnumber-regex="^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$"
                                                 data-validation-containsnumber-message="El nombre debe contener solo letras (incluyendo tildes), no se permiten dobles espacios entre palabras, ni espacios al principio o final de las palabras."
-                                                placeholder="Nombre del nuevo usuario" value="{{ old('name') }}" required>
+                                                placeholder="Nombre del nuevo usuario" value="{{ old('name') }}"
+                                                required>
                                             @error('name')
-                                                <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
-                                                    {{ $errors->first('name') }}
-                                                </div>
+                                            <div class="col-sm-12 badge bg-danger text-wrap"
+                                                style="margin-top: 0.2rem;">
+                                                {{ $errors->first('name') }}
+                                            </div>
                                             @enderror
                                         </div>
                                     </div>
@@ -269,46 +276,49 @@
                                                 data-validation-required-message="El DUI es requerido"
                                                 data-validation-regex-regex="^[0-9]{9}$"
                                                 data-validation-regex-message="El DUI debe contener exactamente 9 dígitos numéricos, sin guión"
-                                                placeholder="Ingrese los 9 dígitos del DUI sin guión" 
-                                                value="{{ old('dui') }}"
-                                                required>
+                                                placeholder="Ingrese los 9 dígitos del DUI sin guión"
+                                                value="{{ old('dui') }}" required>
                                             @error('dui')
-                                                <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
-                                                    {{ $errors->first('dui') }}
-                                                </div>
+                                            <div class="col-sm-12 badge bg-danger text-wrap"
+                                                style="margin-top: 0.2rem;">
+                                                {{ $errors->first('dui') }}
+                                            </div>
                                             @enderror
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-sm-12"> {{-- Fotografia --}}
                                     <div class="form-group">
-                                        <label>Fotografia del Operador <small class="text-muted">(Máximo 512KB, solo JPEG/PNG)</small></label>
-                                        <input type="file" name="profile_photo_path" class="form-control" style="padding-bottom: 35px;" 
-                                               accept="image/jpeg,image/jpg,image/png" 
-                                               onchange="validateFileSize(this, 0.5)">
-                                        <small class="form-text text-muted">Formatos permitidos: JPEG, JPG, PNG. Tamaño máximo: 512KB</small>
+                                        <label>Fotografia del Operador <small class="text-muted">(Máximo 512KB, solo
+                                                JPEG/PNG)</small></label>
+                                        <input type="file" name="profile_photo_path" class="form-control"
+                                            style="padding-bottom: 35px;" accept="image/jpeg,image/jpg,image/png"
+                                            onchange="validateFileSize(this, 0.5)">
+                                        <small class="form-text text-muted">Formatos permitidos: JPEG, JPG, PNG. Tamaño
+                                            máximo: 512KB</small>
                                     </div>
                                     @error('profile_photo_path')
-                                        <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
-                                            {{ $errors->first('profile_photo_path') }}
-                                        </div>
+                                    <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                        {{ $errors->first('profile_photo_path') }}
+                                    </div>
                                     @enderror
                                 </div>
                                 <div class="col-sm-12"> {{-- Area --}}
                                     <div class="form-group">
                                         <label for="area_id">Area</label>
-                                        <select class="select2 form-control" id="area_id" name="area_id" 
-                                        data-validation-required-message="La area es requerida" required>
+                                        <select class="select2 form-control" id="area_id" name="area_id"
+                                            data-validation-required-message="La area es requerida" required>
                                             @foreach ($areas as $area)
-                                                <option value="{{ $area->id }}" {{ old('area_id') == $area->id ? 'selected' : '' }}>
-                                                    {{ $area->area }}
-                                                </option>
+                                            <option value="{{ $area->id }}" {{ old('area_id')==$area->id ? 'selected' :
+                                                '' }}>
+                                                {{ $area->area }}
+                                            </option>
                                             @endforeach
                                         </select>
                                         @error('area_id')
-                                            <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
-                                                {{ $errors->first('area_id') }}
-                                            </div>
+                                        <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                            {{ $errors->first('area_id') }}
+                                        </div>
                                         @enderror
                                     </div>
                                 </div>
@@ -322,9 +332,9 @@
                                                 value="{{ old('email') }}" required>
                                         </div>
                                         @error('email')
-                                            <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
-                                                {{ $errors->first('email') }}
-                                            </div>
+                                        <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                            {{ $errors->first('email') }}
+                                        </div>
                                         @enderror
                                     </div>
                                 </div>
@@ -341,9 +351,9 @@
                                                 value="{{ old('password') }}" required>
                                         </div>
                                         @error('password')
-                                            <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
-                                                {{ $errors->first('password') }}
-                                            </div>
+                                        <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                            {{ $errors->first('password') }}
+                                        </div>
                                         @enderror
                                     </div>
                                 </div>
@@ -358,9 +368,9 @@
                                                 value="{{ old('password_confirmation') }}" required>
                                         </div>
                                         @error('password_confirmation')
-                                            <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
-                                                {{ $errors->first('password_confirmation') }}
-                                            </div>
+                                        <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                            {{ $errors->first('password_confirmation') }}
+                                        </div>
                                         @enderror
                                     </div>
                                 </div>
@@ -391,17 +401,17 @@
 
     <!-- BEGIN: All JavaScript-->
     @vite([
-        'resources/js/vendors/js/vendors.min.js',
-        'resources/js/fonts/LivIconsEvo/js/LivIconsEvo.tools.js',
-        'resources/js/fonts/LivIconsEvo/js/LivIconsEvo.defaults.js',
-        'resources/js/fonts/LivIconsEvo/js/LivIconsEvo.min.js',
-        'resources/js/vendors/js/forms/validation/jqBootstrapValidation.js',
-        'resources/js/vendors/js/forms/select/select2.full.min.js',
-        'resources/js/scripts/configs/vertical-menu-light.js',
-        'resources/js/core/app-menu.js',
-        'resources/js/core/app.js',
-        'resources/js/scripts/components.js',
-        'resources/js/scripts/footer.js'
+    'resources/css/app-assets/vendors/js/vendors.min.js',
+    'resources/css/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.tools.js',
+    'resources/css/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.defaults.js',
+    'resources/css/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.min.js',
+    'resources/css/app-assets/vendors/js/forms/validation/jqBootstrapValidation.js',
+    'resources/css/app-assets/vendors/js/forms/select/select2.full.min.js',
+    'resources/js/js/scripts/configs/vertical-menu-light.js',
+    'resources/js/js/core/app-menu.js',
+    'resources/js/js/core/app.js',
+    'resources/js/js/scripts/components.js',
+    'resources/js/js/scripts/footer.js'
     ])
     <!-- END: All JavaScript-->
 
@@ -452,7 +462,5 @@
     <!-- END: Page JS-->
 </body>
 <!-- END: Body-->
+
 </html>
-
-
-
