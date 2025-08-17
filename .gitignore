@@ -4,6 +4,7 @@ node_modules/
 # Directorios de compilación/distribución
 /build
 /dist
+public/build/
 
 # Archivos de log
 *.log
@@ -13,8 +14,8 @@ yarn-error.log*
 # Archivos de entorno
 .env
 
-# Directorio de dependencias de Composer (si aplica)
-/vendor
+# Directorio de dependencias de Composer
+vendor/
 
 # Archivos temporales y del sistema operativo
 *.tmp
@@ -60,3 +61,14 @@ Thumbs.db
 
 # Directorio de documentación
 docs/
+
+# Archivos de Laravel
+storage/logs/
+storage/framework/cache/
+storage/framework/sessions/
+storage/framework/views/
+bootstrap/cache/
+
+# Archivos de Vite
+public/hot
+public/storage
