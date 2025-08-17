@@ -39,6 +39,7 @@ export default defineConfig({
                 'resources/css/app-assets/vendors/js/forms/validation/jqBootstrapValidation.js',
                 'resources/css/app-assets/vendors/js/forms/select/select2.full.min.js',
                 'resources/css/app-assets/vendors/js/extensions/toastr.min.js',
+                'resources/css/app-assets/vendors/js/ui/unison.min.js',
                 'resources/css/app-assets/vendors/js/tables/datatable/datatables.min.js',
                 'resources/css/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js',
                 'resources/css/app-assets/vendors/js/tables/datatable/dataTables.buttons.min.js',
