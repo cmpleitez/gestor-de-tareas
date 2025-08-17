@@ -3,9 +3,9 @@
 @section('css')
 <!-- SweetAlert2 CSS Local -->
 @vite([
-    'resources/css/app-assets/vendors/css/extensions/sweetalert2.min.css',
-    'resources/css/app-assets/css/bootstrap-extended.css',
-    'resources/css/app-assets/css/pages/app-kanban.css'
+'resources/css/app-assets/vendors/css/extensions/sweetalert2.min.css',
+'resources/css/app-assets/css/bootstrap-extended.css',
+'resources/css/app-assets/css/pages/app-kanban.css'
 ])
 <style>
     .btn i {
@@ -544,9 +544,11 @@
 
 @section('js')
 <!-- BEGIN: Critical JavaScript (Emergency Load) -->
-<script src="{{ asset('resources/css/app-assets/vendors/js/extensions/sweetalert2.all.min.js') }}"></script>
-<script src="{{ asset('resources/css/app-assets/vendors/js/jkanban/Sortable.min.js') }}"></script>
-<script src="{{ asset('resources/css/app-assets/vendors/js/jkanban/jkanban.min.js') }}"></script>
+@vite([
+'resources/css/app-assets/vendors/js/extensions/sweetalert2.all.min.js',
+'resources/css/app-assets/vendors/js/jkanban/Sortable.min.js',
+'resources/css/app-assets/vendors/js/jkanban/jkanban.min.js'
+])
 <!-- END: Critical JavaScript (Emergency Load) -->
 <script>
     //SELECCIONANDO EL ITEM DESTINATARIO

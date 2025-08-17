@@ -831,23 +831,25 @@
     <!-- END: Footer-->
 
     <!-- BEGIN: Critical JavaScript (Emergency Load) -->
-    <script src="{{ asset('resources/css/app-assets/vendors/js/vendors.min.js') }}"></script>
-    <script src="{{ asset('resources/css/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.tools.js') }}"></script>
-    <script src="{{ asset('resources/css/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.defaults.js') }}"></script>
-    <script src="{{ asset('resources/css/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.min.js') }}"></script>
-    <script src="{{ asset('resources/css/app-assets/vendors/js/extensions/numeral/numeral.js') }}"></script>
-    <script src="{{ asset('resources/css/app-assets/vendors/js/extensions/dragula.min.js') }}"></script>
-    <script src="{{ asset('resources/css/app-assets/vendors/js/forms/validation/jqBootstrapValidation.js') }}"></script>
-    <script src="{{ asset('resources/css/app-assets/vendors/js/forms/select/select2.full.min.js') }}"></script>
-    <script src="{{ asset('resources/css/app-assets/vendors/js/extensions/toastr.min.js') }}"></script>
-    <script src="{{ asset('resources/css/app-assets/vendors/js/tables/datatable/datatables.min.js') }}"></script>
-    <script src="{{ asset('resources/css/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}"></script>
-    <script src="{{ asset('resources/css/app-assets/vendors/js/tables/datatable/dataTables.buttons.min.js') }}"></script>
-    <script src="{{ asset('resources/css/app-assets/vendors/js/tables/datatable/buttons.html5.min.js') }}"></script>
-    <script src="{{ asset('resources/css/app-assets/vendors/js/tables/datatable/buttons.print.min.js') }}"></script>
-    <script src="{{ asset('resources/css/app-assets/vendors/js/tables/datatable/buttons.bootstrap.min.js') }}"></script>
-    <script src="{{ asset('resources/css/app-assets/vendors/js/tables/datatable/pdfmake.min.js') }}"></script>
-    <script src="{{ asset('resources/css/app-assets/vendors/js/tables/datatable/vfs_fonts.js') }}"></script>
+    @vite([
+        'resources/css/app-assets/vendors/js/vendors.min.js',
+        'resources/css/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.tools.js',
+        'resources/css/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.defaults.js',
+        'resources/css/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.min.js',
+        'resources/css/app-assets/vendors/js/extensions/numeral/numeral.js',
+        'resources/css/app-assets/vendors/js/extensions/dragula.min.js',
+        'resources/css/app-assets/vendors/js/forms/validation/jqBootstrapValidation.js',
+        'resources/css/app-assets/vendors/js/forms/select/select2.full.min.js',
+        'resources/css/app-assets/vendors/js/extensions/toastr.min.js',
+        'resources/css/app-assets/vendors/js/tables/datatable/datatables.min.js',
+        'resources/css/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js',
+        'resources/css/app-assets/vendors/js/tables/datatable/dataTables.buttons.min.js',
+        'resources/css/app-assets/vendors/js/tables/datatable/buttons.html5.min.js',
+        'resources/css/app-assets/vendors/js/tables/datatable/buttons.print.min.js',
+        'resources/css/app-assets/vendors/js/tables/datatable/buttons.bootstrap.min.js',
+        'resources/css/app-assets/vendors/js/tables/datatable/pdfmake.min.js',
+        'resources/css/app-assets/vendors/js/tables/datatable/vfs_fonts.js'
+    ])
     <!-- END: Critical JavaScript (Emergency Load) -->
     
     <!-- BEGIN: Application JavaScript -->

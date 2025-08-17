@@ -119,12 +119,14 @@
 
 
     <!-- BEGIN: Critical JavaScript (Emergency Load) -->
-    <script src="{{ asset('resources/css/app-assets/vendors/js/vendors.min.js') }}"></script>
-    <script src="{{ asset('resources/css/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.tools.js') }}"></script>
-    <script src="{{ asset('resources/css/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.defaults.js') }}"></script>
-    <script src="{{ asset('resources/css/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.min.js') }}"></script>
-    <script src="{{ asset('resources/css/app-assets/vendors/js/extensions/toastr.min.js') }}"></script>
-    <script src="{{ asset('resources/css/app-assets/vendors/js/ui/unison.min.js') }}"></script>
+    @vite([
+        'resources/css/app-assets/vendors/js/vendors.min.js',
+        'resources/css/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.tools.js',
+        'resources/css/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.defaults.js',
+        'resources/css/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.min.js',
+        'resources/css/app-assets/vendors/js/extensions/toastr.min.js',
+        'resources/css/app-assets/vendors/js/ui/unison.min.js'
+    ])
     <!-- END: Critical JavaScript (Emergency Load) -->
     
     <!-- BEGIN: Application JavaScript -->
