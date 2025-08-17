@@ -12,7 +12,7 @@ export default defineConfig({
                 'resources/css/app-assets/css/components.css',
                 'resources/css/app-assets/css/core/menu/menu-types/vertical-menu.css',
                 'resources/css/app-assets/css/pages/dashboard-analytics.css',
-                'resources/css/app-assets/css/pages/authentication.css',
+                'resources/css/app-assets/css/pages/authentication.min.css',
                 'resources/css/app-assets/css/plugins/forms/validation/form-validation.css',
                 'resources/css/app-assets/css/plugins/extensions/toastr.css',
                 'resources/css/app-assets/vendors/css/vendors.min.css',
@@ -30,7 +30,7 @@ export default defineConfig({
                 'resources/js/js/scripts/forms/validation/form-validation.js',
                 'resources/js/js/scripts/forms/select/form-select2.js',
                 'resources/js/js/scripts/extensions/toastr.js',
-                'node_modules/jquery/dist/jquery.min.js',
+                'resources/js/js/core/libraries/jquery.min.js',
                 'resources/css/app-assets/vendors/js/vendors.min.js',
                 'resources/css/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.tools.js',
                 'resources/css/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.defaults.js',
@@ -53,4 +53,18 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+    define: {
+        global: 'globalThis',
+        'window.jQuery': 'jQuery',
+        'window.$': 'jQuery',
+    },
+    build: {
+        rollupOptions: {
+            output: {
+                globals: {
+                    jquery: 'jQuery',
+                },
+            },
+        },
+    },
 });

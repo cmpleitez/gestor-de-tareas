@@ -8,26 +8,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
     <meta name="description"
         content="Gestor de tareas te apoya en la administración de las tareas diarias de tu organización manteniendo una fluidez excepcional y eleva la calidad de la atención al cliente.">
-    <meta name="keywords"
-        content="gestión, tareas, calidad, control, fluidez, atención al cliente">
+    <meta name="keywords" content="gestión, tareas, calidad, control, fluidez, atención al cliente">
     <meta name="author" content=".">
     <title>Gestor de tareas {{ config('app.version') }}</title>
     <link rel="apple-touch-icon" href="{{ asset('resources/css/app-assets/images/icons/favicon-32x32.png') }}">
-    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('resources/css/app-assets/images/icons/favicon-32x32.png') }}">
+    <link rel="shortcut icon" type="image/x-icon"
+        href="{{ asset('resources/css/app-assets/images/icons/favicon-32x32.png') }}">
     <link href="https://fonts.googleapis.com/css?family=Rubik:300,400,500,600%7CIBM+Plex+Sans:300,400,500,600,700"
         rel="stylesheet">
 
     <!-- BEGIN: All CSS-->
     @vite([
-        'resources/css/app-assets/vendors/css/vendors.min.css',
-        'resources/css/app-assets/vendors/css/extensions/toastr.css',
-        'resources/css/app-assets/css/bootstrap.css',
-        'resources/css/app-assets/css/bootstrap-extended.css',
-        'resources/css/app-assets/css/colors.css',
-        'resources/css/app-assets/css/components.css',
-        'resources/css/app-assets/css/core/menu/menu-types/vertical-menu.css',
-        'resources/css/app-assets/css/pages/authentication.css',
-        'resources/css/app-assets/css/plugins/extensions/toastr.css'
+    'resources/css/app-assets/vendors/css/vendors.min.css',
+    'resources/css/app-assets/vendors/css/extensions/toastr.css',
+    'resources/css/app-assets/css/bootstrap.css',
+    'resources/css/app-assets/css/bootstrap-extended.css',
+    'resources/css/app-assets/css/colors.css',
+    'resources/css/app-assets/css/components.css',
+    'resources/css/app-assets/css/core/menu/menu-types/vertical-menu.css',
+    'resources/css/app-assets/css/pages/authentication.min.css',
+    'resources/css/app-assets/css/plugins/extensions/toastr.css'
     ])
     <!-- END: All CSS-->
 
@@ -53,9 +53,11 @@
                             <div class="row m-0 p-0">
                                 <!-- left section-login -->
                                 <div class="col-md-6 col-12 px-0">
-                                    <div class="card disable-rounded-right mb-0 p-2 h-100 d-flex justify-content-center">
+                                    <div
+                                        class="card disable-rounded-right mb-0 p-2 h-100 d-flex justify-content-center">
                                         <div class="d-flex justify-content-center">
-                                            <img src="{{ asset('resources/css/app-assets/images/logo/logo.png') }}" alt="Logo" class="height-100" style="width: auto; object-fit: contain;">
+                                            <img src="{{ asset('resources/css/app-assets/images/logo/logo.png') }}"
+                                                alt="Logo" class="height-100" style="width: auto; object-fit: contain;">
                                         </div>
                                         <div class="card-header">
                                             <div class="card-title m-0 p-0">
@@ -67,16 +69,18 @@
                                                 <form method="POST" action="{{ route('login') }}">
                                                     @csrf
                                                     <div class="form-group mb-50">
-                                                        <label class="text-bold-600" for="exampleInputEmail1">Correo electrónico</label>
+                                                        <label class="text-bold-600" for="exampleInputEmail1">Correo
+                                                            electrónico</label>
                                                         <input type="email" class="form-control" id="exampleInputEmail1"
-                                                            placeholder="correo@ejemplo.com" name="email" required autofocus
-                                                            autocomplete="username">
+                                                            placeholder="correo@ejemplo.com" name="email" required
+                                                            autofocus autocomplete="username">
                                                     </div>
                                                     <div class="form-group">
                                                         <label class="text-bold-600"
                                                             for="exampleInputPassword1">Clave</label>
                                                         <input type="password" class="form-control"
-                                                            id="exampleInputPassword1" placeholder="Clave" name="password" required autocomplete="current-password">
+                                                            id="exampleInputPassword1" placeholder="Clave"
+                                                            name="password" required autocomplete="current-password">
                                                     </div>
                                                     <div
                                                         class="form-group d-flex flex-md-row flex-column justify-content-between align-items-center">
@@ -85,11 +89,14 @@
                                                                 <input type="checkbox" class="form-check-input"
                                                                     id="exampleCheck1" name="remember">
                                                                 <label class="checkboxsmall"
-                                                                    for="exampleCheck1"><small>Mantener sesión iniciada</small></label>
+                                                                    for="exampleCheck1"><small>Mantener sesión
+                                                                        iniciada</small></label>
                                                             </div>
                                                         </div>
-                                                        <div class="text-right"><a href="{{ route('password.request') }}"
-                                                                class="card-link"><small>¿Olvidaste tu clave?</small></a>
+                                                        <div class="text-right"><a
+                                                                href="{{ route('password.request') }}"
+                                                                class="card-link"><small>¿Olvidaste tu
+                                                                    clave?</small></a>
                                                         </div>
                                                     </div>
                                                     <button type="submit"
@@ -97,14 +104,18 @@
                                                             id="icon-arrow" class="bx bx-right-arrow-alt"></i></button>
                                                 </form>
                                                 <hr>
-                                                <div class="text-center"><small class="mr-25">¿No tienes una cuenta de usuario?</small><a href="{{ route('register') }}"><small>Regístrate</small></a></div>
+                                                <div class="text-center"><small class="mr-25">¿No tienes una cuenta de
+                                                        usuario?</small><a
+                                                        href="{{ route('register') }}"><small>Regístrate</small></a>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <!-- right section image -->
                                 <div class="col-md-6 p-0 m-0">
-                                    <img src="{{ asset('resources/css/app-assets/images/pages/login.jpg') }}" alt="branding logo" style="width: 100%; height: 100%; object-fit: cover;">
+                                    <img src="{{ asset('resources/css/app-assets/images/pages/login.jpg') }}"
+                                        alt="branding logo" style="width: 100%; height: 100%; object-fit: cover;">
                                 </div>
                             </div>
                         </div>
@@ -120,33 +131,33 @@
 
     <!-- BEGIN: Critical JavaScript (Emergency Load) -->
     @vite([
-        'resources/css/app-assets/vendors/js/vendors.min.js',
-        'resources/css/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.tools.js',
-        'resources/css/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.defaults.js',
-        'resources/css/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.min.js',
-        'resources/css/app-assets/vendors/js/extensions/toastr.min.js',
-        'resources/css/app-assets/vendors/js/ui/unison.min.js'
+    'resources/css/app-assets/vendors/js/vendors.min.js',
+    'resources/css/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.tools.js',
+    'resources/css/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.defaults.js',
+    'resources/css/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.min.js',
+    'resources/css/app-assets/vendors/js/extensions/toastr.min.js',
+    'resources/css/app-assets/vendors/js/ui/unison.min.js'
     ])
     <!-- END: Critical JavaScript (Emergency Load) -->
-    
+
     <!-- BEGIN: Application JavaScript -->
     @vite([
-        'resources/js/js/core/app-menu.js',
-        'resources/js/js/core/app.js',
-        'resources/js/js/scripts/components.js',
-        'resources/js/js/scripts/footer.js',
-        'resources/js/js/scripts/extensions/toastr.js'
+    'resources/js/js/core/app-menu.js',
+    'resources/js/js/core/app.js',
+    'resources/js/js/scripts/components.js',
+    'resources/js/js/scripts/footer.js',
+    'resources/js/js/scripts/extensions/toastr.js'
     ])
     <!-- END: Application JavaScript -->
 
     @if ($errors->has('email') || $errors->has('password'))
-        <script>
-            toastr.error("Las credenciales ingresadas son incorrectas", '', { 
+    <script>
+        toastr.error("Las credenciales ingresadas son incorrectas", '', { 
                 timeOut: 0, 
                 extendedTimeOut: 0, 
                 closeButton: true 
             });
-        </script>
+    </script>
     @endif
 
 </body>
