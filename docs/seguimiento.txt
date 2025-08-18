@@ -50,7 +50,7 @@
 
 ...🟢 prueba de despliegue en laravel forge
     he creado dos cuentas de pago una para laravel forge y otra para digital ocean
-        ...resolviendo el problema del despliegue de librerias de estilos y js
+        
 
 🟠 rage agains the machine & limp bizkit & korn & alice in chains
     ...limp bizkit: im broke
