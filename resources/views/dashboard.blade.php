@@ -823,8 +823,7 @@
     <!-- BEGIN: Footer-->
     <footer class="footer footer-static footer-light">
         <p class="clearfix mb-0"><span class="float-left d-inline-block"><i
-                    class="bx bxl-slack pink mx-50 font-small-3"></i>Gestor de Tareas
-                {{ config('app.version') }}</span>
+                    class="bx bxl-slack pink mx-50 font-small-3"></i>ALFA.{{ config('app.version') }}</span>
             <span class="float-right d-sm-inline-block d-none">
                 <a href="#" target="_blank">San Salvador</a> &copy; 2025
             </span>
