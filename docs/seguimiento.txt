@@ -49,8 +49,10 @@
 
 
 ...🟢 prueba de despliegue en laravel forge
-    he creado dos cuentas de pago una para laravel forge y otra para digital ocean
-        
+    he creado dos cuentas de pago una para laravel forge $12 y otra para digital ocean $30
+    necesitamos pegar el dominio a forge y a digital ocean 
+    implementar el ssl
+    averiguar como vaciar la base de datos para comenzar de nuevo
 
 🟠 rage agains the machine & limp bizkit & korn & alice in chains
     ...limp bizkit: im broke
