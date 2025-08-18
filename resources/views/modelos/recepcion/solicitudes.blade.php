@@ -1318,10 +1318,10 @@
                                                 '\'>' + (recepcion.area ? recepcion.area.area :
                                                     'Sin área') + '</span>" ' +
                                                 'data-trigger="hover" data-placement="top">';
-
                                             if (recepcion.usuarioDestino.profile_photo_url) {
-                                                userHtml += '<img src="' + recepcion
-                                                    .usuarioDestino.profile_photo_url +
+                                                userHtml += '<img src="' + 
+                                                    (recepcion.usuarioDestino.profile_photo_url ? 
+                                                    '{{ Storage::url("") }}' + recepcion.usuarioDestino.profile_photo_url : '') +
                                                     '" alt="Usuario" class="avatar" ' +
                                                     'style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;">';
                                             } else {
@@ -1417,10 +1417,8 @@
             let usersHtml = ''; // Generar HTML de usuarios
             if (tarjeta.users && tarjeta.users.length > 0) {
                 tarjeta.users.forEach(function(user) {
-                    const avatar = user.profile_photo_url ?
-                        `<img src="${user.profile_photo_url}" alt="Usuario" class="avatar" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;">` :
+                    const avatar = user.profile_photo_url ? `<img src="${user.profile_photo_url}" alt="Usuario" class="avatar" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;">` :
                         `<div class="avatar" style="width: 32px; height: 32px; border-radius: 50%; background: #e9ecef; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #6c757d;">${user.name ? user.name[0] : '?'}</div>`;
-
                     usersHtml += `
                         <div style="margin: 0;" data-toggle="popover" 
                             data-title="${user.name || 'Sin asignar'}" 
@@ -1543,9 +1541,8 @@
                 });
             }, 100);
             initKanban();
-            setInterval(consultarAvancesTablero, 30000); // 30 segundos
-            setInterval(cargarNuevasRecibidas, 30000); // 30 segundos
-            //setInterval(limpiarPopovers, 30000); // 30 segundos
+            setInterval(consultarAvancesTablero, 900000); // 15 minutos
+            setInterval(cargarNuevasRecibidas, 900000); // 15 minutos
         });
 </script>
 @endsection
