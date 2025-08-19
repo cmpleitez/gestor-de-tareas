@@ -293,7 +293,7 @@ class DatabaseSeeder extends Seeder
             'updated_at' => Carbon::now(),
         ]);
         DB::table('tareas')->insert([
-            'tarea' => 'Revisión del stock',
+            'tarea' => 'Revisión de stock',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
@@ -305,7 +305,7 @@ class DatabaseSeeder extends Seeder
             'updated_at' => Carbon::now(),
         ]);
         DB::table('solicitudes')->insert([
-            'solicitud' => 'Instalación de cluces para neblinas',
+            'solicitud' => 'Instalación de luces adaptativas',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
