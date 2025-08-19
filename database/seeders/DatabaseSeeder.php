@@ -215,28 +215,16 @@ class DatabaseSeeder extends Seeder
             'oficina_id' => 1,
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
-        ]);        
-        DB::table('areas')->insert([
-            'area' => 'Diseño',
-            'oficina_id' => 1,
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now(),
-        ]);
-        DB::table('areas')->insert([
-            'area' => 'Taller',
-            'oficina_id' => 1,
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now(),
         ]);
 
         //EQUIPOS
         DB::table('equipos')->insert([
-            'equipo'              => 'Amortiguadores',
+            'equipo'              => 'Técnicos en suspensión',
             'created_at'        => Carbon::now(),
             'updated_at'        => Carbon::now(),
         ]);
         DB::table('equipos')->insert([
-            'equipo'              => 'Electricidad y Luces',
+            'equipo'              => 'Técnicos en luces adaptativas',
             'created_at'        => Carbon::now(),
             'updated_at'        => Carbon::now(),
         ]);
@@ -259,25 +247,25 @@ class DatabaseSeeder extends Seeder
 
         //ROLES Y ASIGNACIÓN DE PERMISOS
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
-        $role = Role::create(['name' => 'SuperAdmin', 'icon' => 'bx bxs-shield-alt-2']);
+        $role = Role::create(['name' => 'SuperAdmin']);
         $role->givePermissionTo(['ver', 'crear', 'editar', 'activar', 'eliminar', 'autorizar']);
         
-        $role = Role::create(['name' => 'Administrador', 'icon' => 'bx bxs-briefcase-alt-2']);
+        $role = Role::create(['name' => 'Administrador']);
         $role->givePermissionTo(['ver', 'crear', 'editar', 'activar', 'eliminar']);
         
-        $role = Role::create(['name' => 'Recepcionista', 'icon' => 'bx bxs-star-half']);
+        $role = Role::create(['name' => 'Recepcionista']);
         $role->givePermissionTo(['ver', 'crear', 'editar', 'activar', 'derivar']);
 
-        $role = Role::create(['name' => 'Supervisor', 'icon' => 'bx bxs-star-half']);
+        $role = Role::create(['name' => 'Supervisor']);
         $role->givePermissionTo(['ver', 'asignar']);
 
-        $role = Role::create(['name' => 'Gestor', 'icon' => 'bx bxs-star-half']);
+        $role = Role::create(['name' => 'Gestor']);
         $role->givePermissionTo(['ver', 'delegar']);
         
-        $role = Role::create(['name' => 'Operador', 'icon' => 'bx bxs-group']);
+        $role = Role::create(['name' => 'Operador']);
         $role->givePermissionTo(['ver', 'crear', 'editar']);
 
-        $role = Role::create(['name' => 'Beneficiario', 'icon' => 'bx bxs-user']);
+        $role = Role::create(['name' => 'Beneficiario']);
         $role->givePermissionTo(['ver', 'crear', 'editar']);
 
         //USUARIOS
@@ -300,37 +288,12 @@ class DatabaseSeeder extends Seeder
 
         //CREACION DE TAREAS
         DB::table('tareas')->insert([
-            'tarea' => 'Sopesar la cantidad y el nivel de necesidad de las solicitudes versus la cantidad de población de la zona',
+            'tarea' => 'Revisión de viabilidad técnica',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
         DB::table('tareas')->insert([
-            'tarea' => 'Inspección de campo para evaluar la viabilidad de la obra',
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now(),
-        ]);
-        DB::table('tareas')->insert([
-            'tarea' => 'Planeación y diseño de la obra',
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now(),
-        ]);
-        DB::table('tareas')->insert([
-            'tarea' => 'Autorización de la obra y reservación de dinero del presupuesto municipal',
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now(),
-        ]);
-        DB::table('tareas')->insert([
-            'tarea' => 'Inicio de los trabajos',
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now(),
-        ]);
-        DB::table('tareas')->insert([
-            'tarea' => 'Supervisión de la calidad de los trabajos, verificación de comprobantes y facturas de gastos versus los avances de la obra',
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now(),
-        ]);
-        DB::table('tareas')->insert([
-            'tarea' => 'Finalización y entrega pública de la obra',
+            'tarea' => 'Revisión del stock',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);

@@ -11,6 +11,8 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->foreignId('area_id');
+            $table->foreignId('role_id')->default(7);
+
             $table->string('dui',9)->unique();
             $table->string('name');
             $table->string('email')->unique();
@@ -22,6 +24,7 @@ return new class extends Migration
             $table->boolean('activo')->default(true);
             $table->timestamps();
 
+            $table->foreign('role_id')->references('id')->on('roles');
             $table->foreign('area_id')->references('id')->on('areas');
         });
     }

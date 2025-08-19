@@ -47,12 +47,28 @@
 🟢 servicio controlado: para cambiar el dui a una persona por motivos de error involuntario a la hora de registrar ese dui en el formulario de registro de usuarios
 🟢 register: asegurar el id del usuario con un aumento no automático sino programatico
 
-
 ...🟢 prueba de despliegue en laravel forge
     he creado dos cuentas de pago una para laravel forge $12 y otra para digital ocean $30
     necesitamos pegar el dominio a forge y a digital ocean 
     implementar el ssl
     averiguar como vaciar la base de datos para comenzar de nuevo
+    fortalecer la seguridad del servidor y del sitio
+🟢 adecuar lo seeders al nuevo caso de uso
+
+🟢 fortalecimiento de la seguridad forge: incluso por ip o mac
+❌ LO QUE FORGE NO TIENE POR DEFECTO:
+1. WAF (Web Application Firewall)
+ModSecurity: No está instalado por defecto
+Reglas OWASP: No implementadas
+2. Rate Limiting Avanzado
+Bloqueo de IPs: No hay sistema automático de bloqueo
+Fail2ban: No configurado por defecto
+3. Monitoreo de Seguridad
+Alertas: No hay sistema de notificaciones de ataques
+Logs de seguridad: Solo logs básicos de nginx
+CONCLUSIÓN:
+Forge te da seguridad básica sólida (firewall, nginx seguro, SSL), pero para seguridad empresarial necesitas implementar las capas adicionales que mencioné.
+¿Quieres que empecemos implementando lo que falta, o prefieres revisar primero tu configuración actual de Forge?
 
 🟠 rage agains the machine & limp bizkit & korn & alice in chains
     ...limp bizkit: im broke

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreignId('user_id_origen');
             $table->foreignId('user_id_destino');
             $table->foreignId('estado_id');
+            $table->decimal('avance', 5, 2)->default(0.00);
             $table->char('atencion_id', 12)->foreignId();
             $table->string('detalle');
             $table->string('observacion')->nullable();
