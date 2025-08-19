@@ -13,11 +13,11 @@
                 <div class="card-header">
 
                     <div class="col-md-12 d-flex justify-content-between" style="padding: 0;">
-                        <div class="col-md-11" style="padding: 0;">
+                        <div class="col-11 p-1">
                             <h4 class="card-title">SOLICITUDES</h4>
                             <p class="card-text">Son las unidades de servicio brindadas a los beneficiarios del sistema, una solicitud puede tener una o más tareas</p>
                         </div>
-                        <div class="col-md-1 d-flex justify-content-end" style="padding: 0;">
+                        <div class="col-1 d-flex justify-content-end" style="padding: 0;">
                             <a href="{!! route('solicitud.create') !!}">
                                 <div class="badge-circle badge-circle-md badge-circle-primary">
                                     <i class="bx bx-plus-medical font-small-3"></i>
@@ -132,4 +132,7 @@
     <script src="{{ asset('assets/app-assets/vendors/js/tables/datatable/pdfmake.min.js') }}"></script>
     <script src="{{ asset('assets/app-assets/vendors/js/tables/datatable/vfs_fonts.js') }}"></script>
     <!-- END: Page Vendor JS-->
+
+    {{-- Componente de orientación para tablas --}}
+    @include('components.orientation-manager')
 @stop

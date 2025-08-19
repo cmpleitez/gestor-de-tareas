@@ -10,12 +10,12 @@
                 <div class="card-header">
 
                     <div class="col-md-12 d-flex justify-content-between" style="padding: 0;">
-                        <div class="col-md-11" style="padding: 0;">
+                        <div class="col-11 p-1">
                             <h4 class="card-title">EQUIPOS DE TRABAJO</h4>
                             <p class="card-text">Grupos de operadores con diferentes roles y de diferentes areas formados
                                 para resolver casos prederminados</p>
                         </div>
-                        <div class="col-md-1 d-flex justify-content-end" style="padding: 0;">
+                        <div class="col-1 d-flex justify-content-end" style="padding: 0;">
                             <a href="{!! route('equipo.create') !!}">
                                 <div class="badge-circle badge-circle-md badge-circle-primary">
                                     <i class="bx bx-plus-medical font-small-3"></i>
@@ -113,5 +113,6 @@
 @stop
 
 @section('js')
-
+    {{-- Componente de orientación para tablas --}}
+    @include('components.orientation-manager')
 @stop

@@ -13,7 +13,7 @@
             <div class="card-header">
 
                 <div class="col-md-12 d-flex justify-content-between" style="padding: 0;">
-                    <div class="col-md-11" style="padding: 0;">
+                    <div class="col-md-11 p-1">
                         <h4 class="card-title">USUARIOS DEL SISTEMA</h4>
                         <p class="card-text">Las personas autorizadas para operar el sistema desempeñando roles
                             específicos</p>
@@ -173,4 +173,7 @@
 <script src="{{ asset('assets/app-assets/vendors/js/tables/datatable/pdfmake.min.js') }}"></script>
 <script src="{{ asset('assets/app-assets/vendors/js/tables/datatable/vfs_fonts.js') }}"></script>
 <!-- END: Page Vendor JS-->
+
+{{-- Componente de orientación para tablas --}}
+@include('components.orientation-manager')
 @stop
