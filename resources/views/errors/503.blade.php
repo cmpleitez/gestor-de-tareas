@@ -33,7 +33,7 @@
         }
         
         .icon {
-            font-size: 2rem;
+            font-size: 1rem;
             margin-bottom: 1rem;
             color: #00d4ff;
             text-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
