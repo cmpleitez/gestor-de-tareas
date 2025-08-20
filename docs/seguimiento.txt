@@ -33,8 +33,11 @@
 234567890
 345678901
 
-🟢 implementar un nuevo campo para distinguir el rol principal  para el uso de la gestion de tareas
+🟢 mantener los equipos de trabajo para tener potencia en flexibilidad y evitar la estructura organizativa que suele ser variable y dar fuertes golpes a los datos y a la seguridad del sistema
+
+...🟢 implementar un nuevo campo para distinguir el rol principal  para el uso de la gestion de tareas
         verificar y delimitar casos de roles multiples
+
 🟢 construir de control de calidad para el gestor
 🟢 proceso de rechazo de una solicitud o anulación
 🟢 entrega de una solicitud al beneficiario

@@ -797,6 +797,41 @@
                         @endrole
                     </ul>
                 </li>
+                @role('SuperAdmin')
+                <li class=" nav-item"><a href="#"><i class="bx bx-shield"></i><span class="menu-title"
+                            data-i18n="Menu Levels">Monitoreo de Seguridad</span></a>
+                    <ul class="menu-content" style="display: block;">
+                        <li><a href="{{ Route('security.index') }}">
+                                <i class="bx bx-right-arrow-alt"></i>
+                                <span class="menu-item" data-i18n="Second Level">Dashboard</span>
+                            </a></li>
+                        <li><a href="{{ Route('security.events') }}">
+                                <i class="bx bx-right-arrow-alt"></i>
+                                <span class="menu-item" data-i18n="Second Level">Eventos</span>
+                            </a></li>
+                        <li><a href="{{ Route('security.threat-intelligence') }}">
+                                <i class="bx bx-right-arrow-alt"></i>
+                                <span class="menu-item" data-i18n="Second Level">Inteligencia de Amenazas</span>
+                            </a></li>
+                        <li><a href="{{ Route('security.ip-reputation') }}">
+                                <i class="bx bx-right-arrow-alt"></i>
+                                <span class="menu-item" data-i18n="Second Level">Reputación de IPs</span>
+                            </a></li>
+                        <li><a href="{{ Route('security.reports') }}">
+                                <i class="bx bx-right-arrow-alt"></i>
+                                <span class="menu-item" data-i18n="Second Level">Reportes</span>
+                            </a></li>
+                        <li><a href="{{ Route('security.logs') }}">
+                                <i class="bx bx-right-arrow-alt"></i>
+                                <span class="menu-item" data-i18n="Second Level">Logs</span>
+                            </a></li>
+                        <li><a href="{{ Route('security.settings') }}">
+                                <i class="bx bx-right-arrow-alt"></i>
+                                <span class="menu-item" data-i18n="Second Level">Configuración</span>
+                            </a></li>
+                    </ul>
+                </li>
+                @endrole
                 <li class=" navigation-header"><span>Soporte</span>
                 </li>
             </ul>

@@ -8,6 +8,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\TareaController;
 use App\Http\Controllers\SolicitudController;
 use App\Http\Controllers\RecepcionController;
+use App\Http\Controllers\SecurityController;
 
 // Rutas públicas
 Route::get('/', function () {
@@ -100,6 +101,41 @@ Route::middleware([
             Route::put('actualizar-tareas/{solicitud}', [solicitudController::class, 'actualizarTareas'])->name('solicitud.actualizar-tareas');
             Route::get('destroy/{solicitud}', [solicitudController::class, 'destroy'])->name('solicitud.destroy');
             Route::post('activate/{solicitud}', [solicitudController::class, 'activate'])->name('solicitud.activate');
+        });
+
+        // ========================================
+        // RUTAS DEL DASHBOARD DE SEGURIDAD
+        // ========================================
+        Route::group(['prefix' => 'security'], function () {
+            // Dashboard principal de seguridad
+            Route::get('/', [SecurityController::class, 'index'])->name('security.index');
+
+            // Eventos de seguridad
+            Route::get('events', [SecurityController::class, 'events'])->name('security.events');
+
+            // Inteligencia de amenazas
+            Route::get('threat-intelligence', [SecurityController::class, 'threatIntelligence'])->name('security.threat-intelligence');
+
+            // Reputación de IPs
+            Route::get('ip-reputation', [SecurityController::class, 'ipReputation'])->name('security.ip-reputation');
+
+            // Configuración de seguridad
+            Route::get('settings', [SecurityController::class, 'settings'])->name('security.settings');
+
+            // Reportes de seguridad
+            Route::get('reports', [SecurityController::class, 'reports'])->name('security.reports');
+
+            // Logs de seguridad
+            Route::get('logs', [SecurityController::class, 'logs'])->name('security.logs');
+
+            // Acciones de seguridad (AJAX)
+            Route::post('block-ip', [SecurityController::class, 'blockIP'])->name('security.block-ip');
+            Route::post('whitelist-ip', [SecurityController::class, 'whitelistIP'])->name('security.whitelist-ip');
+            Route::post('toggle-maintenance', [SecurityController::class, 'toggleMaintenance'])->name('security.toggle-maintenance');
+
+            // API endpoints para datos
+            Route::get('dashboard-stats', [SecurityController::class, 'getDashboardStats'])->name('security.dashboard-stats');
+            Route::get('security-events', [SecurityController::class, 'getSecurityEvents'])->name('security.security-events');
         });
     });
 
