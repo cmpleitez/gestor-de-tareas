@@ -830,11 +830,11 @@
     </style>
 
     <!-- Favicon para navegadores -->
-    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
-    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    <link rel="icon" type="image/x-icon" href="{{ asset('resources/css/app-assets/images/icons/favicon.ico') }}">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('resources/css/app-assets/images/icons/favicon.ico') }}">
 
     <!-- Apple Touch Icon (para iOS) -->
-    <link rel="apple-touch-icon" href="{{ asset('app-assetsimages/icons/apple-touch-icon.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('resources/css/app-assets/images/icons/apple-touch-icon.png') }}">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">

@@ -1,6 +1,6 @@
 @extends('dashboard')
 
-@section('content')
+@section('contenedor')
 <div class="container-fluid">
     <!-- Header de Logs -->
     <div class="row mb-4">
@@ -421,9 +421,9 @@
     </div>
 </div>
 
-@endsection
+@stop
 
-@push('styles')
+@section('css')
 <style>
 .card { margin-bottom: 1.5rem; }
 .border-left-info { border-left: 0.25rem solid #36b9cc !important; }
@@ -501,9 +501,9 @@
     color: white;
 }
 </style>
-@endpush
+@stop
 
-@push('scripts')
+@section('js')
 <script>
 let autoRefreshInterval;
 let selectedLogs = [];
@@ -814,4 +814,4 @@ function createToastContainer() {
     return container;
 }
 </script>
-@endpush
+@stop

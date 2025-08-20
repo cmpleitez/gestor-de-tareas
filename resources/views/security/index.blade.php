@@ -1,5 +1,95 @@
 @extends('dashboard')
-@section('content')
+@section('css')
+    <style>
+        .security-status-indicator {
+            position: relative;
+            width: 60px;
+            height: 60px;
+        }
+
+        .pulse-dot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(40, 167, 69, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
+            }
+        }
+
+        .chart-area {
+            position: relative;
+            height: 300px;
+        }
+
+        .chart-pie {
+            position: relative;
+            height: 250px;
+        }
+
+        .recent-event-item {
+            border-left: 4px solid #e3e6f0;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            background-color: #f8f9fc;
+            border-radius: 0.35rem;
+        }
+
+        .recent-event-item.critical {
+            border-left-color: #e74a3b;
+            background-color: #fdf2f2;
+        }
+
+        .recent-event-item.high {
+            border-left-color: #f6c23e;
+            background-color: #fdfbf2;
+        }
+
+        .recent-event-item.medium {
+            border-left-color: #fd7e14;
+            background-color: #fdf8f2;
+        }
+
+        .recent-event-item.low {
+            border-left-color: #20c9a6;
+            background-color: #f2fdfb;
+        }
+
+        .suspicious-ip-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            border-bottom: 1px solid #e3e6f0;
+        }
+
+        .suspicious-ip-item:last-child {
+            border-bottom: none;
+        }
+
+        .risk-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+        }
+    </style>
+@stop
+
+@section('contenedor')
     <div class="container-fluid">
         <!-- ========================================
             HEADER DEL DASHBOARD DE SEGURIDAD
@@ -231,6 +321,8 @@
                 </div>
             </div>
 
+            
+
             <!-- Top IPs Sospechosas -->
             <div class="col-xl-6">
                 <div class="card shadow mb-4">
@@ -240,10 +332,16 @@
                             Top 10 IPs Sospechosas
                         </h6>
                     </div>
+
                     <div class="card-body">
                         <div id="suspicious-ips-list">
                             @if (isset($suspiciousIPs) && $suspiciousIPs->count() > 0)
                                 @foreach ($suspiciousIPs as $ip)
+
+
+
+
+
                                     <div class="suspicious-ip-item">
                                         <div>
                                             <strong>{{ $ip->ip_address }}</strong>
@@ -262,368 +360,280 @@
                                         </div>
                                     </div>
                                 @endforeach
+                                
                             @else
                                 <div class="text-center py-4">
                                     <i class="fas fa-info-circle fa-2x text-gray-400"></i>
                                     <p class="mt-2 text-gray-500">No hay IPs sospechosas</p>
                                 </div>
                             @endif
+
+                            
+
                         </div>
                     </div>
                 </div>
             </div>
+
+
+
         </div>
+    </div>
+@stop
 
-            @dd($event->session_id)
+@section('js')
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Variables globales para los gráficos
+        let riskLevelChart;
+        let threatsByCountryChart;
 
-    @endsection
+        // Inicialización del dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDashboard();
+            loadDashboardData();
+            startRealTimeUpdates();
+        });
 
-    @push('styles')
-        <style>
-            .security-status-indicator {
-                position: relative;
-                width: 60px;
-                height: 60px;
-            }
-
-            .pulse-dot {
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                width: 20px;
-                height: 20px;
-                border-radius: 50%;
-                animation: pulse 2s infinite;
-            }
-
-            @keyframes pulse {
-                0% {
-                    box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
+        function initializeDashboard() {
+            // Inicializar gráfico de niveles de riesgo
+            const riskCtx = document.getElementById('riskLevelChart').getContext('2d');
+            riskLevelChart = new Chart(riskCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Crítico', 'Alto', 'Medio', 'Bajo', 'Mínimo'],
+                    datasets: [{
+                        data: [0, 0, 0, 0, 0],
+                        backgroundColor: [
+                            '#e74a3b',
+                            '#f6c23e',
+                            '#fd7e14',
+                            '#20c9a6',
+                            '#1cc88a'
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
                 }
-
-                70% {
-                    box-shadow: 0 0 0 10px rgba(40, 167, 69, 0);
-                }
-
-                100% {
-                    box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
-                }
-            }
-
-            .chart-area {
-                position: relative;
-                height: 300px;
-            }
-
-            .chart-pie {
-                position: relative;
-                height: 250px;
-            }
-
-            .recent-event-item {
-                border-left: 4px solid #e3e6f0;
-                padding: 0.75rem;
-                margin-bottom: 0.5rem;
-                background-color: #f8f9fc;
-                border-radius: 0.35rem;
-            }
-
-            .recent-event-item.critical {
-                border-left-color: #e74a3b;
-                background-color: #fdf2f2;
-            }
-
-            .recent-event-item.high {
-                border-left-color: #f6c23e;
-                background-color: #fdfbf2;
-            }
-
-            .recent-event-item.medium {
-                border-left-color: #fd7e14;
-                background-color: #fdf8f2;
-            }
-
-            .recent-event-item.low {
-                border-left-color: #20c9a6;
-                background-color: #f2fdfb;
-            }
-
-            .suspicious-ip-item {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 0.5rem;
-                border-bottom: 1px solid #e3e6f0;
-            }
-
-            .suspicious-ip-item:last-child {
-                border-bottom: none;
-            }
-
-            .risk-badge {
-                font-size: 0.75rem;
-                padding: 0.25rem 0.5rem;
-            }
-        </style>
-    @endpush
-
-    @push('scripts')
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-        <script>
-            // Variables globales para los gráficos
-            let riskLevelChart;
-            let threatsByCountryChart;
-
-            // Inicialización del dashboard
-            document.addEventListener('DOMContentLoaded', function() {
-                initializeDashboard();
-                loadDashboardData();
-                startRealTimeUpdates();
             });
 
-            function initializeDashboard() {
-                // Inicializar gráfico de niveles de riesgo
-                const riskCtx = document.getElementById('riskLevelChart').getContext('2d');
-                riskLevelChart = new Chart(riskCtx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Crítico', 'Alto', 'Medio', 'Bajo', 'Mínimo'],
-                        datasets: [{
-                            data: [0, 0, 0, 0, 0],
-                            backgroundColor: [
-                                '#e74a3b',
-                                '#f6c23e',
-                                '#fd7e14',
-                                '#20c9a6',
-                                '#1cc88a'
-                            ],
-                            borderWidth: 2,
-                            borderColor: '#fff'
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'bottom'
-                            }
+            // Inicializar gráfico de amenazas por país
+            const countryCtx = document.getElementById('threatsByCountryChart').getContext('2d');
+            threatsByCountryChart = new Chart(countryCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Cargando...'],
+                    datasets: [{
+                        data: [1],
+                        backgroundColor: ['#e3e6f0'],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
                         }
                     }
-                });
+                }
+            });
+        }
 
-                // Inicializar gráfico de amenazas por país
-                const countryCtx = document.getElementById('threatsByCountryChart').getContext('2d');
-                threatsByCountryChart = new Chart(countryCtx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Cargando...'],
-                        datasets: [{
-                            data: [1],
-                            backgroundColor: ['#e3e6f0'],
-                            borderWidth: 2,
-                            borderColor: '#fff'
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: false
-                            }
-                        }
-                    }
-                });
-            }
+        function loadDashboardData() {
+            // Cargar métricas principales
+            loadSecurityMetrics();
 
-            function loadDashboardData() {
-                // Cargar métricas principales
+            // Cargar eventos recientes
+            loadRecentEvents();
+
+            // Cargar IPs sospechosas
+            loadSuspiciousIPs();
+
+            // Cargar datos de gráficos
+            loadChartData();
+        }
+
+        function loadSecurityMetrics() {
+            // Los datos ya están cargados desde el servidor
+            // Solo actualizar el score de seguridad si es necesario
+            const securityScore = calculateSecurityScore();
+            document.getElementById('security-score').innerHTML = securityScore + '/100';
+        }
+
+        function calculateSecurityScore() {
+            // Calcular score basado en los datos disponibles
+            const totalEvents = {{ $securityEventsCount ?? 0 }};
+            const criticalEvents =
+            {{ isset($recentEvents) ? $recentEvents->where('threat_score', '>=', 80)->count() : 0 }};
+
+            if (totalEvents === 0) return 100;
+
+            const score = Math.max(0, 100 - (criticalEvents * 10));
+            return Math.round(score);
+        }
+
+        function loadRecentEvents() {
+            // Los eventos ya están cargados desde el servidor
+            // Solo actualizar si es necesario
+            console.log('Eventos recientes ya cargados desde el servidor');
+        }
+
+        function loadSuspiciousIPs() {
+            // Las IPs ya están cargadas desde el servidor
+            // Solo actualizar si es necesario
+            console.log('IPs sospechosas ya cargadas desde el servidor');
+        }
+
+        function loadChartData() {
+            // Simular carga de datos de gráficos
+            setTimeout(() => {
+                // Actualizar gráfico de niveles de riesgo
+                riskLevelChart.data.datasets[0].data = [15, 28, 42, 35, 20];
+                riskLevelChart.update();
+
+                // Actualizar gráfico de amenazas por país
+                threatsByCountryChart.data.labels = ['Rusia', 'China', 'Estados Unidos', 'Alemania', 'Otros'];
+                threatsByCountryChart.data.datasets[0].data = [25, 20, 15, 12, 28];
+                threatsByCountryChart.data.datasets[0].backgroundColor = [
+                    '#e74a3b',
+                    '#f6c23e',
+                    '#fd7e14',
+                    '#20c9a6',
+                    '#6c757d'
+                ];
+                threatsByCountryChart.update();
+            }, 2500);
+        }
+
+        function startRealTimeUpdates() {
+            // Actualizar datos cada 30 segundos
+            setInterval(() => {
                 loadSecurityMetrics();
-
-                // Cargar eventos recientes
                 loadRecentEvents();
+            }, 30000);
+        }
 
-                // Cargar IPs sospechosas
-                loadSuspiciousIPs();
+        // Funciones de modales
+        function showBlockIPModal() {
+            new bootstrap.Modal(document.getElementById('blockIPModal')).show();
+        }
 
-                // Cargar datos de gráficos
-                loadChartData();
+        function showWhitelistIPModal() {
+            new bootstrap.Modal(document.getElementById('whitelistIPModal')).show();
+        }
+
+        function showMaintenanceModal() {
+            new bootstrap.Modal(document.getElementById('maintenanceModal')).show();
+        }
+
+        // Funciones de acciones
+        function blockIP() {
+            const ip = document.getElementById('ipAddress').value;
+            const reason = document.getElementById('blockReason').value;
+            const duration = document.getElementById('blockDuration').value;
+
+            if (!ip || !reason) {
+                alert('Por favor complete todos los campos requeridos.');
+                return;
             }
 
-            function loadSecurityMetrics() {
-                // Los datos ya están cargados desde el servidor
-                // Solo actualizar el score de seguridad si es necesario
-                const securityScore = calculateSecurityScore();
-                document.getElementById('security-score').innerHTML = securityScore + '/100';
+            // Aquí iría la lógica para bloquear la IP
+            console.log(`Bloqueando IP: ${ip}, Razón: ${reason}, Duración: ${duration}`);
+
+            // Cerrar modal
+            bootstrap.Modal.getInstance(document.getElementById('blockIPModal')).hide();
+
+            // Mostrar notificación
+            showNotification('IP bloqueada exitosamente', 'success');
+        }
+
+        function whitelistIP() {
+            const ip = document.getElementById('whitelistIPAddress').value;
+            const reason = document.getElementById('whitelistReason').value;
+
+            if (!ip || !reason) {
+                alert('Por favor complete todos los campos requeridos.');
+                return;
             }
 
-            function calculateSecurityScore() {
-                // Calcular score basado en los datos disponibles
-                const totalEvents = {{ $securityEventsCount ?? 0 }};
-                const criticalEvents =
-                {{ isset($recentEvents) ? $recentEvents->where('threat_score', '>=', 80)->count() : 0 }};
+            // Aquí iría la lógica para agregar IP a whitelist
+            console.log(`Agregando IP a whitelist: ${ip}, Razón: ${reason}`);
 
-                if (totalEvents === 0) return 100;
+            // Cerrar modal
+            bootstrap.Modal.getInstance(document.getElementById('whitelistIPModal')).hide();
 
-                const score = Math.max(0, 100 - (criticalEvents * 10));
-                return Math.round(score);
+            // Mostrar notificación
+            showNotification('IP agregada a whitelist exitosamente', 'success');
+        }
+
+        function enableMaintenanceMode() {
+            const message = document.getElementById('maintenanceMessage').value;
+            const duration = document.getElementById('maintenanceDuration').value;
+
+            if (!message) {
+                alert('Por favor complete el mensaje de mantenimiento.');
+                return;
             }
 
-            function loadRecentEvents() {
-                // Los eventos ya están cargados desde el servidor
-                // Solo actualizar si es necesario
-                console.log('Eventos recientes ya cargados desde el servidor');
-            }
+            // Aquí iría la lógica para activar modo mantenimiento
+            console.log(`Activando modo mantenimiento: ${message}, Duración: ${duration}`);
 
-            function loadSuspiciousIPs() {
-                // Las IPs ya están cargadas desde el servidor
-                // Solo actualizar si es necesario
-                console.log('IPs sospechosas ya cargadas desde el servidor');
-            }
+            // Cerrar modal
+            bootstrap.Modal.getInstance(document.getElementById('maintenanceModal')).hide();
 
-            function loadChartData() {
-                // Simular carga de datos de gráficos
-                setTimeout(() => {
-                    // Actualizar gráfico de niveles de riesgo
-                    riskLevelChart.data.datasets[0].data = [15, 28, 42, 35, 20];
-                    riskLevelChart.update();
+            // Mostrar notificación
+            showNotification('Modo mantenimiento activado', 'warning');
+        }
 
-                    // Actualizar gráfico de amenazas por país
-                    threatsByCountryChart.data.labels = ['Rusia', 'China', 'Estados Unidos', 'Alemania', 'Otros'];
-                    threatsByCountryChart.data.datasets[0].data = [25, 20, 15, 12, 28];
-                    threatsByCountryChart.data.datasets[0].backgroundColor = [
-                        '#e74a3b',
-                        '#f6c23e',
-                        '#fd7e14',
-                        '#20c9a6',
-                        '#6c757d'
-                    ];
-                    threatsByCountryChart.update();
-                }, 2500);
-            }
+        function generateSecurityReport() {
+            // Aquí iría la lógica para generar reporte
+            console.log('Generando reporte de seguridad...');
+            showNotification('Reporte generado exitosamente', 'info');
+        }
 
-            function startRealTimeUpdates() {
-                // Actualizar datos cada 30 segundos
-                setInterval(() => {
-                    loadSecurityMetrics();
-                    loadRecentEvents();
-                }, 30000);
-            }
+        function updateChart(period) {
+            // Aquí iría la lógica para actualizar gráficos según el período
+            console.log(`Actualizando gráficos para período: ${period}`);
+            showNotification('Gráficos actualizados', 'info');
+        }
 
-            // Funciones de modales
-            function showBlockIPModal() {
-                new bootstrap.Modal(document.getElementById('blockIPModal')).show();
-            }
+        function showNotification(message, type) {
+            // Crear notificación toast
+            const toast = document.createElement('div');
+            toast.className = `toast align-items-center text-white bg-${type} border-0`;
+            toast.setAttribute('role', 'alert');
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">${message}</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>`;
+            // Agregar al contenedor de toasts
+            const toastContainer = document.querySelector('.toast-container') || createToastContainer();
+            toastContainer.appendChild(toast);
 
-            function showWhitelistIPModal() {
-                new bootstrap.Modal(document.getElementById('whitelistIPModal')).show();
-            }
+            // Mostrar toast
+            const bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
+        }
 
-            function showMaintenanceModal() {
-                new bootstrap.Modal(document.getElementById('maintenanceModal')).show();
-            }
-
-            // Funciones de acciones
-            function blockIP() {
-                const ip = document.getElementById('ipAddress').value;
-                const reason = document.getElementById('blockReason').value;
-                const duration = document.getElementById('blockDuration').value;
-
-                if (!ip || !reason) {
-                    alert('Por favor complete todos los campos requeridos.');
-                    return;
-                }
-
-                // Aquí iría la lógica para bloquear la IP
-                console.log(`Bloqueando IP: ${ip}, Razón: ${reason}, Duración: ${duration}`);
-
-                // Cerrar modal
-                bootstrap.Modal.getInstance(document.getElementById('blockIPModal')).hide();
-
-                // Mostrar notificación
-                showNotification('IP bloqueada exitosamente', 'success');
-            }
-
-            function whitelistIP() {
-                const ip = document.getElementById('whitelistIPAddress').value;
-                const reason = document.getElementById('whitelistReason').value;
-
-                if (!ip || !reason) {
-                    alert('Por favor complete todos los campos requeridos.');
-                    return;
-                }
-
-                // Aquí iría la lógica para agregar IP a whitelist
-                console.log(`Agregando IP a whitelist: ${ip}, Razón: ${reason}`);
-
-                // Cerrar modal
-                bootstrap.Modal.getInstance(document.getElementById('whitelistIPModal')).hide();
-
-                // Mostrar notificación
-                showNotification('IP agregada a whitelist exitosamente', 'success');
-            }
-
-            function enableMaintenanceMode() {
-                const message = document.getElementById('maintenanceMessage').value;
-                const duration = document.getElementById('maintenanceDuration').value;
-
-                if (!message) {
-                    alert('Por favor complete el mensaje de mantenimiento.');
-                    return;
-                }
-
-                // Aquí iría la lógica para activar modo mantenimiento
-                console.log(`Activando modo mantenimiento: ${message}, Duración: ${duration}`);
-
-                // Cerrar modal
-                bootstrap.Modal.getInstance(document.getElementById('maintenanceModal')).hide();
-
-                // Mostrar notificación
-                showNotification('Modo mantenimiento activado', 'warning');
-            }
-
-            function generateSecurityReport() {
-                // Aquí iría la lógica para generar reporte
-                console.log('Generando reporte de seguridad...');
-                showNotification('Reporte generado exitosamente', 'info');
-            }
-
-            function updateChart(period) {
-                // Aquí iría la lógica para actualizar gráficos según el período
-                console.log(`Actualizando gráficos para período: ${period}`);
-                showNotification('Gráficos actualizados', 'info');
-            }
-
-            function showNotification(message, type) {
-                // Crear notificación toast
-                const toast = document.createElement('div');
-                toast.className = `toast align-items-center text-white bg-${type} border-0`;
-                toast.setAttribute('role', 'alert');
-                toast.innerHTML = `
-            <div class="d-flex">
-                <div class="toast-body">${message}</div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-            </div>
-        `;
-
-                // Agregar al contenedor de toasts
-                const toastContainer = document.querySelector('.toast-container') || createToastContainer();
-                toastContainer.appendChild(toast);
-
-                // Mostrar toast
-                const bsToast = new bootstrap.Toast(toast);
-                bsToast.show();
-            }
-
-            function createToastContainer() {
-                const container = document.createElement('div');
-                container.className = 'toast-container position-fixed top-0 end-0 p-3';
-                container.style.zIndex = '1055';
-                document.body.appendChild(container);
-                return container;
-            }
-        </script>
-    @endpush
+        function createToastContainer() {
+            const container = document.createElement('div');
+            container.className = 'toast-container position-fixed top-0 end-0 p-3';
+            container.style.zIndex = '1055';
+            document.body.appendChild(container);
+            return container;
+        }
+    </script>
+@stop

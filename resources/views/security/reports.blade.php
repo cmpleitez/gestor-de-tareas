@@ -1,6 +1,6 @@
 @extends('dashboard')
 
-@section('content')
+@section('contenedor')
 <div class="container-fluid">
     <!-- Header de Reportes -->
     <div class="row mb-4">
@@ -382,9 +382,9 @@
     </div>
 </div>
 
-@endsection
+@stop
 
-@push('styles')
+@section('css')
 <style>
 .card { margin-bottom: 1.5rem; }
 .border-left-primary { border-left: 0.25rem solid #4e73df !important; }
@@ -394,9 +394,9 @@
 .text-gray-800 { color: #5a5c69 !important; }
 .text-gray-300 { color: #dddfeb !important; }
 </style>
-@endpush
+@stop
 
-@push('scripts')
+@section('js')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 let charts = {};
@@ -703,4 +703,4 @@ function createToastContainer() {
 // Actualizar cada 5 minutos
 setInterval(updateLastUpdate, 300000);
 </script>
-@endpush
+@stop

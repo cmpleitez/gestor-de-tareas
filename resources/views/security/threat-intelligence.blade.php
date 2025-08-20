@@ -1,6 +1,6 @@
 @extends('dashboard')
 
-@section('content')
+@section('contenedor')
 <div class="container-fluid">
     <!-- ========================================
     HEADER DE INTELIGENCIA DE AMENAZAS
@@ -437,9 +437,9 @@ MODALES Y COMPONENTES ADICIONALES
     </div>
 </div>
 
-@endsection
+@stop
 
-@push('styles')
+@section('css')
 <style>
 .border-left-danger {
     border-left: 0.25rem solid #e74a3b !important;
@@ -550,9 +550,9 @@ MODALES Y COMPONENTES ADICIONALES
     background-color: #20c9a6;
 }
 </style>
-@endpush
+@stop
 
-@push('scripts')
+@section('js')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 // Variables globales
@@ -1099,4 +1099,4 @@ function createToastContainer() {
     return container;
 }
 </script>
-@endpush
+@stop

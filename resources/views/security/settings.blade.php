@@ -1,6 +1,6 @@
 @extends('dashboard')
 
-@section('content')
+@section('contenedor')
 <div class="container-fluid">
     <!-- Header de Configuración -->
     <div class="row mb-4">
@@ -674,18 +674,18 @@
     </div>
 </div>
 
-@endsection
+@stop
 
-@push('styles')
+@section('css')
 <style>
 .card { margin-bottom: 1.5rem; }
 .nav-tabs .nav-link { color: #6c757d; }
 .nav-tabs .nav-link.active { color: #495057; font-weight: 600; }
 .form-check-input:checked { background-color: #0d6efd; border-color: #0d6efd; }
 </style>
-@endpush
+@stop
 
-@push('scripts')
+@section('js')
 <script>
 // Inicialización
 document.addEventListener('DOMContentLoaded', function() {
@@ -859,4 +859,4 @@ function createToastContainer() {
     return container;
 }
 </script>
-@endpush
+@stop
