@@ -23,7 +23,7 @@
                                     <div class="me-4">
                                         <div class="fs-6 opacity-75">IPs Monitoreadas</div>
                                         <div class="fs-4 fw-bold" id="monitored-ips-count">
-                                            <i class="fas fa-spinner fa-spin"></i>
+                                            {{ $ipStats['total_ips'] ?? 0 }}
                                         </div>
                                     </div>
                                 </div>
@@ -44,7 +44,8 @@
                                 <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                     IPs Limpias
                                 </div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="clean-ips-count">0</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="clean-ips-count">
+                                    {{ $ipStats['clean_ips'] ?? 0 }}</div>
                             </div>
                             <div class="col-auto">
                                 <i class="fas fa-check-circle fa-2x text-gray-300"></i>
@@ -62,7 +63,8 @@
                                 <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
                                     IPs Sospechosas
                                 </div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="suspicious-ips-count">0</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="suspicious-ips-count">
+                                    {{ $ipStats['suspicious_ips'] ?? 0 }}</div>
                             </div>
                             <div class="col-auto">
                                 <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
@@ -80,7 +82,8 @@
                                 <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
                                     IPs Maliciosas
                                 </div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="malicious-ips-count">0</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="malicious-ips-count">
+                                    {{ $ipStats['malicious_ips'] ?? 0 }}</div>
                             </div>
                             <div class="col-auto">
                                 <i class="fas fa-skull-crossbones fa-2x text-gray-300"></i>
@@ -98,7 +101,8 @@
                                 <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
                                     Score Promedio
                                 </div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="avg-score">0</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="avg-score">
+                                    {{ $ipStats['avg_score'] ?? 0 }}</div>
                             </div>
                             <div class="col-auto">
                                 <i class="fas fa-chart-line fa-2x text-gray-300"></i>
@@ -728,15 +732,7 @@
             countryDistributionChart.update();
         }
 
-        function loadIPStats() {
-            setTimeout(() => {
-                document.getElementById('clean-ips-count').textContent = '35';
-                document.getElementById('suspicious-ips-count').textContent = '10';
-                document.getElementById('malicious-ips-count').textContent = '5';
-                document.getElementById('avg-score').textContent = '25';
-                document.getElementById('monitored-ips-count').textContent = '50';
-            }, 500);
-        }
+        // Función loadIPStats eliminada - Los datos ahora vienen del servidor
 
         function applyIPFilters() {
             console.log('Aplicando filtros de IPs...');
@@ -848,5 +844,5 @@
             document.body.appendChild(container);
             return container;
         }
-</script>
+    </script>
 @stop

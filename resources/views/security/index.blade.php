@@ -1,4 +1,11 @@
 @extends('dashboard')
+
+@php
+    // Variables por defecto para evitar conflictos de sintaxis con @json
+    $defaultRiskData = [0, 0, 0, 0, 0];
+    $defaultCountryData = [];
+@endphp
+
 @section('css')
     <style>
         .security-status-indicator {
@@ -92,8 +99,8 @@
 @section('contenedor')
     <div class="container-fluid">
         <!-- ========================================
-            HEADER DEL DASHBOARD DE SEGURIDAD
-            ======================================== -->
+                                                                                                                            HEADER DEL DASHBOARD DE SEGURIDAD
+                                                                                                                            ======================================== -->
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card bg-gradient-primary text-white">
@@ -128,8 +135,8 @@
         </div>
 
         <!-- ========================================
-            MÉTRICAS PRINCIPALES - KPIs DE SEGURIDAD
-            ======================================== -->
+                                                                                                                            MÉTRICAS PRINCIPALES - KPIs DE SEGURIDAD
+                                                                                                                            ======================================== -->
         <div class="row mb-4">
             <!-- Eventos de Seguridad -->
             <div class="col-xl-3 col-md-6 mb-4">
@@ -217,8 +224,8 @@
         </div>
 
         <!-- ========================================
-            GRÁFICOS Y ANÁLISIS VISUALES
-            ======================================== -->
+                                                                                                                            GRÁFICOS Y ANÁLISIS VISUALES
+                                                                                                                            ======================================== -->
         <div class="row mb-4">
             <!-- Gráfico de Eventos por Nivel de Riesgo -->
             <div class="col-xl-8 col-lg-7">
@@ -278,8 +285,8 @@
         </div>
 
         <!-- ========================================
-            ACTIVIDAD EN TIEMPO REAL
-            ======================================== -->
+                                                                                                                            ACTIVIDAD EN TIEMPO REAL
+                                                                                                                            ======================================== -->
         <div class="row mb-4">
             <!-- Eventos Recientes -->
             <div class="col-xl-6">
@@ -295,10 +302,12 @@
                             <div id="recent-events-list">
                                 @if (isset($recentEvents) && $recentEvents->count() > 0)
                                     @foreach ($recentEvents as $event)
-                                        <div class="recent-event-item {{ $event->threat_score >= 80 ? 'critical' : ($event->threat_score >= 60 ? 'high' : ($event->threat_score >= 40 ? 'medium' : 'low')) }}">
+                                        <div
+                                            class="recent-event-item {{ $event->threat_score >= 80 ? 'critical' : ($event->threat_score >= 60 ? 'high' : ($event->threat_score >= 40 ? 'medium' : 'low')) }}">
                                             <div class="d-flex justify-content-between align-items-start">
                                                 <div>
-                                                    <strong>IP {{ $event->ip_address }}</strong> - {{ $event->event_type }}
+                                                    <strong>IP {{ $event->ip_address }}</strong> -
+                                                    {{ $event->category ?? 'Sin categoría' }}
                                                     <br><small
                                                         class="text-muted">{{ $event->created_at->diffForHumans() }}</small>
                                                 </div>
@@ -321,7 +330,7 @@
                 </div>
             </div>
 
-            
+
 
             <!-- Top IPs Sospechosas -->
             <div class="col-xl-6">
@@ -337,22 +346,15 @@
                         <div id="suspicious-ips-list">
                             @if (isset($suspiciousIPs) && $suspiciousIPs->count() > 0)
                                 @foreach ($suspiciousIPs as $ip)
-
-
-
-
-
                                     <div class="suspicious-ip-item">
                                         <div>
                                             <strong>{{ $ip->ip_address }}</strong>
-                                            <br><small
-                                                class="text-muted">{{ $ip->geographic_data['country_name'] ?? 'Desconocido' }}
-                                                - {{ $ip->geographic_data['city'] ?? 'Desconocido' }}</small>
+                                            <br><small class="text-muted">Eventos: {{ $ip->event_count }}</small>
                                         </div>
                                         <div class="text-end">
                                             <div
                                                 class="text-{{ $ip->reputation_score >= 80 ? 'danger' : ($ip->reputation_score >= 60 ? 'warning' : 'success') }} fw-bold">
-                                                Score: {{ $ip->reputation_score }}</div>
+                                                Score: {{ round($ip->reputation_score, 1) }}</div>
                                             <span
                                                 class="badge bg-{{ $ip->reputation_score >= 80 ? 'danger' : ($ip->reputation_score >= 60 ? 'warning' : 'success') }} risk-badge">
                                                 {{ $ip->reputation_score >= 80 ? 'Crítico' : ($ip->reputation_score >= 60 ? 'Alto' : 'Bajo') }}
@@ -360,7 +362,6 @@
                                         </div>
                                     </div>
                                 @endforeach
-                                
                             @else
                                 <div class="text-center py-4">
                                     <i class="fas fa-info-circle fa-2x text-gray-400"></i>
@@ -368,7 +369,7 @@
                                 </div>
                             @endif
 
-                            
+
 
                         </div>
                     </div>
@@ -431,7 +432,7 @@
             threatsByCountryChart = new Chart(countryCtx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Cargando...'],
+                    labels: ['Sin datos'],
                     datasets: [{
                         data: [1],
                         backgroundColor: ['#e3e6f0'],
@@ -476,7 +477,7 @@
             // Calcular score basado en los datos disponibles
             const totalEvents = {{ $securityEventsCount ?? 0 }};
             const criticalEvents =
-            {{ isset($recentEvents) ? $recentEvents->where('threat_score', '>=', 80)->count() : 0 }};
+                {{ isset($recentEvents) ? $recentEvents->where('threat_score', '>=', 80)->count() : 0 }};
 
             if (totalEvents === 0) return 100;
 
@@ -497,24 +498,32 @@
         }
 
         function loadChartData() {
-            // Simular carga de datos de gráficos
-            setTimeout(() => {
-                // Actualizar gráfico de niveles de riesgo
-                riskLevelChart.data.datasets[0].data = [15, 28, 42, 35, 20];
-                riskLevelChart.update();
+            // Cargar datos reales del servidor
+            loadRealChartData();
+        }
 
-                // Actualizar gráfico de amenazas por país
-                threatsByCountryChart.data.labels = ['Rusia', 'China', 'Estados Unidos', 'Alemania', 'Otros'];
-                threatsByCountryChart.data.datasets[0].data = [25, 20, 15, 12, 28];
+        function loadRealChartData() {
+            // Actualizar gráfico de niveles de riesgo con datos reales
+            const riskData = @json($riskLevelDistribution ? $riskLevelDistribution : $defaultRiskData);
+            riskLevelChart.data.datasets[0].data = riskData;
+            riskLevelChart.update();
+
+            // Actualizar gráfico de amenazas por país con datos reales
+            const countryData = @json($threatsByCountry ? $threatsByCountry : $defaultCountryData);
+            if (Object.keys(countryData).length > 0) {
+                threatsByCountryChart.data.labels = Object.keys(countryData);
+                threatsByCountryChart.data.datasets[0].data = Object.values(countryData);
                 threatsByCountryChart.data.datasets[0].backgroundColor = [
-                    '#e74a3b',
-                    '#f6c23e',
-                    '#fd7e14',
-                    '#20c9a6',
-                    '#6c757d'
+                    '#e74a3b', '#f6c23e', '#fd7e14', '#20c9a6', '#6c757d'
                 ];
                 threatsByCountryChart.update();
-            }, 2500);
+            } else {
+                // Si no hay datos, mostrar estado "Sin datos"
+                threatsByCountryChart.data.labels = ['Sin datos'];
+                threatsByCountryChart.data.datasets[0].data = [1];
+                threatsByCountryChart.data.datasets[0].backgroundColor = ['#e3e6f0'];
+                threatsByCountryChart.update();
+            }
         }
 
         function startRealTimeUpdates() {

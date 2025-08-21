@@ -1,14 +1,13 @@
 <?php
-use Illuminate\Support\Facades\Route;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
-use Illuminate\Http\Request;
-
 use App\Http\Controllers\EquipoController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\TareaController;
-use App\Http\Controllers\SolicitudController;
 use App\Http\Controllers\RecepcionController;
 use App\Http\Controllers\SecurityController;
+use App\Http\Controllers\SolicitudController;
+use App\Http\Controllers\TareaController;
+use App\Http\Controllers\UserController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 // Rutas públicas
 Route::get('/', function () {
@@ -16,8 +15,8 @@ Route::get('/', function () {
 })->name('welcome');
 
 /* Route::group(['prefix' => 'user'], function () { //Usuarios
-    Route::get('create', [userController::class, 'create'])->name('user.create');
-    Route::post('store', [userController::class, 'store'])->name('user.store');
+Route::get('create', [userController::class, 'create'])->name('user.create');
+Route::post('store', [userController::class, 'store'])->name('user.store');
 }); */
 
 // Rutas de verificación de correo
@@ -41,7 +40,7 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
-    'verified'
+    'verified',
 ])->group(function () {
     // Dashboard
     Route::get('/dashboard', function () {
@@ -54,7 +53,7 @@ Route::middleware([
             Route::get('/', [equipoController::class, 'index'])->name('equipo');
         });
     });
-    
+
     //SUPER ADMINISTRADORES
     Route::group(['middleware' => ['role:SuperAdmin']], function () {
         Route::group(['prefix' => 'user'], function () { //Usuarios
@@ -70,7 +69,7 @@ Route::middleware([
             Route::get('destroy/{user}', [userController::class, 'destroy'])->name('user.destroy');
             Route::post('activate/{user}', [userController::class, 'activate'])->name('user.activate');
         });
-        
+
         Route::group(['prefix' => 'equipo'], function () { //Equipos
             Route::get('/', [equipoController::class, 'index'])->name('equipo');
             Route::get('create', [equipoController::class, 'create'])->name('equipo.create');
@@ -136,6 +135,7 @@ Route::middleware([
             // API endpoints para datos
             Route::get('dashboard-stats', [SecurityController::class, 'getDashboardStats'])->name('security.dashboard-stats');
             Route::get('security-events', [SecurityController::class, 'getSecurityEvents'])->name('security.security-events');
+            Route::get('events/data', [SecurityController::class, 'getEventsData'])->name('security.events-data');
         });
     });
 

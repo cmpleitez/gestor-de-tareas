@@ -12,30 +12,30 @@
 
     <title>Gestor de tareas {{ config('app.version') }}</title>
 
-    <link rel="apple-touch-icon" href="{{ asset('resources/css/app-assets/images/icons/favicon-32x32.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('app-assets/images/icons/favicon-32x32.png') }}">
 
     <link rel="shortcut icon" type="image/svg+xml"
-        href="{{ asset('resources/css/app-assets/images/icons/favicon-32x32.png') }}">
+        href="{{ asset('app-assets/images/icons/favicon-32x32.png') }}">
 
 
     <link href="https://fonts.googleapis.com/css?family=Rubik:300,400,500,600%7CIBM+Plex+Sans:300,400,500,600,700"
         rel="stylesheet">
 
     <!-- BEGIN: All CSS-->
-            <link href="{{ asset('resources/css/app-assets/vendors/css/vendors.min.css') }}" rel="stylesheet">
-        <link href="{{ asset('resources/css/app-assets/vendors/css/charts/apexcharts.css') }}" rel="stylesheet">
-        <link href="{{ asset('resources/css/app-assets/vendors/css/extensions/dragula.min.css') }}" rel="stylesheet">
-        <link href="{{ asset('resources/css/app-assets/vendors/css/forms/select/select2.min.css') }}" rel="stylesheet">
-        <link href="{{ asset('resources/css/app-assets/vendors/css/extensions/toastr.css') }}" rel="stylesheet">
-        <link href="{{ asset('resources/css/app-assets/vendors/css/tables/datatable/datatables.min.css') }}" rel="stylesheet">
-        <link href="{{ asset('resources/css/app-assets/css/bootstrap.css') }}" rel="stylesheet">
-        <link href="{{ asset('resources/css/app-assets/css/bootstrap-extended.css') }}" rel="stylesheet">
-        <link href="{{ asset('resources/css/app-assets/css/colors.css') }}" rel="stylesheet">
-        <link href="{{ asset('resources/css/app-assets/css/components.css') }}" rel="stylesheet">
-        <link href="{{ asset('resources/css/app-assets/css/core/menu/menu-types/vertical-menu.css') }}" rel="stylesheet">
-        <link href="{{ asset('resources/css/app-assets/css/pages/dashboard-analytics.css') }}" rel="stylesheet">
-        <link href="{{ asset('resources/css/app-assets/css/plugins/forms/validation/form-validation.css') }}" rel="stylesheet">
-        <link href="{{ asset('resources/css/app-assets/css/plugins/extensions/toastr.css') }}" rel="stylesheet">
+            <link href="{{ asset('app-assets/vendors/css/vendors.min.css') }}" rel="stylesheet">
+        <link href="{{ asset('app-assets/vendors/css/charts/apexcharts.css') }}" rel="stylesheet">
+        <link href="{{ asset('app-assets/vendors/css/extensions/dragula.min.css') }}" rel="stylesheet">
+        <link href="{{ asset('app-assets/vendors/css/forms/select/select2.min.css') }}" rel="stylesheet">
+        <link href="{{ asset('app-assets/vendors/css/extensions/toastr.css') }}" rel="stylesheet">
+        <link href="{{ asset('app-assets/vendors/css/tables/datatable/datatables.min.css') }}" rel="stylesheet">
+        <link href="{{ asset('app-assets/css/bootstrap.css') }}" rel="stylesheet">
+        <link href="{{ asset('app-assets/css/bootstrap-extended.css') }}" rel="stylesheet">
+        <link href="{{ asset('app-assets/css/colors.css') }}" rel="stylesheet">
+        <link href="{{ asset('app-assets/css/components.css') }}" rel="stylesheet">
+        <link href="{{ asset('app-assets/css/core/menu/menu-types/vertical-menu.css') }}" rel="stylesheet">
+        <link href="{{ asset('app-assets/css/pages/dashboard-analytics.css') }}" rel="stylesheet">
+        <link href="{{ asset('app-assets/css/plugins/forms/validation/form-validation.css') }}" rel="stylesheet">
+        <link href="{{ asset('app-assets/css/plugins/extensions/toastr.css') }}" rel="stylesheet">
     <!-- END: All CSS-->
 
     <style>

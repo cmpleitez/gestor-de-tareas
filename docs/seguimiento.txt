@@ -1,3 +1,17 @@
+🟠 fortalecer la seguridad del servidor y del sitio
+    ❌ LO QUE FORGE NO TIENE POR DEFECTO:
+    1. WAF (Web Application Firewall)
+    ModSecurity: No está instalado por defecto
+    Reglas OWASP: No implementadas
+    2. Rate Limiting Avanzado
+    Bloqueo de IPs: No hay sistema automático de bloqueo
+    Fail2ban: No configurado por defecto
+    3. Monitoreo de Seguridad
+    Alertas: No hay sistema de notificaciones de ataques
+    Logs de seguridad: Solo logs básicos de nginx
+    CONCLUSIÓN:
+    Forge te da seguridad básica sólida (firewall, nginx seguro, SSL), pero para seguridad empresarial necesitas implementar las capas adicionales que mencioné.
+    ¿Quieres que empecemos implementando lo que falta, o prefieres revisar primero tu configuración actual de Forge?
 🟠 solicitudes: que desaparezca de recibidas cuando pasa a en progreso, no cuando el origen y destino es el mismo.
 🟠 Error 500 esta dando por falta de optimize
 🟠 se reviso que areas y oficinas estan al revez en el diagrama de datos, en realidad las areas dependen de las oficinas, pues cada oficina puede tener una copia total o parcial del organigrama de areas de la sede central
@@ -35,8 +49,12 @@
 
 🟢 mantener los equipos de trabajo para tener potencia en flexibilidad y evitar la estructura organizativa que suele ser variable y dar fuertes golpes a los datos y a la seguridad del sistema
 
-...🟢 implementar un nuevo campo para distinguir el rol principal  para el uso de la gestion de tareas
+...🟢 implementar un nuevo campo para distinguir el rol principal para el uso de la gestion de tareas
         verificar y delimitar casos de roles multiples
+🟢 compactando las herramientas de seguridad y el uso de cuota mensual en transacciones
+    verificando que los servicios muestren datos reales:
+        
+
 
 🟢 construir de control de calidad para el gestor
 🟢 proceso de rechazo de una solicitud o anulación
@@ -48,23 +66,8 @@
 🟢 register: asegurar el id del usuario con un aumento no automático sino programatico
 
    🟢 potenciar el documento que incluye: procedimiento y los servicios informáticos a construir
-   🟢 necesitamos pegar el dominio a forge y a digital ocean 
+   🟢 necesitamos pegar el dominio a forge y a digital ocean
    🟢 implementar el ssl
-   🟢 fortalecer la seguridad del servidor y del sitio
-        🟢 fortalecimiento de la seguridad forge: incluso por ip o mac
-        ❌ LO QUE FORGE NO TIENE POR DEFECTO:
-        1. WAF (Web Application Firewall)
-        ModSecurity: No está instalado por defecto
-        Reglas OWASP: No implementadas
-        2. Rate Limiting Avanzado
-        Bloqueo de IPs: No hay sistema automático de bloqueo
-        Fail2ban: No configurado por defecto
-        3. Monitoreo de Seguridad
-        Alertas: No hay sistema de notificaciones de ataques
-        Logs de seguridad: Solo logs básicos de nginx
-        CONCLUSIÓN:
-        Forge te da seguridad básica sólida (firewall, nginx seguro, SSL), pero para seguridad empresarial necesitas implementar las capas adicionales que mencioné.
-        ¿Quieres que empecemos implementando lo que falta, o prefieres revisar primero tu configuración actual de Forge?
 
 🟠 rage agains the machine & limp bizkit & korn & alice in chains
     ...limp bizkit: im broke
@@ -136,3 +139,7 @@ bienestar de sus habitantes habitantes
 fortalecimiento de proyectos de infraestructura 
 promoviendo un entorno cultural sostenible, seguro y limpio
 
+🟢 Investigacion: 
+    cual es la tabla que almacena el indice de cedula
+    cual es la forma de exportacion hacia excel
+    que herramientas se necesitan usar para alcanzar los objetivos

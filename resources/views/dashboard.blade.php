@@ -13,28 +13,28 @@
 
     {{-- Titulo de la aplicación --}}
     <title>{{ auth()->user()->main_role }} - ALFA.{{ config('app.version') }}</title>
-    <link rel="apple-touch-icon" href="{{ asset('resources/css/app-assets/images/icons/favicon-32x32.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('app-assets/images/icons/favicon-32x32.png') }}">
     <link rel="shortcut icon" type="image/svg+xml"
-        href="{{ asset('resources/css/app-assets/images/icons/favicon-32x32.png') }}">
+        href="{{ asset('app-assets/images/icons/favicon-32x32.png') }}">
     <link href="https://fonts.googleapis.com/css?family=Rubik:300,400,500,600%7CIBM+Plex+Sans:300,400,500,600,700"
         rel="stylesheet">
 
     <!-- BEGIN: Vendor CSS-->
-    <link href="{{ asset('resources/css/app-assets/vendors/css/vendors.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('resources/css/app-assets/vendors/css/charts/apexcharts.css') }}" rel="stylesheet">
-    <link href="{{ asset('resources/css/app-assets/vendors/css/animate/animate.css') }}" rel="stylesheet">
-    <link href="{{ asset('resources/css/app-assets/vendors/css/extensions/dragula.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('resources/css/app-assets/vendors/css/forms/select/select2.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('resources/css/app-assets/vendors/css/extensions/toastr.css') }}" rel="stylesheet">
-    <link href="{{ asset('resources/css/app-assets/vendors/css/tables/datatable/datatables.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('resources/css/app-assets/css/bootstrap.css') }}" rel="stylesheet">
-    <link href="{{ asset('resources/css/app-assets/css/bootstrap-extended.css') }}" rel="stylesheet">
-    <link href="{{ asset('resources/css/app-assets/css/colors.css') }}" rel="stylesheet">
-    <link href="{{ asset('resources/css/app-assets/css/components.css') }}" rel="stylesheet">
-    <link href="{{ asset('resources/css/app-assets/css/core/menu/menu-types/vertical-menu.css') }}" rel="stylesheet">
-    <link href="{{ asset('resources/css/app-assets/css/pages/dashboard-analytics.css') }}" rel="stylesheet">
-    <link href="{{ asset('resources/css/app-assets/css/plugins/forms/validation/form-validation.css') }}" rel="stylesheet">
-    <link href="{{ asset('resources/css/app-assets/css/plugins/extensions/toastr.css') }}" rel="stylesheet">
+    <link href="{{ asset('app-assets/vendors/css/vendors.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('app-assets/vendors/css/charts/apexcharts.css') }}" rel="stylesheet">
+    <link href="{{ asset('app-assets/vendors/css/animate/animate.css') }}" rel="stylesheet">
+    <link href="{{ asset('app-assets/vendors/css/extensions/dragula.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('app-assets/vendors/css/forms/select/select2.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('app-assets/vendors/css/extensions/toastr.css') }}" rel="stylesheet">
+    <link href="{{ asset('app-assets/vendors/css/tables/datatable/datatables.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('app-assets/css/bootstrap.css') }}" rel="stylesheet">
+    <link href="{{ asset('app-assets/css/bootstrap-extended.css') }}" rel="stylesheet">
+    <link href="{{ asset('app-assets/css/colors.css') }}" rel="stylesheet">
+    <link href="{{ asset('app-assets/css/components.css') }}" rel="stylesheet">
+    <link href="{{ asset('app-assets/css/core/menu/menu-types/vertical-menu.css') }}" rel="stylesheet">
+    <link href="{{ asset('app-assets/css/pages/dashboard-analytics.css') }}" rel="stylesheet">
+    <link href="{{ asset('app-assets/css/plugins/forms/validation/form-validation.css') }}" rel="stylesheet">
+    <link href="{{ asset('app-assets/css/plugins/extensions/toastr.css') }}" rel="stylesheet">
     <!-- END: All CSS-->
 
     <style>
@@ -685,8 +685,8 @@
                                         <img src="{{ Storage::url($photoPath) }}" alt="avatar"
                                             style="height: 45px; width: 45px; object-fit: cover;">
                                         @else
-                                        <img src="{{ asset('resources/css/app-assets/images/pages/operador.png') }}"
-                                            alt="avatar" style="height: 45px; width: 45px; object-fit: contain;">
+                                                                                 <img src="{{ asset('app-assets/images/pages/operador.png') }}"
+                                             alt="avatar" style="height: 45px; width: 45px; object-fit: contain;">
                                         @endif
                                     @endif
                                 </div>
@@ -720,8 +720,8 @@
                 <li class="nav-item mr-auto open">
                     <a class="navbar-brand align-items-baseline" href="{{ route('dashboard') }}">
                         <div class="brand-logo">
-                            <img src="{{ asset('resources/css/app-assets/images/icons/favicon-32x32.png') }}" alt="logo"
-                                style="width: 2.5rem; height: 2rem; object-fit: contain;">
+                                                         <img src="{{ asset('app-assets/images/icons/favicon-32x32.png') }}" alt="logo"
+                                 style="width: 2.5rem; height: 2rem; object-fit: contain;">
                         </div>
                         <h2 class="brand-text mb-0"></h2>
                     </a>
@@ -872,26 +872,26 @@
     <script src="{{ asset('resources/js/js/core/libraries/jquery.min.js') }}"></script>
 
     <!-- BEGIN: Critical JavaScript (Emergency Load) -->
-    <script src="{{ asset('resources/css/app-assets/vendors/js/vendors.min.js') }}"></script>
+    <script src="{{ asset('app-assets/vendors/js/vendors.min.js') }}"></script>
     <!-- END: Critical JavaScript (Emergency Load) -->
 
     <!-- BEGIN: Vendor JavaScript -->
-    <script src="{{ asset('resources/css/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.tools.js') }}"></script>
-    <script src="{{ asset('resources/css/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.defaults.js') }}"></script>
-    <script src="{{ asset('resources/css/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.min.js') }}"></script>
-    <script src="{{ asset('resources/css/app-assets/vendors/js/extensions/numeral/numeral.js') }}"></script>
-    <script src="{{ asset('resources/css/app-assets/vendors/js/extensions/dragula.min.js') }}"></script>
-    <script src="{{ asset('resources/css/app-assets/vendors/js/forms/validation/jqBootstrapValidation.js') }}"></script>
-    <script src="{{ asset('resources/css/app-assets/vendors/js/forms/select/select2.full.min.js') }}"></script>
-    <script src="{{ asset('resources/css/app-assets/vendors/js/extensions/toastr.min.js') }}"></script>
-    <script src="{{ asset('resources/css/app-assets/vendors/js/tables/datatable/datatables.min.js') }}"></script>
-    <script src="{{ asset('resources/css/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}"></script>
-    <script src="{{ asset('resources/css/app-assets/vendors/js/tables/datatable/dataTables.buttons.min.js') }}"></script>
-    <script src="{{ asset('resources/css/app-assets/vendors/js/tables/datatable/buttons.html5.min.js') }}"></script>
-    <script src="{{ asset('resources/css/app-assets/vendors/js/tables/datatable/buttons.print.min.js') }}"></script>
-    <script src="{{ asset('resources/css/app-assets/vendors/js/tables/datatable/buttons.bootstrap.min.js') }}"></script>
-    <script src="{{ asset('resources/css/app-assets/vendors/js/tables/datatable/pdfmake.min.js') }}"></script>
-    <script src="{{ asset('resources/css/app-assets/vendors/js/tables/datatable/vfs_fonts.js') }}"></script>
+    <script src="{{ asset('app-assets/fonts/LivIconsEvo/js/LivIconsEvo.tools.js') }}"></script>
+    <script src="{{ asset('app-assets/fonts/LivIconsEvo/js/LivIconsEvo.defaults.js') }}"></script>
+    <script src="{{ asset('app-assets/fonts/LivIconsEvo/js/LivIconsEvo.min.js') }}"></script>
+    <script src="{{ asset('app-assets/vendors/js/extensions/numeral/numeral.js') }}"></script>
+    <script src="{{ asset('app-assets/vendors/js/extensions/dragula.min.js') }}"></script>
+    <script src="{{ asset('app-assets/vendors/js/forms/validation/jqBootstrapValidation.js') }}"></script>
+    <script src="{{ asset('app-assets/vendors/js/forms/select/select2.full.min.js') }}"></script>
+    <script src="{{ asset('app-assets/vendors/js/extensions/toastr.min.js') }}"></script>
+    <script src="{{ asset('app-assets/vendors/js/tables/datatable/datatables.min.js') }}"></script>
+    <script src="{{ asset('app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('app-assets/vendors/js/tables/datatable/dataTables.buttons.min.js') }}"></script>
+    <script src="{{ asset('app-assets/vendors/js/tables/datatable/buttons.html5.min.js') }}"></script>
+    <script src="{{ asset('app-assets/vendors/js/tables/datatable/buttons.print.min.js') }}"></script>
+    <script src="{{ asset('app-assets/vendors/js/tables/datatable/buttons.bootstrap.min.js') }}"></script>
+    <script src="{{ asset('app-assets/vendors/js/tables/datatable/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('app-assets/vendors/js/tables/datatable/vfs_fonts.js') }}"></script>
     <!-- END: Vendor JavaScript -->
 
     <!-- BEGIN: Application JavaScript -->
@@ -931,7 +931,7 @@
             if ($.fn.DataTable) {
                 var table = $('.zero-configuration').DataTable({
                     "language": {
-                        "url": "/resources/css/app-assets/Spanish.json"
+                        "url": "/app-assets/Spanish.json"
                     },
                     "responsive": true,
                     "autoWidth": false,

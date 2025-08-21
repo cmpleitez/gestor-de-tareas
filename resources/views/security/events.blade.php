@@ -1,100 +1,100 @@
 @extends('dashboard')
 @section('css')
-<style>
-    .border-left-primary {
-        border-left: 0.25rem solid #4e73df !important;
-    }
+    <style>
+        .border-left-primary {
+            border-left: 0.25rem solid #4e73df !important;
+        }
 
-    .border-left-danger {
-        border-left: 0.25rem solid #e74a3b !important;
-    }
+        .border-left-danger {
+            border-left: 0.25rem solid #e74a3b !important;
+        }
 
-    .border-left-warning {
-        border-left: 0.25rem solid #f6c23e !important;
-    }
+        .border-left-warning {
+            border-left: 0.25rem solid #f6c23e !important;
+        }
 
-    .border-left-info {
-        border-left: 0.25rem solid #36b9cc !important;
-    }
+        .border-left-info {
+            border-left: 0.25rem solid #36b9cc !important;
+        }
 
-    .border-left-success {
-        border-left: 0.25rem solid #1cc88a !important;
-    }
+        .border-left-success {
+            border-left: 0.25rem solid #1cc88a !important;
+        }
 
-    .risk-badge {
-        font-size: 0.75rem;
-        padding: 0.25rem 0.5rem;
-    }
+        .risk-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+        }
 
-    .event-row {
-        cursor: pointer;
-        transition: background-color 0.2s;
-    }
+        .event-row {
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
 
-    .event-row:hover {
-        background-color: #f8f9fc;
-    }
+        .event-row:hover {
+            background-color: #f8f9fc;
+        }
 
-    .event-row.critical {
-        border-left: 4px solid #e74a3b;
-    }
+        .event-row.critical {
+            border-left: 4px solid #e74a3b;
+        }
 
-    .event-row.high {
-        border-left: 4px solid #f6c23e;
-    }
+        .event-row.high {
+            border-left: 4px solid #f6c23e;
+        }
 
-    .event-row.medium {
-        border-left: 4px solid #fd7e14;
-    }
+        .event-row.medium {
+            border-left: 4px solid #fd7e14;
+        }
 
-    .event-row.low {
-        border-left: 4px solid #20c9a6;
-    }
+        .event-row.low {
+            border-left: 4px solid #20c9a6;
+        }
 
-    .event-row.minimal {
-        border-left: 4px solid #1cc88a;
-    }
+        .event-row.minimal {
+            border-left: 4px solid #1cc88a;
+        }
 
-    .score-indicator {
-        width: 60px;
-        height: 8px;
-        background-color: #e3e6f0;
-        border-radius: 4px;
-        overflow: hidden;
-    }
+        .score-indicator {
+            width: 60px;
+            height: 8px;
+            background-color: #e3e6f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
 
-    .score-fill {
-        height: 100%;
-        transition: width 0.3s ease;
-    }
+        .score-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
 
-    .score-fill.critical {
-        background-color: #e74a3b;
-    }
+        .score-fill.critical {
+            background-color: #e74a3b;
+        }
 
-    .score-fill.high {
-        background-color: #f6c23e;
-    }
+        .score-fill.high {
+            background-color: #f6c23e;
+        }
 
-    .score-fill.medium {
-        background-color: #fd7e14;
-    }
+        .score-fill.medium {
+            background-color: #fd7e14;
+        }
 
-    .score-fill.low {
-        background-color: #20c9a6;
-    }
+        .score-fill.low {
+            background-color: #20c9a6;
+        }
 
-    .score-fill.minimal {
-        background-color: #1cc88a;
-    }
-</style>
+        .score-fill.minimal {
+            background-color: #1cc88a;
+        }
+    </style>
 @stop
 
 @section('contenedor')
     <div class="container-fluid">
         <!-- ========================================
-            HEADER DE EVENTOS DE SEGURIDAD
-            ======================================== -->
+                            HEADER DE EVENTOS DE SEGURIDAD
+                            ======================================== -->
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card bg-gradient-info text-white">
@@ -126,8 +126,8 @@
         </div>
 
         <!-- ========================================
-            FILTROS Y CONTROLES DE BÚSQUEDA
-            ======================================== -->
+                            FILTROS Y CONTROLES DE BÚSQUEDA
+                            ======================================== -->
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card shadow">
@@ -258,8 +258,8 @@
         </div>
 
         <!-- ========================================
-            ESTADÍSTICAS RÁPIDAS
-            ======================================== -->
+                            ESTADÍSTICAS RÁPIDAS
+                            ======================================== -->
         <div class="row mb-4">
             <div class="col-md-3 mb-3">
                 <div class="card border-left-danger shadow h-100 py-2">
@@ -335,8 +335,8 @@
         </div>
 
         <!-- ========================================
-            TABLA DE EVENTOS DE SEGURIDAD
-            ======================================== -->
+                            TABLA DE EVENTOS DE SEGURIDAD
+                            ======================================== -->
         <div class="row">
             <div class="col-12">
                 <div class="card shadow mb-4">
@@ -402,8 +402,8 @@
     </div>
 
     <!-- ========================================
-        MODALES Y COMPONENTES ADICIONALES
-        ======================================== -->
+                        MODALES Y COMPONENTES ADICIONALES
+                        ======================================== -->
 
     <!-- Modal de Detalles del Evento -->
     <div class="modal fade" id="eventDetailsModal" tabindex="-1">
@@ -510,41 +510,28 @@
                         <p class="mt-2 text-gray-500">Cargando eventos...</p>
                     </td>
                 </tr>`;
-            // Simular delay de carga
+            // Cargar eventos reales desde el servidor
             setTimeout(() => {
-                const events = generateSampleEvents();
-                renderEventsTable(events);
-                updatePagination();
+                loadRealEvents();
             }, 1000);
         }
 
-        function generateSampleEvents() {
-            const events = [];
-            const ips = ['203.0.113.10', '185.199.108.154', '198.51.100.75', '104.21.92.193', '45.33.12.200'];
-            const categories = ['malware', 'phishing', 'ddos', 'scanning', 'injection', 'brute_force'];
-            const actions = ['block', 'challenge', 'monitor', 'allow', 'rate_limit'];
-            const statuses = ['open', 'investigating', 'resolved', 'escalated'];
-
-            for (let i = 0; i < 50; i++) {
-                const score = Math.floor(Math.random() * 100);
-                const riskLevel = getRiskLevel(score);
-
-                events.push({
-                    id: i + 1,
-                    ip: ips[Math.floor(Math.random() * ips.length)],
-                    score: score,
-                    risk_level: riskLevel,
-                    category: categories[Math.floor(Math.random() * categories.length)],
-                    action: actions[Math.floor(Math.random() * actions.length)],
-                    date: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000),
-                    status: statuses[Math.floor(Math.random() * statuses.length)],
-                    country: 'RU',
-                    city: 'Moscow',
-                    reason: 'Comportamiento sospechoso detectado'
+        function loadRealEvents() {
+            // Cargar eventos reales desde el servidor
+            fetch('/security/events/data')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.events && data.events.length > 0) {
+                        renderEventsTable(data.events);
+                    } else {
+                        renderEmptyState();
+                    }
+                    updatePagination();
+                })
+                .catch(error => {
+                    console.error('Error cargando eventos:', error);
+                    renderEmptyState();
                 });
-            }
-
-            return events;
         }
 
         function getRiskLevel(score) {
@@ -856,6 +843,22 @@
             container.style.zIndex = '1055';
             document.body.appendChild(container);
             return container;
+        }
+
+        function renderEmptyState() {
+            const tableBody = document.getElementById('events-table-body');
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="8" class="text-center py-4">
+                        <i class="fas fa-info-circle fa-2x text-gray-400"></i>
+                        <p class="mt-2 text-gray-500">No hay eventos de seguridad</p>
+                        <small class="text-muted">La tabla está vacía o no se encontraron eventos</small>
+                    </td>
+                </tr>`;
+
+            // Actualizar información de paginación
+            totalEvents = 0;
+            updateShowingInfo();
         }
     </script>
 @stop

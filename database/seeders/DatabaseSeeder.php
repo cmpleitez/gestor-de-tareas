@@ -20,9 +20,6 @@ class DatabaseSeeder extends Seeder
             // SEEDERS DE SEGURIDAD - MONITOREO AVANZADO
             // ========================================
             UserSeeder::class,
-            SecurityEventSeeder::class,
-            ThreatIntelligenceSeeder::class,
-            IPReputationSeeder::class,
         ]);
     }
 }

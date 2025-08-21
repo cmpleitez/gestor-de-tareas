@@ -23,9 +23,9 @@ class Kernel extends HttpKernel
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
         
         // ========================================
-        // MIDDLEWARE DE SEGURIDAD - MONITOREO AVANZADO
+        // MIDDLEWARE DE SEGURIDAD GLOBAL OPTIMIZADO
         // ========================================
-        \App\Http\Middleware\SecurityMonitoring::class,
+        \App\Http\Middleware\SecurityMonitoringOptimized::class,
     ];
 
     /**

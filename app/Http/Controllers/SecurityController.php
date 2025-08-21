@@ -2,34 +2,144 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
 use App\Models\SecurityEvent;
-use App\Models\ThreatIntelligence;
-use App\Models\IPReputation;
+use App\Services\SimpleSecurityService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 
 class SecurityController extends Controller
 {
+    protected $simpleSecurity;
+
+    public function __construct(SimpleSecurityService $simpleSecurity)
+    {
+        $this->simpleSecurity = $simpleSecurity;
+    }
     /**
-     * Dashboard principal de seguridad
+     * Dashboard principal de seguridad (SIMPLIFICADO)
      */
     public function index()
     {
-        // Obtener datos para el dashboard
-        $data = [
-            'securityEventsCount' => SecurityEvent::count(),
-            'activeThreatsCount' => ThreatIntelligence::where('status', 'active')->count(),
-            'blockedIPsCount' => IPReputation::where('blacklisted', true)->count(),
-            'recentEvents' => SecurityEvent::latest()->take(5)->get(),
-            'topThreats' => ThreatIntelligence::orderBy('threat_score', 'desc')->take(5)->get(),
-            'suspiciousIPs' => IPReputation::where('risk_level', 'high')->take(5)->get(),
-        ];
-        // Debug: Log de los datos
-        Log::info('Dashboard Security Data:', $data);
-        
-        return view('security.index', $data);
+        try {
+            // Datos reales de la base de datos
+            $data = [
+                'securityEventsCount' => SecurityEvent::where('created_at', '>=', now()->subDay())->count(),
+                'activeThreatsCount' => SecurityEvent::where('threat_score', '>=', 80)->where('created_at', '>=', now()->subDay())->count(),
+                'blockedIPsCount' => $this->getBlockedIPsCount(),
+                'recentEvents' => SecurityEvent::latest()->take(10)->get(),
+                'suspiciousIPs' => $this->getSuspiciousIPs(),
+                'riskLevelDistribution' => $this->getRiskLevelDistribution(),
+                'threatsByCountry' => $this->getThreatsByCountry(),
+            ];
+
+            return view('security.index', $data);
+        } catch (\Exception $e) {
+            Log::error('Error en dashboard de seguridad: ' . $e->getMessage());
+
+            // Datos por defecto en caso de error
+            $data = [
+                'securityEventsCount' => 0,
+                'activeThreatsCount' => 0,
+                'blockedIPsCount' => 0,
+                'recentEvents' => collect(),
+                'suspiciousIPs' => collect(),
+                'riskLevelDistribution' => [0, 0, 0, 0, 0],
+                'threatsByCountry' => [],
+            ];
+
+            return view('security.index', $data);
+        }
+    }
+
+    /**
+     * Obtener conteo de IPs bloqueadas
+     */
+    private function getBlockedIPsCount(): int
+    {
+        try {
+            return SecurityEvent::where('action_taken', 'block')
+                ->where('created_at', '>=', now()->subDay())
+                ->count();
+        } catch (\Exception $e) {
+            Log::error('Error obteniendo IPs bloqueadas: ' . $e->getMessage());
+            return 0;
+        }
+    }
+
+    /**
+     * Obtener IPs sospechosas
+     */
+    private function getSuspiciousIPs()
+    {
+        try {
+            return SecurityEvent::select('ip_address')
+                ->selectRaw('AVG(threat_score) as reputation_score')
+                ->selectRaw('COUNT(*) as event_count')
+                ->where('threat_score', '>=', 60)
+                ->where('created_at', '>=', now()->subDays(7))
+                ->groupBy('ip_address')
+                ->orderByDesc('reputation_score')
+                ->take(10)
+                ->get();
+        } catch (\Exception $e) {
+            Log::error('Error obteniendo IPs sospechosas: ' . $e->getMessage());
+            return collect();
+        }
+    }
+
+    /**
+     * Obtener distribución de eventos por nivel de riesgo
+     */
+    private function getRiskLevelDistribution(): array
+    {
+        try {
+            $distribution = [
+                'minimal' => SecurityEvent::where('threat_score', '<', 20)->where('created_at', '>=', now()->subDays(30))->count(),
+                'low' => SecurityEvent::whereBetween('threat_score', [20, 39])->where('created_at', '>=', now()->subDays(30))->count(),
+                'medium' => SecurityEvent::whereBetween('threat_score', [40, 59])->where('created_at', '>=', now()->subDays(30))->count(),
+                'high' => SecurityEvent::whereBetween('threat_score', [60, 79])->where('created_at', '>=', now()->subDays(30))->count(),
+                'critical' => SecurityEvent::where('threat_score', '>=', 80)->where('created_at', '>=', now()->subDays(30))->count(),
+            ];
+
+            return array_values($distribution);
+        } catch (\Exception $e) {
+            Log::error('Error obteniendo distribución de riesgo: ' . $e->getMessage());
+            return [0, 0, 0, 0, 0]; // ← AQUÍ ESTÁ EL PROBLEMA
+        }
+    }
+
+    /**
+     * Obtener amenazas por país
+     */
+    private function getThreatsByCountry(): array
+    {
+        try {
+            // Obtener datos de IPs por país desde ip_reputations usando DB directamente
+            if (Schema::hasTable('ip_reputations')) {
+                $threatsByCountry = DB::table('ip_reputations')
+                    ->selectRaw('
+                        JSON_UNQUOTE(JSON_EXTRACT(geographic_data, "$.country")) as country,
+                        COUNT(*) as count
+                    ')
+                    ->whereNotNull('geographic_data')
+                    ->groupBy('country')
+                    ->orderByDesc('count')
+                    ->take(5)
+                    ->pluck('count', 'country')
+                    ->toArray();
+
+                return $threatsByCountry;
+            }
+
+            return [];
+        } catch (\Exception $e) {
+            Log::error('Error obteniendo amenazas por país: ' . $e->getMessage());
+            return [];
+        }
     }
 
     /**
@@ -40,7 +150,7 @@ class SecurityController extends Controller
         $events = SecurityEvent::with(['user'])
             ->latest()
             ->paginate(20);
-            
+
         return view('security.events', compact('events'));
     }
 
@@ -57,7 +167,54 @@ class SecurityController extends Controller
      */
     public function ipReputation()
     {
-        return view('security.ip-reputation');
+        // Obtener datos reales de la base de datos
+        $ipStats = $this->getIPReputationStats();
+
+        return view('security.ip-reputation', compact('ipStats'));
+    }
+
+    /**
+     * Obtener estadísticas de reputación de IPs desde la BD
+     */
+    private function getIPReputationStats()
+    {
+        try {
+            // Intentar obtener datos de la tabla IPReputation si existe
+            if (Schema::hasTable('ip_reputations')) {
+                $totalIPs = \App\Models\IPReputation::count();
+                $cleanIPs = \App\Models\IPReputation::where('risk_score', '<', 30)->count();
+                $suspiciousIPs = \App\Models\IPReputation::whereBetween('risk_score', [30, 70])->count();
+                $maliciousIPs = \App\Models\IPReputation::where('risk_score', '>', 70)->count();
+                $avgScore = \App\Models\IPReputation::avg('risk_score') ?? 0;
+            } else {
+                // Si la tabla no existe, usar datos del cache o valores por defecto
+                $totalIPs = Cache::get('security.total_ips', 0);
+                $cleanIPs = Cache::get('security.clean_ips', 0);
+                $suspiciousIPs = Cache::get('security.suspicious_ips', 0);
+                $maliciousIPs = Cache::get('security.malicious_ips', 0);
+                $avgScore = Cache::get('security.avg_score', 0);
+            }
+
+            return [
+                'total_ips' => $totalIPs,
+                'clean_ips' => $cleanIPs,
+                'suspicious_ips' => $suspiciousIPs,
+                'malicious_ips' => $maliciousIPs,
+                'avg_score' => round($avgScore, 1),
+            ];
+
+        } catch (\Exception $e) {
+            Log::error('Error obteniendo estadísticas de IPs: ' . $e->getMessage());
+
+            // Valores por defecto en caso de error
+            return [
+                'total_ips' => 0,
+                'clean_ips' => 0,
+                'suspicious_ips' => 0,
+                'malicious_ips' => 0,
+                'avg_score' => 0,
+            ];
+        }
     }
 
     /**
@@ -93,7 +250,7 @@ class SecurityController extends Controller
             $request->validate([
                 'ip' => 'required|ip',
                 'reason' => 'nullable|string|max:500',
-                'duration' => 'nullable|integer|min:1|max:365'
+                'duration' => 'nullable|integer|min:1|max:365',
             ]);
 
             $ip = $request->ip;
@@ -106,7 +263,7 @@ class SecurityController extends Controller
                 'reason' => $reason,
                 'blocked_at' => now(),
                 'expires_at' => now()->addHours($duration),
-                'blocked_by' => auth()->id()
+                'blocked_by' => auth()->id(),
             ];
             Cache::put('security.blacklist', $blacklist, now()->addDays(30));
 
@@ -119,9 +276,9 @@ class SecurityController extends Controller
                 'details' => [
                     'reason' => $reason,
                     'duration_hours' => $duration,
-                    'blocked_by' => auth()->id()
+                    'blocked_by' => auth()->id(),
                 ],
-                'created_at' => now()
+                'created_at' => now(),
             ]);
 
             Log::info("IP {$ip} bloqueada manualmente por usuario " . auth()->id());
@@ -131,15 +288,15 @@ class SecurityController extends Controller
                 'message' => "IP {$ip} bloqueada exitosamente por {$duration} horas",
                 'data' => [
                     'ip' => $ip,
-                    'expires_at' => now()->addHours($duration)->toISOString()
-                ]
+                    'expires_at' => now()->addHours($duration)->toISOString(),
+                ],
             ]);
 
         } catch (\Exception $e) {
             Log::error("Error al bloquear IP: " . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Error al bloquear IP: ' . $e->getMessage()
+                'message' => 'Error al bloquear IP: ' . $e->getMessage(),
             ], 500);
         }
     }
@@ -153,7 +310,7 @@ class SecurityController extends Controller
             $request->validate([
                 'ip' => 'required|ip',
                 'reason' => 'nullable|string|max:500',
-                'permanent' => 'boolean'
+                'permanent' => 'boolean',
             ]);
 
             $ip = $request->ip;
@@ -166,7 +323,7 @@ class SecurityController extends Controller
                 'reason' => $reason,
                 'added_at' => now(),
                 'permanent' => $permanent,
-                'added_by' => auth()->id()
+                'added_by' => auth()->id(),
             ];
             Cache::put('security.whitelist', $whitelist, now()->addDays(365));
 
@@ -186,9 +343,9 @@ class SecurityController extends Controller
                 'details' => [
                     'reason' => $reason,
                     'permanent' => $permanent,
-                    'added_by' => auth()->id()
+                    'added_by' => auth()->id(),
                 ],
-                'created_at' => now()
+                'created_at' => now(),
             ]);
 
             Log::info("IP {$ip} agregada a whitelist por usuario " . auth()->id());
@@ -198,15 +355,15 @@ class SecurityController extends Controller
                 'message' => "IP {$ip} agregada a whitelist exitosamente",
                 'data' => [
                     'ip' => $ip,
-                    'permanent' => $permanent
-                ]
+                    'permanent' => $permanent,
+                ],
             ]);
 
         } catch (\Exception $e) {
             Log::error("Error al agregar IP a whitelist: " . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Error al agregar IP a whitelist: ' . $e->getMessage()
+                'message' => 'Error al agregar IP a whitelist: ' . $e->getMessage(),
             ], 500);
         }
     }
@@ -221,7 +378,7 @@ class SecurityController extends Controller
                 'enabled' => 'required|boolean',
                 'message' => 'nullable|string|max:500',
                 'allowed_ips' => 'nullable|array',
-                'allowed_ips.*' => 'ip'
+                'allowed_ips.*' => 'ip',
             ]);
 
             $enabled = $request->enabled;
@@ -233,7 +390,7 @@ class SecurityController extends Controller
                 \Artisan::call('down', [
                     '--message' => $message,
                     '--retry' => 60,
-                    '--secret' => 'admin-access-' . time()
+                    '--secret' => 'admin-access-' . time(),
                 ]);
 
                 // Guardar configuración de mantenimiento
@@ -264,48 +421,43 @@ class SecurityController extends Controller
                 'data' => [
                     'enabled' => $enabled,
                     'message' => $message,
-                    'allowed_ips' => $allowedIPs
-                ]
+                    'allowed_ips' => $allowedIPs,
+                ],
             ]);
 
         } catch (\Exception $e) {
             Log::error("Error al cambiar modo mantenimiento: " . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Error al cambiar modo mantenimiento: ' . $e->getMessage()
+                'message' => 'Error al cambiar modo mantenimiento: ' . $e->getMessage(),
             ], 500);
         }
     }
 
     /**
-     * Obtener estadísticas del dashboard
+     * Estadísticas del dashboard (SIMPLIFICADAS)
      */
     public function getDashboardStats(): JsonResponse
     {
         try {
-            $stats = Cache::remember('security.dashboard_stats', 300, function () {
+            $stats = Cache::remember('security.dashboard_stats', 3600, function () {
                 return [
-                    'total_events' => SecurityEvent::count(),
-                    'critical_threats' => SecurityEvent::where('threat_score', '>=', 80)->count(),
-                    'blocked_ips' => SecurityEvent::where('action_taken', 'block')->distinct('ip_address')->count(),
-                    'prevention_rate' => $this->calculatePreventionRate(),
-                    'recent_events' => SecurityEvent::latest()->take(10)->get(),
-                    'top_suspicious_ips' => $this->getTopSuspiciousIPs(),
-                    'threat_distribution' => $this->getThreatDistribution(),
-                    'system_status' => $this->getSystemStatus()
+                    'total_events_24h' => SecurityEvent::where('created_at', '>=', now()->subDay())->count(),
+                    'critical_threats_24h' => SecurityEvent::where('threat_score', '>=', 80)->where('created_at', '>=', now()->subDay())->count(),
+                    'recent_events' => SecurityEvent::latest()->take(10)->get(['ip_address', 'threat_score', 'created_at', 'action_taken']),
                 ];
             });
 
             return response()->json([
                 'success' => true,
-                'data' => $stats
+                'data' => $stats,
             ]);
 
         } catch (\Exception $e) {
             Log::error("Error al obtener estadísticas del dashboard: " . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Error al obtener estadísticas'
+                'message' => 'Error al obtener estadísticas',
             ], 500);
         }
     }
@@ -347,14 +499,14 @@ class SecurityController extends Controller
 
             return response()->json([
                 'success' => true,
-                'data' => $events
+                'data' => $events,
             ]);
 
         } catch (\Exception $e) {
             Log::error("Error al obtener eventos de seguridad: " . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Error al obtener eventos'
+                'message' => 'Error al obtener eventos',
             ], 500);
         }
     }
@@ -365,7 +517,9 @@ class SecurityController extends Controller
     private function calculatePreventionRate(): float
     {
         $totalEvents = SecurityEvent::count();
-        if ($totalEvents === 0) return 100.0;
+        if ($totalEvents === 0) {
+            return 100.0;
+        }
 
         $preventedEvents = SecurityEvent::whereIn('action_taken', ['block', 'challenge', 'rate_limit'])->count();
         return round(($preventedEvents / $totalEvents) * 100, 1);
@@ -409,7 +563,95 @@ class SecurityController extends Controller
             'last_scan' => Cache::get('security.last_scan', 'Nunca'),
             'active_threats' => SecurityEvent::where('threat_score', '>=', 70)
                 ->where('created_at', '>=', now()->subHours(24))
-                ->count()
+                ->count(),
         ];
+    }
+
+    /**
+     * Obtener datos de eventos para la vista de lista
+     */
+    public function getEventsData()
+    {
+        try {
+            $events = SecurityEvent::select(
+                'id',
+                'ip_address',
+                'category',
+                'threat_score',
+                'action_taken',
+                'created_at'
+            )
+                ->latest()
+                ->take(50)
+                ->get()
+                ->map(function ($event) {
+                    return [
+                        'id' => $event->id,
+                        'ip' => $event->ip_address,
+                        'score' => $event->threat_score,
+                        'risk_level' => $this->getRiskLevelFromScore($event->threat_score),
+                        'category' => $event->category ?? 'unknown',
+                        'action' => $event->action_taken ?? 'monitor',
+                        'date' => $event->created_at->format('d/m/Y, H:i'),
+                        'status' => $this->getStatusFromAction($event->action_taken),
+                        'country' => 'N/A',
+                        'city' => 'N/A',
+                        'reason' => 'Evento de seguridad detectado',
+                    ];
+                });
+
+            return response()->json([
+                'success' => true,
+                'events' => $events,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error obteniendo datos de eventos: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'events' => [],
+                'message' => 'Error al cargar eventos',
+            ]);
+        }
+    }
+
+    /**
+     * Obtener nivel de riesgo desde score
+     */
+    private function getRiskLevelFromScore($score)
+    {
+        if ($score >= 80) {
+            return 'critical';
+        }
+
+        if ($score >= 60) {
+            return 'high';
+        }
+
+        if ($score >= 40) {
+            return 'medium';
+        }
+
+        if ($score >= 20) {
+            return 'low';
+        }
+
+        return 'minimal';
+    }
+
+    /**
+     * Obtener status desde acción
+     */
+    private function getStatusFromAction($action)
+    {
+        switch ($action) {
+            case 'block':
+                return 'resolved';
+            case 'challenge':
+                return 'investigating';
+            case 'monitor':
+                return 'open';
+            default:
+                return 'open';
+        }
     }
 }
