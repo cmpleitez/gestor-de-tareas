@@ -52,8 +52,8 @@
 ...🟢 implementar un nuevo campo para distinguir el rol principal para el uso de la gestion de tareas
         verificar y delimitar casos de roles multiples
 🟢 compactando las herramientas de seguridad y el uso de cuota mensual en transacciones
-    verificando que los servicios muestren datos reales:
-        
+        verificando que los servicios muestren datos reales:
+            ...Eventos de Seguridad
 
 
 🟢 construir de control de calidad para el gestor
