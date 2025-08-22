@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('request_method', 10);
             $table->text('user_agent')->nullable();
             $table->decimal('threat_score', 5, 2)->default(0);
-            $table->string('action_taken', 50)->nullable();
             $table->text('reason')->nullable();
             $table->json('payload')->nullable();
             $table->json('headers')->nullable();
@@ -28,8 +27,6 @@ return new class extends Migration
             $table->string('category', 50)->nullable();
             $table->string('severity', 20)->default('info');
             $table->string('status', 20)->default('open');
-            $table->timestamp('resolved_at')->nullable();
-            $table->unsignedBigInteger('resolved_by')->nullable();
             $table->text('notes')->nullable();
             $table->json('metadata')->nullable();
             $table->timestamps();

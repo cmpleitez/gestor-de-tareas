@@ -21,7 +21,6 @@ class SecurityEvent extends Model
         'request_method',
         'user_agent',
         'threat_score',
-        'action_taken',
         'reason',
         'payload',
         'headers',
@@ -32,8 +31,6 @@ class SecurityEvent extends Model
         'category',
         'severity',
         'status',
-        'resolved_at',
-        'resolved_by',
         'notes',
         'metadata'
     ];
@@ -45,7 +42,7 @@ class SecurityEvent extends Model
         'headers' => 'array',
         'geolocation' => 'array',
         'metadata' => 'array',
-        'resolved_at' => 'datetime',
+
         'created_at' => 'datetime',
         'updated_at' => 'datetime'
     ];
@@ -62,7 +59,7 @@ class SecurityEvent extends Model
     protected $appends = [
         'formatted_risk_level',
         'formatted_severity',
-        'is_resolved',
+
         'age_in_minutes'
     ];
 
@@ -74,13 +71,7 @@ class SecurityEvent extends Model
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * Relación con el usuario que resolvió el evento
-     */
-    public function resolvedBy(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'resolved_by');
-    }
+
 
     /**
      * Relación con eventos relacionados (misma IP)
@@ -116,21 +107,7 @@ class SecurityEvent extends Model
         return $query->where('threat_score', '>=', 80);
     }
 
-    /**
-     * Scope para eventos no resueltos
-     */
-    public function scopeUnresolved(Builder $query): Builder
-    {
-        return $query->whereNull('resolved_at');
-    }
 
-    /**
-     * Scope para eventos resueltos
-     */
-    public function scopeResolved(Builder $query): Builder
-    {
-        return $query->whereNotNull('resolved_at');
-    }
 
     /**
      * Scope para eventos de una IP específica
@@ -196,13 +173,7 @@ class SecurityEvent extends Model
         return $query->where('source', $source);
     }
 
-    /**
-     * Scope para eventos con una acción específica
-     */
-    public function scopeWithAction(Builder $query, string $action): Builder
-    {
-        return $query->where('action_taken', $action);
-    }
+
 
     /**
      * Obtener el nivel de riesgo formateado
@@ -220,13 +191,7 @@ class SecurityEvent extends Model
         return ucfirst($this->severity ?? 'unknown');
     }
 
-    /**
-     * Verificar si el evento está resuelto
-     */
-    public function getIsResolvedAttribute(): bool
-    {
-        return !is_null($this->resolved_at);
-    }
+
 
     /**
      * Obtener la edad del evento en minutos
@@ -244,30 +209,9 @@ class SecurityEvent extends Model
         return $this->created_at->diffForHumans();
     }
 
-    /**
-     * Marcar el evento como resuelto
-     */
-    public function markAsResolved(int $resolvedByUserId, string $notes = null): bool
-    {
-        return $this->update([
-            'resolved_at' => now(),
-            'resolved_by' => $resolvedByUserId,
-            'notes' => $notes,
-            'status' => 'resolved'
-        ]);
-    }
 
-    /**
-     * Marcar el evento como en revisión
-     */
-    public function markAsUnderReview(int $reviewedByUserId, string $notes = null): bool
-    {
-        return $this->update([
-            'status' => 'under_review',
-            'resolved_by' => $reviewedByUserId,
-            'notes' => $notes
-        ]);
-    }
+
+
 
     /**
      * Actualizar el score de amenaza

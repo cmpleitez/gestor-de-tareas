@@ -1,0 +1,317 @@
+/* ========================================
+           ESTILOS PARA COMPONENTES DE SEGURIDAD
+           ======================================== */
+
+/* Indicador de estado del sistema */
+.security-status-indicator {
+    position: relative;
+    width: 60px;
+    height: 60px;
+}
+
+.pulse-dot {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(40, 167, 69, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
+    }
+}
+
+/* Áreas de gráficos */
+.chart-area {
+    position: relative;
+    height: 300px;
+}
+
+.chart-pie {
+    position: relative;
+    height: 250px;
+}
+
+/* Elementos de eventos recientes */
+.recent-event-item {
+    border-left: 4px solid #e3e6f0;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    background-color: #f8f9fc;
+    border-radius: 0.35rem;
+    transition: all 0.2s ease-in-out;
+}
+
+.recent-event-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.recent-event-item.critical {
+    border-left-color: #e74a3b;
+    background-color: #fdf2f2;
+}
+
+.recent-event-item.high {
+    border-left-color: #f6c23e;
+    background-color: #fdfbf2;
+}
+
+.recent-event-item.medium {
+    border-left-color: #fd7e14;
+    background-color: #fdf8f2;
+}
+
+.recent-event-item.low {
+    border-left-color: #20c9a6;
+    background-color: #f2fdfb;
+}
+
+/* Elementos de IPs sospechosas */
+.suspicious-ip-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    border-bottom: 1px solid #e3e6f0;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.suspicious-ip-item:hover {
+    background-color: #f8f9fc;
+}
+
+.suspicious-ip-item:last-child {
+    border-bottom: none;
+}
+
+/* Badges de riesgo */
+.risk-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    font-weight: 500;
+}
+
+/* Contenedores con scroll */
+.recent-events-container {
+    scrollbar-width: thin;
+    scrollbar-color: #c1c1c1 #f1f1f1;
+}
+
+.recent-events-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.recent-events-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.recent-events-container::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.recent-events-container::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Animaciones para las tarjetas */
+.card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Estilos para el header del dashboard */
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .security-status-indicator {
+        width: 50px;
+        height: 50px;
+    }
+
+    .pulse-dot {
+        width: 16px;
+        height: 16px;
+    }
+
+    .chart-area {
+        height: 250px;
+    }
+
+    .chart-pie {
+        height: 200px;
+    }
+}
+
+/* ========================================
+           SISTEMA DE NOTIFICACIONES
+           ======================================== */
+
+.notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    max-width: 400px;
+}
+
+.notification {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    margin-bottom: 10px;
+    overflow: hidden;
+    transform: translateX(100%);
+    transition: transform 0.3s ease-in-out;
+    border-left: 4px solid #007bff;
+}
+
+.notification.show {
+    transform: translateX(0);
+}
+
+.notification.success {
+    border-left-color: #28a745;
+}
+
+.notification.warning {
+    border-left-color: #ffc107;
+}
+
+.notification.error {
+    border-left-color: #dc3545;
+}
+
+.notification.info {
+    border-left-color: #17a2b8;
+}
+
+.notification-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.notification-title {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #495057;
+    margin: 0;
+}
+
+.notification-close {
+    background: none;
+    border: none;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 0;
+    font-size: 1.2rem;
+    line-height: 1;
+    transition: color 0.2s;
+}
+
+.notification-close:hover {
+    color: #495057;
+}
+
+.notification-body {
+    padding: 16px;
+    color: #495057;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.notification-progress {
+    height: 3px;
+    background: #e9ecef;
+    overflow: hidden;
+}
+
+.notification-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #007bff, #0056b3);
+    transition: width 0.1s linear;
+}
+
+.notification.success .notification-progress-bar {
+    background: linear-gradient(90deg, #28a745, #1e7e34);
+}
+
+.notification.warning .notification-progress-bar {
+    background: linear-gradient(90deg, #ffc107, #e0a800);
+}
+
+.notification.error .notification-progress-bar {
+    background: linear-gradient(90deg, #dc3545, #c82333);
+}
+
+.notification.info .notification-progress-bar {
+    background: linear-gradient(90deg, #17a2b8, #138496);
+}
+
+/* Animaciones */
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+.notification.slide-in {
+    animation: slideInRight 0.3s ease-out;
+}
+
+.notification.slide-out {
+    animation: slideOutRight 0.3s ease-in;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+    .notification-container {
+        right: 10px;
+        left: 10px;
+        max-width: none;
+    }
+}

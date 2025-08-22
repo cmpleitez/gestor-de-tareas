@@ -242,7 +242,6 @@ class SecurityMonitor extends Command
         SecurityEvent::create([
             'ip_address' => $ip,
             'threat_score' => 100,
-            'action_taken' => 'block',
             'reason' => 'IP bloqueada manualmente por administrador',
             'risk_level' => 'critical',
             'severity' => 'critical',
@@ -291,7 +290,6 @@ class SecurityMonitor extends Command
         SecurityEvent::create([
             'ip_address' => $ip,
             'threat_score' => 0,
-            'action_taken' => 'whitelist',
             'reason' => 'IP agregada a whitelist por administrador',
             'risk_level' => 'minimal',
             'severity' => 'info',

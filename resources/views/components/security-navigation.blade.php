@@ -33,11 +33,7 @@
                     Reputación de IPs
                 </a>
 
-                <a class="nav-link {{ request()->routeIs('security.reports') ? 'active' : '' }}"
-                    href="{{ route('security.reports') }}">
-                    <i class="fas fa-chart-bar me-2"></i>
-                    Reportes
-                </a>
+
 
                 <a class="nav-link {{ request()->routeIs('security.logs') ? 'active' : '' }}"
                     href="{{ route('security.logs') }}">
@@ -139,25 +135,25 @@
 
 <script>
     // Actualizar tiempo de última actualización
-function updateLastUpdateTime() {
-    const now = new Date();
-    const timeString = now.toLocaleTimeString('es-ES', { 
-        hour: '2-digit', 
-        minute: '2-digit' 
-    });
-    document.getElementById('last-update-time').textContent = `Hace ${timeString}`;
-}
+    function updateLastUpdateTime() {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString('es-ES', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        document.getElementById('last-update-time').textContent = `Hace ${timeString}`;
+    }
 
-// Actualizar cada 5 minutos
-setInterval(updateLastUpdateTime, 300000);
+    // Actualizar cada 5 minutos
+    setInterval(updateLastUpdateTime, 300000);
 
 
 
-function showWhitelistIPModal() {
-    console.log('Mostrar modal de whitelist de IP');
-}
+    function showWhitelistIPModal() {
+        console.log('Mostrar modal de whitelist de IP');
+    }
 
-function showMaintenanceModal() {
-    console.log('Mostrar modal de mantenimiento');
-}
+    function showMaintenanceModal() {
+        console.log('Mostrar modal de mantenimiento');
+    }
 </script>

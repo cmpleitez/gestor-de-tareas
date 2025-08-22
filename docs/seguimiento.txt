@@ -53,11 +53,12 @@
         verificar y delimitar casos de roles multiples
 🟢 compactando las herramientas de seguridad y el uso de cuota mensual en transacciones
         verificando que los servicios muestren datos reales:
-            ...Eventos de Seguridad
-            eliminando todo lo que no funciona o esta de mas
+            ...eliminando todo lo que no funciona o esta de mas
                 evaluar si se necesita, preguntar en verdad se recopila y decidir
+        agregar datos complementarios a las vistas
+        maquetar
 
-
+🟢 registrar las extensiones que hacen funcionar los links goto
 🟢 construir de control de calidad para el gestor
 🟢 proceso de rechazo de una solicitud o anulación
 🟢 entrega de una solicitud al beneficiario

@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\SecurityEvent;
 use App\Services\SimpleSecurityService;
+use App\Services\SecurityDashboardService;
+use App\Http\Resources\SecurityEventResource;
+use App\Http\Resources\SecurityDashboardResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -14,129 +17,103 @@ use Illuminate\Support\Facades\Schema;
 class SecurityController extends Controller
 {
     protected $simpleSecurity;
+    protected $dashboardService;
 
-    public function __construct(SimpleSecurityService $simpleSecurity)
+    public function __construct(SimpleSecurityService $simpleSecurity, SecurityDashboardService $dashboardService)
     {
         $this->simpleSecurity = $simpleSecurity;
+        $this->dashboardService = $dashboardService;
     }
     /**
-     * Dashboard principal de seguridad (SIMPLIFICADO)
+     * Dashboard principal de seguridad (REFACTORIZADO)
      */
     public function index()
     {
         try {
-            // Datos reales de la base de datos
-            $data = [
-                'securityEventsCount' => SecurityEvent::where('created_at', '>=', now()->subDay())->count(),
-                'activeThreatsCount' => SecurityEvent::where('threat_score', '>=', 80)->where('created_at', '>=', now()->subDay())->count(),
-                'recentEvents' => SecurityEvent::latest()->take(10)->get(),
-                'suspiciousIPs' => $this->getSuspiciousIPs(),
-                'riskLevelDistribution' => $this->getRiskLevelDistribution(),
-                'threatsByCountry' => $this->getThreatsByCountry(),
+            // DEBUG TEMPORAL - ELIMINAR DESPUÉS
+            Log::info('SecurityController: Iniciando obtención de datos del dashboard');
+            
+            // Usar el servicio del dashboard para obtener todos los datos
+            $metrics = $this->dashboardService->getMainMetrics();
+            $risk_distribution = $this->dashboardService->getRiskLevelDistribution();
+            $threats_by_country = $this->dashboardService->getThreatsByCountry();
+            $top_suspicious_ips = $this->dashboardService->getTopSuspiciousIPs();
+            $recent_events = $this->dashboardService->getRecentEvents(10);
+            $threat_trends = $this->dashboardService->getThreatTrends();
+            $system_performance = $this->dashboardService->getSystemPerformance();
+            
+            // DEBUG TEMPORAL - ELIMINAR DESPUÉS
+            Log::info('SecurityController: Datos obtenidos del servicio', [
+                'metrics' => $metrics,
+                'risk_distribution' => $risk_distribution,
+                'threats_by_country' => $threats_by_country,
+                'top_suspicious_ips_count' => $top_suspicious_ips->count(),
+                'recent_events_count' => $recent_events->count(),
+            ]);
+            
+            $dashboardData = [
+                'metrics' => $metrics,
+                'risk_distribution' => $risk_distribution,
+                'threats_by_country' => $threats_by_country,
+                'top_suspicious_ips' => $top_suspicious_ips,
+                'recent_events' => $recent_events,
+                'threat_trends' => $threat_trends,
+                'system_performance' => $system_performance,
             ];
 
-            return view('security.index', $data);
+            return view('security.index', $dashboardData);
         } catch (\Exception $e) {
             Log::error('Error en dashboard de seguridad: ' . $e->getMessage());
-
-            // Datos por defecto en caso de error
-            $data = [
-                'securityEventsCount' => 0,
-                'activeThreatsCount' => 0,
-                'recentEvents' => collect(),
-                'suspiciousIPs' => collect(),
-                'riskLevelDistribution' => [0, 0, 0, 0, 0],
-                'threatsByCountry' => [],
-            ];
-
-            return view('security.index', $data);
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+            
+            // En caso de error, mostrar vista con datos vacíos
+            return view('security.index', [
+                'metrics' => [],
+                'risk_distribution' => [0, 0, 0, 0, 0],
+                'threats_by_country' => [],
+                'top_suspicious_ips' => collect(),
+                'recent_events' => collect(),
+                'threat_trends' => [],
+                'system_performance' => [],
+            ]);
         }
     }
 
 
 
-    /**
-     * Obtener IPs sospechosas
-     */
-    private function getSuspiciousIPs()
-    {
-        try {
-            return SecurityEvent::select('ip_address')
-                ->selectRaw('AVG(threat_score) as reputation_score')
-                ->selectRaw('COUNT(*) as event_count')
-                ->where('threat_score', '>=', 60)
-                ->where('created_at', '>=', now()->subDays(7))
-                ->groupBy('ip_address')
-                ->orderByDesc('reputation_score')
-                ->take(10)
-                ->get();
-        } catch (\Exception $e) {
-            Log::error('Error obteniendo IPs sospechosas: ' . $e->getMessage());
-            return collect();
-        }
-    }
 
-    /**
-     * Obtener distribución de eventos por nivel de riesgo
-     */
-    private function getRiskLevelDistribution(): array
-    {
-        try {
-            $distribution = [
-                'minimal' => SecurityEvent::where('threat_score', '<', 20)->where('created_at', '>=', now()->subDays(30))->count(),
-                'low' => SecurityEvent::whereBetween('threat_score', [20, 39])->where('created_at', '>=', now()->subDays(30))->count(),
-                'medium' => SecurityEvent::whereBetween('threat_score', [40, 59])->where('created_at', '>=', now()->subDays(30))->count(),
-                'high' => SecurityEvent::whereBetween('threat_score', [60, 79])->where('created_at', '>=', now()->subDays(30))->count(),
-                'critical' => SecurityEvent::where('threat_score', '>=', 80)->where('created_at', '>=', now()->subDays(30))->count(),
-            ];
 
-            return array_values($distribution);
-        } catch (\Exception $e) {
-            Log::error('Error obteniendo distribución de riesgo: ' . $e->getMessage());
-            return [0, 0, 0, 0, 0]; // ← AQUÍ ESTÁ EL PROBLEMA
-        }
-    }
 
-    /**
-     * Obtener amenazas por país
-     */
-    private function getThreatsByCountry(): array
-    {
-        try {
-            // Obtener datos de IPs por país desde ip_reputations usando DB directamente
-            if (Schema::hasTable('ip_reputations')) {
-                $threatsByCountry = DB::table('ip_reputations')
-                    ->selectRaw('
-                        JSON_UNQUOTE(JSON_EXTRACT(geographic_data, "$.country")) as country,
-                        COUNT(*) as count
-                    ')
-                    ->whereNotNull('geographic_data')
-                    ->groupBy('country')
-                    ->orderByDesc('count')
-                    ->take(5)
-                    ->pluck('count', 'country')
-                    ->toArray();
 
-                return $threatsByCountry;
-            }
 
-            return [];
-        } catch (\Exception $e) {
-            Log::error('Error obteniendo amenazas por país: ' . $e->getMessage());
-            return [];
-        }
-    }
 
     /**
      * Vista de eventos de seguridad
      */
     public function events()
     {
-        $events = SecurityEvent::with(['user'])
-            ->latest()
-            ->paginate(20);
+        try {
+            // Datos reales de la base de datos para estadísticas
+            $data = [
+                'criticalEventsCount' => SecurityEvent::where('threat_score', '>=', 80)->where('created_at', '>=', now()->subDays(7))->count(),
+                'highEventsCount' => SecurityEvent::whereBetween('threat_score', [60, 79])->where('created_at', '>=', now()->subDays(7))->count(),
+                'mediumEventsCount' => SecurityEvent::whereBetween('threat_score', [40, 59])->where('created_at', '>=', now()->subDays(7))->count(),
+                'uniqueIPsCount' => SecurityEvent::where('created_at', '>=', now()->subDays(7))->distinct('ip_address')->count('ip_address'),
+                'totalEventsCount' => SecurityEvent::where('created_at', '>=', now()->subDays(7))->count(),
+            ];
 
-        return view('security.events', compact('events'));
+            return view('security.events', $data);
+        } catch (\Exception $e) {
+            Log::error('Error en vista de eventos: ' . $e->getMessage());
+            
+            return view('security.events', [
+                'criticalEventsCount' => 0,
+                'highEventsCount' => 0,
+                'mediumEventsCount' => 0,
+                'uniqueIPsCount' => 0,
+                'totalEventsCount' => 0,
+            ]);
+        }
     }
 
     /**
@@ -204,13 +181,7 @@ class SecurityController extends Controller
 
 
 
-    /**
-     * Vista de reportes de seguridad
-     */
-    public function reports()
-    {
-        return view('security.reports');
-    }
+
 
     /**
      * Vista de logs de seguridad
@@ -260,7 +231,6 @@ class SecurityController extends Controller
                 'ip_address' => $ip,
                 'event_type' => 'manual_whitelist',
                 'threat_score' => 0,
-                'action_taken' => 'whitelist',
                 'details' => [
                     'reason' => $reason,
                     'permanent' => $permanent,
@@ -292,24 +262,22 @@ class SecurityController extends Controller
 
 
     /**
-     * Estadísticas del dashboard (SIMPLIFICADAS)
+     * Estadísticas del dashboard (REFACTORIZADO)
      */
     public function getDashboardStats(): JsonResponse
     {
         try {
-            $stats = Cache::remember('security.dashboard_stats', 3600, function () {
-                return [
-                    'total_events_24h' => SecurityEvent::where('created_at', '>=', now()->subDay())->count(),
-                    'critical_threats_24h' => SecurityEvent::where('threat_score', '>=', 80)->where('created_at', '>=', now()->subDay())->count(),
-                    'recent_events' => SecurityEvent::latest()->take(10)->get(['ip_address', 'threat_score', 'created_at', 'action_taken']),
-                ];
-            });
+            $dashboardData = [
+                'metrics' => $this->dashboardService->getMainMetrics(),
+                'risk_distribution' => $this->dashboardService->getRiskLevelDistribution(),
+                'threats_by_country' => $this->dashboardService->getThreatsByCountry(),
+                'top_suspicious_ips' => $this->dashboardService->getTopSuspiciousIPs(),
+                'recent_events' => $this->dashboardService->getRecentEvents(10),
+                'threat_trends' => $this->dashboardService->getThreatTrends(),
+                'system_performance' => $this->dashboardService->getSystemPerformance(),
+            ];
 
-            return response()->json([
-                'success' => true,
-                'data' => $stats,
-            ]);
-
+            return (new SecurityDashboardResource($dashboardData))->response();
         } catch (\Exception $e) {
             Log::error("Error al obtener estadísticas del dashboard: " . $e->getMessage());
             return response()->json([
@@ -336,9 +304,7 @@ class SecurityController extends Controller
                 $query->where('event_type', $request->event_type);
             }
 
-            if ($request->filled('action_taken')) {
-                $query->where('action_taken', $request->action_taken);
-            }
+
 
             if ($request->filled('min_threat_score')) {
                 $query->where('threat_score', '>=', $request->min_threat_score);
@@ -378,7 +344,7 @@ class SecurityController extends Controller
             return 100.0;
         }
 
-        $preventedEvents = SecurityEvent::whereIn('action_taken', ['block', 'challenge', 'rate_limit'])->count();
+        $preventedEvents = SecurityEvent::where('threat_score', '>=', 70)->count();
         return round(($preventedEvents / $totalEvents) * 100, 1);
     }
 
@@ -427,46 +393,96 @@ class SecurityController extends Controller
     /**
      * Obtener datos de eventos para la vista de lista
      */
-    public function getEventsData()
+    public function getEventsData(Request $request)
     {
         try {
-            $events = SecurityEvent::select(
+            Log::info('🔍 Iniciando getEventsData()');
+            Log::info('📅 Filtros recibidos: ' . json_encode($request->all()));
+            
+            // Verificar si la tabla existe y tiene datos
+            $totalEvents = SecurityEvent::count();
+            Log::info("📊 Total de eventos en BD: {$totalEvents}");
+            
+            if ($totalEvents === 0) {
+                Log::warning('⚠️ No hay eventos en la base de datos');
+                return response()->json([
+                    'success' => true,
+                    'events' => [],
+                    'message' => 'No hay eventos de seguridad',
+                    'total_in_db' => 0
+                ]);
+            }
+            
+            $query = SecurityEvent::select(
                 'id',
                 'ip_address',
                 'category',
                 'threat_score',
-                'action_taken',
-                'created_at'
-            )
-                ->latest()
-                ->take(50)
-                ->get()
-                ->map(function ($event) {
-                    return [
-                        'id' => $event->id,
-                        'ip' => $event->ip_address,
-                        'score' => $event->threat_score,
-                        'risk_level' => $this->getRiskLevelFromScore($event->threat_score),
-                        'category' => $event->category ?? 'unknown',
-                        'action' => $event->action_taken ?? 'monitor',
-                        'date' => $event->created_at->format('d/m/Y, H:i'),
-                        'status' => $this->getStatusFromAction($event->action_taken),
-                        'country' => 'N/A',
-                        'city' => 'N/A',
-                        'reason' => 'Evento de seguridad detectado',
-                    ];
-                });
+                'created_at',
+                'geolocation',
+                'reason'
+            );
 
+            // Aplicar filtro de fecha si se proporciona
+            if ($request->has('date')) {
+                $dateFilter = $request->input('date');
+                Log::info("📅 Aplicando filtro de fecha: {$dateFilter}");
+                
+                switch ($dateFilter) {
+                    case '24h':
+                        $query->where('created_at', '>=', now()->subHours(24));
+                        Log::info('⏰ Filtro: Últimas 24 horas aplicado');
+                        break;
+                    case '7d':
+                        $query->where('created_at', '>=', now()->subDays(7));
+                        Log::info('⏰ Filtro: Últimos 7 días aplicado');
+                        break;
+                    default:
+                        Log::info('⏰ Sin filtro de fecha específico');
+                        break;
+                }
+            }
+            
+            $events = $query->latest()->take(50)->get();
+                
+            Log::info("📋 Eventos consultados: {$events->count()}");
+            
+            $mappedEvents = $events->map(function ($event) {
+                // Extraer información geográfica real
+                $geolocation = $event->geolocation ?? [];
+                $country = $geolocation['country'] ?? 'N/A';
+                $city = $geolocation['city'] ?? 'N/A';
+                
+                return [
+                    'id' => $event->id,
+                    'ip' => $event->ip_address,
+                    'score' => $event->threat_score,
+                    'risk_level' => $this->getRiskLevelFromScore($event->threat_score),
+                    'category' => $event->category ?? 'unknown',
+                    'action' => 'monitor',
+                    'date' => $event->created_at->format('d/m/Y, H:i'),
+                    'status' => 'open',
+                    'country' => $country,
+                    'city' => $city,
+                    'reason' => $event->reason ?? 'Evento de seguridad detectado',
+                ];
+            });
+
+            Log::info('✅ Eventos mapeados exitosamente');
+            
             return response()->json([
                 'success' => true,
-                'events' => $events,
+                'events' => SecurityEventResource::collection($events),
+                'total_in_db' => $totalEvents,
+                'total_returned' => $events->count()
             ]);
         } catch (\Exception $e) {
-            Log::error('Error obteniendo datos de eventos: ' . $e->getMessage());
+            Log::error('❌ Error obteniendo datos de eventos: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
             return response()->json([
                 'success' => false,
                 'events' => [],
-                'message' => 'Error al cargar eventos',
+                'message' => 'Error al cargar eventos: ' . $e->getMessage(),
             ]);
         }
     }
@@ -495,20 +511,5 @@ class SecurityController extends Controller
         return 'minimal';
     }
 
-    /**
-     * Obtener status desde acción
-     */
-    private function getStatusFromAction($action)
-    {
-        switch ($action) {
-            case 'block':
-                return 'resolved';
-            case 'challenge':
-                return 'investigating';
-            case 'monitor':
-                return 'open';
-            default:
-                return 'open';
-        }
-    }
+
 }

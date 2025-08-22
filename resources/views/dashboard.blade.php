@@ -34,6 +34,7 @@
     <link href="{{ asset('app-assets/css/pages/dashboard-analytics.css') }}" rel="stylesheet">
     <link href="{{ asset('app-assets/css/plugins/forms/validation/form-validation.css') }}" rel="stylesheet">
     <link href="{{ asset('app-assets/css/plugins/extensions/toastr.css') }}" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/security-dashboard.css') }}">
     <!-- END: All CSS-->
 
     <style>
@@ -614,14 +615,15 @@
                         <li class="nav-item d-none d-lg-block"><a class="nav-link nav-link-expand"><i
                                     class="ficon bx bx-fullscreen"></i></a></li>
                         <li class="dropdown dropdown-user nav-item">
-                            <a class="dropdown-toggle nav-link dropdown-user-link" href="#" data-toggle="dropdown">
+                            <a class="dropdown-toggle nav-link dropdown-user-link" href="#"
+                                data-toggle="dropdown">
                                 <div class="user-nav d-sm-flex d-none">
                                     <span class="user-name">{{ auth()->user()->name }}</span>
                                     <span class="user-status text-gray-600 d-flex align-items-center"
                                         onclick="copyToClipboard(event, '{{ auth()->user()->email }}')">
                                         <i class="bx bx-copy" style="cursor: pointer; padding-right: 0.5rem;"></i>
-                                        <span class="hover:text-gray-900 !important transition-colors duration-200">{{
-                                            auth()->user()->email }}</span>
+                                        <span
+                                            class="hover:text-gray-900 !important transition-colors duration-200">{{ auth()->user()->email }}</span>
                                     </span>
                                     <script>
                                         function copyToClipboard(event, text) {
@@ -669,24 +671,25 @@
                                         }
                                     </script>
                                     <span class="user-status" style="color: #0056b3; font-weight: 600;">
-                                        @if(auth()->check())
-                                        Conectado como
-                                        {{ auth()->user()->main_role }}
+                                        @if (auth()->check())
+                                            Conectado como
+                                            {{ auth()->user()->main_role }}
                                         @else
-                                        <span style="color: #d90429; font-weight: 600;">Desconectado</span>
+                                            <span style="color: #d90429; font-weight: 600;">Desconectado</span>
                                         @endif
                                     </span>
                                 </div>
                                 <div class="avatar">
                                     @if (auth()->check())
-                                    @php $photoPath = auth()->user()->profile_photo_path; @endphp
-                                    @if ($photoPath && Storage::disk('public')->exists($photoPath))
-                                    <img src="{{ Storage::url($photoPath) }}" alt="avatar"
-                                        style="height: 45px; width: 45px; object-fit: cover;">
-                                    @else
-                                    <img src="{{ asset('app-assets/images/pages/operador.png') }}" alt="avatar"
-                                        style="height: 45px; width: 45px; object-fit: contain;">
-                                    @endif
+                                        @php $photoPath = auth()->user()->profile_photo_path; @endphp
+                                        @if ($photoPath && Storage::disk('public')->exists($photoPath))
+                                            <img src="{{ Storage::url($photoPath) }}" alt="avatar"
+                                                style="height: 45px; width: 45px; object-fit: cover;">
+                                        @else
+                                            <img src="{{ asset('app-assets/images/pages/operador.png') }}"
+                                                alt="avatar"
+                                                style="height: 45px; width: 45px; object-fit: contain;">
+                                        @endif
                                     @endif
                                 </div>
                             </a>
@@ -740,93 +743,83 @@
                             data-i18n="Menu Levels">Servicios</span></a>
                     <ul class="menu-content" style="display: block;">
                         @role('Beneficiario')
-                        <li><a href="{{ Route('recepcion.create') }}">
-                                <i class="bx bx-right-arrow-alt"></i>
-                                <span class="menu-item" data-i18n="Second Level">Recepciones</span>
-                            </a></li>
+                            <li><a href="{{ Route('recepcion.create') }}">
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Recepciones</span>
+                                </a></li>
                         @endrole
                         @role('Operador')
-                        <li><a href="#">
-                                <i class="bx bx-right-arrow-alt"></i>
-                                <span class="menu-item" data-i18n="Second Level">Disponible</span>
-                            </a></li>
+                            <li><a href="#">
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Disponible</span>
+                                </a></li>
                         @endrole
                         @role('Administrador')
-                        <li>
-                            <a href="#">
-                                <i class="bx bx-right-arrow-alt"></i>
-                                <span class="menu-item" data-i18n="Second Level">Administración</span>
-                            </a>
-                            <ul class="menu-content" style="display: block;">
-                                <li><a href="{{ Route('equipo') }}">
-                                        <i class="bx bx-right-arrow-alt"></i>
-                                        <span class="menu-item" data-i18n="Third Level">Equipos</span></a>
-                                </li>
-                                <li><a href="#">
-                                        <i class="bx bx-right-arrow-alt"></i>
-                                        <span class="menu-item" data-i18n="Third Level">Disponible</span>
-                                    </a></li>
-                            </ul>
-                        </li>
+                            <li>
+                                <a href="#">
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Administración</span>
+                                </a>
+                                <ul class="menu-content" style="display: block;">
+                                    <li><a href="{{ Route('equipo') }}">
+                                            <i class="bx bx-right-arrow-alt"></i>
+                                            <span class="menu-item" data-i18n="Third Level">Equipos</span></a>
+                                    </li>
+                                    <li><a href="#">
+                                            <i class="bx bx-right-arrow-alt"></i>
+                                            <span class="menu-item" data-i18n="Third Level">Disponible</span>
+                                        </a></li>
+                                </ul>
+                            </li>
                         @endrole
                         @role('SuperAdmin')
-                        <li><a href="#">
-                                <i class="bx bx-right-arrow-alt"></i>
-                                <span class="menu-item" data-i18n="Second Level">Configuración</span>
-                            </a>
-                            <ul class="menu-content" style="display: block;">
-                                <li><a href="{{ Route('user') }}">
-                                        <i class="bx bx-right-arrow-alt"></i>
-                                        <span class="menu-item" data-i18n="Third Level">Usuarios</span>
-                                    </a></li>
-                                <li><a href="{{ Route('equipo') }}">
-                                        <i class="bx bx-right-arrow-alt"></i>
-                                        <span class="menu-item" data-i18n="Third Level">Equipos</span>
-                                    </a></li>
-                                <li><a href="{{ Route('tarea') }}">
-                                        <i class="bx bx-right-arrow-alt"></i>
-                                        <span class="menu-item" data-i18n="Third Level">Tareas</span>
-                                    </a></li>
-                                <li><a href="{{ Route('solicitud') }}">
-                                        <i class="bx bx-right-arrow-alt"></i>
-                                        <span class="menu-item" data-i18n="Third Level">Solicitudes</span>
-                                    </a></li>
-                            </ul>
-                        </li>
+                            <li><a href="{{ Route('user') }}">
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Usuarios</span>
+                                </a></li>
+                            <li><a href="{{ Route('equipo') }}">
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Equipos</span>
+                                </a></li>
+                            <li><a href="{{ Route('tarea') }}">
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Tareas</span>
+                                </a></li>
+                            <li><a href="{{ Route('solicitud') }}">
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Solicitudes</span>
+                                </a></li>
                         @endrole
                     </ul>
                 </li>
                 @role('SuperAdmin')
-                <li class=" nav-item"><a href="#"><i class="bx bx-shield"></i><span class="menu-title"
-                            data-i18n="Menu Levels">Monitoreo de Seguridad</span></a>
-                    <ul class="menu-content" style="display: block;">
-                        <li><a href="{{ Route('security.index') }}">
-                                <i class="bx bx-right-arrow-alt"></i>
-                                <span class="menu-item" data-i18n="Second Level">Dashboard</span>
-                            </a></li>
-                        <li><a href="{{ Route('security.events') }}">
-                                <i class="bx bx-right-arrow-alt"></i>
-                                <span class="menu-item" data-i18n="Second Level">Eventos</span>
-                            </a></li>
-                        <li><a href="{{ Route('security.threat-intelligence') }}">
-                                <i class="bx bx-right-arrow-alt"></i>
-                                <span class="menu-item" data-i18n="Second Level">Inteligencia de Amenazas</span>
-                            </a></li>
-                        <li><a href="{{ Route('security.ip-reputation') }}">
-                                <i class="bx bx-right-arrow-alt"></i>
-                                <span class="menu-item" data-i18n="Second Level">Reputación de IPs</span>
-                            </a></li>
-                        <li><a href="{{ Route('security.reports') }}">
-                                <i class="bx bx-right-arrow-alt"></i>
-                                <span class="menu-item" data-i18n="Second Level">Reportes</span>
-                            </a></li>
-                        <li><a href="{{ Route('security.logs') }}">
-                                <i class="bx bx-right-arrow-alt"></i>
-                                <span class="menu-item" data-i18n="Second Level">Logs</span>
-                            </a></li>
+                    <li class=" nav-item"><a href="#"><i class="bx bx-shield"></i><span class="menu-title"
+                                data-i18n="Menu Levels">Monitoreo de Seguridad</span></a>
+                        <ul class="menu-content" style="display: block;">
+                            <li><a href="{{ Route('security.index') }}">
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Dashboard</span>
+                                </a></li>
+                            <li><a href="{{ Route('security.events') }}">
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Eventos</span>
+                                </a></li>
+                            <li><a href="{{ Route('security.threat-intelligence') }}">
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Inteligencia de Amenazas</span>
+                                </a></li>
+                            <li><a href="{{ Route('security.ip-reputation') }}">
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Reputación de IPs</span>
+                                </a></li>
 
-                    </ul>
-                </li>
+                            <li><a href="{{ Route('security.logs') }}">
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Logs</span>
+                                </a></li>
+
+                        </ul>
+                    </li>
                 @endrole
                 <li class=" navigation-header"><span>Soporte</span>
                 </li>
@@ -865,7 +858,6 @@
     <!-- END: Footer-->
 
     <!-- jQuery y dependencias principales -->
-    <script src="{{ asset('resources/js/js/core/libraries/jquery.min.js') }}"></script>
 
     <!-- BEGIN: Critical JavaScript (Emergency Load) -->
     <script src="{{ asset('app-assets/vendors/js/vendors.min.js') }}"></script>
@@ -888,23 +880,19 @@
     <script src="{{ asset('app-assets/vendors/js/tables/datatable/buttons.bootstrap.min.js') }}"></script>
     <script src="{{ asset('app-assets/vendors/js/tables/datatable/pdfmake.min.js') }}"></script>
     <script src="{{ asset('app-assets/vendors/js/tables/datatable/vfs_fonts.js') }}"></script>
+    <script src="{{ asset('app-assets/vendors/js/charts/chart.min.js') }}"></script>
     <!-- END: Vendor JavaScript -->
 
+
     <!-- BEGIN: Application JavaScript -->
-    <script src="{{ asset('resources/js/js/core/app-menu.js') }}"></script>
-    <script src="{{ asset('resources/js/js/core/app.js') }}"></script>
-    <script src="{{ asset('resources/js/js/scripts/components.js') }}"></script>
-    <script src="{{ asset('resources/js/js/scripts/footer.js') }}"></script>
-    <script src="{{ asset('resources/js/js/scripts/forms/validation/form-validation.js') }}"></script>
-    <script src="{{ asset('resources/js/js/scripts/forms/select/form-select2.js') }}"></script>
-    <script src="{{ asset('resources/js/js/scripts/extensions/toastr.js') }}"></script>
+    <script src="{{ asset('app-assets/js/security-dashboard.js') }}"></script>
     <!-- END: Application JavaScript -->
 
     <!-- ... otros scripts ... -->
     <script>
-        $(document).ready(function () {
+        $(document).ready(function() {
             //Captura de alertas del backend
-            @if(Session::has('success'))
+            @if (Session::has('success'))
                 toastr.success("{{ Session::get('success') }}");
             @endif
             @if (Session::has('error'))
@@ -945,7 +933,7 @@
                 // Inicializar tooltips de Bootstrap 4
                 $('[data-toggle="tooltip"]').tooltip();
                 // Reinicializar tooltips después de cada evento de DataTables
-                table.on('draw', function () {
+                table.on('draw', function() {
                     $('[data-toggle="tooltip"]').tooltip();
                 });
             } else {

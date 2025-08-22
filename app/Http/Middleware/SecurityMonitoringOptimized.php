@@ -8,10 +8,12 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use App\Models\SecurityEvent;
 use App\Services\SimpleSecurityService;
+use App\Services\GeolocationService;
 
 class SecurityMonitoringOptimized
 {
     protected $simpleSecurity;
+    protected $geolocationService;
     
     // Configuración mínima y eficiente
     protected $config = [
@@ -21,9 +23,10 @@ class SecurityMonitoringOptimized
         'cache_duration' => 3600, // 1 hora
     ];
 
-    public function __construct(SimpleSecurityService $simpleSecurity)
+    public function __construct(SimpleSecurityService $simpleSecurity, GeolocationService $geolocationService)
     {
         $this->simpleSecurity = $simpleSecurity;
+        $this->geolocationService = $geolocationService;
     }
 
     public function handle(Request $request, Closure $next)
@@ -33,16 +36,21 @@ class SecurityMonitoringOptimized
             $threatScore = $this->quickThreatScan($request);
             
             // CAPA 2: Análisis profundo solo si es necesario
-            if ($threatScore >= 60) {
+            if ($threatScore >= 40) { // Capturar eventos medios, altos y críticos
                 $detailedScore = $this->detailedThreatAnalysis($request);
                 
-                if ($detailedScore >= 80) {
-                    $this->logCriticalEvent($request, $detailedScore);
-                    return $this->generateBlockResponse();
+                // Registrar evento de seguridad para todos los niveles de riesgo
+                if ($detailedScore >= 40) {
+                    $this->logSecurityEvent($request, $detailedScore);
+                    
+                    // Solo bloquear si es crítico
+                    if ($detailedScore >= 80) {
+                        return $this->generateBlockResponse();
+                    }
                 }
             }
             
-            // Continuar normalmente (99% de los casos)
+            // Continuar normalmente
             return $next($request);
             
         } catch (\Exception $e) {
@@ -67,9 +75,9 @@ class SecurityMonitoringOptimized
         // Patrones críticos simples
         $criticalPatterns = [
             'sql_injection' => ['/union\s+select/i', '/drop\s+table/i', '/--/'],
-            'xss_attack' => ['<script', 'javascript:', 'onload='],
-            'path_traversal' => ['../', '..\\', '%2e%2e%2f'],
-            'command_injection' => [';', '|', '&&', '`']
+            'xss_attack' => ['/<script/i', '/javascript:/i', '/onload=/i'],
+            'path_traversal' => ['/\.\.\//', '/\.\.\\\\/', '/%2e%2e%2f/'],
+            'command_injection' => ['/;/', '/\|/', '/&&/', '/`/']
         ];
         
         foreach ($criticalPatterns as $attackType => $patterns) {
@@ -101,19 +109,35 @@ class SecurityMonitoringOptimized
     }
 
     /**
-     * Solo registrar eventos críticos
+     * Registrar eventos de seguridad para todos los niveles de riesgo
      */
-    protected function logCriticalEvent(Request $request, float $threatScore): void
+    protected function logSecurityEvent(Request $request, float $threatScore): void
     {
+        $action = $threatScore >= 80 ? 'block' : 'monitor';
+        $ip = $request->ip();
+        
+        // Obtener geolocalización de la IP
+        $geolocation = $this->geolocationService->getIPGeolocation($ip);
+        
         SecurityEvent::create([
-            'ip_address' => $request->ip(),
+            'ip_address' => $ip,
             'request_uri' => $request->getRequestUri(),
             'request_method' => $request->method(),
             'threat_score' => $threatScore,
-            'action_taken' => 'block',
-            'reason' => 'Critical threat detected',
-            'risk_level' => $this->categorizeRisk($threatScore)
+            'reason' => $this->getThreatReason($threatScore),
+            'risk_level' => $this->categorizeRisk($threatScore),
+            'category' => $this->detectAttackCategory($request),
+            'source' => 'middleware',
+            'geolocation' => $geolocation
         ]);
+    }
+
+    /**
+     * Solo registrar eventos críticos (mantener compatibilidad)
+     */
+    protected function logCriticalEvent(Request $request, float $threatScore): void
+    {
+        $this->logSecurityEvent($request, $threatScore);
     }
 
     /**
@@ -151,5 +175,42 @@ class SecurityMonitoringOptimized
         if ($score >= 40) return 'medium';
         if ($score >= 20) return 'low';
         return 'minimal';
+    }
+
+    /**
+     * Obtener razón de la amenaza basada en el score
+     */
+    protected function getThreatReason(float $score): string
+    {
+        if ($score >= 80) return 'Critical threat detected - Immediate action required';
+        if ($score >= 60) return 'High threat detected - Close monitoring required';
+        if ($score >= 40) return 'Medium threat detected - Investigation recommended';
+        return 'Low threat detected - Standard monitoring';
+    }
+
+    /**
+     * Detectar categoría de ataque basada en el request
+     */
+    protected function detectAttackCategory(Request $request): string
+    {
+        $payload = $request->getContent() . json_encode($request->all());
+        
+        if (preg_match('/union\s+select|drop\s+table|--/i', $payload)) {
+            return 'sql_injection';
+        }
+        
+        if (preg_match('/<script|javascript:|onload=/i', $payload)) {
+            return 'xss_attack';
+        }
+        
+        if (preg_match('/\.\.\/|\.\.\\\\|%2e%2e%2f/i', $payload)) {
+            return 'path_traversal';
+        }
+        
+        if (preg_match('/;|\||&&|`/i', $payload)) {
+            return 'command_injection';
+        }
+        
+        return 'suspicious_activity';
     }
 }
