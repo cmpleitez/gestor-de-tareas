@@ -1,399 +1,123 @@
 @extends('dashboard')
 @section('css')
-    <style>
-        .border-left-primary {
-            border-left: 0.25rem solid #4e73df !important;
-        }
+<style>
+    .border-left-primary {
+        border-left: 0.25rem solid #4e73df !important;
+    }
 
-        .border-left-danger {
-            border-left: 0.25rem solid #e74a3b !important;
-        }
+    .border-left-danger {
+        border-left: 0.25rem solid #e74a3b !important;
+    }
 
-        .border-left-warning {
-            border-left: 0.25rem solid #f6c23e !important;
-        }
+    .border-left-warning {
+        border-left: 0.25rem solid #f6c23e !important;
+    }
 
-        .border-left-info {
-            border-left: 0.25rem solid #36b9cc !important;
-        }
+    .border-left-info {
+        border-left: 0.25rem solid #36b9cc !important;
+    }
 
-        .border-left-success {
-            border-left: 0.25rem solid #1cc88a !important;
-        }
+    .border-left-success {
+        border-left: 0.25rem solid #1cc88a !important;
+    }
 
-        .risk-badge {
-            font-size: 0.75rem;
-            padding: 0.25rem 0.5rem;
-        }
+    .risk-badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
 
-        .event-row {
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
+    .event-row {
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
 
-        .event-row:hover {
-            background-color: #f8f9fc;
-        }
+    .event-row:hover {
+        background-color: #f8f9fc;
+    }
 
-        .event-row.critical {
-            border-left: 4px solid #e74a3b;
-        }
+    .event-row.critical {
+        border-left: 4px solid #e74a3b;
+    }
 
-        .event-row.high {
-            border-left: 4px solid #f6c23e;
-        }
+    .event-row.high {
+        border-left: 4px solid #f6c23e;
+    }
 
-        .event-row.medium {
-            border-left: 4px solid #fd7e14;
-        }
+    .event-row.medium {
+        border-left: 4px solid #fd7e14;
+    }
 
-        .event-row.low {
-            border-left: 4px solid #20c9a6;
-        }
+    .event-row.low {
+        border-left: 4px solid #20c9a6;
+    }
 
-        .event-row.minimal {
-            border-left: 4px solid #1cc88a;
-        }
+    .event-row.minimal {
+        border-left: 4px solid #1cc88a;
+    }
 
-        .score-indicator {
-            width: 60px;
-            height: 8px;
-            background-color: #e3e6f0;
-            border-radius: 4px;
-            overflow: hidden;
-        }
+    .score-indicator {
+        width: 60px;
+        height: 8px;
+        background-color: #e3e6f0;
+        border-radius: 4px;
+        overflow: hidden;
+    }
 
-        .score-fill {
-            height: 100%;
-            transition: width 0.3s ease;
-        }
+    .score-fill {
+        height: 100%;
+        transition: width 0.3s ease;
+    }
 
-        .score-fill.critical {
-            background-color: #e74a3b;
-        }
+    .score-fill.critical {
+        background-color: #e74a3b;
+    }
 
-        .score-fill.high {
-            background-color: #f6c23e;
-        }
+    .score-fill.high {
+        background-color: #f6c23e;
+    }
 
-        .score-fill.medium {
-            background-color: #fd7e14;
-        }
+    .score-fill.medium {
+        background-color: #fd7e14;
+    }
 
-        .score-fill.low {
-            background-color: #20c9a6;
-        }
+    .score-fill.low {
+        background-color: #20c9a6;
+    }
 
-        .score-fill.minimal {
-            background-color: #1cc88a;
-        }
-    </style>
+    .score-fill.minimal {
+        background-color: #1cc88a;
+    }
+</style>
 @stop
 
 @section('contenedor')
-    <div class="container-fluid">
-        <!-- ========================================
+<div class="container-fluid">
+    <!-- ========================================
                             HEADER DE EVENTOS DE SEGURIDAD
                             ======================================== -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card bg-gradient-info text-white">
-                    <div class="card-body">
-                        <div class="row align-items-center">
-                            <div class="col-md-8">
-                                <h1 class="mb-2">
-                                    <i class="fas fa-exclamation-triangle me-3"></i>
-                                    Eventos de Seguridad
-                                </h1>
-                                <p class="mb-0 fs-5">
-                                    Monitoreo detallado de todos los eventos de seguridad detectados por el sistema
-                                </p>
-                            </div>
-                            <div class="col-md-4 text-end">
-                                <div class="d-flex justify-content-end align-items-center">
-                                    <div class="me-4">
-                                        <div class="fs-6 opacity-75">Total de Eventos</div>
-                                        <div class="fs-4 fw-bold" id="total-events-count">
-                                            <i class="fas fa-spinner fa-spin"></i>
-                                        </div>
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-gradient-info text-white">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h1 class="mb-2">
+                                <i class="fas fa-exclamation-triangle me-3"></i>
+                                Eventos de Seguridad
+                            </h1>
+                            <p class="mb-0 fs-5">
+                                Monitoreo detallado de todos los eventos de seguridad detectados por el sistema
+                            </p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="d-flex justify-content-end align-items-center">
+                                <div class="me-4">
+                                    <div class="fs-6 opacity-75">Total de Eventos</div>
+                                    <div class="fs-4 fw-bold" id="total-events-count">
+                                        <i class="fas fa-spinner fa-spin"></i>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ========================================
-                            FILTROS Y CONTROLES DE BÚSQUEDA
-                            ======================================== -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card shadow">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">
-                            <i class="fas fa-filter me-2"></i>
-                            Filtros y Búsqueda
-                        </h6>
-                    </div>
-                    <div class="card-body">
-                        <form id="events-filter-form">
-                            <div class="row">
-                                <!-- Filtro por IP -->
-                                <div class="col-md-3 mb-3">
-                                    <label for="filter-ip" class="form-label">Dirección IP</label>
-                                    <input type="text" class="form-control" id="filter-ip" placeholder="192.168.1.100">
-                                </div>
-
-                                <!-- Filtro por Nivel de Riesgo -->
-                                <div class="col-md-2 mb-3">
-                                    <label for="filter-risk-level" class="form-label">Nivel de Riesgo</label>
-                                    <select class="form-select" id="filter-risk-level">
-                                        <option value="">Todos</option>
-                                        <option value="critical">Crítico</option>
-                                        <option value="high">Alto</option>
-                                        <option value="medium">Medio</option>
-                                        <option value="low">Bajo</option>
-                                        <option value="minimal">Mínimo</option>
-                                    </select>
-                                </div>
-
-                                <!-- Filtro por Categoría -->
-                                <div class="col-md-2 mb-3">
-                                    <label for="filter-category" class="form-label">Categoría</label>
-                                    <select class="form-select" id="filter-category">
-                                        <option value="">Todas</option>
-                                        <option value="malware">Malware</option>
-                                        <option value="phishing">Phishing</option>
-                                        <option value="ddos">DDoS</option>
-                                        <option value="scanning">Escaneo</option>
-                                        <option value="injection">Inyección</option>
-                                        <option value="brute_force">Fuerza Bruta</option>
-                                    </select>
-                                </div>
-
-                                <!-- Filtro por Fecha -->
-                                <div class="col-md-2 mb-3">
-                                    <label for="filter-date" class="form-label">Fecha</label>
-                                    <select class="form-select" id="filter-date">
-                                        <option value="24h">Últimas 24h</option>
-                                        <option value="7d" selected>Últimos 7 días</option>
-                                        <option value="30d">Últimos 30 días</option>
-                                        <option value="90d">Últimos 90 días</option>
-                                        <option value="custom">Personalizado</option>
-                                    </select>
-                                </div>
-
-                                <!-- Botones de Acción -->
-                                <div class="col-md-3 mb-3 d-flex align-items-end">
-                                    <button type="button" class="btn btn-primary me-2" onclick="applyFilters()">
-                                        <i class="fas fa-search me-2"></i>
-                                        Filtrar
-                                    </button>
-                                    <button type="button" class="btn btn-outline-secondary" onclick="clearFilters()">
-                                        <i class="fas fa-times me-2"></i>
-                                        Limpiar
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Filtros Avanzados (Colapsables) -->
-                            <div class="row mt-3">
-                                <div class="col-12">
-                                    <button class="btn btn-link" type="button" data-bs-toggle="collapse"
-                                        data-bs-target="#advanced-filters">
-                                        <i class="fas fa-chevron-down me-2"></i>
-                                        Filtros Avanzados
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="collapse" id="advanced-filters">
-                                <div class="row mt-3">
-                                    <!-- Filtro por País -->
-                                    <div class="col-md-3 mb-3">
-                                        <label for="filter-country" class="form-label">País</label>
-                                        <select class="form-select" id="filter-country">
-                                            <option value="">Todos</option>
-                                            <option value="US">Estados Unidos</option>
-                                            <option value="CN">China</option>
-                                            <option value="RU">Rusia</option>
-                                            <option value="DE">Alemania</option>
-                                            <option value="GB">Reino Unido</option>
-                                        </select>
-                                    </div>
-
-                                    <!-- Filtro por Acción Tomada -->
-                                    <div class="col-md-3 mb-3">
-                                        <label for="filter-action" class="form-label">Acción Tomada</label>
-                                        <select class="form-select" id="filter-action">
-                                            <option value="">Todas</option>
-                                            <option value="allow">Permitir</option>
-                                            <option value="block">Bloquear</option>
-                                            <option value="challenge">Desafío</option>
-                                            <option value="monitor">Monitorear</option>
-                                            <option value="rate_limit">Rate Limit</option>
-                                        </select>
-                                    </div>
-
-                                    <!-- Filtro por Score -->
-                                    <div class="col-md-3 mb-3">
-                                        <label for="filter-score-min" class="form-label">Score Mínimo</label>
-                                        <input type="number" class="form-control" id="filter-score-min" min="0"
-                                            max="100" placeholder="0">
-                                    </div>
-
-                                    <div class="col-md-3 mb-3">
-                                        <label for="filter-score-max" class="form-label">Score Máximo</label>
-                                        <input type="number" class="form-control" id="filter-score-max" min="0"
-                                            max="100" placeholder="100">
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ========================================
-                            ESTADÍSTICAS RÁPIDAS
-                            ======================================== -->
-        <div class="row mb-4">
-            <div class="col-md-3 mb-3">
-                <div class="card border-left-danger shadow h-100 py-2">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
-                                    Eventos Críticos
-                                </div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="critical-events-count">0</div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-3 mb-3">
-                <div class="card border-left-warning shadow h-100 py-2">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                    Eventos Altos
-                                </div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="high-events-count">0</div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-exclamation-circle fa-2x text-gray-300"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-3 mb-3">
-                <div class="card border-left-info shadow h-100 py-2">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                    IPs Únicas
-                                </div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="unique-ips-count">0</div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-globe fa-2x text-gray-300"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-3 mb-3">
-                <div class="card border-left-success shadow h-100 py-2">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                    Resueltos
-                                </div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="resolved-events-count">0</div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-check-circle fa-2x text-gray-300"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ========================================
-                            TABLA DE EVENTOS DE SEGURIDAD
-                            ======================================== -->
-        <div class="row">
-            <div class="col-12">
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                        <h6 class="m-0 font-weight-bold text-primary">
-                            <i class="fas fa-list me-2"></i>
-                            Lista de Eventos
-                        </h6>
-                        <div class="d-flex">
-                            <button class="btn btn-outline-primary btn-sm me-2" onclick="exportEvents()">
-                                <i class="fas fa-download me-2"></i>
-                                Exportar
-                            </button>
-                            <button class="btn btn-outline-success btn-sm" onclick="refreshEvents()">
-                                <i class="fas fa-sync-alt me-2"></i>
-                                Actualizar
-                            </button>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-bordered" id="security-events-table" width="100%"
-                                cellspacing="0">
-                                <thead>
-                                    <tr>
-                                        <th>IP</th>
-                                        <th>Score</th>
-                                        <th>Riesgo</th>
-                                        <th>Categoría</th>
-                                        <th>Acción</th>
-                                        <th>Fecha</th>
-                                        <th>Estado</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="events-table-body">
-                                    <tr>
-                                        <td colspan="8" class="text-center py-4">
-                                            <i class="fas fa-spinner fa-spin fa-2x text-gray-400"></i>
-                                            <p class="mt-2 text-gray-500">Cargando eventos...</p>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <!-- Paginación -->
-                        <div class="d-flex justify-content-between align-items-center mt-3">
-                            <div class="text-muted">
-                                Mostrando <span id="showing-start">0</span> a <span id="showing-end">0</span> de <span
-                                    id="showing-total">0</span> eventos
-                            </div>
-                            <nav aria-label="Navegación de eventos">
-                                <ul class="pagination mb-0" id="events-pagination">
-                                    <!-- Paginación se generará dinámicamente -->
-                                </ul>
-                            </nav>
                         </div>
                     </div>
                 </div>
@@ -402,89 +126,312 @@
     </div>
 
     <!-- ========================================
+                            FILTROS Y CONTROLES DE BÚSQUEDA
+                            ======================================== -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-filter me-2"></i>
+                        Filtros y Búsqueda
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form id="events-filter-form">
+                        <div class="row">
+                            <!-- Filtro por IP -->
+                            <div class="col-md-3 mb-3">
+                                <label for="filter-ip" class="form-label">Dirección IP</label>
+                                <input type="text" class="form-control" id="filter-ip" placeholder="192.168.1.100">
+                            </div>
+
+                            <!-- Filtro por Nivel de Riesgo -->
+                            <div class="col-md-2 mb-3">
+                                <label for="filter-risk-level" class="form-label">Nivel de Riesgo</label>
+                                <select class="form-select" id="filter-risk-level">
+                                    <option value="">Todos</option>
+                                    <option value="critical">Crítico</option>
+                                    <option value="high">Alto</option>
+                                    <option value="medium">Medio</option>
+                                    <option value="low">Bajo</option>
+                                    <option value="minimal">Mínimo</option>
+                                </select>
+                            </div>
+
+                            <!-- Filtro por Categoría -->
+                            <div class="col-md-2 mb-3">
+                                <label for="filter-category" class="form-label">Categoría</label>
+                                <select class="form-select" id="filter-category">
+                                    <option value="">Todas</option>
+                                    <option value="malware">Malware</option>
+                                    <option value="phishing">Phishing</option>
+                                    <option value="ddos">DDoS</option>
+                                    <option value="scanning">Escaneo</option>
+                                    <option value="injection">Inyección</option>
+                                    <option value="brute_force">Fuerza Bruta</option>
+                                </select>
+                            </div>
+
+                            <!-- Filtro por Fecha -->
+                            <div class="col-md-2 mb-3">
+                                <label for="filter-date" class="form-label">Fecha</label>
+                                <select class="form-select" id="filter-date">
+                                    <option value="24h">Últimas 24h</option>
+                                    <option value="7d" selected>Últimos 7 días</option>
+                                    <option value="30d">Últimos 30 días</option>
+                                    <option value="90d">Últimos 90 días</option>
+                                    <option value="custom">Personalizado</option>
+                                </select>
+                            </div>
+
+                            <!-- Botones de Acción -->
+                            <div class="col-md-3 mb-3 d-flex align-items-end">
+                                <button type="button" class="btn btn-primary me-2" onclick="applyFilters()">
+                                    <i class="fas fa-search me-2"></i>
+                                    Filtrar
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="clearFilters()">
+                                    <i class="fas fa-times me-2"></i>
+                                    Limpiar
+                                </button>
+                            </div>
+                        </div>
+
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================
+                            ESTADÍSTICAS RÁPIDAS
+                            ======================================== -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                Eventos Críticos
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="critical-events-count">0</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Eventos Altos
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="high-events-count">0</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-exclamation-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                IPs Únicas
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="unique-ips-count">0</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-globe fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Resueltos
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="resolved-events-count">0</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================
+                            TABLA DE EVENTOS DE SEGURIDAD
+                            ======================================== -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-list me-2"></i>
+                        Lista de Eventos
+                    </h6>
+                    <div class="d-flex">
+                        <button class="btn btn-outline-primary btn-sm me-2" onclick="exportEvents()">
+                            <i class="fas fa-download me-2"></i>
+                            Exportar
+                        </button>
+                        <button class="btn btn-outline-success btn-sm" onclick="refreshEvents()">
+                            <i class="fas fa-sync-alt me-2"></i>
+                            Actualizar
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="security-events-table" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>IP</th>
+                                    <th>Score</th>
+                                    <th>Riesgo</th>
+                                    <th>Categoría</th>
+                                    <th>Acción</th>
+                                    <th>Fecha</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="events-table-body">
+                                <tr>
+                                    <td colspan="8" class="text-center py-4">
+                                        <i class="fas fa-spinner fa-spin fa-2x text-gray-400"></i>
+                                        <p class="mt-2 text-gray-500">Cargando eventos...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Paginación -->
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div class="text-muted">
+                            Mostrando <span id="showing-start">0</span> a <span id="showing-end">0</span> de <span
+                                id="showing-total">0</span> eventos
+                        </div>
+                        <nav aria-label="Navegación de eventos">
+                            <ul class="pagination mb-0" id="events-pagination">
+                                <!-- Paginación se generará dinámicamente -->
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================
                         MODALES Y COMPONENTES ADICIONALES
                         ======================================== -->
 
-    <!-- Modal de Detalles del Evento -->
-    <div class="modal fade" id="eventDetailsModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">
-                        <i class="fas fa-info-circle text-info me-2"></i>
-                        Detalles del Evento de Seguridad
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body" id="event-details-content">
-                    <!-- Contenido se cargará dinámicamente -->
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-primary" onclick="takeActionOnEvent()">
-                        <i class="fas fa-tools me-2"></i>
-                        Tomar Acción
-                    </button>
-                </div>
+<!-- Modal de Detalles del Evento -->
+<div class="modal fade" id="eventDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-info-circle text-info me-2"></i>
+                    Detalles del Evento de Seguridad
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="event-details-content">
+                <!-- Contenido se cargará dinámicamente -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" onclick="takeActionOnEvent()">
+                    <i class="fas fa-tools me-2"></i>
+                    Tomar Acción
+                </button>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Modal de Acción sobre Evento -->
-    <div class="modal fade" id="eventActionModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">
-                        <i class="fas fa-tools text-warning me-2"></i>
-                        Acción sobre Evento
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="event-action-form">
-                        <div class="mb-3">
-                            <label for="action-type" class="form-label">Tipo de Acción</label>
-                            <select class="form-select" id="action-type" required>
-                                <option value="">Seleccione una acción</option>
-                                <option value="block">Bloquear IP</option>
-                                <option value="whitelist">Agregar a Whitelist</option>
-                                <option value="investigate">Marcar para Investigación</option>
-                                <option value="resolve">Marcar como Resuelto</option>
-                                <option value="escalate">Escalar a Equipo</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="action-notes" class="form-label">Notas</label>
-                            <textarea class="form-control" id="action-notes" rows="3" placeholder="Describa la acción a tomar..."
-                                required></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="action-priority" class="form-label">Prioridad</label>
-                            <select class="form-select" id="action-priority">
-                                <option value="low">Baja</option>
-                                <option value="medium" selected>Media</option>
-                                <option value="high">Alta</option>
-                                <option value="urgent">Urgente</option>
-                            </select>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" onclick="executeEventAction()">
-                        <i class="fas fa-check me-2"></i>
-                        Ejecutar Acción
-                    </button>
-                </div>
+<!-- Modal de Acción sobre Evento -->
+<div class="modal fade" id="eventActionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-tools text-warning me-2"></i>
+                    Acción sobre Evento
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="event-action-form">
+                    <div class="mb-3">
+                        <label for="action-type" class="form-label">Tipo de Acción</label>
+                        <select class="form-select" id="action-type" required>
+                            <option value="">Seleccione una acción</option>
+                            <option value="block">Bloquear IP</option>
+                            <option value="whitelist">Agregar a Whitelist</option>
+                            <option value="investigate">Marcar para Investigación</option>
+                            <option value="resolve">Marcar como Resuelto</option>
+                            <option value="escalate">Escalar a Equipo</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="action-notes" class="form-label">Notas</label>
+                        <textarea class="form-control" id="action-notes" rows="3"
+                            placeholder="Describa la acción a tomar..." required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="action-priority" class="form-label">Prioridad</label>
+                        <select class="form-select" id="action-priority">
+                            <option value="low">Baja</option>
+                            <option value="medium" selected>Media</option>
+                            <option value="high">Alta</option>
+                            <option value="urgent">Urgente</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="executeEventAction()">
+                    <i class="fas fa-check me-2"></i>
+                    Ejecutar Acción
+                </button>
             </div>
         </div>
     </div>
+</div>
 @stop
 
 @section('js')
-    <script>
-        // Variables globales
+<script>
+    // Variables globales
         let currentPage = 1;
         let eventsPerPage = 25;
         let totalEvents = 0;
@@ -711,11 +658,7 @@
                 ip: document.getElementById('filter-ip').value,
                 riskLevel: document.getElementById('filter-risk-level').value,
                 category: document.getElementById('filter-category').value,
-                date: document.getElementById('filter-date').value,
-                country: document.getElementById('filter-country').value,
-                action: document.getElementById('filter-action').value,
-                scoreMin: document.getElementById('filter-score-min').value,
-                scoreMax: document.getElementById('filter-score-max').value
+                date: document.getElementById('filter-date').value
             };
 
             // Aplicar filtros y recargar eventos
@@ -860,5 +803,5 @@
             totalEvents = 0;
             updateShowingInfo();
         }
-    </script>
+</script>
 @stop

@@ -9,47 +9,43 @@
         </div>
         <div class="card-body p-0">
             <nav class="nav flex-column">
-                <a class="nav-link {{ request()->routeIs('security.dashboard') ? 'active' : '' }}" 
-                   href="{{ route('security.dashboard') }}">
+                <a class="nav-link {{ request()->routeIs('security.dashboard') ? 'active' : '' }}"
+                    href="{{ route('security.dashboard') }}">
                     <i class="fas fa-tachometer-alt me-2"></i>
                     Dashboard
                 </a>
-                
-                <a class="nav-link {{ request()->routeIs('security.events') ? 'active' : '' }}" 
-                   href="{{ route('security.events') }}">
+
+                <a class="nav-link {{ request()->routeIs('security.events') ? 'active' : '' }}"
+                    href="{{ route('security.events') }}">
                     <i class="fas fa-exclamation-triangle me-2"></i>
                     Eventos
                 </a>
-                
-                <a class="nav-link {{ request()->routeIs('security.threat-intelligence') ? 'active' : '' }}" 
-                   href="{{ route('security.threat-intelligence') }}">
+
+                <a class="nav-link {{ request()->routeIs('security.threat-intelligence') ? 'active' : '' }}"
+                    href="{{ route('security.threat-intelligence') }}">
                     <i class="fas fa-brain me-2"></i>
                     Inteligencia de Amenazas
                 </a>
-                
-                <a class="nav-link {{ request()->routeIs('security.ip-reputation') ? 'active' : '' }}" 
-                   href="{{ route('security.ip-reputation') }}">
+
+                <a class="nav-link {{ request()->routeIs('security.ip-reputation') ? 'active' : '' }}"
+                    href="{{ route('security.ip-reputation') }}">
                     <i class="fas fa-globe me-2"></i>
                     Reputación de IPs
                 </a>
-                
-                <a class="nav-link {{ request()->routeIs('security.reports') ? 'active' : '' }}" 
-                   href="{{ route('security.reports') }}">
+
+                <a class="nav-link {{ request()->routeIs('security.reports') ? 'active' : '' }}"
+                    href="{{ route('security.reports') }}">
                     <i class="fas fa-chart-bar me-2"></i>
                     Reportes
                 </a>
-                
-                <a class="nav-link {{ request()->routeIs('security.logs') ? 'active' : '' }}" 
-                   href="{{ route('security.logs') }}">
+
+                <a class="nav-link {{ request()->routeIs('security.logs') ? 'active' : '' }}"
+                    href="{{ route('security.logs') }}">
                     <i class="fas fa-file-alt me-2"></i>
                     Logs
                 </a>
-                
-                <a class="nav-link {{ request()->routeIs('security.settings') ? 'active' : '' }}" 
-                   href="{{ route('security.settings') }}">
-                    <i class="fas fa-cogs me-2"></i>
-                    Configuración
-                </a>
+
+
             </nav>
         </div>
     </div>
@@ -93,10 +89,7 @@
             </h6>
         </div>
         <div class="card-body">
-            <button class="btn btn-outline-danger btn-sm w-100 mb-2" onclick="showBlockIPModal()">
-                <i class="fas fa-ban me-2"></i>
-                Bloquear IP
-            </button>
+
             <button class="btn btn-outline-success btn-sm w-100 mb-2" onclick="showWhitelistIPModal()">
                 <i class="fas fa-check me-2"></i>
                 Whitelist IP
@@ -110,42 +103,42 @@
 </div>
 
 <style>
-.security-navigation .nav-link {
-    color: #6c757d;
-    padding: 0.75rem 1rem;
-    border-left: 3px solid transparent;
-    transition: all 0.3s ease;
-}
+    .security-navigation .nav-link {
+        color: #6c757d;
+        padding: 0.75rem 1rem;
+        border-left: 3px solid transparent;
+        transition: all 0.3s ease;
+    }
 
-.security-navigation .nav-link:hover {
-    color: #495057;
-    background-color: #f8f9fa;
-    border-left-color: #dee2e6;
-}
+    .security-navigation .nav-link:hover {
+        color: #495057;
+        background-color: #f8f9fa;
+        border-left-color: #dee2e6;
+    }
 
-.security-navigation .nav-link.active {
-    color: #007bff;
-    background-color: #e3f2fd;
-    border-left-color: #007bff;
-    font-weight: 600;
-}
+    .security-navigation .nav-link.active {
+        color: #007bff;
+        background-color: #e3f2fd;
+        border-left-color: #007bff;
+        font-weight: 600;
+    }
 
-.security-navigation .card-header {
-    border-bottom: none;
-}
+    .security-navigation .card-header {
+        border-bottom: none;
+    }
 
-.security-navigation .card {
-    border: none;
-    border-radius: 0.5rem;
-}
+    .security-navigation .card {
+        border: none;
+        border-radius: 0.5rem;
+    }
 
-.security-navigation .btn {
-    border-radius: 0.375rem;
-}
+    .security-navigation .btn {
+        border-radius: 0.375rem;
+    }
 </style>
 
 <script>
-// Actualizar tiempo de última actualización
+    // Actualizar tiempo de última actualización
 function updateLastUpdateTime() {
     const now = new Date();
     const timeString = now.toLocaleTimeString('es-ES', { 
@@ -158,11 +151,7 @@ function updateLastUpdateTime() {
 // Actualizar cada 5 minutos
 setInterval(updateLastUpdateTime, 300000);
 
-// Funciones para mostrar modales (se implementarán en las vistas principales)
-function showBlockIPModal() {
-    // Esta función se implementará en las vistas que incluyan este componente
-    console.log('Mostrar modal de bloqueo de IP');
-}
+
 
 function showWhitelistIPModal() {
     console.log('Mostrar modal de whitelist de IP');

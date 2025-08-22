@@ -54,6 +54,8 @@
 🟢 compactando las herramientas de seguridad y el uso de cuota mensual en transacciones
         verificando que los servicios muestren datos reales:
             ...Eventos de Seguridad
+            eliminando todo lo que no funciona o esta de mas
+                evaluar si se necesita, preguntar en verdad se recopila y decidir
 
 
 🟢 construir de control de calidad para el gestor

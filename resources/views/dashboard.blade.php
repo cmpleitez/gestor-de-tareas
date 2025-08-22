@@ -14,8 +14,7 @@
     {{-- Titulo de la aplicación --}}
     <title>{{ auth()->user()->main_role }} - ALFA.{{ config('app.version') }}</title>
     <link rel="apple-touch-icon" href="{{ asset('app-assets/images/icons/favicon-32x32.png') }}">
-    <link rel="shortcut icon" type="image/svg+xml"
-        href="{{ asset('app-assets/images/icons/favicon-32x32.png') }}">
+    <link rel="shortcut icon" type="image/svg+xml" href="{{ asset('app-assets/images/icons/favicon-32x32.png') }}">
     <link href="https://fonts.googleapis.com/css?family=Rubik:300,400,500,600%7CIBM+Plex+Sans:300,400,500,600,700"
         rel="stylesheet">
 
@@ -680,14 +679,14 @@
                                 </div>
                                 <div class="avatar">
                                     @if (auth()->check())
-                                        @php $photoPath = auth()->user()->profile_photo_path; @endphp
-                                        @if ($photoPath && Storage::disk('public')->exists($photoPath))
-                                        <img src="{{ Storage::url($photoPath) }}" alt="avatar"
-                                            style="height: 45px; width: 45px; object-fit: cover;">
-                                        @else
-                                                                                 <img src="{{ asset('app-assets/images/pages/operador.png') }}"
-                                             alt="avatar" style="height: 45px; width: 45px; object-fit: contain;">
-                                        @endif
+                                    @php $photoPath = auth()->user()->profile_photo_path; @endphp
+                                    @if ($photoPath && Storage::disk('public')->exists($photoPath))
+                                    <img src="{{ Storage::url($photoPath) }}" alt="avatar"
+                                        style="height: 45px; width: 45px; object-fit: cover;">
+                                    @else
+                                    <img src="{{ asset('app-assets/images/pages/operador.png') }}" alt="avatar"
+                                        style="height: 45px; width: 45px; object-fit: contain;">
+                                    @endif
                                     @endif
                                 </div>
                             </a>
@@ -720,8 +719,8 @@
                 <li class="nav-item mr-auto open">
                     <a class="navbar-brand align-items-baseline" href="{{ route('dashboard') }}">
                         <div class="brand-logo">
-                                                         <img src="{{ asset('app-assets/images/icons/favicon-32x32.png') }}" alt="logo"
-                                 style="width: 2.5rem; height: 2rem; object-fit: contain;">
+                            <img src="{{ asset('app-assets/images/icons/favicon-32x32.png') }}" alt="logo"
+                                style="width: 2.5rem; height: 2rem; object-fit: contain;">
                         </div>
                         <h2 class="brand-text mb-0"></h2>
                     </a>
@@ -825,10 +824,7 @@
                                 <i class="bx bx-right-arrow-alt"></i>
                                 <span class="menu-item" data-i18n="Second Level">Logs</span>
                             </a></li>
-                        <li><a href="{{ Route('security.settings') }}">
-                                <i class="bx bx-right-arrow-alt"></i>
-                                <span class="menu-item" data-i18n="Second Level">Configuración</span>
-                            </a></li>
+
                     </ul>
                 </li>
                 @endrole

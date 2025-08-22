@@ -29,7 +29,6 @@ class SecurityController extends Controller
             $data = [
                 'securityEventsCount' => SecurityEvent::where('created_at', '>=', now()->subDay())->count(),
                 'activeThreatsCount' => SecurityEvent::where('threat_score', '>=', 80)->where('created_at', '>=', now()->subDay())->count(),
-                'blockedIPsCount' => $this->getBlockedIPsCount(),
                 'recentEvents' => SecurityEvent::latest()->take(10)->get(),
                 'suspiciousIPs' => $this->getSuspiciousIPs(),
                 'riskLevelDistribution' => $this->getRiskLevelDistribution(),
@@ -44,7 +43,6 @@ class SecurityController extends Controller
             $data = [
                 'securityEventsCount' => 0,
                 'activeThreatsCount' => 0,
-                'blockedIPsCount' => 0,
                 'recentEvents' => collect(),
                 'suspiciousIPs' => collect(),
                 'riskLevelDistribution' => [0, 0, 0, 0, 0],
@@ -55,20 +53,7 @@ class SecurityController extends Controller
         }
     }
 
-    /**
-     * Obtener conteo de IPs bloqueadas
-     */
-    private function getBlockedIPsCount(): int
-    {
-        try {
-            return SecurityEvent::where('action_taken', 'block')
-                ->where('created_at', '>=', now()->subDay())
-                ->count();
-        } catch (\Exception $e) {
-            Log::error('Error obteniendo IPs bloqueadas: ' . $e->getMessage());
-            return 0;
-        }
-    }
+
 
     /**
      * Obtener IPs sospechosas
@@ -217,13 +202,7 @@ class SecurityController extends Controller
         }
     }
 
-    /**
-     * Vista de configuración de seguridad
-     */
-    public function settings()
-    {
-        return view('security.settings');
-    }
+
 
     /**
      * Vista de reportes de seguridad
@@ -241,65 +220,7 @@ class SecurityController extends Controller
         return view('security.logs');
     }
 
-    /**
-     * Bloquear una IP
-     */
-    public function blockIP(Request $request): JsonResponse
-    {
-        try {
-            $request->validate([
-                'ip' => 'required|ip',
-                'reason' => 'nullable|string|max:500',
-                'duration' => 'nullable|integer|min:1|max:365',
-            ]);
 
-            $ip = $request->ip;
-            $reason = $request->reason ?? 'Bloqueo manual por administrador';
-            $duration = $request->duration ?? 24; // horas por defecto
-
-            // Agregar IP a blacklist
-            $blacklist = Cache::get('security.blacklist', []);
-            $blacklist[$ip] = [
-                'reason' => $reason,
-                'blocked_at' => now(),
-                'expires_at' => now()->addHours($duration),
-                'blocked_by' => auth()->id(),
-            ];
-            Cache::put('security.blacklist', $blacklist, now()->addDays(30));
-
-            // Registrar evento de seguridad
-            SecurityEvent::create([
-                'ip_address' => $ip,
-                'event_type' => 'manual_block',
-                'threat_score' => 100,
-                'action_taken' => 'block',
-                'details' => [
-                    'reason' => $reason,
-                    'duration_hours' => $duration,
-                    'blocked_by' => auth()->id(),
-                ],
-                'created_at' => now(),
-            ]);
-
-            Log::info("IP {$ip} bloqueada manualmente por usuario " . auth()->id());
-
-            return response()->json([
-                'success' => true,
-                'message' => "IP {$ip} bloqueada exitosamente por {$duration} horas",
-                'data' => [
-                    'ip' => $ip,
-                    'expires_at' => now()->addHours($duration)->toISOString(),
-                ],
-            ]);
-
-        } catch (\Exception $e) {
-            Log::error("Error al bloquear IP: " . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Error al bloquear IP: ' . $e->getMessage(),
-            ], 500);
-        }
-    }
 
     /**
      * Agregar IP a whitelist
@@ -368,71 +289,7 @@ class SecurityController extends Controller
         }
     }
 
-    /**
-     * Activar/Desactivar modo mantenimiento
-     */
-    public function toggleMaintenance(Request $request): JsonResponse
-    {
-        try {
-            $request->validate([
-                'enabled' => 'required|boolean',
-                'message' => 'nullable|string|max:500',
-                'allowed_ips' => 'nullable|array',
-                'allowed_ips.*' => 'ip',
-            ]);
 
-            $enabled = $request->enabled;
-            $message = $request->message ?? 'Sitio en mantenimiento. Volveremos pronto.';
-            $allowedIPs = $request->allowed_ips ?? [];
-
-            if ($enabled) {
-                // Activar modo mantenimiento
-                \Artisan::call('down', [
-                    '--message' => $message,
-                    '--retry' => 60,
-                    '--secret' => 'admin-access-' . time(),
-                ]);
-
-                // Guardar configuración de mantenimiento
-                Cache::put('maintenance.enabled', true, now()->addDays(30));
-                Cache::put('maintenance.message', $message, now()->addDays(30));
-                Cache::put('maintenance.allowed_ips', $allowedIPs, now()->addDays(30));
-                Cache::put('maintenance.activated_by', auth()->id(), now()->addDays(30));
-                Cache::put('maintenance.activated_at', now(), now()->addDays(30));
-
-                Log::info("Modo mantenimiento activado por usuario " . auth()->id());
-            } else {
-                // Desactivar modo mantenimiento
-                \Artisan::call('up');
-
-                // Limpiar configuración de mantenimiento
-                Cache::forget('maintenance.enabled');
-                Cache::forget('maintenance.message');
-                Cache::forget('maintenance.allowed_ips');
-                Cache::forget('maintenance.activated_by');
-                Cache::forget('maintenance.activated_at');
-
-                Log::info("Modo mantenimiento desactivado por usuario " . auth()->id());
-            }
-
-            return response()->json([
-                'success' => true,
-                'message' => $enabled ? 'Modo mantenimiento activado' : 'Modo mantenimiento desactivado',
-                'data' => [
-                    'enabled' => $enabled,
-                    'message' => $message,
-                    'allowed_ips' => $allowedIPs,
-                ],
-            ]);
-
-        } catch (\Exception $e) {
-            Log::error("Error al cambiar modo mantenimiento: " . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Error al cambiar modo mantenimiento: ' . $e->getMessage(),
-            ], 500);
-        }
-    }
 
     /**
      * Estadísticas del dashboard (SIMPLIFICADAS)

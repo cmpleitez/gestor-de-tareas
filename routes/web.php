@@ -118,8 +118,7 @@ Route::middleware([
             // Reputación de IPs
             Route::get('ip-reputation', [SecurityController::class, 'ipReputation'])->name('security.ip-reputation');
 
-            // Configuración de seguridad
-            Route::get('settings', [SecurityController::class, 'settings'])->name('security.settings');
+
 
             // Reportes de seguridad
             Route::get('reports', [SecurityController::class, 'reports'])->name('security.reports');
@@ -128,9 +127,9 @@ Route::middleware([
             Route::get('logs', [SecurityController::class, 'logs'])->name('security.logs');
 
             // Acciones de seguridad (AJAX)
-            Route::post('block-ip', [SecurityController::class, 'blockIP'])->name('security.block-ip');
+
             Route::post('whitelist-ip', [SecurityController::class, 'whitelistIP'])->name('security.whitelist-ip');
-            Route::post('toggle-maintenance', [SecurityController::class, 'toggleMaintenance'])->name('security.toggle-maintenance');
+
 
             // API endpoints para datos
             Route::get('dashboard-stats', [SecurityController::class, 'getDashboardStats'])->name('security.dashboard-stats');
