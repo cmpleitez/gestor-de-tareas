@@ -123,8 +123,8 @@ class SecurityTestDataSeeder extends Seeder
                 $uri = $testURIs[array_rand($testURIs)];
                 $userAgent = $userAgents[array_rand($userAgents)];
 
-                // Generar timestamp realista (últimos 30 días)
-                $timestamp = Carbon::now()->subDays(rand(0, 30))->subHours(rand(0, 23))->subMinutes(rand(0, 59));
+                // Generar timestamp realista (últimos 3 días)
+                $timestamp = Carbon::now()->subDays(rand(0, 2))->addHours(rand(0, 23))->addMinutes(rand(0, 59));
 
                 // Crear geolocalización realista
                 $geolocation = [
@@ -231,7 +231,7 @@ class SecurityTestDataSeeder extends Seeder
                 'blacklisted' => $ipData['reputation_score'] > 70,
                 'whitelisted' => $ipData['reputation_score'] < 20,
                 'last_seen' => Carbon::now()->subMinutes(rand(1, 1440)),
-                'created_at' => Carbon::now()->subDays(rand(1, 30)),
+                'created_at' => Carbon::now()->subDays(rand(0, 2)), // Últimos 3 días (0, 1, 2)
                 'updated_at' => Carbon::now()->subMinutes(rand(1, 1440)),
             ]);
         }
@@ -250,25 +250,103 @@ class SecurityTestDataSeeder extends Seeder
 
         $this->command->info('   🚨 Creando datos de inteligencia de amenazas de prueba...');
 
-        $threats = [
-            ['type' => 'malware', 'ip' => '192.168.1.100'],
-            ['type' => 'phishing', 'ip' => '10.0.0.50'],
-            ['type' => 'ddos', 'ip' => '172.16.0.25'],
-            ['type' => 'sql_injection', 'ip' => '203.0.113.10'],
-            ['type' => 'xss', 'ip' => '198.51.100.5']
+        // Tipos de amenazas realistas
+        $threatTypes = [
+            'malware' => 'Malware',
+            'phishing' => 'Phishing',
+            'ddos' => 'DDoS',
+            'apt' => 'APT',
+            'ransomware' => 'Ransomware',
+            'botnet' => 'Botnet',
+            'sql_injection' => 'SQL Injection',
+            'xss' => 'XSS Attack'
         ];
 
-        foreach ($threats as $threat) {
-            DB::table('threat_intelligence')->insert([
-                'threat_type' => $threat['type'], // ✅ COLUMNA REAL
-                'ip_address' => $threat['ip'], // ✅ COLUMNA OBLIGATORIA
-                'status' => 'active', // ✅ COLUMNA REAL
-                'created_at' => Carbon::now()->subHours(rand(1, 24)),
-                'updated_at' => Carbon::now()->subHours(rand(1, 24))
-            ]);
+        // Familias de malware realistas
+        $malwareFamilies = [
+            'Emotet',
+            'TrickBot',
+            'Dridex',
+            'QakBot',
+            'IcedID',
+            'BazarLoader',
+            'Ryuk',
+            'REvil',
+            'Conti',
+            'LockBit'
+        ];
+
+        // Vectores de ataque
+        $attackVectors = [
+            'email',
+            'web',
+            'network',
+            'social_engineering',
+            'malvertising',
+            'drive_by_download',
+            'supply_chain',
+            'remote_access'
+        ];
+
+        $threatsCreated = 0;
+
+        foreach ($threatTypes as $type => $name) {
+            // Crear múltiples amenazas por tipo
+            $threatCount = rand(2, 5);
+
+            for ($i = 0; $i < $threatCount; $i++) {
+                $threatScore = $this->generateRealisticThreatScore();
+                $classification = $this->getRiskLevel($threatScore);
+                $confidence = rand(70, 95);
+                $malwareFamily = $malwareFamilies[array_rand($malwareFamilies)];
+                $attackVector = $attackVectors[array_rand($attackVectors)];
+
+                // Generar timestamp realista (últimos 7 días)
+                $timestamp = Carbon::now()->subDays(rand(0, 7))->subHours(rand(0, 23))->subMinutes(rand(0, 59));
+
+                // Generar IP realista
+                $ip = $this->generateRealisticIP();
+
+                // Obtener geolocalización real usando el servicio
+                $geolocation = $this->getRealGeolocation($ip);
+
+                DB::table('threat_intelligence')->insert([
+                    'ip_address' => $ip,
+                    'threat_type' => $type,
+                    'threat_score' => $threatScore,
+                    'classification' => $classification,
+                    'confidence' => $confidence,
+                    'country_code' => $geolocation['country_code'],
+                    'status' => 'active',
+                    'last_updated' => $timestamp,
+                    'first_seen' => $timestamp->copy()->subDays(rand(1, 3)),
+                    'last_seen' => $timestamp,
+                    'malware_family' => $malwareFamily,
+                    'attack_vectors' => json_encode([$attackVector]),
+                    'geographic_origin' => $geolocation['country'] ?? 'Unknown',
+                    'latitude' => $geolocation['latitude'] ?? 0,
+                    'longitude' => $geolocation['longitude'] ?? 0,
+                    'timezone' => $geolocation['timezone'] ?? 'UTC',
+                    'asn' => $geolocation['asn'] ?? 'Unknown',
+                    'isp' => $geolocation['isp'] ?? 'Unknown',
+                    'organization' => $geolocation['organization'] ?? 'Unknown',
+                    'verified' => rand(0, 1),
+                    'false_positive' => 0,
+                    'notes' => "Amenaza de prueba generada por seeder - Tipo: {$name}",
+                    'metadata' => json_encode([
+                        'seeded' => true,
+                        'test_data' => true,
+                        'created_at' => now()->toISOString()
+                    ]),
+                    'created_at' => $timestamp,
+                    'updated_at' => $timestamp,
+                ]);
+
+                $threatsCreated++;
+            }
         }
 
-        $this->command->info('   ✅ 5 amenazas de inteligencia creadas');
+        $this->command->info("   ✅ {$threatsCreated} amenazas de inteligencia creadas con geolocalización real");
     }
 
     /**
@@ -350,5 +428,61 @@ class SecurityTestDataSeeder extends Seeder
         if ($score >= 60)
             return 'high';
         return 'medium'; // Solo 3 niveles: Crítico, Alto y Medio
+    }
+
+    /**
+     * Generar IP realista para amenazas
+     */
+    private function generateRealisticIP(): string
+    {
+        $ranges = [
+            '203.0.113',
+            '198.51.100',
+            '192.0.2',
+            '10.0.0',
+            '172.16.0',
+            '192.168.1',
+            '185.199.108',
+            '104.21.92',
+            '45.33.12'
+        ];
+
+        $range = $ranges[array_rand($ranges)];
+        $lastOctet = rand(1, 254);
+
+        return "{$range}.{$lastOctet}";
+    }
+
+    /**
+     * Obtener geolocalización real para una IP
+     */
+    private function getRealGeolocation(string $ip): array
+    {
+        try {
+            // Usar el servicio de geolocalización
+            $geolocationService = app(\App\Services\GeolocationService::class);
+            $geolocation = $geolocationService->getGeolocation($ip);
+
+            // Asegurar que country_code tenga máximo 3 caracteres
+            if (isset($geolocation['country_code']) && strlen($geolocation['country_code']) > 3) {
+                $geolocation['country_code'] = substr($geolocation['country_code'], 0, 3);
+            }
+
+            return $geolocation;
+        } catch (\Exception $e) {
+            // Fallback a datos básicos si falla el servicio
+            return [
+                'country' => 'Unknown',
+                'country_code' => 'XX',
+                'region' => 'Unknown',
+                'city' => 'Unknown',
+                'latitude' => 0,
+                'longitude' => 0,
+                'timezone' => 'UTC',
+                'isp' => 'Unknown',
+                'organization' => 'Unknown',
+                'asn' => 'Unknown'
+            ];
+        }
     }
 }

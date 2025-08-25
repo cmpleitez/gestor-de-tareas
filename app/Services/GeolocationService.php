@@ -2,58 +2,61 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class GeolocationService
 {
-    protected $config = [
-        'cache_duration' => 86400, // 24 horas
-        'api_timeout' => 5, // 5 segundos
-        'max_retries' => 2
-    ];
-
     /**
-     * Obtener información geográfica de una IP
+     * Obtener información geográfica de una IP usando múltiples APIs
      */
-    public function getIPGeolocation(string $ip): array
+    public function getGeolocation(string $ip): array
     {
         // Verificar cache primero
-        $cacheKey = "ip_geolocation_{$ip}";
-        if (Cache::has($cacheKey)) {
-            return Cache::get($cacheKey);
+        $cacheKey = "geolocation_{$ip}";
+        $cached = Cache::get($cacheKey);
+
+        if ($cached) {
+            return $cached;
         }
 
         try {
-            // Usar IP-API (gratuita, sin API key)
-            $geolocation = $this->queryIPAPI($ip);
-            
-            if ($geolocation) {
-                // Cache por 24 horas
-                Cache::put($cacheKey, $geolocation, now()->addHours(24));
-                return $geolocation;
+            // Intentar con ipapi.co (gratuito, confiable)
+            $geolocation = $this->getFromIpApi($ip);
+
+            if (!$geolocation) {
+                // Fallback a ipinfo.io
+                $geolocation = $this->getFromIpInfo($ip);
             }
+
+            if (!$geolocation) {
+                // Fallback a datos básicos
+                $geolocation = $this->getBasicGeolocation($ip);
+            }
+
+            // Cache por 24 horas
+            Cache::put($cacheKey, $geolocation, now()->addHours(24));
+
+            return $geolocation;
+
         } catch (\Exception $e) {
             Log::error("Error obteniendo geolocalización para IP {$ip}: " . $e->getMessage());
+            return $this->getBasicGeolocation($ip);
         }
-
-        // Retornar datos por defecto si falla
-        return $this->getDefaultGeolocation($ip);
     }
 
     /**
-     * Consultar IP-API para obtener geolocalización
+     * Obtener geolocalización desde ipapi.co
      */
-    protected function queryIPAPI(string $ip): ?array
+    private function getFromIpApi(string $ip): ?array
     {
         try {
-            $response = Http::timeout($this->config['api_timeout'])
-                ->get("http://ip-api.com/json/{$ip}");
+            $response = Http::timeout(5)->get("http://ip-api.com/json/{$ip}");
 
             if ($response->successful()) {
                 $data = $response->json();
-                
+
                 if ($data['status'] === 'success') {
                     return [
                         'country' => $data['country'] ?? 'Unknown',
@@ -67,73 +70,140 @@ class GeolocationService
                         'org' => $data['org'] ?? 'Unknown',
                         'as' => $data['as'] ?? 'Unknown',
                         'query' => $ip,
-                        'source' => 'ip-api.com',
+                        'source' => 'ipapi.co',
                         'timestamp' => now()->toISOString()
                     ];
                 }
             }
         } catch (\Exception $e) {
-            Log::error("Error consultando IP-API para {$ip}: " . $e->getMessage());
+            Log::warning("Error con ipapi.co para IP {$ip}: " . $e->getMessage());
         }
 
         return null;
     }
 
     /**
-     * Obtener geolocalización por defecto
+     * Obtener geolocalización desde ipinfo.io (fallback)
      */
-    protected function getDefaultGeolocation(string $ip): array
+    private function getFromIpInfo(string $ip): ?array
     {
+        try {
+            $response = Http::timeout(5)->get("https://ipinfo.io/{$ip}/json");
+
+            if ($response->successful()) {
+                $data = $response->json();
+
+                if (isset($data['country'])) {
+                    $location = explode(',', $data['loc'] ?? '0,0');
+
+                    return [
+                        'country' => $data['country'] ?? 'Unknown',
+                        'country_code' => $data['country'] ?? 'XX',
+                        'region' => $data['region'] ?? 'Unknown',
+                        'city' => $data['city'] ?? 'Unknown',
+                        'latitude' => $location[0] ?? 0,
+                        'longitude' => $location[1] ?? 0,
+                        'timezone' => $data['timezone'] ?? 'UTC',
+                        'isp' => $data['org'] ?? 'Unknown',
+                        'org' => $data['org'] ?? 'Unknown',
+                        'as' => 'Unknown',
+                        'query' => $ip,
+                        'source' => 'ipinfo.io',
+                        'timestamp' => now()->toISOString()
+                    ];
+                }
+            }
+        } catch (\Exception $e) {
+            Log::warning("Error con ipinfo.io para IP {$ip}: " . $e->getMessage());
+        }
+
+        return null;
+    }
+
+    /**
+     * Obtener geolocalización básica (fallback)
+     */
+    private function getBasicGeolocation(string $ip): array
+    {
+        // Detectar si es IP privada
+        $isPrivate = filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE);
+
+        if (!$isPrivate) {
+            return [
+                'country' => 'Unknown',
+                'country_code' => 'XX',
+                'region' => 'Unknown',
+                'city' => 'Unknown',
+                'latitude' => 0,
+                'longitude' => 0,
+                'timezone' => 'UTC',
+                'isp' => 'Unknown',
+                'org' => 'Unknown',
+                'as' => 'Unknown',
+                'query' => $ip,
+                'source' => 'fallback',
+                'timestamp' => now()->toISOString()
+            ];
+        }
+
+        // IP privada
         return [
-            'country' => 'Unknown',
-            'country_code' => 'XX',
-            'region' => 'Unknown',
-            'city' => 'Unknown',
+            'country' => 'Private Network',
+            'country_code' => 'PRIVATE',
+            'region' => 'Local',
+            'city' => 'Local',
             'latitude' => 0,
             'longitude' => 0,
             'timezone' => 'UTC',
-            'isp' => 'Unknown',
-            'org' => 'Unknown',
-            'as' => 'Unknown',
+            'isp' => 'Private Network',
+            'org' => 'Private Network',
+            'as' => 'Private',
             'query' => $ip,
-            'source' => 'default',
+            'source' => 'private',
             'timestamp' => now()->toISOString()
         ];
     }
 
     /**
-     * Obtener solo el país de una IP
+     * Actualizar geolocalización de amenazas existentes
      */
-    public function getIPCountry(string $ip): string
+    public function updateThreatGeolocation(): int
     {
-        $geolocation = $this->getIPGeolocation($ip);
-        return $geolocation['country'] ?? 'Unknown';
-    }
+        try {
+            $threats = \App\Models\ThreatIntelligence::whereNull('geographic_origin')
+                ->orWhere('geographic_origin', '')
+                ->take(100) // Procesar en lotes
+                ->get();
 
-    /**
-     * Obtener código de país de una IP
-     */
-    public function getIPCountryCode(string $ip): string
-    {
-        $geolocation = $this->getIPGeolocation($ip);
-        return $geolocation['country_code'] ?? 'XX';
-    }
+            $updated = 0;
 
-    /**
-     * Verificar si una IP es de un país específico
-     */
-    public function isIPFromCountry(string $ip, string $countryCode): bool
-    {
-        $geolocation = $this->getIPGeolocation($ip);
-        return strtoupper($geolocation['country_code'] ?? '') === strtoupper($countryCode);
-    }
+            foreach ($threats as $threat) {
+                $geolocation = $this->getGeolocation($threat->ip_address);
 
-    /**
-     * Limpiar cache expirado
-     */
-    public function cleanupExpiredCache(): void
-    {
-        // El cache se limpia automáticamente por Laravel
-        // Este método está aquí para futuras implementaciones
+                if ($geolocation) {
+                    $threat->update([
+                        'country_code' => $geolocation['country_code'],
+                        'geographic_origin' => $geolocation['country'],
+                        'latitude' => $geolocation['latitude'],
+                        'longitude' => $geolocation['longitude'],
+                        'timezone' => $geolocation['timezone'],
+                        'isp' => $geolocation['isp'],
+                        'organization' => $geolocation['org'],
+                        'asn' => $geolocation['as']
+                    ]);
+
+                    $updated++;
+                }
+
+                // Pausa para no sobrecargar las APIs
+                usleep(100000); // 0.1 segundos
+            }
+
+            return $updated;
+
+        } catch (\Exception $e) {
+            Log::error('Error actualizando geolocalización de amenazas: ' . $e->getMessage());
+            return 0;
+        }
     }
 }

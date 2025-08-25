@@ -28,6 +28,12 @@ document.addEventListener('DOMContentLoaded', function () {
 function cleanupExistingCharts() {
     console.log('🧹 LIMPIEZA ULTRA-AGRESIVA de gráficos...');
 
+    // Verificar que Chart.js esté disponible
+    if (typeof Chart === 'undefined') {
+        console.log('ℹ️ Chart.js no está disponible, saltando limpieza de gráficos');
+        return;
+    }
+
     // 1. Destruir gráficos locales
     if (riskChart && typeof riskChart.destroy === 'function') {
         try {
@@ -52,7 +58,7 @@ function cleanupExistingCharts() {
     // 2. LIMPIEZA ULTRA-AGRESIVA - Destruir TODOS los gráficos de Chart.js
     try {
         // Método 1: Chart.instances
-        if (Chart.instances && Chart.instances.length > 0) {
+        if (Chart.instances && Array.isArray(Chart.instances) && Chart.instances.length > 0) {
             console.log('🗑️ Destruyendo', Chart.instances.length, 'instancias de Chart.js');
             Chart.instances.forEach((chart, index) => {
                 try {
@@ -67,7 +73,7 @@ function cleanupExistingCharts() {
         }
 
         // Método 2: Chart.Chart.instances (versiones más nuevas)
-        if (Chart.Chart && Chart.Chart.instances && Chart.Chart.instances.length > 0) {
+        if (Chart.Chart && Chart.Chart.instances && Array.isArray(Chart.Chart.instances) && Chart.Chart.instances.length > 0) {
             console.log('🗑️ Destruyendo', Chart.Chart.instances.length, 'instancias de Chart.Chart');
             Chart.Chart.instances.forEach((chart, index) => {
                 try {
@@ -82,7 +88,7 @@ function cleanupExistingCharts() {
         }
 
         // Método 3: Chart.registry.controllers (versiones más nuevas)
-        if (Chart.registry && Chart.registry.controllers && Chart.registry.controllers.size > 0) {
+        if (Chart.registry && Chart.registry.controllers && typeof Chart.registry.controllers.forEach === 'function' && Chart.registry.controllers.size > 0) {
             console.log('🗑️ Destruyendo', Chart.registry.controllers.size, 'controladores del registro');
             Chart.registry.controllers.forEach((controller, id) => {
                 try {
@@ -97,7 +103,7 @@ function cleanupExistingCharts() {
         }
 
         // Método 4: Limpiar registros internos
-        if (typeof Chart.registry.clear === 'function') {
+        if (Chart.registry && typeof Chart.registry.clear === 'function') {
             try {
                 Chart.registry.clear();
                 console.log('✅ Registro de Chart.js limpiado');

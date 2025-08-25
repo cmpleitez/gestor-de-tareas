@@ -52,7 +52,7 @@
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">
                         <i class="fas fa-chart-line me-2"></i>
-                        Evolución de Amenazas (Últimos 30 días)
+                        Evolución de Amenazas (Últimos 3 días)
                     </h6>
                 </div>
                 <div class="card-body">
@@ -83,12 +83,9 @@
                                 <label for="filter-threat-type" class="form-label">Tipo de Amenaza</label>
                                 <select class="form-select" id="filter-threat-type">
                                     <option value="">Todos</option>
-                                    <option value="malware">Malware</option>
-                                    <option value="phishing">Phishing</option>
-                                    <option value="ddos">DDoS</option>
-                                    <option value="apt">APT</option>
-                                    <option value="ransomware">Ransomware</option>
-                                    <option value="botnet">Botnet</option>
+                                    @foreach($threatTypes ?? [] as $type => $name)
+                                    <option value="{{ $type }}">{{ $name }}</option>
+                                    @endforeach
                                 </select>
                             </div>
 
@@ -106,11 +103,9 @@
                                 <label for="filter-country" class="form-label">País de Origen</label>
                                 <select class="form-select" id="filter-country">
                                     <option value="">Todos</option>
-                                    <option value="RU">Rusia</option>
-                                    <option value="CN">China</option>
-                                    <option value="KP">Corea del Norte</option>
-                                    <option value="IR">Irán</option>
-                                    <option value="US">Estados Unidos</option>
+                                    @foreach($countries ?? [] as $code => $name)
+                                    <option value="{{ $code }}">{{ $name }}</option>
+                                    @endforeach
                                 </select>
                             </div>
 
@@ -140,7 +135,7 @@
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                     <h6 class="m-0 font-weight-bold text-primary">
                         <i class="fas fa-list me-2"></i>
-                        Base de Datos de Amenazas
+                        Base de Datos de Amenazas (Últimos 3 días)
                     </h6>
 
                 </div>
@@ -323,354 +318,325 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     // Variables globales
-        let threatEvolutionChart;
-        let currentThreatPage = 1;
-        let threatsPerPage = 25;
-        let totalThreats = 0;
+    let threatEvolutionChart;
+    let currentThreatPage = 1;
+    let threatsPerPage = 25;
+    let totalThreats = 0;
 
-        // Inicialización
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeThreatCharts();
-            loadThreats();
-        });
+    // Datos reales enviados desde el controlador
+    const serverThreats = {!! json_encode($threats ?? []) !!};
+    const serverEvolutionData = {!! json_encode($evolutionData ?? []) !!};
 
-        function initializeThreatCharts() {
-            // Gráfico de evolución temporal
-            const evolutionCtx = document.getElementById('threatEvolutionChart').getContext('2d');
-            threatEvolutionChart = new Chart(evolutionCtx, {
-                type: 'line',
-                data: {
-                    labels: [],
-                    datasets: [{
-                        label: 'Amenazas Críticas',
-                        data: [],
-                        borderColor: '#e74a3b',
-                        backgroundColor: 'rgba(231, 74, 59, 0.1)',
-                        tension: 0.4
-                    }, {
-                        label: 'Amenazas Altas',
-                        data: [],
-                        borderColor: '#f6c23e',
-                        backgroundColor: 'rgba(246, 194, 62, 0.1)',
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
+    // Inicialización
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeThreatCharts();
+        loadThreats();
+        updateActiveThreatsCount();
+    });
+
+    function initializeThreatCharts() {
+        // Gráfico de evolución temporal
+        const evolutionCtx = document.getElementById('threatEvolutionChart').getContext('2d');
+        threatEvolutionChart = new Chart(evolutionCtx, {
+            type: 'line',
+            data: {
+                labels: serverEvolutionData.dates || [],
+                datasets: [{
+                    label: 'Amenazas Críticas',
+                    data: serverEvolutionData.critical || [],
+                    borderColor: '#e74a3b',
+                    backgroundColor: 'rgba(231, 74, 59, 0.1)',
+                    tension: 0.4
+                }, {
+                    label: 'Amenazas Altas',
+                    data: serverEvolutionData.high || [],
+                    borderColor: '#f6c23e',
+                    backgroundColor: 'rgba(246, 194, 62, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
                     }
                 }
-            });
-        }
-
-        function loadThreats(page = 1) {
-            currentThreatPage = page;
-
-            const tableBody = document.getElementById('threats-table-body');
-
-            // Mostrar loading
-            tableBody.innerHTML = `
-        <tr>
-            <td colspan="8" class="text-center py-4">
-                <i class="fas fa-spinner fa-spin fa-2x text-gray-400"></i>
-                <p class="mt-2 text-gray-500">Cargando amenazas...</p>
-            </td>
-        </tr>
-    `;
-
-            // Simular delay de carga
-            setTimeout(() => {
-                const threats = generateSampleThreats();
-                renderThreatsTable(threats);
-                updateThreatsPagination();
-                updateThreatCharts(threats);
-            }, 1000);
-        }
-
-        function generateSampleThreats() {
-            const threats = [];
-            const ips = ['203.0.113.10', '185.199.108.154', '198.51.100.75', '104.21.92.193', '45.33.12.200'];
-            const types = ['malware', 'phishing', 'ddos', 'apt', 'ransomware', 'botnet'];
-            const classifications = ['critical', 'high', 'medium'];
-            const countries = ['RU', 'CN', 'KP', 'IR', 'US'];
-            const statuses = ['active', 'monitoring', 'mitigated', 'investigating'];
-
-            for (let i = 0; i < 50; i++) {
-                const score = Math.floor(Math.random() * 100);
-                const classification = getThreatClassification(score);
-
-                threats.push({
-                    id: i + 1,
-                    ip: ips[Math.floor(Math.random() * ips.length)],
-                    type: types[Math.floor(Math.random() * types.length)],
-                    classification: classification,
-                    score: score,
-                    confidence: Math.floor(Math.random() * 40) + 60,
-                    country: countries[Math.floor(Math.random() * countries.length)],
-                    status: statuses[Math.floor(Math.random() * statuses.length)],
-                    lastUpdated: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000),
-                    description: 'Amenaza detectada por múltiples fuentes de inteligencia',
-                    sources: ['abuseipdb', 'virustotal'],
-                    malwareFamily: 'Emotet',
-                    attackVectors: ['email', 'web', 'network']
-                });
             }
+        });
+    }
 
-            return threats;
-        }
+    function loadThreats(page = 1) {
+        currentThreatPage = page;
 
-        function getThreatClassification(score) {
-            if (score >= 80) return 'critical';
-            if (score >= 60) return 'high';
-            if (score >= 40) return 'medium';
-            return 'medium'; // Cambiado de 'low' a 'medium' para mantener solo 3 clasificaciones
-        }
+        const tableBody = document.getElementById('threats-table-body');
 
-        function renderThreatsTable(threats) {
-            const tableBody = document.getElementById('threats-table-body');
-            const startIndex = (currentThreatPage - 1) * threatsPerPage;
-            const endIndex = startIndex + threatsPerPage;
-            const pageThreats = threats.slice(startIndex, endIndex);
-
-            tableBody.innerHTML = '';
-
-            pageThreats.forEach(threat => {
-                const row = document.createElement('tr');
-                row.className = `threat-row ${threat.classification}`;
-                row.onclick = () => showThreatDetails(threat);
-
-                row.innerHTML = `
-            <td>
-                <div class="d-flex align-items-center">
-                    <div class="me-2">
-                        <i class="fas fa-globe text-muted"></i>
-                    </div>
-                    <div>
-                        <strong>${threat.ip}</strong>
-                        <br><small class="text-muted">${threat.malwareFamily || 'N/A'}</small>
-                    </div>
-                </div>
-            </td>
-            <td>
-                <span class="badge bg-secondary threat-badge">${threat.type}</span>
-            </td>
-            <td>
-                <span class="badge threat-badge bg-${getClassificationBadgeColor(threat.classification)}">
-                    ${threat.classification.toUpperCase()}
-                </span>
-            </td>
-            <td>
-                <div class="d-flex align-items-center">
-                    <div class="me-2">
-                        <strong>${threat.score}</strong>
-                    </div>
-                    <div class="score-indicator">
-                        <div class="score-fill ${threat.classification}" style="width: ${threat.score}%"></div>
-                    </div>
-                </div>
-            </td>
-            <td>
-                <div class="progress" style="height: 20px;">
-                    <div class="progress-bar bg-${getConfidenceColor(threat.confidence)}" 
-                         style="width: ${threat.confidence}%">
-                        ${threat.confidence}%
-                    </div>
-                </div>
-            </td>
-            <td>
-                <span class="badge bg-info">${threat.country}</span>
-            </td>
-            <td>
-                <span class="badge bg-${getStatusBadgeColor(threat.status)}">${threat.status}</span>
-            </td>
-            <td>
-                <small>${formatDate(threat.lastUpdated)}</small>
-            </td>
+        // Mostrar loading
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="8" class="text-center py-4">
+                    <i class="fas fa-spinner fa-spin fa-2x text-gray-400"></i>
+                    <p class="mt-2 text-gray-500">Cargando amenazas...</p>
+                </td>
+            </tr>
         `;
 
-                tableBody.appendChild(row);
-            });
+        // Usar los datos reales del servidor
+        if (serverThreats && serverThreats.length > 0) {
+            renderThreatsTable(serverThreats);
+            updateThreatsPagination();
+        } else {
+            // Si no hay datos del servidor, mostrar mensaje
+            showNoThreatsMessage();
+        }
+    }
 
-            totalThreats = threats.length;
-            updateThreatsShowingInfo();
+    function renderThreatsTable(threats) {
+        const tableBody = document.getElementById('threats-table-body');
+        const startIndex = (currentThreatPage - 1) * threatsPerPage;
+        const endIndex = startIndex + threatsPerPage;
+        const pageThreats = threats.slice(startIndex, endIndex);
+
+        tableBody.innerHTML = '';
+
+        if (pageThreats.length === 0) {
+            showNoThreatsMessage();
+            return;
         }
 
-        function getClassificationBadgeColor(classification) {
-            const colors = {
-                'critical': 'danger',
-                'high': 'warning',
-                'medium': 'warning'
-            };
-            return colors[classification] || 'secondary';
-        }
+        pageThreats.forEach(threat => {
+            const row = document.createElement('tr');
+            row.className = `threat-row ${threat.classification}`;
+            row.onclick = () => showThreatDetails(threat);
 
-        function getConfidenceColor(confidence) {
-            if (confidence >= 90) return 'success';
-            if (confidence >= 75) return 'info';
-            if (confidence >= 60) return 'warning';
-            return 'danger';
-        }
+            row.innerHTML = `
+                <td>
+                    <div class="d-flex align-items-center">
+                        <div class="me-2">
+                            <i class="fas fa-globe text-muted"></i>
+                        </div>
+                        <div>
+                            <strong>${threat.ip}</strong>
+                            <br><small class="text-muted">${threat.malwareFamily || 'N/A'}</small>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <span class="badge bg-secondary threat-badge">${threat.type}</span>
+                </td>
+                <td>
+                    <span class="badge threat-badge bg-${getClassificationBadgeColor(threat.classification)}">
+                        ${threat.classification.toUpperCase()}
+                    </span>
+                </td>
+                <td>
+                    <div class="d-flex align-items-center">
+                        <div class="me-2">
+                            <strong>${threat.score}</strong>
+                        </div>
+                        <div class="score-indicator">
+                            <div class="score-fill ${threat.classification}" style="width: ${threat.score}%"></div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="progress" style="height: 20px;">
+                        <div class="progress-bar bg-${getConfidenceColor(threat.confidence)}" 
+                             style="width: ${threat.confidence}%">
+                            ${threat.confidence}%
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <span class="badge bg-info">${threat.country}</span>
+                </td>
+                <td>
+                    <span class="badge bg-${getStatusBadgeColor(threat.status)}">${threat.status}</span>
+                </td>
+                <td>
+                    <small>${formatDate(threat.lastUpdated)}</small>
+                </td>
+            `;
 
-        function getStatusBadgeColor(status) {
-            const colors = {
-                'active': 'danger',
-                'monitoring': 'warning',
-                'mitigated': 'success',
-                'investigating': 'info'
-            };
-            return colors[status] || 'secondary';
-        }
+            tableBody.appendChild(row);
+        });
 
-        function formatDate(date) {
-            return new Intl.DateTimeFormat('es-ES', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            }).format(date);
-        }
+        totalThreats = threats.length;
+        updateThreatsShowingInfo();
+    }
 
-        function updateThreatsShowingInfo() {
-            const start = (currentThreatPage - 1) * threatsPerPage + 1;
-            const end = Math.min(currentThreatPage * threatsPerPage, totalThreats);
-
-            document.getElementById('threats-showing-start').textContent = start;
-            document.getElementById('threats-showing-end').textContent = end;
-            document.getElementById('threats-showing-total').textContent = totalThreats;
-        }
-
-        function updateThreatsPagination() {
-            const totalPages = Math.ceil(totalThreats / threatsPerPage);
-            const pagination = document.getElementById('threats-pagination');
-
-            pagination.innerHTML = '';
-
-            // Botón anterior
-            const prevLi = document.createElement('li');
-            prevLi.className = `page-item ${currentThreatPage === 1 ? 'disabled' : ''}`;
-            prevLi.innerHTML = `<a class="page-link" href="#" onclick="loadThreats(${currentThreatPage - 1})">Anterior</a>`;
-            pagination.appendChild(prevLi);
-
-            // Páginas numeradas
-            const startPage = Math.max(1, currentThreatPage - 2);
-            const endPage = Math.min(totalPages, currentThreatPage + 2);
-
-            for (let i = startPage; i <= endPage; i++) {
-                const li = document.createElement('li');
-                li.className = `page-item ${i === currentThreatPage ? 'active' : ''}`;
-                li.innerHTML = `<a class="page-link" href="#" onclick="loadThreats(${i})">${i}</a>`;
-                pagination.appendChild(li);
-            }
-
-            // Botón siguiente
-            const nextLi = document.createElement('li');
-            nextLi.className = `page-item ${currentThreatPage === totalPages ? 'disabled' : ''}`;
-            nextLi.innerHTML = `<a class="page-link" href="#" onclick="loadThreats(${currentThreatPage + 1})">Siguiente</a>`;
-            pagination.appendChild(nextLi);
-        }
-
-        function updateThreatCharts(threats) {
-            // Actualizar gráfico de evolución
-            const dates = [];
-            const criticalData = [];
-            const highData = [];
-
-            for (let i = 29; i >= 0; i--) {
-                const date = new Date();
-                date.setDate(date.getDate() - i);
-                dates.push(date.toLocaleDateString('es-ES', {
-                    month: 'short',
-                    day: 'numeric'
-                }));
-
-                const dayThreats = threats.filter(t =>
-                    new Date(t.lastUpdated).toDateString() === date.toDateString()
-                );
-
-                criticalData.push(dayThreats.filter(t => t.classification === 'critical').length);
-                highData.push(dayThreats.filter(t => t.classification === 'high').length);
-            }
-
-            threatEvolutionChart.data.labels = dates;
-            threatEvolutionChart.data.datasets[0].data = criticalData;
-            threatEvolutionChart.data.datasets[1].data = highData;
-            threatEvolutionChart.update();
-        }
-
-
-
-
-
-        function applyThreatFilters() {
-            // Aquí iría la lógica para aplicar filtros
-            console.log('Aplicando filtros de amenazas...');
-            loadThreats(1);
-        }
-
-        function clearThreatFilters() {
-            document.getElementById('threats-filter-form').reset();
-            loadThreats(1);
-        }
-
-
-
-        function showThreatDetails(threat) {
-            const modal = new bootstrap.Modal(document.getElementById('threatDetailsModal'));
-            const content = document.getElementById('threat-details-content');
-
-            content.innerHTML = `
-        <div class="row">
-            <div class="col-md-6">
-                <h6>Información Básica</h6>
-                <table class="table table-sm">
-                    <tr><td><strong>IP:</strong></td><td>${threat.ip}</td></tr>
-                    <tr><td><strong>Tipo:</strong></td><td><span class="badge bg-secondary">${threat.type}</span></td></tr>
-                    <tr><td><strong>Clasificación:</strong></td><td><span class="badge bg-${getClassificationBadgeColor(threat.classification)}">${threat.classification.toUpperCase()}</span></td></tr>
-                    <tr><td><strong>Score:</strong></td><td>${threat.score}/100</td></tr>
-                    <tr><td><strong>Confianza:</strong></td><td>${threat.confidence}%</td></tr>
-                    <tr><td><strong>Estado:</strong></td><td><span class="badge bg-${getStatusBadgeColor(threat.status)}">${threat.status}</span></td></tr>
-                </table>
-            </div>
-            <div class="col-md-6">
-                <h6>Información Geográfica</h6>
-                <table class="table table-sm">
-                    <tr><td><strong>País:</strong></td><td>${threat.country}</td></tr>
-                    <tr><td><strong>Última Actualización:</strong></td><td>${formatDate(threat.lastUpdated)}</td></tr>
-                </table>
-                
-                <h6 class="mt-3">Descripción</h6>
-                <p class="text-muted">${threat.description}</p>
-            </div>
-        </div>
+    function showNoThreatsMessage() {
+        const tableBody = document.getElementById('threats-table-body');
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="8" class="text-center py-4">
+                    <i class="fas fa-info-circle text-muted fa-2x mb-3"></i>
+                    <p class="text-muted">No hay amenazas de inteligencia disponibles</p>
+                    <small class="text-muted">Las amenazas se cargarán desde la base de datos</small>
+                </td>
+            </tr>
+        `;
         
-        <div class="row mt-3">
-            <div class="col-12">
-                <h6>Detalles Técnicos</h6>
-                <div class="row">
-                    <div class="col-md-4">
-                        <strong>Familia de Malware:</strong><br>
-                        <span class="badge bg-info">${threat.malwareFamily || 'N/A'}</span>
-                    </div>
-                    <div class="col-md-4">
-                        <strong>Fuentes:</strong><br>
-                        ${threat.sources.map(s => `<span class="badge bg-secondary me-1">${s}</span>`).join('')}
-                    </div>
-                    <div class="col-md-4">
-                        <strong>Vectores de Ataque:</strong><br>
-                        ${threat.attackVectors.map(v => `<span class="badge bg-warning me-1">${v}</span>`).join('')}
+        // Actualizar contadores
+        document.getElementById('threats-showing-start').textContent = '0';
+        document.getElementById('threats-showing-end').textContent = '0';
+        document.getElementById('threats-showing-total').textContent = '0';
+    }
+
+    function updateActiveThreatsCount() {
+        const activeThreatsElement = document.getElementById('active-threats-count');
+        if (activeThreatsElement) {
+            const activeThreats = {!! json_encode($activeThreats ?? 0) !!};
+            activeThreatsElement.textContent = activeThreats;
+        }
+    }
+
+    function getClassificationBadgeColor(classification) {
+        const colors = {
+            'critical': 'danger',
+            'high': 'warning',
+            'medium': 'warning'
+        };
+        return colors[classification] || 'secondary';
+    }
+
+    function getConfidenceColor(confidence) {
+        if (confidence >= 90) return 'success';
+        if (confidence >= 75) return 'info';
+        if (confidence >= 60) return 'warning';
+        return 'danger';
+    }
+
+    function getStatusBadgeColor(status) {
+        const colors = {
+            'active': 'danger',
+            'monitoring': 'warning',
+            'mitigated': 'success',
+            'investigating': 'info'
+        };
+        return colors[status] || 'secondary';
+    }
+
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        return new Intl.DateTimeFormat('es-ES', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        }).format(date);
+    }
+
+    function updateThreatsShowingInfo() {
+        const start = (currentThreatPage - 1) * threatsPerPage + 1;
+        const end = Math.min(currentThreatPage * threatsPerPage, totalThreats);
+
+        document.getElementById('threats-showing-start').textContent = start;
+        document.getElementById('threats-showing-end').textContent = end;
+        document.getElementById('threats-showing-total').textContent = totalThreats;
+    }
+
+    function updateThreatsPagination() {
+        const totalPages = Math.ceil(totalThreats / threatsPerPage);
+        const pagination = document.getElementById('threats-pagination');
+
+        pagination.innerHTML = '';
+
+        if (totalPages <= 1) {
+            return;
+        }
+
+        // Botón anterior
+        const prevLi = document.createElement('li');
+        prevLi.className = `page-item ${currentThreatPage === 1 ? 'disabled' : ''}`;
+        prevLi.innerHTML = `<a class="page-link" href="#" onclick="loadThreats(${currentThreatPage - 1})">Anterior</a>`;
+        pagination.appendChild(prevLi);
+
+        // Páginas numeradas
+        const startPage = Math.max(1, currentThreatPage - 2);
+        const endPage = Math.min(totalPages, currentThreatPage + 2);
+
+        for (let i = startPage; i <= endPage; i++) {
+            const li = document.createElement('li');
+            li.className = `page-item ${i === currentThreatPage ? 'active' : ''}`;
+            li.innerHTML = `<a class="page-link" href="#" onclick="loadThreats(${i})">${i}</a>`;
+            pagination.appendChild(li);
+        }
+
+        // Botón siguiente
+        const nextLi = document.createElement('li');
+        nextLi.className = `page-item ${currentThreatPage === totalPages ? 'disabled' : ''}`;
+        nextLi.innerHTML = `<a class="page-link" href="#" onclick="loadThreats(${currentThreatPage + 1})">Siguiente</a>`;
+        pagination.appendChild(nextLi);
+    }
+
+    function applyThreatFilters() {
+        // Aquí iría la lógica para aplicar filtros
+        console.log('Aplicando filtros de amenazas...');
+        loadThreats(1);
+    }
+
+    function clearThreatFilters() {
+        document.getElementById('threats-filter-form').reset();
+        loadThreats(1);
+    }
+
+    function showThreatDetails(threat) {
+        const modal = new bootstrap.Modal(document.getElementById('threatDetailsModal'));
+        const content = document.getElementById('threat-details-content');
+
+        content.innerHTML = `
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>Información Básica</h6>
+                    <table class="table table-sm">
+                        <tr><td><strong>IP:</strong></td><td>${threat.ip}</td></tr>
+                        <tr><td><strong>Tipo:</strong></td><td><span class="badge bg-secondary">${threat.type}</span></td></tr>
+                        <tr><td><strong>Clasificación:</strong></td><td><span class="badge bg-${getClassificationBadgeColor(threat.classification)}">${threat.classification.toUpperCase()}</span></td></tr>
+                        <tr><td><strong>Score:</strong></td><td>${threat.score}/100</td></tr>
+                        <tr><td><strong>Confianza:</strong></td><td>${threat.confidence}%</td></tr>
+                        <tr><td><strong>Estado:</strong></td><td><span class="badge bg-${getStatusBadgeColor(threat.status)}">${threat.status}</span></td></tr>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    <h6>Información Geográfica</h6>
+                    <table class="table table-sm">
+                        <tr><td><strong>País:</strong></td><td>${threat.country}</td></tr>
+                        <tr><td><strong>Última Actualización:</strong></td><td>${formatDate(threat.lastUpdated)}</td></tr>
+                    </table>
+                    
+                    <h6 class="mt-3">Descripción</h6>
+                    <p class="text-muted">Amenaza detectada por múltiples fuentes de inteligencia</p>
+                </div>
+            </div>
+            
+            <div class="row mt-3">
+                <div class="col-12">
+                    <h6>Detalles Técnicos</h6>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <strong>Familia de Malware:</strong><br>
+                            <span class="badge bg-info">${threat.malwareFamily || 'N/A'}</span>
+                        </div>
+                        <div class="col-md-4">
+                            <strong>Origen Geográfico:</strong><br>
+                            <span class="badge bg-secondary">${threat.geographicOrigin || 'N/A'}</span>
+                        </div>
+                        <div class="col-md-4">
+                            <strong>Vectores de Ataque:</strong><br>
+                            ${Array.isArray(threat.attackVectors) && threat.attackVectors.length > 0 
+                                ? threat.attackVectors.map(v => `<span class="badge bg-warning me-1">${v}</span>`).join('') 
+                                : '<span class="badge bg-secondary">N/A</span>'}
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    `;
+        `;
 
-            modal.show();
-        }
+        modal.show();
+    }
 </script>
 
 <!-- BEGIN: Application JavaScript -->

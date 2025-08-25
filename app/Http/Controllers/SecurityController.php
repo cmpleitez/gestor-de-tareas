@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\SecurityEvent;
+use App\Models\ThreatIntelligence; // Added this import
 use App\Services\SimpleSecurityService;
 use App\Services\SecurityDashboardService;
 use App\Http\Resources\SecurityEventResource;
@@ -13,6 +14,8 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
+use App\Services\GeolocationService; // Added this import
+use Carbon\Carbon;
 
 class SecurityController extends Controller
 {
@@ -89,13 +92,48 @@ class SecurityController extends Controller
     public function events()
     {
         try {
-            // Datos reales de la base de datos para estadísticas
+            // Obtener eventos reales de la base de datos (día actual)
+            $events = SecurityEvent::select(
+                'id',
+                'ip_address',
+                'category',
+                'threat_score',
+                'risk_level',
+                'created_at',
+                'geolocation',
+                'status',
+                'reason'
+            )
+                ->whereDate('created_at', today()) // Solo día actual
+                ->latest()
+                ->take(150) // Limitar a 150 eventos para rendimiento
+                ->get();
+
+            // Mapear eventos para la vista
+            $mappedEvents = $events->map(function ($event) {
+                $geolocation = $event->geolocation ?? [];
+                $country = $geolocation['country'] ?? 'N/A';
+
+                return [
+                    'id' => $event->id,
+                    'ip_address' => $event->ip_address,
+                    'category' => $event->category ?? 'unknown',
+                    'threat_score' => $event->threat_score,
+                    'risk_level' => $event->risk_level ?? 'medium',
+                    'created_at' => $event->created_at,
+                    'country' => $country,
+                    'status' => $event->status ?? 'nuevo'
+                ];
+            });
+
+            // Datos de estadísticas reales
             $data = [
-                'criticalEventsCount' => SecurityEvent::where('threat_score', '>=', 80)->where('created_at', '>=', now()->subDays(7))->count(),
-                'highEventsCount' => SecurityEvent::whereBetween('threat_score', [60, 79])->where('created_at', '>=', now()->subDays(7))->count(),
-                'mediumEventsCount' => SecurityEvent::whereBetween('threat_score', [40, 59])->where('created_at', '>=', now()->subDays(7))->count(),
-                'uniqueIPsCount' => SecurityEvent::where('created_at', '>=', now()->subDays(7))->distinct('ip_address')->count('ip_address'),
-                'totalEventsCount' => SecurityEvent::where('created_at', '>=', now()->subDays(7))->count(),
+                'events' => $mappedEvents,
+                'criticalEventsCount' => SecurityEvent::where('threat_score', '>=', 80)->whereDate('created_at', today())->count(),
+                'highEventsCount' => SecurityEvent::whereBetween('threat_score', [60, 79])->whereDate('created_at', today())->count(),
+                'mediumEventsCount' => SecurityEvent::whereBetween('threat_score', [40, 59])->whereDate('created_at', today())->count(),
+                'uniqueIPsCount' => SecurityEvent::whereDate('created_at', today())->distinct('ip_address')->count('ip_address'),
+                'totalEventsCount' => SecurityEvent::whereDate('created_at', today())->count(),
             ];
 
             return view('security.events', $data);
@@ -103,6 +141,7 @@ class SecurityController extends Controller
             Log::error('Error en vista de eventos: ' . $e->getMessage());
 
             return view('security.events', [
+                'events' => collect(),
                 'criticalEventsCount' => 0,
                 'highEventsCount' => 0,
                 'mediumEventsCount' => 0,
@@ -117,7 +156,78 @@ class SecurityController extends Controller
      */
     public function threatIntelligence()
     {
-        return view('security.threat-intelligence');
+        try {
+            // Obtener datos reales de inteligencia de amenazas (últimos 3 días)
+            $threats = ThreatIntelligence::select(
+                'id',
+                'ip_address',
+                'threat_type',
+                'threat_score',
+                'classification',
+                'confidence',
+                'country_code',
+                'status',
+                'last_updated',
+                'malware_family',
+                'attack_vectors',
+                'geographic_origin'
+            )
+                ->where('last_updated', '>=', now()->subDays(3)) // Solo últimos 3 días
+                ->latest('last_updated')
+                ->take(50) // Limitar a 50 amenazas para rendimiento
+                ->get();
+
+            // Mapear amenazas para la vista
+            $mappedThreats = $threats->map(function ($threat) {
+                return [
+                    'id' => $threat->id,
+                    'ip' => $threat->ip_address,
+                    'type' => $threat->threat_type ?? 'unknown',
+                    'classification' => $threat->classification ?? 'medium',
+                    'score' => $threat->threat_score ?? 50,
+                    'confidence' => $threat->confidence ?? 70,
+                    'country' => $threat->country_code ?? 'N/A',
+                    'status' => $threat->status ?? 'active',
+                    'lastUpdated' => $threat->last_updated ?? now(),
+                    'malwareFamily' => $threat->malware_family ?? 'N/A',
+                    'attackVectors' => $threat->attack_vectors ?? [],
+                    'geographicOrigin' => $threat->geographic_origin ?? 'N/A'
+                ];
+            });
+
+            // Generar datos de evolución temporal (últimos 7 días)
+            $evolutionData = $this->getThreatEvolutionData();
+
+            // Obtener tipos de amenazas disponibles para filtros
+            $threatTypes = $this->getAvailableThreatTypes();
+
+            // Obtener países disponibles para filtros
+            $countries = $this->getAvailableCountries();
+
+            $data = [
+                'threats' => $mappedThreats,
+                'evolutionData' => $evolutionData,
+                'threatTypes' => $threatTypes,
+                'countries' => $countries,
+                'totalThreats' => ThreatIntelligence::where('last_updated', '>=', now()->subDays(3))->count(),
+                'activeThreats' => ThreatIntelligence::where('status', 'active')->where('last_updated', '>=', now()->subDays(3))->count(),
+                'criticalThreats' => ThreatIntelligence::where('classification', 'critical')->where('last_updated', '>=', now()->subDays(3))->count(),
+                'highThreats' => ThreatIntelligence::where('classification', 'high')->where('last_updated', '>=', now()->subDays(3))->count(),
+            ];
+
+            return view('security.threat-intelligence', $data);
+        } catch (\Exception $e) {
+            Log::error('Error en vista de inteligencia de amenazas: ' . $e->getMessage());
+
+            return view('security.threat-intelligence', [
+                'threats' => collect(),
+                'evolutionData' => [],
+                'totalThreats' => 0,
+                'activeThreats' => 0,
+                'criticalThreats' => 0,
+                'highThreats' => 0,
+            ]);
+        }
     }
 
     /**
@@ -125,10 +235,103 @@ class SecurityController extends Controller
      */
     public function ipReputation()
     {
-        // Obtener datos reales de la base de datos
-        $ipStats = $this->getIPReputationStats();
+        try {
+            // Obtener datos reales de reputación de IPs desde la base de datos (últimos 3 días)
+            $ipReputations = DB::table('ip_reputations')->select(
+                'ip_address',
+                'reputation_score as threat_score',
+                'risk_level',
+                'geographic_data as geolocation',
+                'network_data',
+                'blacklisted',
+                'created_at',
+                DB::raw('CASE WHEN blacklisted = 1 THEN "blocked" ELSE "active" END as status'),
+                DB::raw('"ip_reputation" as category')
+            )
+                ->where('created_at', '>=', now()->subDays(3)) // Solo últimos 3 días
+                ->orderBy('created_at', 'desc') // Ordenar por fecha más reciente
+                ->take(100) // Limitar a 100 IPs para rendimiento
+                ->get();
 
-        return view('security.ip-reputation', compact('ipStats'));
+            // Usar el servicio de geolocalización para obtener información real de países
+            $geolocationService = app(GeolocationService::class);
+
+            // Mapear datos para la vista con geolocalización real
+            $mappedIPs = $ipReputations->map(function ($ip) use ($geolocationService) {
+                // Obtener geolocalización real usando el servicio
+                $geolocation = $geolocationService->getGeolocation($ip->ip_address);
+
+                // Extraer datos de geolocalización de la base de datos si están disponibles
+                // NOTA: Los campos son alias SQL, por eso usamos los nombres de los alias
+                $dbGeolocation = json_decode($ip->geolocation, true) ?? [];
+                $dbNetwork = json_decode($ip->network_data, true) ?? [];
+
+                $country = $geolocation['country'] ?? $dbGeolocation['country'] ?? 'N/A';
+                $city = $geolocation['city'] ?? $dbGeolocation['city'] ?? 'N/A';
+                $isp = $geolocation['isp'] ?? $dbNetwork['isp'] ?? 'N/A';
+
+                return [
+                    'ip' => $ip->ip_address,
+                    'score' => $ip->threat_score ?? 50,
+                    'risk_level' => $ip->risk_level ?? 'medium',
+                    'country' => $country,
+                    'city' => $city,
+                    'isp' => $isp,
+                    'lastUpdated' => Carbon::parse($ip->created_at)->toISOString(),
+                    'status' => $ip->status ?? 'active',
+                    'category' => $ip->category ?? 'ip_reputation'
+                ];
+            });
+
+            // Generar datos de distribución por riesgo (últimos 3 días)
+            $riskDistribution = $this->getIPRiskDistribution($ipReputations);
+
+            // Generar datos de distribución por país usando geolocalización real (últimos 3 días)
+            $countryDistribution = $this->getIPCountryDistributionReal($mappedIPs);
+
+            // Obtener países disponibles para filtros usando geolocalización real (últimos 3 días)
+            $availableCountries = $this->getAvailableIPCountriesReal($mappedIPs);
+
+            // DEBUG TEMPORAL - ELIMINAR DESPUÉS
+            Log::info('IP Reputation Data Debug', [
+                'total_mapped_ips' => $mappedIPs->count(),
+                'first_ip_sample' => $mappedIPs->first(),
+                'risk_distribution' => $riskDistribution,
+                'country_distribution' => $countryDistribution,
+                'raw_data_sample' => $ipReputations->first(),
+                'mapped_data_sample' => $mappedIPs->first(),
+                'raw_data_structure' => $ipReputations->first() ? get_object_vars($ipReputations->first()) : null,
+                'date_format_sample' => $mappedIPs->first() ? $mappedIPs->first()['lastUpdated'] : null
+            ]);
+
+            // Contadores actualizados para últimos 3 días
+            $data = [
+                'ipReputations' => $mappedIPs,
+                'riskDistribution' => $riskDistribution,
+                'countryDistribution' => $countryDistribution,
+                'availableCountries' => $availableCountries,
+                'totalIPs' => DB::table('ip_reputations')->where('created_at', '>=', now()->subDays(3))->count(),
+                'criticalIPs' => DB::table('ip_reputations')->where('risk_level', 'critical')->where('created_at', '>=', now()->subDays(3))->count(),
+                'highIPs' => DB::table('ip_reputations')->where('risk_level', 'high')->where('created_at', '>=', now()->subDays(3))->count(),
+                'mediumIPs' => DB::table('ip_reputations')->where('risk_level', 'medium')->where('created_at', '>=', now()->subDays(3))->count(),
+            ];
+
+            return view('security.ip-reputation', $data);
+
+        } catch (\Exception $e) {
+            Log::error('Error en vista de reputación de IPs: ' . $e->getMessage());
+
+            return view('security.ip-reputation', [
+                'ipReputations' => collect(),
+                'riskDistribution' => [],
+                'countryDistribution' => [],
+                'availableCountries' => [],
+                'totalIPs' => 0,
+                'criticalIPs' => 0,
+                'highIPs' => 0,
+                'mediumIPs' => 0,
+            ]);
+        }
     }
 
     /**
@@ -213,6 +416,11 @@ class SecurityController extends Controller
                         $logs->push($logEntry);
                     }
                 }
+            }
+
+            // Si no hay logs reales, mostrar mensaje de no hay logs
+            if ($logs->isEmpty()) {
+                $logs = collect();
             }
 
             // Ordenar por timestamp más reciente
@@ -589,6 +797,49 @@ class SecurityController extends Controller
     }
 
     /**
+     * Obtener datos de evolución de amenazas (últimos 3 días)
+     */
+    private function getThreatEvolutionData(): array
+    {
+        try {
+            $dates = [];
+            $criticalData = [];
+            $highData = [];
+
+            for ($i = 2; $i >= 0; $i--) {
+                $date = now()->subDays($i);
+                $dates[] = $date->format('d/m');
+
+                // Contar amenazas críticas del día
+                $criticalCount = ThreatIntelligence::where('classification', 'critical')
+                    ->whereDate('last_updated', $date)
+                    ->count();
+
+                // Contar amenazas altas del día
+                $highCount = ThreatIntelligence::where('classification', 'high')
+                    ->whereDate('last_updated', $date)
+                    ->count();
+
+                $criticalData[] = $criticalCount;
+                $highData[] = $highCount;
+            }
+
+            return [
+                'dates' => $dates,
+                'critical' => $criticalData,
+                'high' => $highData
+            ];
+        } catch (\Exception $e) {
+            Log::error('Error obteniendo datos de evolución: ' . $e->getMessage());
+            return [
+                'dates' => [],
+                'critical' => [],
+                'high' => []
+            ];
+        }
+    }
+
+    /**
      * Obtener nivel de riesgo desde score
      */
     private function getRiskLevelFromScore($score)
@@ -608,6 +859,179 @@ class SecurityController extends Controller
         // Solo retornar los 3 niveles principales
         return 'medium';
     }
+
+    /**
+     * Obtener tipos de amenazas disponibles para filtros
+     */
+    private function getAvailableThreatTypes(): array
+    {
+        try {
+            $types = ThreatIntelligence::select('threat_type')
+                ->distinct()
+                ->whereNotNull('threat_type')
+                ->pluck('threat_type')
+                ->toArray();
+
+            $typeNames = [
+                'malware' => 'Malware',
+                'phishing' => 'Phishing',
+                'ddos' => 'DDoS',
+                'apt' => 'APT',
+                'ransomware' => 'Ransomware',
+                'botnet' => 'Botnet',
+                'sql_injection' => 'SQL Injection',
+                'xss' => 'XSS Attack'
+            ];
+
+            $availableTypes = [];
+            foreach ($types as $type) {
+                if (isset($typeNames[$type])) {
+                    $availableTypes[$type] = $typeNames[$type];
+                }
+            }
+
+            return $availableTypes;
+        } catch (\Exception $e) {
+            Log::error('Error obteniendo tipos de amenazas: ' . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Obtener países disponibles para filtros
+     */
+    private function getAvailableCountries(): array
+    {
+        try {
+            $countries = ThreatIntelligence::select('country_code', 'geographic_origin')
+                ->distinct()
+                ->whereNotNull('country_code')
+                ->where('country_code', '!=', '')
+                ->get();
+
+            $availableCountries = [];
+            foreach ($countries as $country) {
+                $code = $country->country_code;
+                $name = $country->geographic_origin ?: $code;
+                $availableCountries[$code] = $name;
+            }
+
+            return $availableCountries;
+        } catch (\Exception $e) {
+            Log::error('Error obteniendo países: ' . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Generar datos de distribución por riesgo de IPs
+     */
+    private function getIPRiskDistribution($ipReputations): array
+    {
+        $riskDistribution = [];
+        $totalIPs = $ipReputations->count();
+
+        if ($totalIPs === 0) {
+            return [
+                'critical' => 0,
+                'high' => 0,
+                'medium' => 0,
+                'total' => 0,
+            ];
+        }
+
+        $riskDistribution['critical'] = $ipReputations->filter(function ($ip) {
+            return $ip->risk_level === 'critical';
+        })->count();
+        $riskDistribution['high'] = $ipReputations->filter(function ($ip) {
+            return $ip->risk_level === 'high';
+        })->count();
+        $riskDistribution['medium'] = $ipReputations->filter(function ($ip) {
+            return $ip->risk_level === 'medium';
+        })->count();
+        $riskDistribution['total'] = $totalIPs;
+
+        return $riskDistribution;
+    }
+
+    /**
+     * Generar datos de distribución por país de IPs
+     */
+    private function getIPCountryDistribution($ipReputations): array
+    {
+        $countryDistribution = [];
+        $totalIPs = $ipReputations->count();
+
+        if ($totalIPs === 0) {
+            return [
+                'N/A' => 0,
+                'total' => 0,
+            ];
+        }
+
+        $countryDistribution = $ipReputations->groupBy('country')
+            ->map(function ($ips, $country) use ($totalIPs) {
+                return [
+                    'country' => $country,
+                    'count' => $ips->count(),
+                    'percentage' => round(($ips->count() / $totalIPs) * 100, 2),
+                ];
+            })
+            ->toArray();
+
+        return $countryDistribution;
+    }
+
+    /**
+     * Generar datos de distribución por país de IPs usando geolocalización real
+     */
+    private function getIPCountryDistributionReal($mappedIPs): array
+    {
+        $countryDistribution = [];
+        $totalIPs = $mappedIPs->count();
+
+        if ($totalIPs === 0) {
+            return [
+                'N/A' => [
+                    'country' => 'N/A',
+                    'count' => 0,
+                    'percentage' => 0
+                ],
+                'total' => 0
+            ];
+        }
+
+        // Agrupar IPs por país
+        $countryCounts = $mappedIPs->groupBy('country')
+            ->map(function ($ips, $country) use ($totalIPs) {
+                return [
+                    'country' => $country,
+                    'count' => $ips->count(),
+                    'percentage' => round(($ips->count() / $totalIPs) * 100, 2),
+                ];
+            })
+            ->toArray();
+
+        // Agregar total
+        $countryCounts['total'] = $totalIPs;
+
+        return $countryCounts;
+    }
+
+    /**
+     * Obtener países disponibles para filtros de IPs usando geolocalización real
+     */
+    private function getAvailableIPCountriesReal($mappedIPs): array
+    {
+        return $mappedIPs->pluck('country')
+            ->unique()
+            ->filter(function ($country) {
+                return $country !== 'N/A' && !empty($country);
+            })
+            ->values()
+            ->toArray();
+    }
+
 
 
 }

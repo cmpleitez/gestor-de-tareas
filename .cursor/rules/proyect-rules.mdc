@@ -29,7 +29,7 @@ alwaysApply: true
 ✅ Cuando yo te diga la frase clave "Iniciemos una configuración", preguntame en que idioma necesito los nombres de las opciones, las distintas herramientas que se configuran a veces están en español y la mayoria de veces en inglés.
 ✅ nunca agregues datos hardcoreados en el frontend, los datos de pueba tendrán origen en los seeders, lo cual indica que los datos se leerán siempre de las tablas de la base de datos.
 ✅ cuando vayas a crear un archivo, metodo, funcion o similar nuevo(a) o eliminar uno existente debes pedirme confirmación
-✅ Cuando te diga "Has una verificación basica", lo que tu debes hacer es pedirme que vacie el log de laravel y que corra la pagina, luego trabaja tu: verifica que la ruta existe y funciona, verifica que el controlador este enviando los datos, verifica que la vista esta recibiendo los datos, verifica que se esten dibujando bien los datos, verifica el laravel.log para ver los errores que tenemos
+✅ Cuando te diga "Prueba basica", lo que tu debes hacer es pedirme que vacie el log de laravel y que corra la pagina, luego trabaja tu: verifica que la ruta existe y funciona, verifica que el controlador este enviando los datos, verifica que la vista esta recibiendo los datos, verifica que se esten dibujando bien los datos, verifica el laravel.log para ver los errores que tenemos
 
 ✅Los modelos IA han tenido exito usando estas herramientas para aplicar los cambios cuando tengas problemas para aplicar los cambios lee esta regla, claro que puedes usar otras pero si no te funcionan aqui tienes las que si funcionan:
     1. list_dir - Para explorar la estructura

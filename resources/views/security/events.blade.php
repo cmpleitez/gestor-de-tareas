@@ -64,9 +64,33 @@
     <!-- ========================================
                                                                                                                 HEADER DE EVENTOS DE SEGURIDAD
                                                                                                                 ======================================== -->
-    <x-security.dashboard-header title="Eventos de Seguridad"
-        subtitle="Monitoreo y análisis detallado de eventos de seguridad en tiempo real" status="MONITORANDO"
-        status_color="info" />
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-gradient-primary text-white">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h4 class="card-title text-white mb-1">
+                                <i class="fas fa-shield-alt me-2"></i>
+                                Eventos de Seguridad
+                            </h4>
+                            <p class="card-text text-white-50 mb-0">
+                                Monitoreo y análisis detallado de eventos de seguridad en tiempo real
+                            </p>
+                        </div>
+                        <div class="col-auto">
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-light text-dark me-2">MONITORANDO</span>
+                                <div class="spinner-border spinner-border-sm text-white" role="status">
+                                    <span class="visually-hidden">Cargando...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- ========================================
                                                                                                                 FILTROS Y CONTROLES
@@ -108,7 +132,7 @@
                         </div>
                         <div class="col-md-3">
                             <label for="date_filter" class="form-label">Fecha</label>
-                            <input type="date" class="form-control" id="date_filter">
+                            <input type="date" class="form-control" id="date_filter" value="{{ date('Y-m-d') }}">
                         </div>
                         <div class="col-12">
                             <button type="submit" class="btn btn-primary me-2">
@@ -186,218 +210,269 @@
 @section('js')
 <script>
     let currentPage = 1;
-        let eventsPerPage = 25;
-        let allEvents = [];
+    let eventsPerPage = 25;
+    let allEvents = [];
 
-        document.addEventListener('DOMContentLoaded', function() {
+    // Datos reales enviados desde el controlador
+    const serverEvents = @json($events ?? []);
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Establecer fecha actual en el filtro
+        document.getElementById('date_filter').value = new Date().toISOString().split('T')[0];
+        
+        loadEvents();
+        setupEventListeners();
+    });
+
+    function setupEventListeners() {
+        document.getElementById('filterForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            currentPage = 1;
             loadEvents();
-            setupEventListeners();
+        });
+    }
+
+    function loadEvents() {
+        showLoadingState();
+
+        // Obtener filtros aplicados
+        const ipFilter = document.getElementById('ip_filter').value.toLowerCase();
+        const categoryFilter = document.getElementById('category_filter').value;
+        const riskFilter = document.getElementById('risk_filter').value;
+        const dateFilter = document.getElementById('date_filter').value;
+
+        // Usar los datos reales del servidor
+        if (serverEvents && serverEvents.length > 0) {
+            // Aplicar filtros
+            allEvents = serverEvents.filter(event => {
+                // Filtro por IP
+                if (ipFilter && !event.ip_address.toLowerCase().includes(ipFilter)) {
+                    return false;
+                }
+                
+                // Filtro por categoría
+                if (categoryFilter && event.category !== categoryFilter) {
+                    return false;
+                }
+                
+                // Filtro por nivel de riesgo
+                if (riskFilter && event.risk_level !== riskFilter) {
+                    return false;
+                }
+                
+                // Filtro por fecha (solo mostrar eventos del día seleccionado)
+                if (dateFilter) {
+                    const eventDate = new Date(event.created_at).toISOString().split('T')[0];
+                    if (eventDate !== dateFilter) {
+                        return false;
+                    }
+                }
+                
+                return true;
+            });
+        } else {
+            // Si no hay datos del servidor, mostrar mensaje
+            allEvents = [];
+            showNoDataMessage();
+            return;
+        }
+
+        displayEvents();
+        updatePagination();
+    }
+
+    function displayEvents() {
+        const startIndex = (currentPage - 1) * eventsPerPage;
+        const endIndex = startIndex + eventsPerPage;
+        const pageEvents = allEvents.slice(startIndex, endIndex);
+
+        const tbody = document.getElementById('eventsTableBody');
+        tbody.innerHTML = '';
+
+        if (pageEvents.length === 0) {
+            showNoDataMessage();
+            return;
+        }
+
+        pageEvents.forEach(event => {
+            const row = createEventRow(event);
+            tbody.appendChild(row);
         });
 
-        function setupEventListeners() {
-            document.getElementById('filterForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                currentPage = 1;
-                loadEvents();
-            });
+        updateDisplayInfo(startIndex, endIndex);
+    }
+
+    function createEventRow(event) {
+        const row = document.createElement('tr');
+        row.className = `event-row ${event.risk_level}`;
+        row.onclick = () => showEventDetails(event);
+
+        row.innerHTML = `
+            <td><strong>${event.ip_address}</strong></td>
+            <td>${formatCategory(event.category)}</td>
+            <td>
+                <div class="score-indicator">
+                    <div class="score-fill ${event.risk_level}" style="width: ${event.threat_score}%"></div>
+                </div>
+                <small class="text-muted">${event.threat_score}</small>
+            </td>
+            <td>
+                <span class="badge bg-${getRiskBadgeColor(event.threat_score)}">
+                    ${event.risk_level}
+                </span>
+            </td>
+            <td>${formatDate(event.created_at)}</td>
+            <td><i class="fas fa-globe me-1"></i>${event.country}</td>
+            <td>
+                <span class="badge bg-${event.status === 'investigando' ? 'warning' : 'info'}">
+                    ${event.status === 'investigando' ? 'Investigando' : 'Nuevo'}
+                </span>
+            </td>
+        `;
+
+        return row;
+    }
+
+    function formatCategory(category) {
+        const categories = {
+            'sql_injection': 'Inyección SQL',
+            'xss_attack': 'Ataque XSS',
+            'path_traversal': 'Travesía de Ruta',
+            'command_injection': 'Inyección de Comandos',
+            'brute_force': 'Fuerza Bruta',
+            'suspicious_activity': 'Actividad Sospechosa',
+            'rate_limit_exceeded': 'Límite Excedido',
+            'malware_detected': 'Malware Detectado',
+            'phishing_attempt': 'Intento de Phishing',
+            'ddos_attack': 'Ataque DDoS',
+            'unknown': 'Desconocido'
+        };
+        return categories[category] || category;
+    }
+
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        return new Intl.DateTimeFormat('es-ES', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        }).format(date);
+    }
+
+    function getRiskBadgeColor(score) {
+        if (score >= 80) return 'danger';
+        if (score >= 60) return 'warning';
+        if (score >= 40) return 'info';
+        return 'info';
+    }
+
+    function updateDisplayInfo(start, end) {
+        document.getElementById('showing-start').textContent = start + 1;
+        document.getElementById('showing-end').textContent = Math.min(end, allEvents.length);
+        document.getElementById('total-count').textContent = allEvents.length;
+        document.getElementById('total-events').textContent = `Total: ${allEvents.length}`;
+    }
+
+    function updatePagination() {
+        const totalPages = Math.ceil(allEvents.length / eventsPerPage);
+        const pagination = document.getElementById('pagination');
+        pagination.innerHTML = '';
+
+        if (totalPages <= 1) {
+            return;
         }
 
-        function loadEvents() {
-            // Simular carga de eventos (en producción esto vendría del servidor)
-            showLoadingState();
+        // Botón anterior
+        const prevLi = document.createElement('li');
+        prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+        prevLi.innerHTML = `<a class="page-link" href="#" onclick="changePage(${currentPage - 1})">Anterior</a>`;
+        pagination.appendChild(prevLi);
 
-            // Aquí iría la llamada AJAX real
-            setTimeout(() => {
-                // Datos de ejemplo
-                allEvents = generateSampleEvents();
-                displayEvents();
-                updatePagination();
-            }, 1000);
+        // Páginas numeradas
+        const startPage = Math.max(1, currentPage - 2);
+        const endPage = Math.min(totalPages, currentPage + 2);
+
+        for (let i = startPage; i <= endPage; i++) {
+            const li = document.createElement('li');
+            li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+            li.innerHTML = `<a class="page-link" href="#" onclick="changePage(${i})">${i}</a>`;
+            pagination.appendChild(li);
         }
 
-        function generateSampleEvents() {
-            const events = [];
-            const categories = ['suspicious_activity', 'brute_force', 'malware', 'ddos', 'phishing'];
-            const countries = ['Estados Unidos', 'China', 'Rusia', 'Alemania', 'Francia', 'Japón', 'Reino Unido'];
+        // Botón siguiente
+        const nextLi = document.createElement('li');
+        nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+        nextLi.innerHTML = `<a class="page-link" href="#" onclick="changePage(${currentPage + 1})">Siguiente</a>`;
+        pagination.appendChild(nextLi);
+    }
 
-            for (let i = 1; i <= 150; i++) {
-                const threatScore = Math.floor(Math.random() * 100) + 1;
-                const riskLevel = getRiskLevel(threatScore);
+    function changePage(page) {
+        if (page < 1 || page > Math.ceil(allEvents.length / eventsPerPage)) return;
+        currentPage = page;
+        displayEvents();
+        updatePagination();
+    }
 
-                events.push({
-                    id: i,
-                    ip_address: `192.168.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`,
-                    category: categories[Math.floor(Math.random() * categories.length)],
-                    threat_score: threatScore,
-                    risk_level: riskLevel,
-                    created_at: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000),
-                    country: countries[Math.floor(Math.random() * countries.length)],
-                    status: Math.random() > 0.7 ? 'investigando' : 'nuevo'
-                });
-            }
-
-            return events.sort((a, b) => b.threat_score - a.threat_score);
-        }
-
-        function getRiskLevel(score) {
-            if (score >= 80) return 'critical';
-            if (score >= 60) return 'high';
-            if (score >= 40) return 'medium';
-            // Solo retornar los 3 niveles principales
-            return 'medium';
-        }
-
-        function getRiskBadgeColor(score) {
-            if (score >= 80) return 'danger';
-            if (score >= 60) return 'warning';
-            if (score >= 40) return 'info';
-            // Solo retornar los 3 niveles principales
-            return 'info';
-        }
-
-        function displayEvents() {
-            const startIndex = (currentPage - 1) * eventsPerPage;
-            const endIndex = startIndex + eventsPerPage;
-            const pageEvents = allEvents.slice(startIndex, endIndex);
-
-            const tbody = document.getElementById('eventsTableBody');
-            tbody.innerHTML = '';
-
-            pageEvents.forEach(event => {
-                const row = createEventRow(event);
-                tbody.appendChild(row);
-            });
-
-            updateDisplayInfo(startIndex, endIndex);
-        }
-
-        function createEventRow(event) {
-            const row = document.createElement('tr');
-            row.className = `event-row ${event.risk_level}`;
-            row.onclick = () => showEventDetails(event);
-
-            row.innerHTML = `
-                <td><strong>${event.ip_address}</strong></td>
-                <td>${formatCategory(event.category)}</td>
-                <td>
-                    <div class="score-indicator">
-                        <div class="score-fill ${event.risk_level}" style="width: ${event.threat_score}%"></div>
+    function showLoadingState() {
+        const tbody = document.getElementById('eventsTableBody');
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Cargando...</span>
                     </div>
-                    <small class="text-muted">${event.threat_score}</small>
+                    <p class="mt-2 text-muted">Cargando eventos...</p>
                 </td>
-                <td>
-                    <span class="badge bg-${getRiskBadgeColor(event.threat_score)}">
-                        ${getRiskLevel(event.threat_score)}
-                    </span>
+            </tr>
+        `;
+    }
+
+    function showNoDataMessage() {
+        const tbody = document.getElementById('eventsTableBody');
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" class="text-center py-4">
+                    <i class="fas fa-info-circle text-muted fa-2x mb-3"></i>
+                    <p class="text-muted">No hay eventos de seguridad disponibles</p>
+                    <small class="text-muted">Los eventos se cargarán desde la base de datos</small>
                 </td>
-                <td>${formatDate(event.created_at)}</td>
-                <td><i class="fas fa-globe me-1"></i>${event.country}</td>
-                <td>
-                    <span class="badge bg-${event.status === 'investigando' ? 'warning' : 'info'}">
-                        ${event.status === 'investigando' ? 'Investigando' : 'Nuevo'}
-                    </span>
-                </td>
-            `;
+            </tr>
+        `;
+        
+        // Actualizar contadores
+        document.getElementById('showing-start').textContent = '0';
+        document.getElementById('showing-end').textContent = '0';
+        document.getElementById('total-count').textContent = '0';
+        document.getElementById('total-events').textContent = 'Total: 0';
+    }
 
-            return row;
-        }
+    function clearFilters() {
+        // Limpiar todos los filtros excepto la fecha
+        document.getElementById('ip_filter').value = '';
+        document.getElementById('category_filter').value = '';
+        document.getElementById('risk_filter').value = '';
+        // Mantener la fecha actual
+        document.getElementById('date_filter').value = new Date().toISOString().split('T')[0];
+        
+        currentPage = 1;
+        loadEvents();
+    }
 
-        function formatCategory(category) {
-            const categories = {
-                'suspicious_activity': 'Actividad Sospechosa',
-                'brute_force': 'Fuerza Bruta',
-                'malware': 'Malware',
-                'ddos': 'DDoS',
-                'phishing': 'Phishing'
-            };
-            return categories[category] || category;
-        }
+    function refreshEvents() {
+        currentPage = 1;
+        // Recargar la página para obtener datos frescos del servidor
+        window.location.reload();
+    }
 
-        function formatDate(date) {
-            return new Intl.DateTimeFormat('es-ES', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            }).format(date);
-        }
-
-        function updateDisplayInfo(start, end) {
-            document.getElementById('showing-start').textContent = start + 1;
-            document.getElementById('showing-end').textContent = Math.min(end, allEvents.length);
-            document.getElementById('total-count').textContent = allEvents.length;
-            document.getElementById('total-events').textContent = `Total: ${allEvents.length}`;
-        }
-
-        function updatePagination() {
-            const totalPages = Math.ceil(allEvents.length / eventsPerPage);
-            const pagination = document.getElementById('pagination');
-            pagination.innerHTML = '';
-
-            // Botón anterior
-            const prevLi = document.createElement('li');
-            prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
-            prevLi.innerHTML = `<a class="page-link" href="#" onclick="changePage(${currentPage - 1})">Anterior</a>`;
-            pagination.appendChild(prevLi);
-
-            // Páginas numeradas
-            const startPage = Math.max(1, currentPage - 2);
-            const endPage = Math.min(totalPages, currentPage + 2);
-
-            for (let i = startPage; i <= endPage; i++) {
-                const li = document.createElement('li');
-                li.className = `page-item ${i === currentPage ? 'active' : ''}`;
-                li.innerHTML = `<a class="page-link" href="#" onclick="changePage(${i})">${i}</a>`;
-                pagination.appendChild(li);
-            }
-
-            // Botón siguiente
-            const nextLi = document.createElement('li');
-            nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
-            nextLi.innerHTML = `<a class="page-link" href="#" onclick="changePage(${currentPage + 1})">Siguiente</a>`;
-            pagination.appendChild(nextLi);
-        }
-
-        function changePage(page) {
-            if (page < 1 || page > Math.ceil(allEvents.length / eventsPerPage)) return;
-            currentPage = page;
-            displayEvents();
-            updatePagination();
-        }
-
-        function showLoadingState() {
-            const tbody = document.getElementById('eventsTableBody');
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="7" class="text-center py-4">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Cargando...</span>
-                        </div>
-                        <p class="mt-2 text-muted">Cargando eventos...</p>
-                    </td>
-                </tr>
-            `;
-        }
-
-        function clearFilters() {
-            document.getElementById('filterForm').reset();
-            currentPage = 1;
-            loadEvents();
-        }
-
-        function refreshEvents() {
-            currentPage = 1;
-            loadEvents();
-        }
-
-        function showEventDetails(event) {
-            // Aquí se mostraría un modal con detalles del evento
-            console.log('Mostrar detalles del evento:', event);
-            alert(
-                `Detalles del evento:\nIP: ${event.ip_address}\nCategoría: ${formatCategory(event.category)}\nScore: ${event.threat_score}\nRiesgo: ${event.risk_level}`
-            );
-        }
+    function showEventDetails(event) {
+        // Aquí se mostraría un modal con detalles del evento
+        console.log('Mostrar detalles del evento:', event);
+        alert(
+            `Detalles del evento:\nIP: ${event.ip_address}\nCategoría: ${formatCategory(event.category)}\nScore: ${event.threat_score}\nRiesgo: ${event.risk_level}`
+        );
+    }
 </script>
 
 <!-- BEGIN: Application JavaScript -->

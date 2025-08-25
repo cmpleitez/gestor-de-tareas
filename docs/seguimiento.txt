@@ -47,6 +47,8 @@
 234567890
 345678901
 
+🟢 via enginx posiblemente esten llegando, toda la configuracion de forge sites se ve que es de nginx sin embargo la IA entendio que era apache
+🟢 consultar que significan las fuentes de Filtros de Búsqueda de security/logs y confirmar lo que se va quedar
 🟢 retirar campos de las tablas que no esten siendo utilizados por las vistas y retirarlos tambien los procesos que recopilen sus datos
 🟢 retirar procesos de los middlewares que no esten siendo utilizados en las vistas de security
 🟢 revisar las opciones de chat de cursor

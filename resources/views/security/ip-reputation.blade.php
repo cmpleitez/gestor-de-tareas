@@ -24,7 +24,7 @@
                                 <div class="me-4">
                                     <div class="fs-6 opacity-75">IPs Monitoreadas</div>
                                     <div class="fs-4 fw-bold" id="monitored-ips-count">
-                                        {{ $ipStats['total_ips'] ?? 0 }}
+                                        {{ $totalIPs ?? 0 }}
                                     </div>
                                 </div>
                             </div>
@@ -45,7 +45,7 @@
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">
                         <i class="fas fa-chart-pie me-2"></i>
-                        Distribución por Nivel de Riesgo
+                        Distribución por Nivel de Riesgo (Últimos 3 días)
                     </h6>
                 </div>
                 <div class="card-body">
@@ -61,7 +61,7 @@
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">
                         <i class="fas fa-globe me-2"></i>
-                        IPs por País
+                        IPs por País (Últimos 3 días)
                     </h6>
                 </div>
                 <div class="card-body">
@@ -105,11 +105,9 @@
                                 <label for="filter-country" class="form-label">País</label>
                                 <select class="form-select" id="filter-country">
                                     <option value="">Todos</option>
-                                    <option value="US">Estados Unidos</option>
-                                    <option value="CN">China</option>
-                                    <option value="RU">Rusia</option>
-                                    <option value="DE">Alemania</option>
-                                    <option value="GB">Reino Unido</option>
+                                    @foreach($availableCountries ?? [] as $country)
+                                    <option value="{{ $country }}">{{ $country }}</option>
+                                    @endforeach
                                 </select>
                             </div>
 
@@ -137,7 +135,7 @@
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                     <h6 class="m-0 font-weight-bold text-primary">
                         <i class="fas fa-list me-2"></i>
-                        Base de Datos de Reputación
+                        Base de Datos de Reputación (Últimos 3 días)
                     </h6>
                     <div class="d-flex">
                         <button class="btn btn-outline-info btn-sm me-2" onclick="updateIPReputation()">
@@ -300,143 +298,123 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     // Variables globales
-        let riskDistributionChart;
-        let countryDistributionChart;
-        let currentIPPage = 1;
-        let ipsPerPage = 25;
-        let totalIPs = 0;
+    let riskDistributionChart;
+    let countryDistributionChart;
+    let currentIPPage = 1;
+    let ipsPerPage = 25;
+    let totalIPs = 0;
 
-        // Inicialización
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeIPCharts();
-            loadIPReputation();
-            // loadIPStats() eliminado - Los datos ahora vienen del servidor
+    // Datos reales enviados desde el controlador
+    const serverIPReputations = {!! json_encode($ipReputations ?? []) !!};
+    const serverRiskDistribution = {!! json_encode($riskDistribution ?? []) !!};
+    const serverCountryDistribution = {!! json_encode($countryDistribution ?? []) !!};
+
+    // Inicialización
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeIPCharts();
+        loadIPReputation();
+    });
+
+    function initializeIPCharts() {
+        // Gráfico de distribución de riesgo
+        const riskCtx = document.getElementById('riskDistributionChart').getContext('2d');
+        riskDistributionChart = new Chart(riskCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Medio', 'Alto', 'Crítico'],
+                datasets: [{
+                    data: [
+                        serverRiskDistribution.medium || 0,
+                        serverRiskDistribution.high || 0,
+                        serverRiskDistribution.critical || 0
+                    ],
+                    backgroundColor: ['#fd7e14', '#f6c23e', '#e74a3b'],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
         });
 
-        function initializeIPCharts() {
-            // Gráfico de distribución de riesgo
-            const riskCtx = document.getElementById('riskDistributionChart').getContext('2d');
-            riskDistributionChart = new Chart(riskCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Medio', 'Alto', 'Crítico'],
-                    datasets: [{
-                        data: [0, 0, 0],
-                        backgroundColor: ['#fd7e14', '#f6c23e', '#e74a3b'],
-                        borderWidth: 2,
-                        borderColor: '#fff'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
+        // Gráfico de distribución por país
+        const countryCtx = document.getElementById('countryDistributionChart').getContext('2d');
+        
+        // Preparar datos del gráfico de países
+        const countryLabels = Object.keys(serverCountryDistribution).filter(key => key !== 'total');
+        const countryData = countryLabels.map(country => serverCountryDistribution[country].count || 0);
+        
+        countryDistributionChart = new Chart(countryCtx, {
+            type: 'bar',
+            data: {
+                labels: countryLabels,
+                datasets: [{
+                    label: 'Cantidad de IPs',
+                    data: countryData,
+                    backgroundColor: ['#4e73df', '#f6c23e', '#e74a3b', '#36b9cc', '#1cc88a', '#fd7e14', '#20c9a6']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
                     }
                 }
-            });
-
-            // Gráfico de distribución por país
-            const countryCtx = document.getElementById('countryDistributionChart').getContext('2d');
-            countryDistributionChart = new Chart(countryCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['Estados Unidos', 'China', 'Rusia', 'Alemania', 'Reino Unido'],
-                    datasets: [{
-                        label: 'Cantidad de IPs',
-                        data: [0, 0, 0, 0, 0],
-                        backgroundColor: ['#4e73df', '#f6c23e', '#e74a3b', '#36b9cc', '#1cc88a']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-        }
-
-        function loadIPReputation(page = 1) {
-            currentIPPage = page;
-
-            const tableBody = document.getElementById('ip-reputation-table-body');
-
-            // Mostrar loading
-            tableBody.innerHTML = `
-        <tr>
-            <td colspan="8" class="text-center py-4">
-                <i class="fas fa-spinner fa-spin fa-2x text-gray-400"></i>
-                <p class="mt-2 text-gray-500">Cargando reputaciones...</p>
-            </td>
-        </tr>
-    `;
-
-            // Simular delay de carga
-            setTimeout(() => {
-                const ips = generateSampleIPs();
-                renderIPsTable(ips);
-                updateIPsPagination();
-                updateIPCharts(ips);
-            }, 1000);
-        }
-
-        function generateSampleIPs() {
-            const ips = [];
-            const ipRanges = ['203.0.113', '185.199.108', '198.51.100', '104.21.92', '45.33.12'];
-            const countries = ['US', 'CN', 'RU', 'DE', 'GB'];
-            const isps = ['Cloudflare', 'GitHub', 'Amazon', 'DigitalOcean', 'Linode'];
-
-            for (let i = 0; i < 50; i++) {
-                // Solo generar scores entre 40-95 (Medio, Alto, Crítico)
-                const score = Math.floor(Math.random() * 56) + 40;
-                const riskLevel = getRiskLevel(score);
-
-                ips.push({
-                    id: i + 1,
-                    ip: `${ipRanges[Math.floor(Math.random() * ipRanges.length)]}.${Math.floor(Math.random() * 255)}`,
-                    score: score,
-                    risk_level: riskLevel,
-                    country: countries[Math.floor(Math.random() * countries.length)],
-                    isp: isps[Math.floor(Math.random() * isps.length)],
-                    lastUpdated: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000),
-                    status: 'active',
-                    totalRequests: Math.floor(Math.random() * 10000),
-                    threatRequests: Math.floor(Math.random() * 1000),
-                    benignRequests: Math.floor(Math.random() * 9000)
-                });
             }
+        });
+    }
 
-            return ips;
+    function loadIPReputation(page = 1) {
+        currentIPPage = page;
+
+        const tableBody = document.getElementById('ip-reputation-table-body');
+
+        // Mostrar loading
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="7" class="text-center py-4">
+                    <i class="fas fa-spinner fa-spin fa-2x text-gray-400"></i>
+                    <p class="mt-2 text-gray-500">Cargando reputaciones...</p>
+                </td>
+            </tr>
+        `;
+
+        // Usar los datos reales del servidor
+        if (serverIPReputations && serverIPReputations.length > 0) {
+            renderIPsTable(serverIPReputations);
+            updateIPsPagination();
+            updateIPCharts(serverIPReputations);
+        } else {
+            // Si no hay datos del servidor, mostrar mensaje
+            showNoIPsMessage();
         }
-
-        function getRiskLevel(score) {
-            if (score >= 80) return 'critical';
-            if (score >= 60) return 'high';
-            if (score >= 40) return 'medium';
-            // Solo generamos IPs con score >= 40 (Medio, Alto, Crítico)
-            return 'medium';
-        }
-
-        function renderIPsTable(ips) {
-            const tableBody = document.getElementById('ip-reputation-table-body');
-            const startIndex = (currentIPPage - 1) * ipsPerPage;
-            const endIndex = startIndex + ipsPerPage;
-            const pageIPs = ips.slice(startIndex, endIndex);
-
-            tableBody.innerHTML = '';
-
-            pageIPs.forEach(ip => {
-                const row = document.createElement('tr');
-                row.className = `ip-row ${ip.risk_level}`;
+    }
 
 
-                row.innerHTML = `
+
+    function renderIPsTable(ips) {
+        const tableBody = document.getElementById('ip-reputation-table-body');
+        const startIndex = (currentIPPage - 1) * ipsPerPage;
+        const endIndex = startIndex + ipsPerPage;
+        const pageIPs = ips.slice(startIndex, endIndex);
+
+        tableBody.innerHTML = '';
+
+        pageIPs.forEach(ip => {
+            const row = document.createElement('tr');
+            row.className = `ip-row ${ip.risk_level}`;
+
+
+            row.innerHTML = `
             <td>
                 <div class="d-flex align-items-center">
                     <div class="me-2">
@@ -478,156 +456,164 @@
             
         `;
 
-                tableBody.appendChild(row);
-            });
+            tableBody.appendChild(row);
+        });
 
-            totalIPs = ips.length;
-            updateIPsShowingInfo();
+        totalIPs = ips.length;
+        updateIPsShowingInfo();
+    }
+
+    function getRiskBadgeColor(riskLevel) {
+        const colors = {
+            'critical': 'danger',
+            'high': 'warning',
+            'medium': 'warning',
+            'low': 'info',
+            'minimal': 'success'
+        };
+        return colors[riskLevel] || 'secondary';
+    }
+
+    function formatDate(date) {
+        return new Intl.DateTimeFormat('es-ES', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        }).format(date);
+    }
+
+    function updateIPsShowingInfo() {
+        const start = (currentIPPage - 1) * ipsPerPage + 1;
+        const end = Math.min(currentIPPage * ipsPerPage, totalIPs);
+
+        document.getElementById('ips-showing-start').textContent = start;
+        document.getElementById('ips-showing-end').textContent = end;
+        document.getElementById('ips-showing-total').textContent = totalIPs;
+    }
+
+    function updateIPsPagination() {
+        const totalPages = Math.ceil(totalIPs / ipsPerPage);
+        const pagination = document.getElementById('ips-pagination');
+
+        pagination.innerHTML = '';
+
+        // Botón anterior
+        const prevLi = document.createElement('li');
+        prevLi.className = `page-item ${currentIPPage === 1 ? 'disabled' : ''}`;
+        prevLi.innerHTML = `<a class="page-link" href="#" onclick="loadIPReputation(${currentIPPage - 1})">Anterior</a>`;
+        pagination.appendChild(prevLi);
+
+        // Páginas numeradas
+        const startPage = Math.max(1, currentIPPage - 2);
+        const endPage = Math.min(totalPages, currentIPPage + 2);
+
+        for (let i = startPage; i <= endPage; i++) {
+            const li = document.createElement('li');
+            li.className = `page-item ${i === currentIPPage ? 'active' : ''}`;
+            li.innerHTML = `<a class="page-link" href="#" onclick="loadIPReputation(${i})">${i}</a>`;
+            pagination.appendChild(li);
         }
 
-        function getRiskBadgeColor(riskLevel) {
-            const colors = {
-                'critical': 'danger',
-                'high': 'warning',
-                'medium': 'warning',
-                'low': 'info',
-                'minimal': 'success'
-            };
-            return colors[riskLevel] || 'secondary';
-        }
+        // Botón siguiente
+        const nextLi = document.createElement('li');
+        nextLi.className = `page-item ${currentIPPage === totalPages ? 'disabled' : ''}`;
+        nextLi.innerHTML = `<a class="page-link" href="#" onclick="loadIPReputation(${currentIPPage + 1})">Siguiente</a>`;
+        pagination.appendChild(nextLi);
+    }
 
-        function formatDate(date) {
-            return new Intl.DateTimeFormat('es-ES', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            }).format(date);
-        }
+    function updateIPCharts(ips) {
+        // Actualizar gráfico de distribución de riesgo
+        const riskCounts = {};
+        ips.forEach(ip => {
+            riskCounts[ip.risk_level] = (riskCounts[ip.risk_level] || 0) + 1;
+        });
 
-        function updateIPsShowingInfo() {
-            const start = (currentIPPage - 1) * ipsPerPage + 1;
-            const end = Math.min(currentIPPage * ipsPerPage, totalIPs);
+        riskDistributionChart.data.datasets[0].data = [
+            riskCounts.medium || 0,
+            riskCounts.high || 0,
+            riskCounts.critical || 0
+        ];
+        riskDistributionChart.update();
 
-            document.getElementById('ips-showing-start').textContent = start;
-            document.getElementById('ips-showing-end').textContent = end;
-            document.getElementById('ips-showing-total').textContent = totalIPs;
-        }
+        // Actualizar gráfico de distribución por país dinámicamente
+        const countryCounts = {};
+        ips.forEach(ip => {
+            countryCounts[ip.country] = (countryCounts[ip.country] || 0) + 1;
+        });
 
-        function updateIPsPagination() {
-            const totalPages = Math.ceil(totalIPs / ipsPerPage);
-            const pagination = document.getElementById('ips-pagination');
+        // Obtener países únicos y sus conteos
+        const uniqueCountries = Object.keys(countryCounts);
+        const countryData = uniqueCountries.map(country => countryCounts[country]);
 
-            pagination.innerHTML = '';
+        // Actualizar gráfico con datos reales
+        countryDistributionChart.data.labels = uniqueCountries;
+        countryDistributionChart.data.datasets[0].data = countryData;
+        countryDistributionChart.update();
+    }
 
-            // Botón anterior
-            const prevLi = document.createElement('li');
-            prevLi.className = `page-item ${currentIPPage === 1 ? 'disabled' : ''}`;
-            prevLi.innerHTML = `<a class="page-link" href="#" onclick="loadIPReputation(${currentIPPage - 1})">Anterior</a>`;
-            pagination.appendChild(prevLi);
+    // Función loadIPStats eliminada - Los datos ahora vienen del servidor
 
-            // Páginas numeradas
-            const startPage = Math.max(1, currentIPPage - 2);
-            const endPage = Math.min(totalPages, currentIPPage + 2);
+    function applyIPFilters() {
+        console.log('Aplicando filtros de IPs...');
+        loadIPReputation(1);
+    }
 
-            for (let i = startPage; i <= endPage; i++) {
-                const li = document.createElement('li');
-                li.className = `page-item ${i === currentIPPage ? 'active' : ''}`;
-                li.innerHTML = `<a class="page-link" href="#" onclick="loadIPReputation(${i})">${i}</a>`;
-                pagination.appendChild(li);
-            }
+    function clearIPFilters() {
+        document.getElementById('ip-filter-form').reset();
+        loadIPReputation(1);
+    }
 
-            // Botón siguiente
-            const nextLi = document.createElement('li');
-            nextLi.className = `page-item ${currentIPPage === totalPages ? 'disabled' : ''}`;
-            nextLi.innerHTML = `<a class="page-link" href="#" onclick="loadIPReputation(${currentIPPage + 1})">Siguiente</a>`;
-            pagination.appendChild(nextLi);
-        }
+    function updateIPReputation() {
+        console.log('Actualizando reputación de IPs...');
+        showNotification('Actualización iniciada', 'info');
+    }
 
-        function updateIPCharts(ips) {
-            // Actualizar gráfico de distribución de riesgo
-            const riskCounts = {};
-            ips.forEach(ip => {
-                riskCounts[ip.risk_level] = (riskCounts[ip.risk_level] || 0) + 1;
-            });
+    function exportIPReputation() {
+        console.log('Exportando base de datos de reputación...');
+        showNotification('Exportación iniciada', 'info');
+    }
 
-            riskDistributionChart.data.datasets[0].data = [
-                riskCounts.medium || 0,
-                riskCounts.high || 0,
-                riskCounts.critical || 0
-            ];
-            riskDistributionChart.update();
-
-            // Actualizar gráfico de distribución por país
-            const countryCounts = {};
-            ips.forEach(ip => {
-                countryCounts[ip.country] = (countryCounts[ip.country] || 0) + 1;
-            });
-
-            countryDistributionChart.data.datasets[0].data = [
-                countryCounts.US || 0,
-                countryCounts.CN || 0,
-                countryCounts.RU || 0,
-                countryCounts.DE || 0,
-                countryCounts.GB || 0
-            ];
-            countryDistributionChart.update();
-        }
-
-        // Función loadIPStats eliminada - Los datos ahora vienen del servidor
-
-        function applyIPFilters() {
-            console.log('Aplicando filtros de IPs...');
-            loadIPReputation(1);
-        }
-
-        function clearIPFilters() {
-            document.getElementById('ip-filter-form').reset();
-            loadIPReputation(1);
-        }
-
-        function updateIPReputation() {
-            console.log('Actualizando reputación de IPs...');
-            showNotification('Actualización iniciada', 'info');
-        }
-
-        function exportIPReputation() {
-            console.log('Exportando base de datos de reputación...');
-            showNotification('Exportación iniciada', 'info');
-        }
+    function showNoIPsMessage() {
+        const tableBody = document.getElementById('ip-reputation-table-body');
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="7" class="text-center py-4">
+                    <i class="fas fa-info-circle text-muted"></i>
+                    <p class="mt-2 text-gray-500">No hay datos de reputación disponibles para mostrar.</p>
+                </td>
+            </tr>
+        `;
+        updateIPsShowingInfo();
+    }
 
 
-
-
-
-
-
-        function showNotification(message, type) {
-            const toast = document.createElement('div');
-            toast.className = `toast align-items-center text-white bg-${type} border-0`;
-            toast.setAttribute('role', 'alert');
-            toast.innerHTML = `
+    function showNotification(message, type) {
+        const toast = document.createElement('div');
+        toast.className = `toast align-items-center text-white bg-${type} border-0`;
+        toast.setAttribute('role', 'alert');
+        toast.innerHTML = `
         <div class="d-flex">
             <div class="toast-body">${message}</div>
             <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
         </div>
     `;
 
-            const toastContainer = document.querySelector('.toast-container') || createToastContainer();
-            toastContainer.appendChild(toast);
+        const toastContainer = document.querySelector('.toast-container') || createToastContainer();
+        toastContainer.appendChild(toast);
 
-            const bsToast = new bootstrap.Toast(toast);
-            bsToast.show();
-        }
+        const bsToast = new bootstrap.Toast(toast);
+        bsToast.show();
+    }
 
-        function createToastContainer() {
-            const container = document.createElement('div');
-            container.className = 'toast-container position-fixed top-0 end-0 p-3';
-            container.style.zIndex = '1055';
-            document.body.appendChild(container);
-            return container;
-        }
+    function createToastContainer() {
+        const container = document.createElement('div');
+        container.className = 'toast-container position-fixed top-0 end-0 p-3';
+        container.style.zIndex = '1055';
+        document.body.appendChild(container);
+        return container;
+    }
 </script>
 
 <!-- BEGIN: Application JavaScript -->

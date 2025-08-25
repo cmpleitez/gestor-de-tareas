@@ -4,6 +4,67 @@
 <!-- BEGIN: Security Dashboard CSS -->
 <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/security-dashboard.css') }}">
 <!-- END: Security Dashboard CSS -->
+
+<style>
+    .log-viewer {
+        max-height: none !important;
+        overflow: visible !important;
+        padding: 1rem;
+        background-color: #f8f9fa;
+        border-radius: 0.375rem;
+        border: 1px solid #e9ecef;
+    }
+
+    .log-entry {
+        padding: 0.5rem;
+        margin-bottom: 0.25rem;
+        border-radius: 0.25rem;
+        background-color: white;
+        border-left: 4px solid #6c757d;
+        font-family: 'Courier New', monospace;
+        font-size: 0.875rem;
+        line-height: 1.4;
+    }
+
+    .log-entry.critical {
+        border-left-color: #dc3545;
+        background-color: #f8d7da;
+    }
+
+    .log-entry.error {
+        border-left-color: #fd7e14;
+        background-color: #fff3cd;
+    }
+
+    .log-timestamp {
+        color: #6c757d;
+        font-weight: 600;
+    }
+
+    .log-level {
+        font-weight: bold;
+        margin: 0 0.5rem;
+    }
+
+    .log-level.critical {
+        color: #dc3545;
+    }
+
+    .log-level.error {
+        color: #fd7e14;
+    }
+
+    .log-source {
+        color: #495057;
+        font-weight: 500;
+        margin: 0 0.5rem;
+    }
+
+    .log-message {
+        color: #212529;
+        margin-left: 0.5rem;
+    }
+</style>
 @stop
 
 @section('contenedor')
@@ -12,9 +73,33 @@
     <!-- ========================================
                                                                                                                                         HEADER DE LOGS DE SEGURIDAD
                                                                                                                                         ======================================== -->
-    <x-security.dashboard-header title="Logs de Seguridad"
-        subtitle="Gestión y análisis completo de logs del sistema de monitoreo de seguridad" status="REGISTRANDO"
-        status_color="dark" :show_pulse="false" />
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-gradient-primary text-white">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h4 class="card-title text-white mb-1">
+                                <i class="fas fa-file-alt me-2"></i>
+                                Logs de Seguridad
+                            </h4>
+                            <p class="card-text text-white-50 mb-0">
+                                Gestión y análisis completo de logs del sistema de monitoreo de seguridad
+                            </p>
+                        </div>
+                        <div class="col-auto">
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-light text-dark me-2">REGISTRANDO</span>
+                                <div class="spinner-border spinner-border-sm text-white" role="status">
+                                    <span class="visually-hidden">Cargando...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- ========================================
                                                                                                                                         FILTROS DE LOGS
@@ -42,9 +127,13 @@
                             <label for="log-source" class="form-label">Fuente</label>
                             <select class="form-select" id="log-source">
                                 <option value="all" selected>Todas</option>
-                                <option value="middleware">Middleware</option>
-                                <option value="service">Servicios</option>
-                                <option value="database">Base de Datos</option>
+                                <option value="security">Security</option>
+                                <option value="firewall">Firewall</option>
+                                <option value="ids">IDS</option>
+                                <option value="monitoring">Monitoring</option>
+                                <option value="database">Database</option>
+                                <option value="network">Network</option>
+                                <option value="backup">Backup</option>
                             </select>
                         </div>
                         <div class="col-md-2">
@@ -96,17 +185,6 @@
                         <i class="fas fa-file-alt me-2"></i>
                         Visualizador de Logs
                     </h6>
-                    <div class="d-flex align-items-center">
-                        <span class="badge bg-secondary me-3" id="log-count">Logs del sistema</span>
-                        <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-outline-primary btn-sm" onclick="refreshLogs()">
-                                <i class="fas fa-sync-alt"></i>
-                            </button>
-                            <button type="button" class="btn btn-outline-success btn-sm" onclick="downloadLogs()">
-                                <i class="fas fa-download"></i>
-                            </button>
-                        </div>
-                    </div>
                 </div>
                 <div class="card-body">
                     <div class="log-viewer" id="logViewer">
@@ -135,83 +213,84 @@
 @section('js')
 <script>
     let currentLogs = [];
-        let filteredLogs = [];
-        let currentLogPage = 1;
-        let logsPerPage = 25;
-        let totalLogs = 0;
+    let filteredLogs = [];
+    let currentLogPage = 1;
+    let logsPerPage = 25;
+    let totalLogs = 0;
 
-        document.addEventListener('DOMContentLoaded', function() {
-            loadLogs();
-            setupEventListeners();
+    // Datos reales enviados desde el controlador
+    const serverLogs = @json($logs ?? []);
+    const serverPagination = @json($pagination ?? []);
+    
+    // DEBUG TEMPORAL - ELIMINAR DESPUÉS
+    console.log('Logs recibidos del servidor:', {
+        logs: serverLogs,
+        pagination: serverPagination,
+        logsCount: serverLogs ? serverLogs.length : 0,
+        sampleLog: serverLogs && serverLogs.length > 0 ? serverLogs[0] : null
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        loadLogs();
+        setupEventListeners();
+    });
+
+    function setupEventListeners() {
+        document.getElementById('logFilterForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            filterLogs();
         });
 
-        function setupEventListeners() {
-            document.getElementById('logFilterForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                filterLogs();
-            });
+        // Filtros en tiempo real
+        document.getElementById('log-search').addEventListener('input', filterLogs);
+        document.getElementById('log-level').addEventListener('change', filterLogs);
+        document.getElementById('log-source').addEventListener('change', filterLogs);
+    }
 
-            // Filtros en tiempo real
-            document.getElementById('log-search').addEventListener('input', filterLogs);
-            document.getElementById('log-level').addEventListener('change', filterLogs);
-            document.getElementById('log-source').addEventListener('change', filterLogs);
+    function loadLogs() {
+        console.log('loadLogs() ejecutándose...');
+        console.log('serverLogs:', serverLogs);
+        console.log('serverPagination:', serverPagination);
+        
+        showLoadingState();
+
+        // Usar los datos reales del servidor
+        if (serverLogs && serverLogs.length > 0) {
+            console.log('Usando logs del servidor:', serverLogs.length);
+            currentLogs = serverLogs;
+            filteredLogs = [...currentLogs];
+            totalLogs = serverPagination.total || currentLogs.length;
+            console.log('Logs cargados:', currentLogs.length);
+        } else {
+            console.log('No hay logs del servidor, usando array vacío');
+            // Si no hay datos del servidor, mostrar mensaje
+            currentLogs = [];
+            filteredLogs = [];
+            totalLogs = 0;
         }
 
-        function loadLogs() {
-            showLoadingState();
+        console.log('Llamando a displayLogs(1)...');
+        displayLogs(1);
+    }
 
-            // Simular carga de logs (en producción esto vendría del servidor)
-            setTimeout(() => {
-                currentLogs = generateSampleLogs();
-                filteredLogs = [...currentLogs];
-                displayLogs();
-                updateLogCount();
-            }, 1000);
-        }
 
-        function generateSampleLogs() {
-            const logs = [];
-            const levels = ['critical', 'error']; // Solo 2 niveles
-            const sources = ['middleware', 'service', 'database'];
-            const messages = [
-                'Usuario autenticado exitosamente',
-                'Intento de acceso no autorizado detectado',
-                'Solicitud procesada correctamente',
-                'Error en la validación de datos',
-                'Amenaza de seguridad bloqueada',
-                'Conexión a base de datos establecida',
-                'Archivo de configuración cargado',
-                'Sesión de usuario iniciada',
-                'Logout de usuario completado',
-                'Verificación de permisos realizada'
-            ];
-
-            for (let i = 1; i <= 100; i++) {
-                const level = levels[Math.floor(Math.random() * levels.length)];
-                const source = sources[Math.floor(Math.random() * sources.length)];
-                const message = messages[Math.floor(Math.random() * messages.length)];
-                const timestamp = new Date(Date.now() - Math.random() * 24 * 60 * 60 * 1000);
-                const ip = `192.168.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`;
-
-                logs.push({
-                    id: i,
-                    timestamp: timestamp,
-                    level: level,
-                    source: source,
-                    message: message,
-                    ip: ip,
-                    user_id: Math.random() > 0.5 ? `user_${Math.floor(Math.random() * 1000)}` : null
-                });
-            }
-
-            return logs.sort((a, b) => b.timestamp - a.timestamp);
-        }
 
         function displayLogs(page = 1) {
+            console.log('displayLogs() ejecutándose con página:', page);
+            console.log('filteredLogs:', filteredLogs);
+            console.log('filteredLogs.length:', filteredLogs.length);
+            
             const viewer = document.getElementById('logViewer');
+            if (!viewer) {
+                console.error('Elemento logViewer no encontrado');
+                return;
+            }
+            
+            console.log('Elemento logViewer encontrado, limpiando contenido...');
             viewer.innerHTML = '';
 
             if (filteredLogs.length === 0) {
+                console.log('No hay logs filtrados, mostrando mensaje de no datos');
                 viewer.innerHTML = `
                     <div class="text-center py-4">
                         <i class="fas fa-info-circle fa-2x text-gray-400"></i>
@@ -222,13 +301,10 @@
                 return;
             }
 
-            // Calcular logs para la página actual
-            const startIndex = (page - 1) * logsPerPage;
-            const endIndex = startIndex + logsPerPage;
-            const pageLogs = filteredLogs.slice(startIndex, endIndex);
-
-            // Mostrar logs de la página actual
-            pageLogs.forEach(log => {
+            console.log('Mostrando logs filtrados...');
+            // Mostrar todos los logs filtrados
+            filteredLogs.forEach((log, index) => {
+                console.log(`Creando entrada para log ${index}:`, log);
                 const logEntry = createLogEntry(log);
                 viewer.appendChild(logEntry);
             });
@@ -236,7 +312,9 @@
             // Actualizar paginación
             currentLogPage = page;
             totalLogs = filteredLogs.length;
+            console.log('Llamando a updateLogsPagination()...');
             updateLogsPagination();
+            console.log('Llamando a updateLogsShowingInfo()...');
             updateLogsShowingInfo();
         }
 
@@ -244,15 +322,15 @@
             const entry = document.createElement('div');
             entry.className = `log-entry ${log.level}`;
 
-            const timestamp = formatTimestamp(log.timestamp);
+            const timestamp = log.timestamp || formatTimestamp(new Date());
             const levelClass = `log-level ${log.level}`;
-            const levelText = log.level.toUpperCase();
+            const levelText = (log.level || 'info').toUpperCase();
 
             entry.innerHTML = `
                 <span class="log-timestamp">[${timestamp}]</span>
                 <span class="${levelClass}">[${levelText}]</span>
-                <span class="log-source">[${log.source}]</span>
-                <span class="log-message">${log.message}</span>
+                <span class="log-source">[${log.source || 'system'}]</span>
+                <span class="log-message">${log.message || 'Sin mensaje'}</span>
                 ${log.ip ? `<small class="text-muted ms-2">IP: ${log.ip}</small>` : ''}
                 ${log.user_id ? `<small class="text-muted ms-2">User: ${log.user_id}</small>` : ''}
             `;
@@ -296,7 +374,6 @@
             // Resetear a la primera página al filtrar
             currentLogPage = 1;
             displayLogs(1);
-            updateLogCount();
         }
 
         function clearFilters() {
@@ -308,7 +385,6 @@
             // Resetear a la primera página al limpiar filtros
             currentLogPage = 1;
             displayLogs(1);
-            updateLogCount();
         }
 
         function refreshLogs() {
@@ -347,10 +423,7 @@
             window.URL.revokeObjectURL(url);
         }
 
-        function updateLogCount() {
-            const countElement = document.getElementById('log-count');
-            countElement.textContent = `Mostrando ${filteredLogs.length} de ${currentLogs.length} logs`;
-        }
+
 
         function updateLogsShowingInfo() {
             const start = (currentLogPage - 1) * logsPerPage + 1;
