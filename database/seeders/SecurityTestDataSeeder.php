@@ -123,8 +123,8 @@ class SecurityTestDataSeeder extends Seeder
                 $uri = $testURIs[array_rand($testURIs)];
                 $userAgent = $userAgents[array_rand($userAgents)];
 
-                // Generar timestamp realista (últimos 3 días)
-                $timestamp = Carbon::now()->subDays(rand(0, 2))->addHours(rand(0, 23))->addMinutes(rand(0, 59));
+                // Generar timestamp realista (últimas 48 horas para que aparezcan en Top 10)
+                $timestamp = Carbon::now()->subHours(rand(0, 48))->addMinutes(rand(0, 59));
 
                 // Crear geolocalización realista
                 $geolocation = [

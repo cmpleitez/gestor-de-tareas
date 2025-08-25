@@ -47,6 +47,10 @@
 234567890
 345678901
 
+🟢 eliminar el campo geolocalizacion porque es decorativo
+🟢 aplicar filtros automatizados
+🟢 medir el peso de las consultas y procesos en la zona de seguridad del sistema
+🟢 la api de geolocalizacion no esta funcionando
 🟢 dar seguridad a nginx porque no es pache el motor donde trabajamos con todo
 🟢 via enginx posiblemente esten llegando, toda la configuracion de forge sites se ve que es de nginx sin embargo la IA entendio que era apache
 🟢 consultar que significan las fuentes de Filtros de Búsqueda de security/logs y confirmar lo que se va quedar

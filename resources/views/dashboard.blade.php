@@ -615,14 +615,15 @@
                         <li class="nav-item d-none d-lg-block"><a class="nav-link nav-link-expand"><i
                                     class="ficon bx bx-fullscreen"></i></a></li>
                         <li class="dropdown dropdown-user nav-item">
-                            <a class="dropdown-toggle nav-link dropdown-user-link" href="#" data-toggle="dropdown">
+                            <a class="dropdown-toggle nav-link dropdown-user-link" href="#"
+                                data-toggle="dropdown">
                                 <div class="user-nav d-sm-flex d-none">
                                     <span class="user-name">{{ auth()->user()->name }}</span>
                                     <span class="user-status text-gray-600 d-flex align-items-center"
                                         onclick="copyToClipboard(event, '{{ auth()->user()->email }}')">
                                         <i class="bx bx-copy" style="cursor: pointer; padding-right: 0.5rem;"></i>
-                                        <span class="hover:text-gray-900 !important transition-colors duration-200">{{
-                                            auth()->user()->email }}</span>
+                                        <span
+                                            class="hover:text-gray-900 !important transition-colors duration-200">{{ auth()->user()->email }}</span>
                                     </span>
                                     <script>
                                         function copyToClipboard(event, text) {
@@ -632,17 +633,21 @@
                                                 return;
                                             }
                                             navigator.clipboard.writeText(text)
-                                                .then(() => {
-                                                    toastr.success('Correo copiado al portapapeles');
+                                                .then(function() {
+                                                    if (typeof toastr !== 'undefined') {
+                                                        toastr.success('Correo copiado al portapapeles');
+                                                    }
                                                 })
-                                                .catch(err => {
-                                                    toastr.error('Error al copiar el correo: ' + err.message, 'Error');
+                                                .catch(function(err) {
+                                                    if (typeof toastr !== 'undefined') {
+                                                        toastr.error('Error al copiar el correo: ' + err.message, 'Error');
+                                                    }
                                                     fallbackCopyTextToClipboard(text);
                                                 });
                                         }
 
                                         function fallbackCopyTextToClipboard(text) {
-                                            const textArea = document.createElement("textarea");
+                                            var textArea = document.createElement("textarea");
                                             textArea.value = text;
                                             textArea.style.top = "0";
                                             textArea.style.left = "0";
@@ -651,43 +656,50 @@
                                             textArea.focus();
                                             textArea.select();
                                             try {
-                                                const successful = document.execCommand('copy');
+                                                var successful = document.execCommand('copy');
                                                 if (successful) {
-                                                    toastr.success('Correo copiado al portapapeles', '', {
-                                                        positionClass: 'toast-top-center'
-                                                    });
+                                                    if (typeof toastr !== 'undefined') {
+                                                        toastr.success('Correo copiado al portapapeles', '', {
+                                                            positionClass: 'toast-top-center'
+                                                        });
+                                                    }
                                                 } else {
+                                                    if (typeof toastr !== 'undefined') {
+                                                        toastr.error('No se pudo copiar el correo', 'Error', {
+                                                            positionClass: 'toast-top-center'
+                                                        });
+                                                    }
+                                                }
+                                            } catch (err) {
+                                                if (typeof toastr !== 'undefined') {
                                                     toastr.error('No se pudo copiar el correo', 'Error', {
                                                         positionClass: 'toast-top-center'
                                                     });
                                                 }
-                                            } catch (err) {
-                                                toastr.error('No se pudo copiar el correo', 'Error', {
-                                                    positionClass: 'toast-top-center'
-                                                });
                                             }
                                             document.body.removeChild(textArea);
                                         }
                                     </script>
                                     <span class="user-status" style="color: #0056b3; font-weight: 600;">
                                         @if (auth()->check())
-                                        Conectado como
-                                        {{ auth()->user()->main_role }}
+                                            Conectado como
+                                            {{ auth()->user()->main_role }}
                                         @else
-                                        <span style="color: #d90429; font-weight: 600;">Desconectado</span>
+                                            <span style="color: #d90429; font-weight: 600;">Desconectado</span>
                                         @endif
                                     </span>
                                 </div>
                                 <div class="avatar">
                                     @if (auth()->check())
-                                    @php $photoPath = auth()->user()->profile_photo_path; @endphp
-                                    @if ($photoPath && Storage::disk('public')->exists($photoPath))
-                                    <img src="{{ Storage::url($photoPath) }}" alt="avatar"
-                                        style="height: 45px; width: 45px; object-fit: cover;">
-                                    @else
-                                    <img src="{{ asset('app-assets/images/pages/operador.png') }}" alt="avatar"
-                                        style="height: 45px; width: 45px; object-fit: contain;">
-                                    @endif
+                                        @php $photoPath = auth()->user()->profile_photo_path; @endphp
+                                        @if ($photoPath && Storage::disk('public')->exists($photoPath))
+                                            <img src="{{ Storage::url($photoPath) }}" alt="avatar"
+                                                style="height: 45px; width: 45px; object-fit: cover;">
+                                        @else
+                                            <img src="{{ asset('app-assets/images/pages/operador.png') }}"
+                                                alt="avatar"
+                                                style="height: 45px; width: 45px; object-fit: contain;">
+                                        @endif
                                     @endif
                                 </div>
                             </a>
@@ -741,87 +753,87 @@
                             data-i18n="Menu Levels">Servicios</span></a>
                     <ul class="menu-content" style="display: block;">
                         @role('Beneficiario')
-                        <li><a href="{{ Route('recepcion.create') }}">
-                                <i class="bx bx-right-arrow-alt"></i>
-                                <span class="menu-item" data-i18n="Second Level">Recepciones</span>
-                            </a></li>
+                            <li><a href="{{ Route('recepcion.create') }}">
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Recepciones</span>
+                                </a></li>
                         @endrole
                         @role('Operador')
-                        <li><a href="#">
-                                <i class="bx bx-right-arrow-alt"></i>
-                                <span class="menu-item" data-i18n="Second Level">Disponible</span>
-                            </a></li>
+                            <li><a href="#">
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Disponible</span>
+                                </a></li>
                         @endrole
                         @role('Administrador')
-                        <li>
-                            <a href="#">
-                                <i class="bx bx-right-arrow-alt"></i>
-                                <span class="menu-item" data-i18n="Second Level">Administración</span>
-                            </a>
-                            <ul class="menu-content" style="display: block;">
-                                <li><a href="{{ Route('equipo') }}">
-                                        <i class="bx bx-right-arrow-alt"></i>
-                                        <span class="menu-item" data-i18n="Third Level">Equipos</span></a>
-                                </li>
-                                <li><a href="#">
-                                        <i class="bx bx-right-arrow-alt"></i>
-                                        <span class="menu-item" data-i18n="Third Level">Disponible</span>
-                                    </a></li>
-                            </ul>
-                        </li>
+                            <li>
+                                <a href="#">
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Administración</span>
+                                </a>
+                                <ul class="menu-content" style="display: block;">
+                                    <li><a href="{{ Route('equipo') }}">
+                                            <i class="bx bx-right-arrow-alt"></i>
+                                            <span class="menu-item" data-i18n="Third Level">Equipos</span></a>
+                                    </li>
+                                    <li><a href="#">
+                                            <i class="bx bx-right-arrow-alt"></i>
+                                            <span class="menu-item" data-i18n="Third Level">Disponible</span>
+                                        </a></li>
+                                </ul>
+                            </li>
                         @endrole
 
                     </ul>
                 </li>
                 @role('SuperAdmin')
-                <li class=" nav-item"><a href="#"><i class="bx bx-cog"></i><span class="menu-title"
-                            data-i18n="Menu Levels">Administración</span></a>
-                    <ul class="menu-content" style="display: block;">
-                        <li><a href="{{ Route('user') }}">
-                                <i class="bx bx-right-arrow-alt"></i>
-                                <span class="menu-item" data-i18n="Second Level">Usuarios</span>
-                            </a></li>
-                        <li><a href="{{ Route('equipo') }}">
-                                <i class="bx bx-right-arrow-alt"></i>
-                                <span class="menu-item" data-i18n="Second Level">Equipos</span>
-                            </a></li>
-                        <li><a href="{{ Route('tarea') }}">
-                                <i class="bx bx-right-arrow-alt"></i>
-                                <span class="menu-item" data-i18n="Second Level">Tareas</span>
-                            </a></li>
-                        <li><a href="{{ Route('solicitud') }}">
-                                <i class="bx bx-right-arrow-alt"></i>
-                                <span class="menu-item" data-i18n="Second Level">Solicitudes</span>
-                            </a></li>
-                    </ul>
-                </li>
-                <li class=" nav-item"><a href="#"><i class="bx bx-shield"></i><span class="menu-title"
-                            data-i18n="Menu Levels">Monitoreo de Seguridad</span></a>
-                    <ul class="menu-content" style="display: block;">
-                        <li><a href="{{ Route('security.index') }}">
-                                <i class="bx bx-right-arrow-alt"></i>
-                                <span class="menu-item" data-i18n="Second Level">Dashboard</span>
-                            </a></li>
-                        <li><a href="{{ Route('security.events') }}">
-                                <i class="bx bx-right-arrow-alt"></i>
-                                <span class="menu-item" data-i18n="Second Level">Eventos</span>
-                            </a></li>
-                        <li><a href="{{ Route('security.threat-intelligence') }}">
-                                <i class="bx bx-right-arrow-alt"></i>
-                                <span class="menu-item" data-i18n="Second Level">Inteligencia de Amenazas</span>
-                            </a></li>
-                        <li><a href="{{ Route('security.ip-reputation') }}">
-                                <i class="bx bx-right-arrow-alt"></i>
-                                <span class="menu-item" data-i18n="Second Level">Reputación de IPs</span>
-                            </a></li>
+                    <li class=" nav-item"><a href="#"><i class="bx bx-cog"></i><span class="menu-title"
+                                data-i18n="Menu Levels">Administración</span></a>
+                        <ul class="menu-content" style="display: block;">
+                            <li><a href="{{ Route('user') }}">
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Usuarios</span>
+                                </a></li>
+                            <li><a href="{{ Route('equipo') }}">
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Equipos</span>
+                                </a></li>
+                            <li><a href="{{ Route('tarea') }}">
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Tareas</span>
+                                </a></li>
+                            <li><a href="{{ Route('solicitud') }}">
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Solicitudes</span>
+                                </a></li>
+                        </ul>
+                    </li>
+                    <li class=" nav-item"><a href="#"><i class="bx bx-shield"></i><span class="menu-title"
+                                data-i18n="Menu Levels">Monitoreo de Seguridad</span></a>
+                        <ul class="menu-content" style="display: block;">
+                            <li><a href="{{ Route('security.index') }}">
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Dashboard</span>
+                                </a></li>
+                            <li><a href="{{ Route('security.events') }}">
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Eventos</span>
+                                </a></li>
+                            <li><a href="{{ Route('security.threat-intelligence') }}">
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Inteligencia de Amenazas</span>
+                                </a></li>
+                            <li><a href="{{ Route('security.ip-reputation') }}">
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Reputación de IPs</span>
+                                </a></li>
 
-                        <li><a href="{{ Route('security.logs') }}">
-                                <i class="bx bx-right-arrow-alt"></i>
-                                <span class="menu-item" data-i18n="Second Level">Logs</span>
-                            </a></li>
+                            <li><a href="{{ Route('security.logs') }}">
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Logs</span>
+                                </a></li>
 
-                    </ul>
-                </li>
+                        </ul>
+                    </li>
                 @endrole
                 <li class=" navigation-header"><span>Soporte</span>
                 </li>

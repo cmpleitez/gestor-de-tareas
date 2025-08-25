@@ -1,97 +1,110 @@
 @extends('dashboard')
 
 @section('css')
-<!-- BEGIN: Security Dashboard CSS -->
-<link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/security-dashboard.css') }}">
-<!-- END: Security Dashboard CSS -->
+    <!-- BEGIN: Security Dashboard CSS -->
+    <!-- Archivo CSS externo comentado temporalmente para evitar conflictos -->
+    <!-- <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/security-dashboard.css') }}"> -->
+    <!-- END: Security Dashboard CSS -->
 
-<style>
-    .log-viewer {
-        max-height: none !important;
-        overflow: visible !important;
-        padding: 1rem;
-        background-color: #f8f9fa;
-        border-radius: 0.375rem;
-        border: 1px solid #e9ecef;
-    }
+    <style>
+        .log-viewer {
+            max-height: none !important;
+            overflow: visible !important;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 0.375rem;
+            border: 1px solid #e9ecef;
+        }
 
-    .log-entry {
-        padding: 0.5rem;
-        margin-bottom: 0.25rem;
-        border-radius: 0.25rem;
-        background-color: white;
-        border-left: 4px solid #6c757d;
-        font-family: 'Courier New', monospace;
-        font-size: 0.875rem;
-        line-height: 1.4;
-    }
+        .log-entry {
+            padding: 0.5rem;
+            margin-bottom: 0.25rem;
+            border-radius: 0.25rem;
+            background-color: white;
+            border-left: 4px solid #6c757d;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            line-height: 1.4;
+        }
 
-    .log-entry.critical {
-        border-left-color: #dc3545;
-        background-color: #f8d7da;
-    }
+        .log-entry.critical {
+            border-left-color: #dc3545;
+            background-color: #f8d7da;
+        }
 
-    .log-entry.error {
-        border-left-color: #fd7e14;
-        background-color: #fff3cd;
-    }
+        .log-entry.error {
+            border-left-color: #fd7e14;
+            background-color: #fff3cd;
+        }
 
-    .log-timestamp {
-        color: #6c757d;
-        font-weight: 600;
-    }
+        .log-timestamp {
+            color: #6c757d;
+            font-weight: 600;
+        }
 
-    .log-level {
-        font-weight: bold;
-        margin: 0 0.5rem;
-    }
+        .log-level {
+            font-weight: bold;
+            margin: 0 0.5rem;
+        }
 
-    .log-level.critical {
-        color: #dc3545;
-    }
+        .log-level.critical {
+            color: #dc3545;
+        }
 
-    .log-level.error {
-        color: #fd7e14;
-    }
+        .log-level.error {
+            color: #fd7e14;
+        }
 
-    .log-source {
-        color: #495057;
-        font-weight: 500;
-        margin: 0 0.5rem;
-    }
+        .log-source {
+            color: #495057;
+            font-weight: 500;
+            margin: 0 0.5rem;
+        }
 
-    .log-message {
-        color: #212529;
-        margin-left: 0.5rem;
-    }
-</style>
+        .log-message {
+            color: #212529;
+            margin-left: 0.5rem;
+        }
+    </style>
 @stop
 
 @section('contenedor')
-<div class="container-fluid" data-risk-distribution="{{ trim(json_encode($risk_distribution ?? [])) }}"
-    data-threats-by-country="{{ trim(json_encode($threats_by_country ?? [])) }}">
-    <!-- ========================================
-                                                                                                                                        HEADER DE LOGS DE SEGURIDAD
-                                                                                                                                        ======================================== -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card bg-gradient-primary text-white">
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col">
-                            <h4 class="card-title text-white mb-1">
-                                <i class="fas fa-file-alt me-2"></i>
-                                Logs de Seguridad
-                            </h4>
-                            <p class="card-text text-white-50 mb-0">
-                                Gestión y análisis completo de logs del sistema de monitoreo de seguridad
-                            </p>
-                        </div>
-                        <div class="col-auto">
-                            <div class="d-flex align-items-center">
-                                <span class="badge bg-light text-dark me-2">REGISTRANDO</span>
-                                <div class="spinner-border spinner-border-sm text-white" role="status">
-                                    <span class="visually-hidden">Cargando...</span>
+    <div class="container-fluid">
+        <!-- ========================================
+                        HEADER DE LOGS DE SEGURIDAD
+                        ======================================== -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card bg-gradient-primary text-white">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <h4 class="card-title text-white mb-1">
+                                    <i class="fas fa-file-alt me-2"></i>
+                                    Logs de Seguridad
+                                </h4>
+                                <p class="card-text text-white-50 mb-0">
+                                    Gestión y análisis completo de logs del sistema de monitoreo de seguridad
+                                </p>
+                            </div>
+                            <div class="col-auto">
+                                <div class="d-flex align-items-center">
+                                    <span class="badge bg-light text-dark me-2">REGISTRANDO</span>
+                                    <div class="spinner-border spinner-border-sm text-white" role="status">
+                                        <span class="visually-hidden">Cargando...</span>
+                                    </div>
+                                    <button class="btn btn-outline-light btn-sm ms-3" onclick="debugLogs()">
+                                        <i class="fas fa-bug me-1"></i>
+                                        Debug
+                                    </button>
+                                    <button class="btn btn-outline-light btn-sm ms-2" onclick="testFilter('security')">
+                                        <i class="fas fa-shield-alt me-1"></i>
+                                        Test Security
+                                    </button>
+                                    <button class="btn btn-outline-light btn-sm ms-2" onclick="testFilter('firewall')">
+                                        <i class="fas fa-fire me-1"></i>
+                                        Test Firewall
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -99,212 +112,216 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- ========================================
-                                                                                                                                        FILTROS DE LOGS
-                                                                                                                                        ======================================== -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card shadow">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">
-                        <i class="fas fa-filter me-2"></i>
-                        Filtros de Búsqueda
-                    </h6>
-                </div>
-                <div class="card-body">
-                    <form id="logFilterForm" class="row g-3">
-                        <div class="col-md-2">
-                            <label for="log-level" class="form-label">Nivel de Log</label>
-                            <select class="form-select" id="log-level">
-                                <option value="all" selected>Todos</option>
-                                <option value="critical">Critical</option>
-                                <option value="error">Error</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <label for="log-source" class="form-label">Fuente</label>
-                            <select class="form-select" id="log-source">
-                                <option value="all" selected>Todas</option>
-                                <option value="security">Security</option>
-                                <option value="firewall">Firewall</option>
-                                <option value="ids">IDS</option>
-                                <option value="monitoring">Monitoring</option>
-                                <option value="database">Database</option>
-                                <option value="network">Network</option>
-                                <option value="backup">Backup</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <label for="log-date" class="form-label">Fecha</label>
-                            <input type="date" class="form-control" id="log-date">
-                        </div>
-                        <div class="col-md-2">
-                            <label for="log-time-start" class="form-label">Hora Inicio</label>
-                            <input type="time" class="form-control" id="log-time-start">
-                        </div>
-                        <div class="col-md-2">
-                            <label for="log-time-end" class="form-label">Hora Fin</label>
-                            <input type="time" class="form-control" id="log-time-end">
-                        </div>
-                        <div class="col-md-2 d-flex align-items-end">
-                            <button type="submit" class="btn btn-primary w-100">
-                                <i class="fas fa-search me-2"></i>
-                                Filtrar
-                            </button>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="log-search" class="form-label">Búsqueda de Texto</label>
-                            <input type="text" class="form-control" id="log-search" placeholder="Buscar en logs...">
-                        </div>
-                        <div class="col-md-4">
-                            <label for="log-ip" class="form-label">IP Específica</label>
-                            <input type="text" class="form-control" id="log-ip" placeholder="192.168.1.1">
-                        </div>
-                        <div class="col-md-4 d-flex align-items-end">
-                            <button type="button" class="btn btn-outline-secondary w-100" onclick="clearFilters()">
-                                <i class="fas fa-times me-2"></i>
-                                Limpiar Filtros
-                            </button>
-                        </div>
-                    </form>
+        <!-- ========================================
+                        FILTROS DE LOGS
+                ======================================== -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">
+                            <i class="fas fa-filter me-2"></i>
+                            Filtros de Búsqueda
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <form id="logFilterForm" class="row g-3" method="GET" action="{{ route('security.logs') }}">
+
+                            <div class="col-md-2">
+                                <label for="log-source" class="form-label">Fuente</label>
+                                <select class="form-select" id="log-source">
+                                    <option value="all" selected>Todas</option>
+                                    <option value="laravel">Laravel</option>
+                                    <option value="security">Security</option>
+                                    <option value="firewall">Firewall</option>
+                                    <option value="ids">IDS</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="log-date" class="form-label">Fecha</label>
+                                <input type="date" class="form-control" id="log-date">
+                            </div>
+
+
+                            <div class="col-md-4">
+                                <label for="log-search" class="form-label">Búsqueda de Texto</label>
+                                <input type="text" class="form-control" id="log-search" placeholder="Buscar en logs...">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="log-ip" class="form-label">IP Específica</label>
+                                <input type="text" class="form-control" id="log-ip" placeholder="192.168.1.1">
+                            </div>
+                            <div class="col-md-4 d-flex align-items-end">
+                                <button type="button" class="btn btn-outline-secondary w-100" onclick="clearFilters()">
+                                    <i class="fas fa-times me-2"></i>
+                                    Limpiar Filtros
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- ========================================
-                                                                                                                                        VISUALIZADOR DE LOGS
-                                                                                                                                        ======================================== -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card shadow">
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">
-                        <i class="fas fa-file-alt me-2"></i>
-                        Visualizador de Logs
-                    </h6>
-                </div>
-                <div class="card-body">
-                    <div class="log-viewer" id="logViewer">
-                        <!-- Los logs se cargarán dinámicamente -->
+        <!-- ========================================
+                        VISUALIZADOR DE LOGS
+                        ======================================== -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow">
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                        <h6 class="m-0 font-weight-bold text-primary">
+                            <i class="fas fa-file-alt me-2"></i>
+                            Visualizador de Logs
+                        </h6>
+                        <button class="btn btn-success btn-sm" onclick="downloadLogs()">
+                            <i class="fas fa-download me-1"></i>
+                            Descargar Logs
+                        </button>
                     </div>
-
-                    <!-- Paginación -->
-                    <div class="d-flex justify-content-between align-items-center mt-3">
-                        <div class="text-muted">
-                            Mostrando <span id="logs-showing-start">0</span> a <span id="logs-showing-end">0</span> de
-                            <span id="logs-showing-total">0</span> logs
+                    <div class="card-body">
+                        <!-- Información de filtros aplicados -->
+                        <div id="appliedFiltersInfo" class="mb-3" style="display: none;">
+                            <div class="alert alert-info">
+                                <i class="fas fa-filter me-2"></i>
+                                <strong>Filtros aplicados:</strong>
+                                <span id="filtersList"></span>
+                            </div>
                         </div>
-                        <nav aria-label="Navegación de logs">
-                            <ul class="pagination mb-0" id="logs-pagination">
-                                <!-- Paginación se generará dinámicamente -->
-                            </ul>
-                        </nav>
+
+                        <div class="log-viewer" id="logViewer">
+                            <!-- Los logs se cargarán dinámicamente -->
+                        </div>
+
+                        <!-- Paginación -->
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <div class="text-muted">
+                                Mostrando <span id="logs-showing-start">0</span> a <span id="logs-showing-end">0</span> de
+                                <span id="logs-showing-total">0</span> logs
+                            </div>
+                            <nav aria-label="Navegación de logs">
+                                <ul class="pagination mb-0" id="logs-pagination">
+                                    <!-- Paginación se generará dinámicamente -->
+                                </ul>
+                            </nav>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 @stop
 
 @section('js')
-<script>
-    let currentLogs = [];
-    let filteredLogs = [];
-    let currentLogPage = 1;
-    let logsPerPage = 25;
-    let totalLogs = 0;
+    <script>
+        let currentLogs = [];
+        let filteredLogs = [];
+        let currentLogPage = 1;
+        let logsPerPage = 25;
+        let totalLogs = 0;
 
-    // Datos reales enviados desde el controlador
-    const serverLogs = @json($logs ?? []);
-    const serverPagination = @json($pagination ?? []);
-    
-    // DEBUG TEMPORAL - ELIMINAR DESPUÉS
-    console.log('Logs recibidos del servidor:', {
-        logs: serverLogs,
-        pagination: serverPagination,
-        logsCount: serverLogs ? serverLogs.length : 0,
-        sampleLog: serverLogs && serverLogs.length > 0 ? serverLogs[0] : null
-    });
+        // Datos reales enviados desde el controlador
+        @if (isset($logs) && is_array($logs) && !is_null($logs))
+            const serverLogs = @json($logs);
+        @else
+            const serverLogs = [];
+        @endif
 
-    document.addEventListener('DOMContentLoaded', function() {
-        loadLogs();
-        setupEventListeners();
-    });
+        @if (isset($pagination) && is_array($pagination) && !is_null($pagination))
+            const serverPagination = @json($pagination);
+        @else
+            const serverPagination = {};
+        @endif
 
-    function setupEventListeners() {
-        document.getElementById('logFilterForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            filterLogs();
+        // DEBUG: Mostrar datos recibidos del servidor
+        console.log('=== DEBUG DE DATOS DEL SERVIDOR ===');
+        console.log('serverLogs:', serverLogs);
+        console.log('serverLogs type:', typeof serverLogs);
+        console.log('serverLogs isArray:', Array.isArray(serverLogs));
+        console.log('serverPagination:', serverPagination);
+        console.log('serverPagination type:', typeof serverPagination);
+        console.log('===================================');
+
+        // Datos del servidor cargados
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadLogs();
+            setupEventListeners();
         });
 
-        // Filtros en tiempo real
-        document.getElementById('log-search').addEventListener('input', filterLogs);
-        document.getElementById('log-level').addEventListener('change', filterLogs);
-        document.getElementById('log-source').addEventListener('change', filterLogs);
-    }
-
-    function loadLogs() {
-        console.log('loadLogs() ejecutándose...');
-        console.log('serverLogs:', serverLogs);
-        console.log('serverPagination:', serverPagination);
-        
-        showLoadingState();
-
-        // Usar los datos reales del servidor
-        if (serverLogs && serverLogs.length > 0) {
-            console.log('Usando logs del servidor:', serverLogs.length);
-            currentLogs = serverLogs;
-            filteredLogs = [...currentLogs];
-            totalLogs = serverPagination.total || currentLogs.length;
-            console.log('Logs cargados:', currentLogs.length);
-        } else {
-            console.log('No hay logs del servidor, usando array vacío');
-            // Si no hay datos del servidor, mostrar mensaje
-            currentLogs = [];
-            filteredLogs = [];
-            totalLogs = 0;
+        function setupEventListeners() {
+            // Filtrado automático en tiempo real para búsqueda de texto
+            document.getElementById('log-search').addEventListener('input', function() {
+                currentLogPage = 1;
+                filterLogs();
+            });
+            
+            // Filtrado automático para IP
+            document.getElementById('log-ip').addEventListener('input', function() {
+                currentLogPage = 1;
+                filterLogs();
+            });
+            
+            // Filtrado automático para fecha
+            document.getElementById('log-date').addEventListener('change', function() {
+                currentLogPage = 1;
+                filterLogs();
+            });
+            
+            // Filtrado automático para fuente
+            document.getElementById('log-source').addEventListener('change', function() {
+                currentLogPage = 1;
+                filterLogs();
+            });
         }
 
-        console.log('Llamando a displayLogs(1)...');
-        displayLogs(1);
-    }
+        function loadLogs() {
+            showLoadingState();
+
+            // Verificar que serverLogs sea un array válido y no esté vacío
+            if (serverLogs && Array.isArray(serverLogs) && serverLogs.length > 0) {
+                currentLogs = serverLogs;
+                filteredLogs = [...currentLogs];
+                totalLogs = serverPagination && serverPagination.total ? serverPagination.total : currentLogs.length;
+                console.log('✅ Logs cargados correctamente:', currentLogs.length);
+            } else {
+                console.warn('⚠️ serverLogs no es válido o está vacío:', serverLogs);
+                currentLogs = [];
+                filteredLogs = [];
+                totalLogs = 0;
+            }
+
+            displayLogs(1);
+            updateAppliedFiltersInfo();
+        }
 
 
 
         function displayLogs(page = 1) {
-            console.log('displayLogs() ejecutándose con página:', page);
-            console.log('filteredLogs:', filteredLogs);
-            console.log('filteredLogs.length:', filteredLogs.length);
-            
             const viewer = document.getElementById('logViewer');
             if (!viewer) {
-                console.error('Elemento logViewer no encontrado');
+                console.error('❌ Elemento logViewer no encontrado');
                 return;
             }
-            
-            console.log('Elemento logViewer encontrado, limpiando contenido...');
+
             viewer.innerHTML = '';
 
-            if (filteredLogs.length === 0) {
-                console.log('No hay logs filtrados, mostrando mensaje de no datos');
+            // Verificar si hay logs para mostrar
+            if (!filteredLogs || filteredLogs.length === 0) {
                 viewer.innerHTML = `
                     <div class="text-center py-4">
                         <i class="fas fa-info-circle fa-2x text-gray-400"></i>
-                        <p class="mt-2 text-gray-500">No se encontraron logs con los filtros aplicados</p>
+                        <p class="mt-2 text-gray-500">No se encontraron logs para mostrar</p>
+                        <small class="text-muted">Verifica que el controlador esté enviando datos correctamente</small>
                     </div>
                 `;
                 updateLogsPagination();
                 return;
             }
 
-            console.log('Mostrando logs filtrados...');
             // Mostrar todos los logs filtrados
             filteredLogs.forEach((log, index) => {
-                console.log(`Creando entrada para log ${index}:`, log);
                 const logEntry = createLogEntry(log);
                 viewer.appendChild(logEntry);
             });
@@ -312,23 +329,21 @@
             // Actualizar paginación
             currentLogPage = page;
             totalLogs = filteredLogs.length;
-            console.log('Llamando a updateLogsPagination()...');
             updateLogsPagination();
-            console.log('Llamando a updateLogsShowingInfo()...');
             updateLogsShowingInfo();
+
+            // Mostrar filtros aplicados
+            updateAppliedFiltersInfo();
         }
 
         function createLogEntry(log) {
             const entry = document.createElement('div');
-            entry.className = `log-entry ${log.level}`;
+            entry.className = `log-entry`;
 
             const timestamp = log.timestamp || formatTimestamp(new Date());
-            const levelClass = `log-level ${log.level}`;
-            const levelText = (log.level || 'info').toUpperCase();
 
             entry.innerHTML = `
                 <span class="log-timestamp">[${timestamp}]</span>
-                <span class="${levelClass}">[${levelText}]</span>
                 <span class="log-source">[${log.source || 'system'}]</span>
                 <span class="log-message">${log.message || 'Sin mensaje'}</span>
                 ${log.ip ? `<small class="text-muted ms-2">IP: ${log.ip}</small>` : ''}
@@ -339,39 +354,31 @@
         }
 
         function formatTimestamp(date) {
-            return new Intl.DateTimeFormat('es-ES', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            }).format(date);
+            return date.toLocaleString('es-ES');
         }
 
         function filterLogs() {
-            const level = document.getElementById('log-level').value;
+            const search = document.getElementById('log-search').value.trim().toLowerCase();
+            const ip = document.getElementById('log-ip').value.trim().toLowerCase();
+            const date = document.getElementById('log-date').value;
             const source = document.getElementById('log-source').value;
-            const search = document.getElementById('log-search').value.toLowerCase();
-            const ip = document.getElementById('log-ip').value.toLowerCase();
 
             filteredLogs = currentLogs.filter(log => {
-                // Filtro por nivel
-                if (level !== 'all' && log.level !== level) return false;
-
-                // Filtro por fuente
-                if (source !== 'all' && log.source !== source) return false;
-
                 // Filtro por búsqueda de texto
                 if (search && !log.message.toLowerCase().includes(search)) return false;
-
+                
                 // Filtro por IP
-                if (ip && !log.ip.toLowerCase().includes(ip)) return false;
-
+                if (ip && log.ip && !log.ip.toLowerCase().includes(ip)) return false;
+                
+                // Filtro por fecha
+                if (date && log.timestamp && !log.timestamp.startsWith(date)) return false;
+                
+                // Filtro por fuente
+                if (source && source !== 'all' && log.source !== source) return false;
+                
                 return true;
             });
 
-            // Resetear a la primera página al filtrar
             currentLogPage = 1;
             displayLogs(1);
         }
@@ -380,10 +387,9 @@
             document.getElementById('logFilterForm').reset();
             document.getElementById('log-search').value = '';
             document.getElementById('log-ip').value = '';
-
-            filteredLogs = [...currentLogs];
-            // Resetear a la primera página al limpiar filtros
             currentLogPage = 1;
+            // Restaurar datos originales sin filtros
+            filteredLogs = [...currentLogs];
             displayLogs(1);
         }
 
@@ -392,35 +398,7 @@
         }
 
         function downloadLogs() {
-            if (filteredLogs.length === 0) {
-                alert('No hay logs para descargar');
-                return;
-            }
-
-            // Crear contenido del archivo
-            let content = 'Logs de Seguridad\n';
-            content += '==================\n\n';
-
-            filteredLogs.forEach(log => {
-                const timestamp = formatTimestamp(log.timestamp);
-                content += `[${timestamp}] [${log.level.toUpperCase()}] [${log.source}] ${log.message}`;
-                if (log.ip) content += ` IP: ${log.ip}`;
-                if (log.user_id) content += ` User: ${log.user_id}`;
-                content += '\n';
-            });
-
-            // Crear y descargar archivo
-            const blob = new Blob([content], {
-                type: 'text/plain'
-            });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `security_logs_${new Date().toISOString().split('T')[0]}.txt`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
+            alert('Función de descarga temporalmente deshabilitada');
         }
 
 
@@ -482,9 +460,54 @@
                 </div>
             `;
         }
-</script>
 
-<!-- BEGIN: Application JavaScript -->
-<script src="{{ asset('app-assets/js/security-dashboard.js') }}"></script>
-<!-- END: Application JavaScript -->
+        function debugLogs() {
+            console.log('=== DEBUG DE LOGS ===');
+            console.log('serverLogs:', serverLogs);
+            console.log('serverPagination:', serverPagination);
+            console.log('currentLogs:', currentLogs);
+            console.log('filteredLogs:', filteredLogs);
+            console.log('totalLogs:', totalLogs);
+
+            if (currentLogs.length > 0) {
+                console.log('Fuentes disponibles:', [...new Set(currentLogs.map(log => log.source))]);
+                console.log('Muestra de logs:', currentLogs.slice(0, 5));
+            }
+        }
+
+
+
+        function getAppliedFilters() {
+            const filters = [];
+            const source = document.getElementById('log-source').value;
+            const search = document.getElementById('log-search').value.trim();
+            const ip = document.getElementById('log-ip').value.trim();
+            const date = document.getElementById('log-date').value;
+
+            if (source && source !== 'all') filters.push(`Fuente: ${source}`);
+            if (search) filters.push(`Búsqueda: "${search}"`);
+            if (ip) filters.push(`IP: ${ip}`);
+            if (date) filters.push(`Fecha: ${date}`);
+
+            return filters;
+        }
+
+        function updateAppliedFiltersInfo() {
+            const appliedFilters = getAppliedFilters();
+            const filtersInfo = document.getElementById('appliedFiltersInfo');
+            const filtersList = document.getElementById('filtersList');
+
+            if (appliedFilters.length > 0) {
+                filtersList.innerHTML = appliedFilters.join(' | ');
+                filtersInfo.style.display = 'block';
+            } else {
+                filtersInfo.style.display = 'none';
+            }
+        }
+    </script>
+
+    <!-- BEGIN: Application JavaScript -->
+    <!-- Archivo JavaScript externo comentado temporalmente para evitar conflictos -->
+    <!-- <script src="{{ asset('app-assets/js/security-dashboard.js') }}"></script> -->
+    <!-- END: Application JavaScript -->
 @stop

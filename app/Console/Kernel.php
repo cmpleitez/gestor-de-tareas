@@ -16,24 +16,24 @@ class Kernel extends ConsoleKernel
         // TAREAS DE LIMPIEZA AUTOMÁTICA DE SEGURIDAD
         // ========================================
 
-        // Limpieza diaria de eventos antiguos (reduce almacenamiento)
-        $schedule->command('security:cleanup --days=30 --force')
-            ->daily()
-            ->at('02:00')
-            ->withoutOverlapping()
-            ->runInBackground();
+        // LIMPIEZA TEMPORALMENTE DESHABILITADA PARA EVITAR CORRUPCIÓN DE LOGS
+        // $schedule->command('security:cleanup --days=30 --force')
+        //     ->daily()
+        //     ->at('02:00')
+        //     ->withoutOverlapping()
+        //     ->runInBackground();
 
-        // Limpieza de cache cada 6 horas (optimiza memoria)
-        $schedule->command('security:cleanup --days=1 --force')
-            ->everyFourHours()
-            ->withoutOverlapping()
-            ->runInBackground();
+        // LIMPIEZA TEMPORALMENTE DESHABILITADA PARA EVITAR CORRUPCIÓN DE LOGS
+        // $schedule->command('security:cleanup --days=1 --force')
+        //     ->everyFourHours()
+        //     ->withoutOverlapping()
+        //     ->runInBackground();
 
-        // Monitoreo de uso de recursos (sin consultas costosas)
-        $schedule->command('security:monitor stats')
-            ->hourly()
-            ->withoutOverlapping()
-            ->runInBackground();
+        // MONITOREO TEMPORALMENTE DESHABILITADO PARA EVITAR CORRUPCIÓN DE LOGS
+        // $schedule->command('security:monitor stats')
+        //     ->hourly()
+        //     ->withoutOverlapping()
+        //     ->runInBackground();
 
         // $schedule->command('inspire')->hourly();
     }

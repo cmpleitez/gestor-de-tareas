@@ -7,29 +7,29 @@ alwaysApply: true
     3°. o4-mini
     4°. Claude Opus
 ✅ Cuando diga "nivel 2", debes elegir en orden de prioridad uno de los siguientes modelos IA
-    1°. Gemini 2.5 pro max
-    2°. Claude sonnet 4
-    3°. Gpt-5
-    4°. Grok 4
+    1°. Gpt-5
+    2°. Grok 4
+    3°. Gemini 2.5 pro max
+    4°. Claude sonnet 4
 ✅ Cuando diga "nivel 3", debes elegir en orden de prioridad uno de los siguientes modelos IA
     1º. Gpt-5-fast
     2º. Otros modelos IA rápidos
-✅ Cuando diga "elevar modelo" dependiendo en que nivel te encuentres debes cambiar al proximo modelo segun correlativo
-✅ Cuando diga "bajar modelo" dependiendo en que nivel te encuentres debes cambiar al anterior modelo segun correlativo
+✅ Cuando diga "bajar modelo" dependiendo en que nivel te encuentres debes cambiar al proximo modelo segun correlativo
+✅ Cuando diga "elevar modelo" dependiendo en que nivel te encuentres debes cambiar al anterior modelo segun correlativo
 ✅ Debes mencionar al principio y al final de cada respuesta tuya el modelo que estas usando para la misma.
 ✅ Cuando diga: esta línea o lineas me refiero a que ya hice referencia dichas líneas con CTRL+L o he hecho referencia a un archivo en especifico
-✅ Busca primero en la pestaña activa y luego en las demás. 
+✅ Ante cualquier peticion de mi parte: busca primero en la pestaña activa y luego en las demás. 
 ✅ Cuando el modelo IA que se está consultando agregue a cola la pregunta porque esta saturado, cambiar al siguiente modelo según el orden que he dado anteriormente en esta regla
 ✅ Cuando comentes una línea o una serie de líneas hazlo a la derecha de la línea o de la primera línea de bloque, el bloque comienza con un titulo y finaliza una linea antes de comenzar el siguiente titulo, pues los únicos comentarios que van arriba son titulos generales de bloques de lineas y de esos me encargo yo.
 ✅ código limpio y estándar
 ✅ No uso de artificios
 ✅ Compactar servicios y reutilizar estilos existentes
 ✅ Respondeme con las 2 mejores opciones, es muy cansado estar leyendo tantas opciones para resolver cualquier pregunta de mi parte
-✅ Trabajemos paso a paso: no me des todo el procedimiento, sino solo el primer y segundo paso, luego los trabajamos correlativa y detalladamente hasta terminarlo, no avances de paso hasta que terminemos, dime los nombres completos y exactos de las opciones, su consecutividad y su ubicacion en pantalla.
+✅ Trabajemos paso a paso: no me des todo el procedimiento, sino únicamente tres pasos a la vez para no perder el hilo, luego los trabajamos correlativa y detalladamente hasta resolverlos, no avances de paso hasta que terminemos, dime los nombres completos y exactos de las opciones, su consecutividad y su ubicacion en pantalla o el el sofware respectivo.
 ✅ Cuando yo te diga la frase clave "Iniciemos una configuración", preguntame en que idioma necesito los nombres de las opciones, las distintas herramientas que se configuran a veces están en español y la mayoria de veces en inglés.
 ✅ nunca agregues datos hardcoreados en el frontend, los datos de pueba tendrán origen en los seeders, lo cual indica que los datos se leerán siempre de las tablas de la base de datos.
 ✅ cuando vayas a crear un archivo, metodo, funcion o similar nuevo(a) o eliminar uno existente debes pedirme confirmación
-✅ Cuando te diga "Prueba basica", lo que tu debes hacer es pedirme que vacie el log de laravel y que corra la pagina, luego trabaja tu: verifica que la ruta existe y funciona, verifica que el controlador este enviando los datos, verifica que la vista esta recibiendo los datos, verifica que se esten dibujando bien los datos, verifica el laravel.log para ver los errores que tenemos
+✅ Cuando te diga "Has una Prueba basica", lo que tu debes hacer es pedirme que vacie el log de laravel y que corra la pagina, luego trabaja tu: verifica que la ruta existe y funciona, verifica que el controlador este enviando los datos, verifica que la vista esta recibiendo los datos, verifica que se esten dibujando bien los datos, verifica el laravel.log para ver los errores que tenemos
 
 ✅Los modelos IA han tenido exito usando estas herramientas para aplicar los cambios cuando tengas problemas para aplicar los cambios lee esta regla, claro que puedes usar otras pero si no te funcionan aqui tienes las que si funcionan:
     1. list_dir - Para explorar la estructura
@@ -47,10 +47,12 @@ alwaysApply: true
     5. search_replace - Para eliminar del dashboard principal
     Propósito: Remover el script del dashboard principal
     Resultado: Eliminé las líneas exactas sin afectar el resto del código
-✅ Consejo para Otros Modelos:
-    Si quieres que otros modelos IA apliquen cambios correctamente, deben:
-    Leer el archivo completo o al menos el contexto relevante
-    Entender la estructura del framework (Blade en este caso)
-    Verificar el estado actual antes de hacer cambios
-    Aplicar cambios uno por uno con confirmación
-    Verificar que cada cambio se aplicó correctamente    
+    Consejo para Otros Modelos:
+        Si quieres que otros modelos IA apliquen cambios correctamente, deben:
+        Leer el archivo completo o al menos el contexto relevante
+        Entender la estructura del framework (Blade en este caso)
+        Verificar el estado actual antes de hacer cambios
+        Aplicar cambios uno por uno con confirmación
+        Verificar que cada cambio se aplicó correctamente   
+ 
+ ✅ Ejecuto dos tipos de seeders el seeder de usuarios y el seeder de seguridad, este último no se incluye en el DatabaseSeeder, porque se ejecuta aparte de forma independiente, porque los modelos has estado hardcoreando datos y esta es la manera de depurar ese tipo de conducta que poseen los modelos IA

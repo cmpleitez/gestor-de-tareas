@@ -109,4 +109,111 @@ class SimpleSecurityService
         
         Cache::put('expired_keys', [], now()->addHour());
     }
+
+    /**
+     * Obtener reputaciones de IPs desde eventos de seguridad (últimos 3 días)
+     */
+    public function getIPReputations()
+    {
+        return SecurityEvent::select('ip_address as ip', 'threat_score as score', 'created_at as lastUpdated', 'geolocation')
+            ->whereNotNull('ip_address')
+            ->where('ip_address', '!=', '')
+            ->where('created_at', '>=', now()->subDays(3)) // ← Filtrar últimos 3 días
+            ->orderBy('created_at', 'desc')
+            ->limit(50)
+            ->get()
+            ->map(function ($event) {
+                $geolocation = $event->geolocation ?? [];
+                
+                return [
+                    'ip' => $event->ip,
+                    'score' => $event->score,
+                    'risk_level' => $this->categorizeRisk($event->score),
+                    'country' => $geolocation['country'] ?? 
+                                $geolocation['country_name'] ?? 
+                                $geolocation['countryCode'] ?? 
+                                'Desconocido',
+                    'isp' => $geolocation['isp'] ?? 
+                            $geolocation['organization'] ?? 
+                            'Desconocido',
+                    'lastUpdated' => $event->lastUpdated,
+                    'status' => $event->score >= 80 ? 'Bloqueada' : 'Monitoreando'
+                ];
+            });
+    }
+
+    /**
+     * Obtener distribución de riesgo
+     */
+    public function getRiskDistribution(): array
+    {
+        $events = SecurityEvent::whereNotNull('ip_address')
+            ->where('ip_address', '!=', '')
+            ->get();
+
+        $distribution = [
+            'critical' => 0,
+            'high' => 0,
+            'medium' => 0,
+            'low' => 0,
+            'minimal' => 0
+        ];
+
+        foreach ($events as $event) {
+            $riskLevel = $this->categorizeRisk($event->threat_score);
+            $distribution[$riskLevel]++;
+        }
+
+        return $distribution;
+    }
+
+    /**
+     * Obtener distribución por país usando datos de geolocalización (últimos 3 días)
+     */
+    public function getCountryDistribution(): array
+    {
+        $events = SecurityEvent::whereNotNull('ip_address')
+            ->where('ip_address', '!=', '')
+            ->whereNotNull('geolocation')
+            ->where('geolocation', '!=', '[]')
+            ->where('created_at', '>=', now()->subDays(3)) // ← Filtrar últimos 3 días
+            ->get();
+
+        $countryCounts = [];
+        
+        foreach ($events as $event) {
+            $geolocation = $event->geolocation;
+            
+            // Extraer país del array de geolocalización
+            $country = $geolocation['country'] ?? 
+                      $geolocation['country_name'] ?? 
+                      $geolocation['countryCode'] ?? 
+                      'Desconocido';
+            
+            if (!isset($countryCounts[$country])) {
+                $countryCounts[$country] = 0;
+            }
+            $countryCounts[$country]++;
+        }
+
+        // Si no hay datos de geolocalización, usar IPs únicas
+        if (empty($countryCounts)) {
+            $uniqueIPs = SecurityEvent::whereNotNull('ip_address')
+                ->where('ip_address', '!=', '')
+                ->distinct('ip_address')
+                ->count();
+            
+            return [
+                'Sin datos de ubicación' => ['count' => $uniqueIPs]
+            ];
+        }
+
+        // Convertir a formato esperado por la vista
+        $result = [];
+        foreach ($countryCounts as $country => $count) {
+            $result[$country] = ['count' => $count];
+        }
+
+        return $result;
+    }
 }

@@ -8,15 +8,10 @@ let countryChart = null;
 
 // Función principal de inicialización
 document.addEventListener('DOMContentLoaded', function () {
-    console.log('🚀 Dashboard de seguridad iniciando...');
-
     // Verificar que Chart.js esté disponible
     if (typeof Chart === 'undefined') {
-        console.error('❌ Chart.js no está disponible');
         return;
     }
-
-    console.log('✅ Chart.js disponible');
 
     // Limpiar cualquier gráfico existente
     cleanupExistingCharts();
@@ -26,11 +21,8 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function cleanupExistingCharts() {
-    console.log('🧹 LIMPIEZA ULTRA-AGRESIVA de gráficos...');
-
     // Verificar que Chart.js esté disponible
     if (typeof Chart === 'undefined') {
-        console.log('ℹ️ Chart.js no está disponible, saltando limpieza de gráficos');
         return;
     }
 
@@ -38,9 +30,8 @@ function cleanupExistingCharts() {
     if (riskChart && typeof riskChart.destroy === 'function') {
         try {
             riskChart.destroy();
-            console.log('✅ Gráfico de riesgo destruido');
         } catch (error) {
-            console.warn('⚠️ Error destruyendo gráfico de riesgo:', error);
+            // Error silencioso
         }
         riskChart = null;
     }
@@ -48,9 +39,8 @@ function cleanupExistingCharts() {
     if (countryChart && typeof countryChart.destroy === 'function') {
         try {
             countryChart.destroy();
-            console.log('✅ Gráfico de países destruido');
         } catch (error) {
-            console.warn('⚠️ Error destruyendo gráfico de países:', error);
+            // Error silencioso
         }
         countryChart = null;
     }
@@ -59,45 +49,39 @@ function cleanupExistingCharts() {
     try {
         // Método 1: Chart.instances
         if (Chart.instances && Array.isArray(Chart.instances) && Chart.instances.length > 0) {
-            console.log('🗑️ Destruyendo', Chart.instances.length, 'instancias de Chart.js');
             Chart.instances.forEach((chart, index) => {
                 try {
                     if (chart && typeof chart.destroy === 'function') {
                         chart.destroy();
-                        console.log(`✅ Instancia ${index} destruida`);
                     }
                 } catch (error) {
-                    console.warn(`⚠️ Error destruyendo instancia ${index}:`, error);
+                    // Error silencioso
                 }
             });
         }
 
         // Método 2: Chart.Chart.instances (versiones más nuevas)
         if (Chart.Chart && Chart.Chart.instances && Array.isArray(Chart.Chart.instances) && Chart.Chart.instances.length > 0) {
-            console.log('🗑️ Destruyendo', Chart.Chart.instances.length, 'instancias de Chart.Chart');
             Chart.Chart.instances.forEach((chart, index) => {
                 try {
                     if (chart && typeof chart.destroy === 'function') {
                         chart.destroy();
-                        console.log(`✅ Chart.Chart instancia ${index} destruida`);
                     }
                 } catch (error) {
-                    console.warn(`⚠️ Error destruyendo Chart.Chart instancia ${index}:`, error);
+                    // Error silencioso
                 }
             });
         }
 
         // Método 3: Chart.registry.controllers (versiones más nuevas)
         if (Chart.registry && Chart.registry.controllers && typeof Chart.registry.controllers.forEach === 'function' && Chart.registry.controllers.size > 0) {
-            console.log('🗑️ Destruyendo', Chart.registry.controllers.size, 'controladores del registro');
             Chart.registry.controllers.forEach((controller, id) => {
                 try {
                     if (controller && typeof controller.destroy === 'function') {
                         controller.destroy();
-                        console.log(`✅ Controlador ${id} destruido`);
                     }
                 } catch (error) {
-                    console.warn(`⚠️ Error destruyendo controlador ${id}:`, error);
+                    // Error silencioso
                 }
             });
         }
@@ -106,15 +90,13 @@ function cleanupExistingCharts() {
         if (Chart.registry && typeof Chart.registry.clear === 'function') {
             try {
                 Chart.registry.clear();
-                console.log('✅ Registro de Chart.js limpiado');
             } catch (error) {
-                console.warn('⚠️ Error limpiando registro:', error);
+                // Error silencioso
             }
         }
 
         // Método 5: Buscar y destruir TODOS los canvas del DOM
         const allCanvases = document.querySelectorAll('canvas');
-        console.log('🔍 Encontrados', allCanvases.length, 'canvas en el DOM');
 
         allCanvases.forEach((canvas, index) => {
             try {
@@ -122,10 +104,9 @@ function cleanupExistingCharts() {
                 const ctx = canvas.getContext('2d');
                 if (ctx) {
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    console.log(`✅ Canvas ${index} limpiado`);
                 }
             } catch (error) {
-                console.warn(`⚠️ Error limpiando canvas ${index}:`, error);
+                // Error silencioso
             }
         });
 
@@ -133,30 +114,20 @@ function cleanupExistingCharts() {
         if (window.gc) {
             try {
                 window.gc();
-                console.log('✅ Garbage collector forzado');
             } catch (error) {
-                console.log('ℹ️ Garbage collector no disponible');
+                // Garbage collector no disponible
             }
         }
 
     } catch (error) {
-        console.error('❌ Error en limpieza ultra-agresiva:', error);
+        // Error silencioso en limpieza
     }
-
-    console.log('✅ LIMPIEZA ULTRA-AGRESIVA completada');
 }
 
 function initializeDashboard() {
-    console.log('🔧 Inicializando dashboard...');
-
     // Buscar los canvas
     const riskCanvas = document.getElementById('riskDistributionChart');
     const countryCanvas = document.getElementById('threatsByCountryChart');
-
-    console.log('🔍 Canvas encontrados:', {
-        risk: riskCanvas,
-        country: countryCanvas
-    });
 
     // Crear gráficos solo si los canvas existen
     if (riskCanvas) {
@@ -164,8 +135,6 @@ function initializeDashboard() {
         setTimeout(() => {
             createRiskChart(riskCanvas);
         }, 100);
-    } else {
-        console.warn('⚠️ Canvas de riesgo no encontrado');
     }
 
     if (countryCanvas) {
@@ -173,8 +142,6 @@ function initializeDashboard() {
         setTimeout(() => {
             createCountryChart(countryCanvas);
         }, 200);
-    } else {
-        console.warn('⚠️ Canvas de países no encontrado');
     }
 
     // Cargar datos del servidor después de crear los gráficos
@@ -184,8 +151,6 @@ function initializeDashboard() {
 }
 
 function createRiskChart(canvas) {
-    console.log('🎨 Creando gráfico de riesgo...');
-
     // VERIFICACIÓN EXTRA: Asegurar que el canvas esté libre
     try {
         // Limpiar el canvas antes de crear el gráfico
@@ -194,13 +159,11 @@ function createRiskChart(canvas) {
 
         // Verificar que no haya gráficos activos en este canvas
         if (Chart.instances && Chart.instances.length > 0) {
-            console.log('⚠️ Aún hay instancias activas, forzando limpieza...');
             cleanupExistingCharts();
         }
 
         // Crear el gráfico con ID único
         const chartId = 'riskChart_' + Date.now();
-        console.log('🆔 Creando gráfico con ID:', chartId);
 
         riskChart = new Chart(ctx, {
             type: 'doughnut',
@@ -246,15 +209,9 @@ function createRiskChart(canvas) {
             }
         });
 
-        console.log('✅ Gráfico de riesgo creado exitosamente');
-
     } catch (error) {
-        console.error('❌ Error creando gráfico de riesgo:', error);
-        console.error('❌ Stack trace:', error.stack);
-
         // Si falla, intentar limpiar y recrear
         try {
-            console.log('🔄 Reintentando creación del gráfico...');
             cleanupExistingCharts();
 
             const ctx = canvas.getContext('2d');
@@ -278,16 +235,13 @@ function createRiskChart(canvas) {
                 }
             });
 
-            console.log('✅ Gráfico de error creado como fallback');
         } catch (retryError) {
-            console.error('❌ Error en reintento:', retryError);
+            // Error en reintento
         }
     }
 }
 
 function createCountryChart(canvas) {
-    console.log('🎨 Creando gráfico de países...');
-
     // VERIFICACIÓN EXTRA: Asegurar que el canvas esté libre
     try {
         // Limpiar el canvas antes de crear el gráfico
@@ -296,13 +250,11 @@ function createCountryChart(canvas) {
 
         // Verificar que no haya gráficos activos en este canvas
         if (Chart.instances && Chart.instances.length > 0) {
-            console.log('⚠️ Aún hay instancias activas, forzando limpieza...');
             cleanupExistingCharts();
         }
 
         // Crear el gráfico con ID único
         const chartId = 'countryChart_' + Date.now();
-        console.log('🆔 Creando gráfico con ID:', chartId);
 
         countryChart = new Chart(ctx, {
             type: 'doughnut',
@@ -344,15 +296,9 @@ function createCountryChart(canvas) {
             }
         });
 
-        console.log('✅ Gráfico de países creado exitosamente');
-
     } catch (error) {
-        console.error('❌ Error creando gráfico de países:', error);
-        console.error('❌ Stack trace:', error.stack);
-
         // Si falla, intentar limpiar y recrear
         try {
-            console.log('🔄 Reintentando creación del gráfico...');
             cleanupExistingCharts();
 
             const ctx = canvas.getContext('2d');
@@ -376,28 +322,23 @@ function createCountryChart(canvas) {
                 }
             });
 
-            console.log('✅ Gráfico de error creado como fallback');
         } catch (retryError) {
-            console.error('❌ Error en reintento:', retryError);
+            // Error en reintento
         }
     }
 }
 
 function loadServerData() {
-    console.log('📊 Cargando datos del servidor...');
-
     // Obtener datos desde los atributos data-* del HTML
     const container = document.querySelector('.container-fluid[data-risk-distribution][data-threats-by-country]');
 
     if (!container) {
-        console.warn('⚠️ Contenedor con datos no encontrado');
         return;
     }
 
     try {
         // Obtener datos de riesgo
         const riskDataAttr = container.getAttribute('data-risk-distribution');
-        console.log('🔍 Raw data-risk-distribution:', riskDataAttr);
 
         let riskData = [0, 0, 0]; // Solo 3 niveles: Crítico, Alto, Medio
         if (riskDataAttr && riskDataAttr !== 'null' && riskDataAttr !== 'undefined') {
@@ -406,55 +347,37 @@ function loadServerData() {
 
         // Obtener datos de países
         const countryDataAttr = container.getAttribute('data-threats-by-country');
-        console.log('🔍 Raw data-threats-by-country:', countryDataAttr);
 
         let countryData = {};
         if (countryDataAttr && countryDataAttr !== 'null' && countryDataAttr !== 'undefined') {
             countryData = JSON.parse(countryDataAttr);
         }
 
-        console.log('🔍 Datos parseados:', {
-            risk: riskData,
-            country: countryData
-        });
-
         // Actualizar gráficos con los datos
         updateRiskChart(riskData);
         updateCountryChart(countryData);
 
-        console.log('✅ Datos cargados y gráficos actualizados');
-
     } catch (error) {
-        console.error('❌ Error cargando datos:', error);
-        console.error('❌ Stack trace:', error.stack);
+        // Error silencioso al cargar datos
     }
 }
 
 function updateRiskChart(data) {
     if (!riskChart) {
-        console.warn('⚠️ Gráfico de riesgo no disponible');
         return;
     }
-
-    console.log('🔄 Actualizando gráfico de riesgo con datos:', data);
 
     // Verificar que los datos sean válidos
     if (Array.isArray(data) && data.length === 3) { // Solo 3 niveles: Crítico, Alto, Medio
         riskChart.data.datasets[0].data = data;
         riskChart.update();
-        console.log('✅ Gráfico de riesgo actualizado');
-    } else {
-        console.warn('⚠️ Datos de riesgo inválidos - deben ser 3 niveles:', data);
     }
 }
 
 function updateCountryChart(data) {
     if (!countryChart) {
-        console.warn('⚠️ Gráfico de países no disponible');
         return;
     }
-
-    console.log('🔄 Actualizando gráfico de países con datos:', data);
 
     // Verificar que los datos sean válidos
     if (data && typeof data === 'object' && Object.keys(data).length > 0) {
@@ -469,9 +392,7 @@ function updateCountryChart(data) {
         countryChart.data.datasets[0].backgroundColor = countries.map((_, index) => colors[index % colors.length]);
 
         countryChart.update();
-        console.log('✅ Gráfico de países actualizado');
     } else {
-        console.warn('⚠️ Datos de países inválidos o vacíos:', data);
         // Mostrar estado vacío
         countryChart.data.labels = ['Sin datos'];
         countryChart.data.datasets[0].data = [1];
@@ -487,8 +408,6 @@ window.addEventListener('beforeunload', function () {
 
 // Función de emergencia - Si todo falla, eliminar cálculos complejos
 window.emergencyMode = function () {
-    console.log('🚨 ACTIVANDO MODO DE EMERGENCIA - Eliminando cálculos complejos');
-
     try {
         // Limpiar todo
         cleanupExistingCharts();
@@ -549,25 +468,18 @@ window.emergencyMode = function () {
             });
         }
 
-        console.log('✅ Modo de emergencia activado - Gráficos simples creados');
-
     } catch (error) {
-        console.error('❌ Error en modo de emergencia:', error);
+        // Error silencioso en modo de emergencia
     }
 };
 
 // Función para debugging - mostrar estado actual
 window.debugSecurityDashboard = function () {
-    console.log('🔍 Estado del dashboard:', {
+    return {
         riskChart: riskChart,
         countryChart: countryChart,
         container: document.querySelector('.container-fluid[data-risk-distribution][data-threats-by-country]'),
         riskData: document.querySelector('.container-fluid[data-risk-distribution][data-threats-by-country]')?.getAttribute('data-risk-distribution'),
         countryData: document.querySelector('.container-fluid[data-risk-distribution][data-threats-by-country]')?.getAttribute('data-threats-by-country')
-    });
-
-    console.log('🚨 Si todo falla, usa: window.emergencyMode()');
+    };
 };
-
-console.log('✅ Script de dashboard de seguridad cargado');
-console.log('💡 Usa window.debugSecurityDashboard() para debugging');
