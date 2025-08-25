@@ -1,201 +1,191 @@
 @extends('dashboard')
 
 @section('css')
-    <x-security.security-styles />
-    <style>
-        .event-row {
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
+<style>
+    .event-row {
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
 
-        .event-row:hover {
-            background-color: #f8f9fc;
-        }
+    .event-row:hover {
+        background-color: #f8f9fc;
+    }
 
-        .event-row.critical {
-            border-left: 4px solid #e74a3b;
-        }
+    .event-row.critical {
+        border-left: 4px solid #e74a3b;
+    }
 
-        .event-row.high {
-            border-left: 4px solid #f6c23e;
-        }
+    .event-row.high {
+        border-left: 4px solid #f6c23e;
+    }
 
-        .event-row.medium {
-            border-left: 4px solid #fd7e14;
-        }
+    .event-row.medium {
+        border-left: 4px solid #fd7e14;
+    }
 
-        .event-row.low {
-            border-left: 4px solid #20c9a6;
-        }
+    /* Estilos para niveles bajos eliminados */
 
-        .event-row.minimal {
-            border-left: 4px solid #1cc88a;
-        }
+    .score-indicator {
+        width: 60px;
+        height: 8px;
+        background-color: #e3e6f0;
+        border-radius: 4px;
+        overflow: hidden;
+    }
 
-        .score-indicator {
-            width: 60px;
-            height: 8px;
-            background-color: #e3e6f0;
-            border-radius: 4px;
-            overflow: hidden;
-        }
+    .score-fill {
+        height: 100%;
+        transition: width 0.3s ease;
+    }
 
-        .score-fill {
-            height: 100%;
-            transition: width 0.3s ease;
-        }
+    .score-fill.critical {
+        background-color: #e74a3b;
+    }
 
-        .score-fill.critical {
-            background-color: #e74a3b;
-        }
+    .score-fill.high {
+        background-color: #f6c23e;
+    }
 
-        .score-fill.high {
-            background-color: #f6c23e;
-        }
+    .score-fill.medium {
+        background-color: #fd7e14;
+    }
 
-        .score-fill.medium {
-            background-color: #fd7e14;
-        }
+    /* Estilos para niveles bajos eliminados */
+</style>
 
-        .score-fill.low {
-            background-color: #20c9a6;
-        }
-
-        .score-fill.minimal {
-            background-color: #1cc88a;
-        }
-    </style>
+<!-- BEGIN: Security Dashboard CSS -->
+<link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/security-dashboard.css') }}">
+<!-- END: Security Dashboard CSS -->
 @stop
 
 @section('contenedor')
-    <div class="container-fluid">
-        <!-- ========================================
+<div class="container-fluid" data-risk-distribution="{{ trim(json_encode($risk_distribution ?? [])) }}"
+    data-threats-by-country="{{ trim(json_encode($threats_by_country ?? [])) }}">
+    <!-- ========================================
                                                                                                                 HEADER DE EVENTOS DE SEGURIDAD
                                                                                                                 ======================================== -->
-        <x-security.dashboard-header title="Eventos de Seguridad"
-            subtitle="Monitoreo y análisis detallado de eventos de seguridad en tiempo real" status="MONITORANDO"
-            status_color="info" />
+    <x-security.dashboard-header title="Eventos de Seguridad"
+        subtitle="Monitoreo y análisis detallado de eventos de seguridad en tiempo real" status="MONITORANDO"
+        status_color="info" />
 
-        <!-- ========================================
+    <!-- ========================================
                                                                                                                 FILTROS Y CONTROLES
                                                                                                                 ======================================== -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card shadow">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">
-                            <i class="fas fa-filter me-2"></i>
-                            Filtros de Búsqueda
-                        </h6>
-                    </div>
-                    <div class="card-body">
-                        <form id="filterForm" class="row g-3">
-                            <div class="col-md-3">
-                                <label for="ip_filter" class="form-label">Dirección IP</label>
-                                <input type="text" class="form-control" id="ip_filter" placeholder="192.168.1.1">
-                            </div>
-                            <div class="col-md-3">
-                                <label for="category_filter" class="form-label">Categoría</label>
-                                <select class="form-select" id="category_filter">
-                                    <option value="">Todas las categorías</option>
-                                    <option value="suspicious_activity">Actividad Sospechosa</option>
-                                    <option value="brute_force">Fuerza Bruta</option>
-                                    <option value="malware">Malware</option>
-                                    <option value="ddos">DDoS</option>
-                                    <option value="phishing">Phishing</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="risk_filter" class="form-label">Nivel de Riesgo</label>
-                                <select class="form-select" id="risk_filter">
-                                    <option value="">Todos los niveles</option>
-                                    <option value="critical">Crítico</option>
-                                    <option value="high">Alto</option>
-                                    <option value="medium">Medio</option>
-                                    <option value="low">Bajo</option>
-                                    <option value="minimal">Mínimo</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="date_filter" class="form-label">Fecha</label>
-                                <input type="date" class="form-control" id="date_filter">
-                            </div>
-                            <div class="col-12">
-                                <button type="submit" class="btn btn-primary me-2">
-                                    <i class="fas fa-search me-1"></i>Filtrar
-                                </button>
-                                <button type="button" class="btn btn-secondary" onclick="clearFilters()">
-                                    <i class="fas fa-times me-1"></i>Limpiar
-                                </button>
-                            </div>
-                        </form>
-                    </div>
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-filter me-2"></i>
+                        Filtros de Búsqueda
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form id="filterForm" class="row g-3">
+                        <div class="col-md-3">
+                            <label for="ip_filter" class="form-label">Dirección IP</label>
+                            <input type="text" class="form-control" id="ip_filter" placeholder="192.168.1.1">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="category_filter" class="form-label">Categoría</label>
+                            <select class="form-select" id="category_filter">
+                                <option value="">Todas las categorías</option>
+                                <option value="suspicious_activity">Actividad Sospechosa</option>
+                                <option value="brute_force">Fuerza Bruta</option>
+                                <option value="malware">Malware</option>
+                                <option value="ddos">DDoS</option>
+                                <option value="phishing">Phishing</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="risk_filter" class="form-label">Nivel de Riesgo</label>
+                            <select class="form-select" id="risk_filter">
+                                <option value="">Todos los niveles</option>
+                                <option value="critical">Crítico</option>
+                                <option value="high">Alto</option>
+                                <option value="medium">Medio</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="date_filter" class="form-label">Fecha</label>
+                            <input type="date" class="form-control" id="date_filter">
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary me-2">
+                                <i class="fas fa-search me-1"></i>Filtrar
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="clearFilters()">
+                                <i class="fas fa-times me-1"></i>Limpiar
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- ========================================
+    <!-- ========================================
                                                                                                                 TABLA DE EVENTOS
                                                                                                                 ======================================== -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card shadow">
-                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                        <h6 class="m-0 font-weight-bold text-primary">
-                            <i class="fas fa-list me-2"></i>
-                            Eventos de Seguridad
-                        </h6>
-                        <div class="d-flex align-items-center">
-                            <span class="badge bg-secondary me-3" id="total-events">Total: 0</span>
-                            <div class="btn-group" role="group">
-                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="refreshEvents()">
-                                    <i class="fas fa-sync-alt"></i>
-                                </button>
-                            </div>
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-list me-2"></i>
+                        Eventos de Seguridad
+                    </h6>
+                    <div class="d-flex align-items-center">
+                        <span class="badge bg-secondary me-3" id="total-events">Total: 0</span>
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-outline-primary btn-sm" onclick="refreshEvents()">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
                         </div>
                     </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover" id="eventsTable">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>IP</th>
-                                        <th>Categoría</th>
-                                        <th>Score</th>
-                                        <th>Riesgo</th>
-                                        <th>Fecha</th>
-                                        <th>País</th>
-                                        <th>Estado</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="eventsTableBody">
-                                    <!-- Los eventos se cargarán dinámicamente -->
-                                </tbody>
-                            </table>
-                        </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="eventsTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>IP</th>
+                                    <th>Categoría</th>
+                                    <th>Score</th>
+                                    <th>Riesgo</th>
+                                    <th>Fecha</th>
+                                    <th>País</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="eventsTableBody">
+                                <!-- Los eventos se cargarán dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
 
-                        <!-- Paginación -->
-                        <div class="d-flex justify-content-between align-items-center mt-3">
-                            <div class="text-muted">
-                                Mostrando <span id="showing-start">0</span> a <span id="showing-end">0</span> de <span
-                                    id="total-count">0</span> eventos
-                            </div>
-                            <nav aria-label="Navegación de eventos">
-                                <ul class="pagination pagination-sm mb-0" id="pagination">
-                                    <!-- La paginación se generará dinámicamente -->
-                                </ul>
-                            </nav>
+                    <!-- Paginación -->
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div class="text-muted">
+                            Mostrando <span id="showing-start">0</span> a <span id="showing-end">0</span> de <span
+                                id="total-count">0</span> eventos
                         </div>
+                        <nav aria-label="Navegación de eventos">
+                            <ul class="pagination pagination-sm mb-0" id="pagination">
+                                <!-- La paginación se generará dinámicamente -->
+                            </ul>
+                        </nav>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 @stop
 
 @section('js')
-    <script>
-        let currentPage = 1;
+<script>
+    let currentPage = 1;
         let eventsPerPage = 25;
         let allEvents = [];
 
@@ -253,16 +243,16 @@
             if (score >= 80) return 'critical';
             if (score >= 60) return 'high';
             if (score >= 40) return 'medium';
-            if (score >= 20) return 'low';
-            return 'minimal';
+            // Solo retornar los 3 niveles principales
+            return 'medium';
         }
 
         function getRiskBadgeColor(score) {
             if (score >= 80) return 'danger';
             if (score >= 60) return 'warning';
             if (score >= 40) return 'info';
-            if (score >= 20) return 'success';
-            return 'secondary';
+            // Solo retornar los 3 niveles principales
+            return 'info';
         }
 
         function displayEvents() {
@@ -408,5 +398,9 @@
                 `Detalles del evento:\nIP: ${event.ip_address}\nCategoría: ${formatCategory(event.category)}\nScore: ${event.threat_score}\nRiesgo: ${event.risk_level}`
             );
         }
-    </script>
+</script>
+
+<!-- BEGIN: Application JavaScript -->
+<script src="{{ asset('app-assets/js/security-dashboard.js') }}"></script>
+<!-- END: Application JavaScript -->
 @stop

@@ -10,27 +10,6 @@ use Carbon\Carbon;
 class SecurityDashboardService
 {
     /**
-     * Obtener métricas principales del dashboard
-     */
-    public function getMainMetrics(): array
-    {
-        return Cache::remember('security.main_metrics', 300, function () {
-            $now = Carbon::now();
-            $last24h = $now->copy()->subDay();
-            $last7d = $now->copy()->subDays(7);
-            $last30d = $now->copy()->subDays(30);
-
-            return [
-                'events_24h' => SecurityEvent::where('created_at', '>=', $last24h)->count(),
-                'critical_threats_24h' => SecurityEvent::critical()->where('created_at', '>=', $last24h)->count(),
-                'high_threats_24h' => SecurityEvent::highRisk()->where('created_at', '>=', $last24h)->count(),
-                'unique_ips_24h' => SecurityEvent::where('created_at', '>=', $last24h)->distinct('ip_address')->count('ip_address'),
-                'total_threat_score_24h' => SecurityEvent::where('created_at', '>=', $last24h)->avg('threat_score') ?? 0,
-            ];
-        });
-    }
-
-    /**
      * Obtener distribución de eventos por nivel de riesgo
      */
     public function getRiskLevelDistribution(): array
@@ -38,32 +17,24 @@ class SecurityDashboardService
         return Cache::remember('security.risk_distribution', 600, function () {
             $last30d = Carbon::now()->subDays(30);
 
-            // Consulta compatible con MySQL strict mode
+            // Solo 3 niveles: Crítico, Alto y Medio
             $distribution = [];
-            
+
             // Contar eventos por rango de threat_score
-            $distribution['minimal'] = SecurityEvent::where('threat_score', '<', 20)
-                ->where('created_at', '>=', $last30d)
-                ->count();
-                
-            $distribution['low'] = SecurityEvent::whereBetween('threat_score', [20, 39])
-                ->where('created_at', '>=', $last30d)
-                ->count();
-                
-            $distribution['medium'] = SecurityEvent::whereBetween('threat_score', [40, 59])
-                ->where('created_at', '>=', $last30d)
-                ->count();
-                
-            $distribution['high'] = SecurityEvent::whereBetween('threat_score', [60, 79])
-                ->where('created_at', '>=', $last30d)
-                ->count();
-                
             $distribution['critical'] = SecurityEvent::where('threat_score', '>=', 80)
                 ->where('created_at', '>=', $last30d)
                 ->count();
 
+            $distribution['high'] = SecurityEvent::whereBetween('threat_score', [60, 79])
+                ->where('created_at', '>=', $last30d)
+                ->count();
+
+            $distribution['medium'] = SecurityEvent::whereBetween('threat_score', [40, 59])
+                ->where('created_at', '>=', $last30d)
+                ->count();
+
             // Asegurar que todos los niveles estén presentes
-            $levels = ['minimal', 'low', 'medium', 'high', 'critical'];
+            $levels = ['critical', 'high', 'medium'];
             foreach ($levels as $level) {
                 if (!isset($distribution[$level])) {
                     $distribution[$level] = 0;
@@ -88,17 +59,19 @@ class SecurityDashboardService
                     AVG(threat_score) as avg_score
                 ')
                 ->whereNotNull('geolocation')
-                ->where('threat_score', '>=', 40)
+                ->where('threat_score', '>=', 40) // Solo nivel Medio, Alto y Crítico
                 ->where('created_at', '>=', $last30d)
                 ->groupBy('country')
                 ->orderByDesc('count')
                 ->limit(10)
                 ->get()
                 ->mapWithKeys(function ($item) {
-                    return [$item->country => [
-                        'count' => $item->count,
-                        'avg_score' => round($item->avg_score, 1)
-                    ]];
+                    return [
+                        $item->country => [
+                            'count' => $item->count,
+                            'avg_score' => round($item->avg_score, 1)
+                        ]
+                    ];
                 })
                 ->toArray();
         });
@@ -233,7 +206,6 @@ class SecurityDashboardService
      */
     public function clearCache(): void
     {
-        Cache::forget('security.main_metrics');
         Cache::forget('security.risk_distribution');
         Cache::forget('security.threats_by_country');
         Cache::forget('security.top_suspicious_ips');

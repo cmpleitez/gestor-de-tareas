@@ -45,6 +45,77 @@
     height: 250px;
 }
 
+/* Gráficos de seguridad - Más grandes y prominentes */
+#threatsByCountryChart {
+    height: 500px !important;
+    max-height: 500px !important;
+    overflow: hidden !important;
+}
+
+#riskDistributionChart {
+    height: 500px !important;
+    max-height: 500px !important;
+    overflow: hidden !important;
+}
+
+/* Gráficos específicos de ip-reputation */
+#countryDistributionChart {
+    height: 500px !important;
+    max-height: 500px !important;
+    overflow: hidden !important;
+}
+
+/* Área de gráficos en ip-reputation */
+.chart-area {
+    position: relative;
+    height: 500px !important;
+    min-height: 500px !important;
+    overflow: hidden !important;
+}
+
+/* Hacer los gráficos más prominentes pero contenidos */
+.chart-area canvas {
+    max-height: 100% !important;
+    width: 100% !important;
+    object-fit: contain !important;
+}
+
+/* Contenedor de gráficos con overflow controlado */
+.chart-card .card-body {
+    overflow: hidden !important;
+    position: relative !important;
+}
+
+/* Canvas específico para evitar desbordamiento */
+.chart-card canvas {
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: contain !important;
+}
+
+/* Componente chart-card específico */
+.x-security-chart-card {
+    overflow: hidden !important;
+}
+
+.x-security-chart-card .card-body {
+    padding: 1rem !important;
+    height: 500px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.x-security-chart-card .chart-container {
+    width: 100% !important;
+    height: 100% !important;
+    max-height: 450px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
 /* Elementos de eventos recientes */
 .recent-event-item {
     border-left: 4px solid #e3e6f0;
@@ -314,4 +385,91 @@
         left: 10px;
         max-width: none;
     }
+}
+
+/* ========================================
+           ESTILOS PARA LOGS DE SEGURIDAD
+           ======================================== */
+
+.log-viewer {
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+    font-family: 'Courier New', monospace;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    padding: 1rem;
+    border-radius: 0.35rem;
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.log-entry {
+    margin-bottom: 0.5rem;
+    padding: 0.25rem 0;
+    border-bottom: 1px solid #333;
+}
+
+.log-entry:last-child {
+    border-bottom: none;
+}
+
+.log-timestamp {
+    color: #569cd6;
+    font-weight: bold;
+}
+
+.log-level {
+    font-weight: bold;
+    margin: 0 0.5rem;
+}
+
+.log-level.debug {
+    color: #6a9955;
+}
+
+.log-level.info {
+    color: #4ec9b0;
+}
+
+.log-level.warning {
+    color: #dcdcaa;
+}
+
+.log-level.error {
+    color: #f44747;
+}
+
+.log-level.critical {
+    color: #ff0000;
+}
+
+.log-source {
+    color: #9cdcfe;
+    font-style: italic;
+}
+
+.log-message {
+    color: #d4d4d4;
+    margin-left: 1rem;
+}
+
+.log-entry.error .log-message {
+    color: #f44747;
+}
+
+.log-entry.critical .log-message {
+    color: #ff0000;
+    font-weight: bold;
+}
+
+.log-entry.warning .log-message {
+    color: #dcdcaa;
+}
+
+.log-entry.info .log-message {
+    color: #4ec9b0;
+}
+
+.log-entry.debug .log-message {
+    color: #6a9955;
 }

@@ -1,7 +1,8 @@
 @extends('dashboard')
 
 @section('contenedor')
-<div class="container-fluid">
+<div class="container-fluid" data-risk-distribution="{{ trim(json_encode($risk_distribution ?? [])) }}"
+    data-threats-by-country="{{ trim(json_encode($threats_by_country ?? [])) }}">
     <!-- ========================================
     HEADER DE INTELIGENCIA DE AMENAZAS
     ======================================== -->
@@ -16,7 +17,8 @@
                                 Inteligencia de Amenazas
                             </h1>
                             <p class="mb-0 fs-5">
-                                Análisis avanzado de amenazas con Machine Learning y correlación de datos de múltiples fuentes
+                                Análisis avanzado de amenazas con Machine Learning y correlación de datos de múltiples
+                                fuentes
                             </p>
                         </div>
                         <div class="col-md-4 text-end">
@@ -189,7 +191,6 @@
                                     <option value="critical">Crítica</option>
                                     <option value="high">Alta</option>
                                     <option value="medium">Media</option>
-                                    <option value="low">Baja</option>
                                 </select>
                             </div>
 
@@ -278,7 +279,8 @@
                     <!-- Paginación -->
                     <div class="d-flex justify-content-between align-items-center mt-3">
                         <div class="text-muted">
-                            Mostrando <span id="threats-showing-start">0</span> a <span id="threats-showing-end">0</span> de <span id="threats-showing-total">0</span> amenazas
+                            Mostrando <span id="threats-showing-start">0</span> a <span
+                                id="threats-showing-end">0</span> de <span id="threats-showing-total">0</span> amenazas
                         </div>
                         <nav aria-label="Navegación de amenazas">
                             <ul class="pagination mb-0" id="threats-pagination">
@@ -379,7 +381,8 @@ MODALES Y COMPONENTES ADICIONALES
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="new-threat-ip" class="form-label">Dirección IP</label>
-                            <input type="text" class="form-control" id="new-threat-ip" placeholder="192.168.1.100" required>
+                            <input type="text" class="form-control" id="new-threat-ip" placeholder="192.168.1.100"
+                                required>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="new-threat-type" class="form-label">Tipo de Amenaza</label>
@@ -402,7 +405,6 @@ MODALES Y COMPONENTES ADICIONALES
                                 <option value="critical">Crítica</option>
                                 <option value="high">Alta</option>
                                 <option value="medium">Media</option>
-                                <option value="low">Baja</option>
                             </select>
                         </div>
                         <div class="col-md-6 mb-3">
@@ -412,7 +414,8 @@ MODALES Y COMPONENTES ADICIONALES
                     </div>
                     <div class="mb-3">
                         <label for="new-threat-description" class="form-label">Descripción</label>
-                        <textarea class="form-control" id="new-threat-description" rows="3" placeholder="Describa la amenaza..." required></textarea>
+                        <textarea class="form-control" id="new-threat-description" rows="3"
+                            placeholder="Describa la amenaza..." required></textarea>
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
@@ -421,7 +424,8 @@ MODALES Y COMPONENTES ADICIONALES
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="new-threat-sources" class="form-label">Fuentes de Información</label>
-                            <input type="text" class="form-control" id="new-threat-sources" placeholder="abuseipdb, virustotal">
+                            <input type="text" class="form-control" id="new-threat-sources"
+                                placeholder="abuseipdb, virustotal">
                         </div>
                     </div>
                 </form>
@@ -441,121 +445,123 @@ MODALES Y COMPONENTES ADICIONALES
 
 @section('css')
 <style>
-.border-left-danger {
-    border-left: 0.25rem solid #e74a3b !important;
-}
-
-.border-left-warning {
-    border-left: 0.25rem solid #f6c23e !important;
-}
-
-.border-left-info {
-    border-left: 0.25rem solid #36b9cc !important;
-}
-
-.border-left-success {
-    border-left: 0.25rem solid #1cc88a !important;
-}
-
-.threat-status-indicator {
-    position: relative;
-    width: 60px;
-    height: 60px;
-}
-
-.pulse-dot {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0% {
-        box-shadow: 0 0 0 0 rgba(246, 194, 62, 0.7);
+    .border-left-danger {
+        border-left: 0.25rem solid #e74a3b !important;
     }
-    70% {
-        box-shadow: 0 0 0 10px rgba(246, 194, 62, 0);
+
+    .border-left-warning {
+        border-left: 0.25rem solid #f6c23e !important;
     }
-    100% {
-        box-shadow: 0 0 0 0 rgba(246, 194, 62, 0);
+
+    .border-left-info {
+        border-left: 0.25rem solid #36b9cc !important;
     }
-}
 
-.chart-area {
-    position: relative;
-    height: 300px;
-}
+    .border-left-success {
+        border-left: 0.25rem solid #1cc88a !important;
+    }
 
-.threat-row {
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
+    .threat-status-indicator {
+        position: relative;
+        width: 60px;
+        height: 60px;
+    }
 
-.threat-row:hover {
-    background-color: #f8f9fc;
-}
+    .pulse-dot {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+    }
 
-.threat-row.critical {
-    border-left: 4px solid #e74a3b;
-}
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(246, 194, 62, 0.7);
+        }
 
-.threat-row.high {
-    border-left: 4px solid #f6c23e;
-}
+        70% {
+            box-shadow: 0 0 0 10px rgba(246, 194, 62, 0);
+        }
 
-.threat-row.medium {
-    border-left: 4px solid #fd7e14;
-}
+        100% {
+            box-shadow: 0 0 0 0 rgba(246, 194, 62, 0);
+        }
+    }
 
-.threat-row.low {
-    border-left: 4px solid #20c9a6;
-}
+    .chart-area {
+        position: relative;
+        height: 300px;
+    }
 
-.threat-badge {
-    font-size: 0.75rem;
-    padding: 0.25rem 0.5rem;
-}
+    .threat-row {
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
 
-.score-indicator {
-    width: 60px;
-    height: 8px;
-    background-color: #e3e6f0;
-    border-radius: 4px;
-    overflow: hidden;
-}
+    .threat-row:hover {
+        background-color: #f8f9fc;
+    }
 
-.score-fill {
-    height: 100%;
-    transition: width 0.3s ease;
-}
+    .threat-row.critical {
+        border-left: 4px solid #e74a3b;
+    }
 
-.score-fill.critical {
-    background-color: #e74a3b;
-}
+    .threat-row.high {
+        border-left: 4px solid #f6c23e;
+    }
 
-.score-fill.high {
-    background-color: #f6c23e;
-}
+    .threat-row.medium {
+        border-left: 4px solid #fd7e14;
+    }
 
-.score-fill.medium {
-    background-color: #fd7e14;
-}
+    /* Estilos para niveles bajos eliminados */
 
-.score-fill.low {
-    background-color: #20c9a6;
-}
+    .threat-badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
+
+    .score-indicator {
+        width: 60px;
+        height: 8px;
+        background-color: #e3e6f0;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .score-fill {
+        height: 100%;
+        transition: width 0.3s ease;
+    }
+
+    .score-fill.critical {
+        background-color: #e74a3b;
+    }
+
+    .score-fill.high {
+        background-color: #f6c23e;
+    }
+
+    .score-fill.medium {
+        background-color: #fd7e14;
+    }
+
+    /* Estilos para niveles bajos eliminados */
 </style>
+
+<!-- BEGIN: Security Dashboard CSS -->
+<link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/security-dashboard.css') }}">
+<!-- END: Security Dashboard CSS -->
 @stop
 
 @section('js')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-// Variables globales
+    // Variables globales
 let threatTypeChart;
 let threatEvolutionChart;
 let currentThreatPage = 1;
@@ -662,7 +668,7 @@ function generateSampleThreats() {
     const threats = [];
     const ips = ['203.0.113.10', '185.199.108.154', '198.51.100.75', '104.21.92.193', '45.33.12.200'];
     const types = ['malware', 'phishing', 'ddos', 'apt', 'ransomware', 'botnet'];
-    const classifications = ['critical', 'high', 'medium', 'low'];
+    const classifications = ['critical', 'high', 'medium'];
     const countries = ['RU', 'CN', 'KP', 'IR', 'US'];
     const statuses = ['active', 'monitoring', 'mitigated', 'investigating'];
     
@@ -694,7 +700,8 @@ function getThreatClassification(score) {
     if (score >= 80) return 'critical';
     if (score >= 60) return 'high';
     if (score >= 40) return 'medium';
-    return 'low';
+    // Solo retornar los 3 niveles principales
+    return 'medium';
 }
 
 function renderThreatsTable(threats) {
@@ -783,8 +790,7 @@ function getClassificationBadgeColor(classification) {
     const colors = {
         'critical': 'danger',
         'high': 'warning',
-        'medium': 'warning',
-        'low': 'info'
+        'medium': 'warning'
     };
     return colors[classification] || 'secondary';
 }
@@ -1099,4 +1105,8 @@ function createToastContainer() {
     return container;
 }
 </script>
+
+<!-- BEGIN: Application JavaScript -->
+<script src="{{ asset('app-assets/js/security-dashboard.js') }}"></script>
+<!-- END: Application JavaScript -->
 @stop

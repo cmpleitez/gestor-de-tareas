@@ -173,8 +173,8 @@ class SecurityMonitoringOptimized
         if ($score >= 80) return 'critical';
         if ($score >= 60) return 'high';
         if ($score >= 40) return 'medium';
-        if ($score >= 20) return 'low';
-        return 'minimal';
+        // Solo retornar los 3 niveles principales
+        return 'medium';
     }
 
     /**
@@ -185,7 +185,8 @@ class SecurityMonitoringOptimized
         if ($score >= 80) return 'Critical threat detected - Immediate action required';
         if ($score >= 60) return 'High threat detected - Close monitoring required';
         if ($score >= 40) return 'Medium threat detected - Investigation recommended';
-        return 'Low threat detected - Standard monitoring';
+        // Solo retornar los 3 niveles principales
+        return 'Medium threat detected - Investigation recommended';
     }
 
     /**

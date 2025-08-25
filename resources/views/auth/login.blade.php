@@ -12,21 +12,20 @@
     <meta name="author" content=".">
     <title>Gestor de tareas {{ config('app.version') }}</title>
     <link rel="apple-touch-icon" href="{{ asset('app-assets/images/icons/favicon-32x32.png') }}">
-    <link rel="shortcut icon" type="image/x-icon"
-        href="{{ asset('app-assets/images/icons/favicon-32x32.png') }}">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('app-assets/images/icons/favicon-32x32.png') }}">
     <link href="https://fonts.googleapis.com/css?family=Rubik:300,400,500,600%7CIBM+Plex+Sans:300,400,500,600,700"
         rel="stylesheet">
 
     <!-- BEGIN: All CSS-->
-            <link href="{{ asset('app-assets/vendors/css/vendors.min.css') }}" rel="stylesheet">
-        <link href="{{ asset('app-assets/vendors/css/extensions/toastr.css') }}" rel="stylesheet">
-        <link href="{{ asset('app-assets/css/bootstrap.css') }}" rel="stylesheet">
-        <link href="{{ asset('app-assets/css/bootstrap-extended.css') }}" rel="stylesheet">
-        <link href="{{ asset('app-assets/css/colors.css') }}" rel="stylesheet">
-        <link href="{{ asset('app-assets/css/components.css') }}" rel="stylesheet">
-        <link href="{{ asset('app-assets/css/core/menu/menu-types/vertical-menu.css') }}" rel="stylesheet">
-        <link href="{{ asset('app-assets/css/pages/authentication.min.css') }}" rel="stylesheet">
-        <link href="{{ asset('app-assets/css/plugins/extensions/toastr.css') }}" rel="stylesheet">
+    <link href="{{ asset('app-assets/vendors/css/vendors.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('app-assets/vendors/css/extensions/toastr.css') }}" rel="stylesheet">
+    <link href="{{ asset('app-assets/css/bootstrap.css') }}" rel="stylesheet">
+    <link href="{{ asset('app-assets/css/bootstrap-extended.css') }}" rel="stylesheet">
+    <link href="{{ asset('app-assets/css/colors.css') }}" rel="stylesheet">
+    <link href="{{ asset('app-assets/css/components.css') }}" rel="stylesheet">
+    <link href="{{ asset('app-assets/css/core/menu/menu-types/vertical-menu.css') }}" rel="stylesheet">
+    <link href="{{ asset('app-assets/css/pages/authentication.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('app-assets/css/plugins/extensions/toastr.css') }}" rel="stylesheet">
     <!-- END: All CSS-->
 
 </head>
@@ -54,8 +53,8 @@
                                     <div
                                         class="card disable-rounded-right mb-0 p-2 h-100 d-flex justify-content-center">
                                         <div class="d-flex justify-content-center">
-                                            <img src="{{ asset('app-assets/images/logo/logo.png') }}"
-                                                alt="Logo" class="height-100" style="width: auto; object-fit: contain;">
+                                            <img src="{{ asset('app-assets/images/logo/logo.png') }}" alt="Logo"
+                                                class="height-100" style="width: auto; object-fit: contain;">
                                         </div>
                                         <div class="card-header">
                                             <div class="card-title m-0 p-0">
@@ -112,8 +111,8 @@
                                 </div>
                                 <!-- right section image -->
                                 <div class="col-md-6 p-0 m-0">
-                                    <img src="{{ asset('app-assets/images/pages/login.jpg') }}"
-                                        alt="branding logo" style="width: 100%; height: 100%; object-fit: cover;">
+                                    <img src="{{ asset('app-assets/images/pages/login.jpg') }}" alt="branding logo"
+                                        style="width: 100%; height: 100%; object-fit: cover;">
                                 </div>
                             </div>
                         </div>
@@ -128,7 +127,7 @@
 
 
     <!-- jQuery y dependencias principales -->
-    <script src="{{ asset('resources/js/js/core/libraries/jquery.min.js') }}"></script>
+    <script src="{{ asset('app-assets/js/core/libraries/jquery.min.js') }}"></script>
 
     <!-- BEGIN: Critical JavaScript (Emergency Load) -->
     <script src="{{ asset('app-assets/vendors/js/vendors.min.js') }}"></script>
@@ -140,11 +139,11 @@
     <!-- END: Critical JavaScript (Emergency Load) -->
 
     <!-- BEGIN: Application JavaScript -->
-    <script src="{{ asset('resources/js/js/core/app-menu.js') }}"></script>
-    <script src="{{ asset('resources/js/js/core/app.js') }}"></script>
-    <script src="{{ asset('resources/js/js/scripts/components.js') }}"></script>
-    <script src="{{ asset('resources/js/js/scripts/footer.js') }}"></script>
-    <script src="{{ asset('resources/js/js/scripts/extensions/toastr.js') }}"></script>
+    <script src="{{ asset('app-assets/js/core/app-menu.js') }}"></script>
+    <script src="{{ asset('app-assets/js/core/app.js') }}"></script>
+    <script src="{{ asset('app-assets/js/scripts/components.js') }}"></script>
+    <script src="{{ asset('app-assets/js/scripts/footer.js') }}"></script>
+    <script src="{{ asset('app-assets/js/scripts/extensions/toastr.js') }}"></script>
     <!-- END: Application JavaScript -->
 
     @if ($errors->has('email') || $errors->has('password'))

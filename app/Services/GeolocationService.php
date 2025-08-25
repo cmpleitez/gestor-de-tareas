@@ -35,7 +35,7 @@ class GeolocationService
                 return $geolocation;
             }
         } catch (\Exception $e) {
-            Log::warning("Error obteniendo geolocalización para IP {$ip}: " . $e->getMessage());
+            Log::error("Error obteniendo geolocalización para IP {$ip}: " . $e->getMessage());
         }
 
         // Retornar datos por defecto si falla
@@ -73,7 +73,7 @@ class GeolocationService
                 }
             }
         } catch (\Exception $e) {
-            Log::warning("Error consultando IP-API para {$ip}: " . $e->getMessage());
+            Log::error("Error consultando IP-API para {$ip}: " . $e->getMessage());
         }
 
         return null;

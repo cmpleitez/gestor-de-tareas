@@ -115,17 +115,17 @@ class SecurityTestDataSeeder extends Seeder
         foreach ($testIPs as $ip => $geoData) {
             // Crear múltiples eventos por IP para simular actividad real
             $eventCount = rand(3, 8);
-            
+
             for ($i = 0; $i < $eventCount; $i++) {
                 $threatScore = $this->generateRealisticThreatScore();
                 $category = $categories[array_rand($categories)];
                 $reason = $reasons[array_rand($reasons)];
                 $uri = $testURIs[array_rand($testURIs)];
                 $userAgent = $userAgents[array_rand($userAgents)];
-                
+
                 // Generar timestamp realista (últimos 30 días)
                 $timestamp = Carbon::now()->subDays(rand(0, 30))->subHours(rand(0, 23))->subMinutes(rand(0, 59));
-                
+
                 // Crear geolocalización realista
                 $geolocation = [
                     'country' => $geoData[1],
@@ -145,7 +145,7 @@ class SecurityTestDataSeeder extends Seeder
 
                 // Crear payload realista
                 $payload = $this->generateRealisticPayload($category, $uri);
-                
+
                 // Crear headers realistas
                 $headers = [
                     'User-Agent' => $userAgent,
@@ -183,7 +183,7 @@ class SecurityTestDataSeeder extends Seeder
                     'created_at' => $timestamp,
                     'updated_at' => $timestamp,
                 ]);
-                
+
                 $eventsCreated++;
             }
         }
@@ -247,9 +247,9 @@ class SecurityTestDataSeeder extends Seeder
             $this->command->warn('   ⚠️  Tabla threat_intelligence no existe, saltando...');
             return;
         }
-        
+
         $this->command->info('   🚨 Creando datos de inteligencia de amenazas de prueba...');
-        
+
         $threats = [
             ['type' => 'malware', 'ip' => '192.168.1.100'],
             ['type' => 'phishing', 'ip' => '10.0.0.50'],
@@ -257,7 +257,7 @@ class SecurityTestDataSeeder extends Seeder
             ['type' => 'sql_injection', 'ip' => '203.0.113.10'],
             ['type' => 'xss', 'ip' => '198.51.100.5']
         ];
-        
+
         foreach ($threats as $threat) {
             DB::table('threat_intelligence')->insert([
                 'threat_type' => $threat['type'], // ✅ COLUMNA REAL
@@ -267,7 +267,7 @@ class SecurityTestDataSeeder extends Seeder
                 'updated_at' => Carbon::now()->subHours(rand(1, 24))
             ]);
         }
-        
+
         $this->command->info('   ✅ 5 amenazas de inteligencia creadas');
     }
 
@@ -276,13 +276,14 @@ class SecurityTestDataSeeder extends Seeder
      */
     private function generateRealisticThreatScore(): float
     {
-        // Distribución realista: más eventos de bajo riesgo, menos críticos
+        // Solo 3 niveles: Crítico, Alto y Medio
         $rand = rand(1, 100);
-        
-        if ($rand <= 50) return rand(20, 39);      // 50% - Bajo
-        if ($rand <= 80) return rand(40, 59);      // 30% - Medio
-        if ($rand <= 95) return rand(60, 79);      // 15% - Alto
-        return rand(80, 95);                        // 5% - Crítico
+
+        if ($rand <= 40)
+            return rand(40, 59);      // 40% - Medio
+        if ($rand <= 80)
+            return rand(60, 79);      // 40% - Alto
+        return rand(80, 95);                        // 20% - Crítico
     }
 
     /**
@@ -332,11 +333,11 @@ class SecurityTestDataSeeder extends Seeder
      */
     private function getRiskLevel(float $score): string
     {
-        if ($score >= 80) return 'critical';
-        if ($score >= 60) return 'high';
-        if ($score >= 40) return 'medium';
-        if ($score >= 20) return 'low';
-        return 'minimal';
+        if ($score >= 80)
+            return 'critical';
+        if ($score >= 60)
+            return 'high';
+        return 'medium'; // Solo 3 niveles: Crítico, Alto y Medio
     }
 
     /**
@@ -344,10 +345,10 @@ class SecurityTestDataSeeder extends Seeder
      */
     private function getSeverity(float $score): string
     {
-        if ($score >= 80) return 'critical';
-        if ($score >= 60) return 'high';
-        if ($score >= 40) return 'medium';
-        if ($score >= 20) return 'low';
-        return 'info';
+        if ($score >= 80)
+            return 'critical';
+        if ($score >= 60)
+            return 'high';
+        return 'medium'; // Solo 3 niveles: Crítico, Alto y Medio
     }
 }

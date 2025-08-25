@@ -32,27 +32,24 @@ class SecurityController extends Controller
         try {
             // DEBUG TEMPORAL - ELIMINAR DESPUÉS
             Log::info('SecurityController: Iniciando obtención de datos del dashboard');
-            
+
             // Usar el servicio del dashboard para obtener todos los datos
-            $metrics = $this->dashboardService->getMainMetrics();
             $risk_distribution = $this->dashboardService->getRiskLevelDistribution();
             $threats_by_country = $this->dashboardService->getThreatsByCountry();
             $top_suspicious_ips = $this->dashboardService->getTopSuspiciousIPs();
             $recent_events = $this->dashboardService->getRecentEvents(10);
             $threat_trends = $this->dashboardService->getThreatTrends();
             $system_performance = $this->dashboardService->getSystemPerformance();
-            
+
             // DEBUG TEMPORAL - ELIMINAR DESPUÉS
             Log::info('SecurityController: Datos obtenidos del servicio', [
-                'metrics' => $metrics,
                 'risk_distribution' => $risk_distribution,
                 'threats_by_country' => $threats_by_country,
                 'top_suspicious_ips_count' => $top_suspicious_ips->count(),
                 'recent_events_count' => $recent_events->count(),
             ]);
-            
+
             $dashboardData = [
-                'metrics' => $metrics,
                 'risk_distribution' => $risk_distribution,
                 'threats_by_country' => $threats_by_country,
                 'top_suspicious_ips' => $top_suspicious_ips,
@@ -65,11 +62,10 @@ class SecurityController extends Controller
         } catch (\Exception $e) {
             Log::error('Error en dashboard de seguridad: ' . $e->getMessage());
             Log::error('Stack trace: ' . $e->getTraceAsString());
-            
+
             // En caso de error, mostrar vista con datos vacíos
             return view('security.index', [
-                'metrics' => [],
-                'risk_distribution' => [0, 0, 0, 0, 0],
+                'risk_distribution' => [0, 0, 0], // Solo 3 niveles: Crítico, Alto, Medio
                 'threats_by_country' => [],
                 'top_suspicious_ips' => collect(),
                 'recent_events' => collect(),
@@ -105,7 +101,7 @@ class SecurityController extends Controller
             return view('security.events', $data);
         } catch (\Exception $e) {
             Log::error('Error en vista de eventos: ' . $e->getMessage());
-            
+
             return view('security.events', [
                 'criticalEventsCount' => 0,
                 'highEventsCount' => 0,
@@ -141,28 +137,15 @@ class SecurityController extends Controller
     private function getIPReputationStats()
     {
         try {
-            // Intentar obtener datos de la tabla IPReputation si existe
-            if (Schema::hasTable('ip_reputations')) {
-                $totalIPs = \App\Models\IPReputation::count();
-                $cleanIPs = \App\Models\IPReputation::where('risk_score', '<', 30)->count();
-                $suspiciousIPs = \App\Models\IPReputation::whereBetween('risk_score', [30, 70])->count();
-                $maliciousIPs = \App\Models\IPReputation::where('risk_score', '>', 70)->count();
-                $avgScore = \App\Models\IPReputation::avg('risk_score') ?? 0;
-            } else {
-                // Si la tabla no existe, usar datos del cache o valores por defecto
-                $totalIPs = Cache::get('security.total_ips', 0);
-                $cleanIPs = Cache::get('security.clean_ips', 0);
-                $suspiciousIPs = Cache::get('security.suspicious_ips', 0);
-                $maliciousIPs = Cache::get('security.malicious_ips', 0);
-                $avgScore = Cache::get('security.avg_score', 0);
-            }
+            // Solo obtener datos básicos sin métricas
+            $totalIPs = SecurityEvent::distinct('ip_address')->count('ip_address');
 
             return [
                 'total_ips' => $totalIPs,
-                'clean_ips' => $cleanIPs,
-                'suspicious_ips' => $suspiciousIPs,
-                'malicious_ips' => $maliciousIPs,
-                'avg_score' => round($avgScore, 1),
+                'clean_ips' => 0,
+                'suspicious_ips' => 0,
+                'malicious_ips' => 0,
+                'avg_score' => 0,
             ];
 
         } catch (\Exception $e) {
@@ -186,11 +169,129 @@ class SecurityController extends Controller
     /**
      * Vista de logs de seguridad
      */
-    public function logs()
+    public function logs(Request $request)
     {
-        return view('security.logs');
+        try {
+            // Parámetros de paginación
+            $perPage = $request->get('per_page', 25);
+            $page = $request->get('page', 1);
+
+            // Filtros
+            $level = $request->get('level');
+            $source = $request->get('source');
+            $search = $request->get('search');
+            $ip = $request->get('ip');
+            $date = $request->get('date');
+
+            // Obtener logs del archivo de Laravel
+            $logFile = storage_path('logs/laravel.log');
+            $logs = collect();
+
+            if (file_exists($logFile)) {
+                $logContent = file_get_contents($logFile);
+                $logLines = explode("\n", $logContent);
+
+                foreach ($logLines as $line) {
+                    if (empty(trim($line)))
+                        continue;
+
+                    // Parsear línea de log de Laravel
+                    $logEntry = $this->parseLogLine($line);
+                    if ($logEntry) {
+                        // Aplicar filtros
+                        if ($level && $logEntry['level'] !== $level)
+                            continue;
+                        if ($source && $logEntry['source'] !== $source)
+                            continue;
+                        if ($search && !str_contains(strtolower($logEntry['message']), strtolower($search)))
+                            continue;
+                        if ($ip && !str_contains($logEntry['ip'], $ip))
+                            continue;
+                        if ($date && !str_starts_with($logEntry['timestamp'], $date))
+                            continue;
+
+                        $logs->push($logEntry);
+                    }
+                }
+            }
+
+            // Ordenar por timestamp más reciente
+            $logs = $logs->sortByDesc('timestamp');
+
+            // Paginar
+            $totalLogs = $logs->count();
+            $logs = $logs->forPage($page, $perPage);
+
+            // Generar datos de paginación
+            $pagination = [
+                'current_page' => (int) $page,
+                'per_page' => (int) $perPage,
+                'total' => $totalLogs,
+                'last_page' => ceil($totalLogs / $perPage),
+                'from' => ($page - 1) * $perPage + 1,
+                'to' => min($page * $perPage, $totalLogs),
+            ];
+
+            return view('security.logs', compact('logs', 'pagination'));
+
+        } catch (\Exception $e) {
+            Log::error('Error en vista de logs: ' . $e->getMessage());
+
+            return view('security.logs', [
+                'logs' => collect(),
+                'pagination' => [
+                    'current_page' => 1,
+                    'per_page' => 25,
+                    'total' => 0,
+                    'last_page' => 1,
+                    'from' => 0,
+                    'to' => 0,
+                ]
+            ]);
+        }
     }
 
+    /**
+     * Parsear línea de log de Laravel
+     */
+    private function parseLogLine(string $line): ?array
+    {
+        // Patrón para logs de Laravel: [2024-01-15 10:30:45] local.INFO: Mensaje del log
+        if (preg_match('/^\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\] (\w+)\.(\w+): (.+)$/', $line, $matches)) {
+            return [
+                'timestamp' => $matches[1],
+                'source' => $matches[2],
+                'level' => strtolower($matches[3]),
+                'message' => $matches[4],
+                'ip' => $this->extractIPFromMessage($matches[4]),
+                'user_id' => $this->extractUserIdFromMessage($matches[4]),
+            ];
+        }
+
+        return null;
+    }
+
+    /**
+     * Extraer IP del mensaje del log
+     */
+    private function extractIPFromMessage(string $message): ?string
+    {
+        if (preg_match('/\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b/', $message, $matches)) {
+            return $matches[0];
+        }
+        return null;
+    }
+
+    /**
+     * Extraer ID de usuario del mensaje del log
+     */
+    private function extractUserIdFromMessage(string $message): ?string
+    {
+        if (preg_match('/user[_-]?(\d+)/i', $message, $matches)) {
+            return $matches[1];
+        }
+        return null;
+    }
 
 
     /**
@@ -398,13 +499,13 @@ class SecurityController extends Controller
         try {
             Log::info('🔍 Iniciando getEventsData()');
             Log::info('📅 Filtros recibidos: ' . json_encode($request->all()));
-            
+
             // Verificar si la tabla existe y tiene datos
             $totalEvents = SecurityEvent::count();
             Log::info("📊 Total de eventos en BD: {$totalEvents}");
-            
+
             if ($totalEvents === 0) {
-                Log::warning('⚠️ No hay eventos en la base de datos');
+                Log::error('⚠️ No hay eventos en la base de datos');
                 return response()->json([
                     'success' => true,
                     'events' => [],
@@ -412,7 +513,7 @@ class SecurityController extends Controller
                     'total_in_db' => 0
                 ]);
             }
-            
+
             $query = SecurityEvent::select(
                 'id',
                 'ip_address',
@@ -427,7 +528,7 @@ class SecurityController extends Controller
             if ($request->has('date')) {
                 $dateFilter = $request->input('date');
                 Log::info("📅 Aplicando filtro de fecha: {$dateFilter}");
-                
+
                 switch ($dateFilter) {
                     case '24h':
                         $query->where('created_at', '>=', now()->subHours(24));
@@ -442,17 +543,17 @@ class SecurityController extends Controller
                         break;
                 }
             }
-            
+
             $events = $query->latest()->take(50)->get();
-                
+
             Log::info("📋 Eventos consultados: {$events->count()}");
-            
+
             $mappedEvents = $events->map(function ($event) {
                 // Extraer información geográfica real
                 $geolocation = $event->geolocation ?? [];
                 $country = $geolocation['country'] ?? 'N/A';
                 $city = $geolocation['city'] ?? 'N/A';
-                
+
                 return [
                     'id' => $event->id,
                     'ip' => $event->ip_address,
@@ -469,7 +570,7 @@ class SecurityController extends Controller
             });
 
             Log::info('✅ Eventos mapeados exitosamente');
-            
+
             return response()->json([
                 'success' => true,
                 'events' => SecurityEventResource::collection($events),
@@ -504,11 +605,8 @@ class SecurityController extends Controller
             return 'medium';
         }
 
-        if ($score >= 20) {
-            return 'low';
-        }
-
-        return 'minimal';
+        // Solo retornar los 3 niveles principales
+        return 'medium';
     }
 
 

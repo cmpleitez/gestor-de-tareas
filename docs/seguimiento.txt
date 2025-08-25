@@ -47,6 +47,10 @@
 234567890
 345678901
 
+🟢 retirar campos de las tablas que no esten siendo utilizados por las vistas y retirarlos tambien los procesos que recopilen sus datos
+🟢 retirar procesos de los middlewares que no esten siendo utilizados en las vistas de security
+🟢 revisar las opciones de chat de cursor
+🟢 verificar si el deploy de forge no esta originando permisos al folder raíz
 🟢 mantener los equipos de trabajo para tener potencia en flexibilidad y evitar la estructura organizativa que suele ser variable y dar fuertes golpes a los datos y a la seguridad del sistema
 
 ...🟢 implementar un nuevo campo para distinguir el rol principal para el uso de la gestion de tareas

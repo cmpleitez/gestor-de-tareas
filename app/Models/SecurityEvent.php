@@ -291,8 +291,8 @@ class SecurityEvent extends Model
         if ($score >= 80) return 'critical';
         if ($score >= 60) return 'high';
         if ($score >= 40) return 'medium';
-        if ($score >= 20) return 'low';
-        return 'minimal';
+        // Solo retornar los 3 niveles principales
+        return 'medium';
     }
 
     /**
@@ -374,7 +374,7 @@ class SecurityEvent extends Model
         if ($score >= 80) return 'critical';
         if ($score >= 60) return 'high';
         if ($score >= 40) return 'medium';
-        if ($score >= 20) return 'low';
-        return 'info';
+        // Solo retornar los 3 niveles principales
+        return 'medium';
     }
 }
