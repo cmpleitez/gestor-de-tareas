@@ -17,12 +17,12 @@
     <div class="container-fluid" data-risk-distribution="{{ trim(json_encode($risk_distribution ?? $defaultRiskData)) }}"
         data-threats-by-country="{{ trim(json_encode($threats_by_country ?? $defaultCountryData)) }}">
         <!-- ========================================
-                                                                                                                                                                                                                                                    HEADER DEL DASHBOARD DE SEGURIDAD
-                                                                                                                                                                                                                                                    ======================================== -->
+        HEADER DEL DASHBOARD DE SEGURIDAD
+        ======================================== -->
         <x-security.dashboard-header />
 
         <!-- GRÁFICOS Y ANÁLISIS VISUALES -->
-        <div class="row mb-4">
+        <div class="row">
             <!-- Gráfico de Eventos por Nivel de Riesgo -->
             <div class="col-xl-8 col-lg-7">
                 <x-security.chart-card title="Distribución de Eventos por Nivel de Riesgo" icon="fas fa-chart-pie"
@@ -41,7 +41,7 @@
         </div>
 
         <!-- ACTIVIDAD EN TIEMPO REAL -->
-        <div class="row mb-4">
+        <div class="row">
             <!-- Eventos Recientes -->
             <div class="col-xl-6">
                 <x-security.recent-events :events="$recent_events ?? collect()" title="Eventos Recientes" icon="fas fa-clock" />

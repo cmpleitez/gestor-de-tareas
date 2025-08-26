@@ -4,12 +4,9 @@
     'icon' => 'fas fa-list-ol',
 ])
 
-<div class="card shadow mb-4">
-    <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">
-            <i class="{{ $icon }} me-2"></i>
-            {{ $title }}
-        </h6>
+<div class="card h-100">
+    <div class="card-header">
+        <span class="card-title" style="font-size: 0.875rem; font-weight: 500;">{{ $title }}</span>
     </div>
     <div class="card-body">
         @if ($ips->count() > 0)

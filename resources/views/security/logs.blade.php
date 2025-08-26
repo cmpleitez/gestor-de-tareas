@@ -73,13 +73,13 @@
         <!-- ========================================
                                     HEADER DE LOGS DE SEGURIDAD
                                     ======================================== -->
-        <div class="row mb-4">
+        <div class="row">
             <div class="col-12">
                 <div class="card bg-gradient-primary text-white">
                     <div class="card-body">
                         <div class="row align-items-center">
                             <div class="col">
-                                <h4 class="card-title text-white mb-1">
+                                <h4 class="card-title mb-1">
                                     <i class="fas fa-file-alt me-2"></i>
                                     Logs de Seguridad
                                 </h4>
@@ -101,7 +101,7 @@
         <!-- ========================================
                                     FILTROS DE LOGS
                             ======================================== -->
-        <div class="row mb-4">
+        <div class="row">
             <div class="col-12">
                 <div class="card shadow">
                     <div class="card-header py-3">

@@ -5,15 +5,13 @@
     'max_height' => '400px',
 ])
 
-<div class="card shadow mb-4">
-    <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">
-            <i class="{{ $icon }} me-2"></i>
-            {{ $title }}
-        </h6>
+<div class="card h-100">
+    <div class="card-header">
+        <span class="card-title" style="font-size: 0.875rem; font-weight: 500;">{{ $title }}
+            ({{ $events->count() }} eventos)</span>
     </div>
     <div class="card-body">
-        <div class="recent-events-container" style="max-height: {{ $max_height }}; overflow-y: auto;">
+        <div class="recent-events-container" style="flex: 1; overflow-y: auto;">
             @if ($events->count() > 0)
                 @foreach ($events as $event)
                     <div

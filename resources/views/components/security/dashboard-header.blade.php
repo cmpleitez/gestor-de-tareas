@@ -1,33 +1,22 @@
 @props([
-    'title' => 'Dashboard de Seguridad',
-    'subtitle' => 'Sistema avanzado de monitoreo con Machine Learning y análisis de amenazas en tiempo real',
-    'status' => 'OPERATIVO',
-    'status_color' => 'success',
+    'title' => 'SEGURIDAD DEL SITIO WEB',
+    'status_color' => 'danger',
     'show_pulse' => true,
 ])
 
-<div class="row mb-4">
+<div class="row">
     <div class="col-12">
-        <div class="card bg-gradient-primary text-white">
-            <div class="card-body">
-                <div class="row align-items-center">
-                    <div class="col-md-8">
-                        <h1 class="mb-2">
-                            <i class="fas fa-shield-alt me-3"></i>
+        <div class="card mb-0">
+            <div class="card-body p-0">
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-md-11">
+                        <h6 class="m-0 align-items-center" style="display: flex; align-items: center;">
+                            <i class="bx bxs-check-shield me-3 text-dark" style="padding-left: 0rem !important; padding-right: 0.2rem !important; font-size: 3rem;"></i>
                             {{ $title }}
-                        </h1>
-                        <p class="mb-0 fs-5">
-                            {{ $subtitle }}
-                        </p>
+                        </h6>
                     </div>
-                    <div class="col-md-4 text-end">
+                    <div class="col-md-1 text-center">
                         <div class="d-flex justify-content-end align-items-center">
-                            <div class="me-4">
-                                <div class="fs-6 opacity-75">Estado del Sistema</div>
-                                <div class="fs-4 fw-bold">
-                                    <span class="badge bg-{{ $status_color }} fs-6">{{ $status }}</span>
-                                </div>
-                            </div>
                             @if ($show_pulse)
                                 <div class="security-status-indicator">
                                     <div class="pulse-dot bg-{{ $status_color }}"></div>
