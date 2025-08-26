@@ -180,6 +180,18 @@
 .recent-events-container {
     scrollbar-width: thin;
     scrollbar-color: #c1c1c1 #f1f1f1;
+    overflow-x: hidden !important;
+    /* Prevenir scroll horizontal */
+    overflow-y: auto !important;
+    /* Mantener scroll vertical */
+    max-width: 100% !important;
+    /* Asegurar que no exceda el ancho */
+}
+
+/* Prevenir scroll horizontal en elementos hijos */
+.recent-events-container * {
+    max-width: 100% !important;
+    overflow-x: hidden !important;
 }
 
 .recent-events-container::-webkit-scrollbar {
