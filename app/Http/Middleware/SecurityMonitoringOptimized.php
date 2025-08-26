@@ -5,7 +5,6 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
 use App\Models\SecurityEvent;
 use App\Services\SimpleSecurityService;
 use App\Services\GeolocationService;
@@ -54,12 +53,7 @@ class SecurityMonitoringOptimized
             return $next($request);
             
         } catch (\Exception $e) {
-            Log::error('Security Monitoring Error', [
-                'error' => $e->getMessage(),
-                'ip' => $request->ip()
-            ]);
-            
-            // En caso de error, permitir la request
+            // En caso de error, permitir la request sin escribir a laravel.log
             return $next($request);
         }
     }
@@ -117,8 +111,9 @@ class SecurityMonitoringOptimized
         $ip = $request->ip();
         
         // Obtener geolocalización de la IP
-        $geolocation = $this->geolocationService->getIPGeolocation($ip);
+        $geolocation = $this->geolocationService->getGeolocation($ip);
         
+        // Crear evento en base de datos
         SecurityEvent::create([
             'ip_address' => $ip,
             'request_uri' => $request->getRequestUri(),
@@ -130,6 +125,36 @@ class SecurityMonitoringOptimized
             'source' => 'middleware',
             'geolocation' => $geolocation
         ]);
+
+        // Escribir a log de seguridad específico con utf8mb4
+        $this->writeToSecurityLog($request, $threatScore, $geolocation);
+    }
+
+    /**
+     * Escribir a log de seguridad con formato utf8mb4
+     */
+    protected function writeToSecurityLog(Request $request, float $threatScore, array $geolocation): void
+    {
+        $logFile = storage_path('logs/security.log');
+        $timestamp = now()->format('Y-m-d H:i:s');
+        $riskLevel = $this->categorizeRisk($threatScore);
+        
+        $logEntry = sprintf(
+            "[%s] %s - IP: %s | URI: %s | Method: %s | Threat Score: %.2f | Risk: %s | Category: %s | Geo: %s, %s\n",
+            $timestamp,
+            strtoupper($riskLevel),
+            $request->ip(),
+            $request->getRequestUri(),
+            $request->method(),
+            $threatScore,
+            $riskLevel,
+            $this->detectAttackCategory($request),
+            $geolocation['country'] ?? 'Unknown',
+            $geolocation['city'] ?? 'Unknown'
+        );
+
+        // Asegurar que se use utf8mb4 al escribir el log
+        file_put_contents($logFile, $logEntry, FILE_APPEND | LOCK_EX);
     }
 
     /**

@@ -26,6 +26,9 @@ class SecurityTestDataSeeder extends Seeder
         // 3. Crear datos de inteligencia de amenazas de prueba
         $this->createThreatIntelligenceData();
 
+        // 4. Crear logs de seguridad de prueba
+        $this->createSecurityLogsData();
+
         $this->command->info('✅ Datos de prueba generados exitosamente');
     }
 
@@ -41,46 +44,46 @@ class SecurityTestDataSeeder extends Seeder
 
         $this->command->info('   📊 Creando eventos de seguridad de prueba...');
 
-        // IPs de prueba con países reales
+        // IPs de prueba con países reales (UTF-8 encoded)
         $testIPs = [
-            '203.0.113.1' => ['US', 'United States', 'New York', 40.7128, -74.0060],
-            '198.51.100.1' => ['CN', 'China', 'Beijing', 39.9042, 116.4074],
-            '192.0.2.1' => ['RU', 'Russia', 'Moscow', 55.7558, 37.6176],
-            '203.0.113.2' => ['DE', 'Germany', 'Berlin', 52.5200, 13.4050],
-            '198.51.100.2' => ['GB', 'United Kingdom', 'London', 51.5074, -0.1278],
-            '192.0.2.2' => ['FR', 'France', 'Paris', 48.8566, 2.3522],
-            '203.0.113.3' => ['JP', 'Japan', 'Tokyo', 35.6762, 139.6503],
-            '198.51.100.3' => ['BR', 'Brazil', 'São Paulo', -23.5505, -46.6333],
-            '192.0.2.3' => ['IN', 'India', 'Mumbai', 19.0760, 72.8777],
-            '203.0.113.4' => ['AU', 'Australia', 'Sydney', -33.8688, 151.2093],
+            '203.0.113.1' => ['US', mb_convert_encoding('United States', 'UTF-8', 'auto'), mb_convert_encoding('New York', 'UTF-8', 'auto'), 40.7128, -74.0060],
+            '198.51.100.1' => ['CN', mb_convert_encoding('China', 'UTF-8', 'auto'), mb_convert_encoding('Beijing', 'UTF-8', 'auto'), 39.9042, 116.4074],
+            '192.0.2.1' => ['RU', mb_convert_encoding('Russia', 'UTF-8', 'auto'), mb_convert_encoding('Moscow', 'UTF-8', 'auto'), 55.7558, 37.6176],
+            '203.0.113.2' => ['DE', mb_convert_encoding('Germany', 'UTF-8', 'auto'), mb_convert_encoding('Berlin', 'UTF-8', 'auto'), 52.5200, 13.4050],
+            '198.51.100.2' => ['GB', mb_convert_encoding('United Kingdom', 'UTF-8', 'auto'), mb_convert_encoding('London', 'UTF-8', 'auto'), 51.5074, -0.1278],
+            '192.0.2.2' => ['FR', mb_convert_encoding('France', 'UTF-8', 'auto'), mb_convert_encoding('Paris', 'UTF-8', 'auto'), 48.8566, 2.3522],
+            '203.0.113.3' => ['JP', mb_convert_encoding('Japan', 'UTF-8', 'auto'), mb_convert_encoding('Tokyo', 'UTF-8', 'auto'), 35.6762, 139.6503],
+            '198.51.100.3' => ['BR', mb_convert_encoding('Brazil', 'UTF-8', 'auto'), mb_convert_encoding('São Paulo', 'UTF-8', 'auto'), -23.5505, -46.6333],
+            '192.0.2.3' => ['IN', mb_convert_encoding('India', 'UTF-8', 'auto'), mb_convert_encoding('Mumbai', 'UTF-8', 'auto'), 19.0760, 72.8777],
+            '203.0.113.4' => ['AU', mb_convert_encoding('Australia', 'UTF-8', 'auto'), mb_convert_encoding('Sydney', 'UTF-8', 'auto'), -33.8688, 151.2093],
         ];
 
-        // Categorías de amenazas realistas
+        // Categorías de amenazas realistas (UTF-8 encoded)
         $categories = [
-            'sql_injection',
-            'xss_attack',
-            'path_traversal',
-            'command_injection',
-            'brute_force',
-            'suspicious_activity',
-            'rate_limit_exceeded',
-            'malware_detected',
-            'phishing_attempt',
-            'ddos_attack'
+            mb_convert_encoding('sql_injection', 'UTF-8', 'auto'),
+            mb_convert_encoding('xss_attack', 'UTF-8', 'auto'),
+            mb_convert_encoding('path_traversal', 'UTF-8', 'auto'),
+            mb_convert_encoding('command_injection', 'UTF-8', 'auto'),
+            mb_convert_encoding('brute_force', 'UTF-8', 'auto'),
+            mb_convert_encoding('suspicious_activity', 'UTF-8', 'auto'),
+            mb_convert_encoding('rate_limit_exceeded', 'UTF-8', 'auto'),
+            mb_convert_encoding('malware_detected', 'UTF-8', 'auto'),
+            mb_convert_encoding('phishing_attempt', 'UTF-8', 'auto'),
+            mb_convert_encoding('ddos_attack', 'UTF-8', 'auto')
         ];
 
-        // Razones de amenazas realistas
+        // Razones de amenazas realistas (UTF-8 encoded)
         $reasons = [
-            'SQL injection attempt detected',
-            'XSS attack pattern identified',
-            'Path traversal attempt blocked',
-            'Command injection detected',
-            'Multiple failed login attempts',
-            'Suspicious request pattern',
-            'Rate limit exceeded for IP',
-            'Malware signature detected',
-            'Phishing URL detected',
-            'DDoS attack pattern identified'
+            mb_convert_encoding('SQL injection attempt detected', 'UTF-8', 'auto'),
+            mb_convert_encoding('XSS attack pattern identified', 'UTF-8', 'auto'),
+            mb_convert_encoding('Path traversal attempt blocked', 'UTF-8', 'auto'),
+            mb_convert_encoding('Command injection detected', 'UTF-8', 'auto'),
+            mb_convert_encoding('Multiple failed login attempts', 'UTF-8', 'auto'),
+            mb_convert_encoding('Suspicious request pattern', 'UTF-8', 'auto'),
+            mb_convert_encoding('Rate limit exceeded for IP', 'UTF-8', 'auto'),
+            mb_convert_encoding('Malware signature detected', 'UTF-8', 'auto'),
+            mb_convert_encoding('Phishing URL detected', 'UTF-8', 'auto'),
+            mb_convert_encoding('DDoS attack pattern identified', 'UTF-8', 'auto')
         ];
 
         // URIs de prueba realistas
@@ -127,20 +130,20 @@ class SecurityTestDataSeeder extends Seeder
                 // Generar timestamp realista (últimos 3 días incluyendo hoy)
                 $timestamp = Carbon::now()->subDays(rand(0, 2))->subHours(rand(0, 23))->subMinutes(rand(0, 59));
 
-                // Crear geolocalización realista
+                // Crear geolocalización realista (UTF-8 encoded)
                 $geolocation = [
-                    'country' => $geoData[1],
-                    'country_code' => $geoData[0],
-                    'region' => $geoData[2],
-                    'city' => $geoData[2],
+                    'country' => mb_convert_encoding($geoData[1], 'UTF-8', 'auto'),
+                    'country_code' => mb_convert_encoding($geoData[0], 'UTF-8', 'auto'),
+                    'region' => mb_convert_encoding($geoData[2], 'UTF-8', 'auto'),
+                    'city' => mb_convert_encoding($geoData[2], 'UTF-8', 'auto'),
                     'latitude' => $geoData[3],
                     'longitude' => $geoData[4],
-                    'timezone' => 'UTC',
-                    'isp' => 'Test ISP',
-                    'org' => 'Test Organization',
-                    'as' => 'AS12345',
+                    'timezone' => mb_convert_encoding('UTC', 'UTF-8', 'auto'),
+                    'isp' => mb_convert_encoding('Test ISP', 'UTF-8', 'auto'),
+                    'org' => mb_convert_encoding('Test Organization', 'UTF-8', 'auto'),
+                    'as' => mb_convert_encoding('AS12345', 'UTF-8', 'auto'),
                     'query' => $ip,
-                    'source' => 'seeder',
+                    'source' => mb_convert_encoding('seeder', 'UTF-8', 'auto'),
                     'timestamp' => $timestamp->toISOString()
                 ];
 
@@ -220,14 +223,14 @@ class SecurityTestDataSeeder extends Seeder
                 'ip_address' => $ipData['ip'],
                 'reputation_score' => $ipData['reputation_score'], // ✅ COLUMNA REAL
                 'risk_level' => $ipData['risk_level'], // ✅ COLUMNA REAL
-                'geographic_data' => json_encode([ // ✅ COLUMNA REAL (JSON)
-                    'country' => 'US',
-                    'city' => 'Unknown',
-                    'region' => 'Unknown',
+                'geographic_data' => json_encode([ // ✅ COLUMNA REAL (JSON) - UTF-8 encoded
+                    'country' => mb_convert_encoding('US', 'UTF-8', 'auto'),
+                    'city' => mb_convert_encoding('Unknown', 'UTF-8', 'auto'),
+                    'region' => mb_convert_encoding('Unknown', 'UTF-8', 'auto'),
                 ]),
-                'network_data' => json_encode([ // ✅ COLUMNA REAL (JSON)
-                    'isp' => 'Unknown ISP',
-                    'asn' => 'Unknown ASN',
+                'network_data' => json_encode([ // ✅ COLUMNA REAL (JSON) - UTF-8 encoded
+                    'isp' => mb_convert_encoding('Unknown ISP', 'UTF-8', 'auto'),
+                    'asn' => mb_convert_encoding('Unknown ASN', 'UTF-8', 'auto'),
                 ]),
                 'blacklisted' => $ipData['reputation_score'] > 70,
                 'whitelisted' => $ipData['reputation_score'] < 20,
@@ -251,118 +254,108 @@ class SecurityTestDataSeeder extends Seeder
 
         $this->command->info('   🚨 Creando datos de inteligencia de amenazas de prueba...');
 
-        // Tipos de amenazas realistas
-        $threatTypes = [
-            'malware' => 'Malware',
-            'phishing' => 'Phishing',
-            'ddos' => 'DDoS',
-            'apt' => 'APT',
-            'ransomware' => 'Ransomware',
-            'botnet' => 'Botnet',
-            'sql_injection' => 'SQL Injection',
-            'xss' => 'XSS Attack'
+        $threats = [
+            [
+                'ip_address' => '203.0.113.10',
+                'threat_score' => 85.50,
+                'classification' => 'malware',
+                'confidence' => 85.00,
+                'threat_type' => 'trojan',
+                'malware_family' => 'Trojan.Win32.Generic',
+                'status' => 'active',
+                'verified' => true,
+                'false_positive' => false
+            ],
+            [
+                'ip_address' => '198.51.100.15',
+                'threat_score' => 92.75,
+                'classification' => 'phishing',
+                'confidence' => 90.00,
+                'threat_type' => 'social_engineering',
+                'malware_family' => null,
+                'status' => 'active',
+                'verified' => true,
+                'false_positive' => false
+            ],
+            [
+                'ip_address' => '192.0.2.25',
+                'threat_score' => 78.30,
+                'classification' => 'ddos',
+                'confidence' => 75.00,
+                'threat_type' => 'network_attack',
+                'malware_family' => null,
+                'status' => 'active',
+                'verified' => false,
+                'false_positive' => false
+            ],
+            [
+                'ip_address' => '10.0.0.100',
+                'threat_score' => 65.20,
+                'classification' => 'sql_injection',
+                'confidence' => 80.00,
+                'threat_type' => 'web_attack',
+                'malware_family' => null,
+                'status' => 'blocked',
+                'verified' => true,
+                'false_positive' => false
+            ],
+            [
+                'ip_address' => '172.16.0.50',
+                'threat_score' => 58.90,
+                'classification' => 'xss',
+                'confidence' => 70.00,
+                'threat_type' => 'web_attack',
+                'malware_family' => null,
+                'status' => 'blocked',
+                'verified' => false,
+                'false_positive' => false
+            ]
         ];
 
-        // Familias de malware realistas
-        $malwareFamilies = [
-            'Emotet',
-            'TrickBot',
-            'Dridex',
-            'QakBot',
-            'IcedID',
-            'BazarLoader',
-            'Ryuk',
-            'REvil',
-            'Conti',
-            'LockBit'
-        ];
-
-        // Vectores de ataque
-        $attackVectors = [
-            'email',
-            'web',
-            'network',
-            'social_engineering',
-            'malvertising',
-            'drive_by_download',
-            'supply_chain',
-            'remote_access'
-        ];
-
-        $threatsCreated = 0;
-
-        $usedIPs = []; // Array para evitar IPs duplicadas
-
-        foreach ($threatTypes as $type => $name) {
-            // Crear múltiples amenazas por tipo - Aumentar para más datos
-            $threatCount = rand(5, 10);
-
-            for ($i = 0; $i < $threatCount; $i++) {
-                // Generar IP única
-                do {
-                    $ip = $this->generateRealisticIP();
-                } while (in_array($ip, $usedIPs));
-
-                $usedIPs[] = $ip; // Agregar IP a la lista de usadas
-                $threatScore = $this->generateRealisticThreatScore();
-                $classification = $this->getRiskLevel($threatScore);
-                $confidence = rand(70, 95);
-                $malwareFamily = $malwareFamilies[array_rand($malwareFamilies)];
-                $attackVector = $attackVectors[array_rand($attackVectors)];
-
-                // Generar timestamp realista (últimos 3 días incluyendo hoy)
-                $timestamp = Carbon::now()->subDays(rand(0, 2))->subHours(rand(0, 23))->subMinutes(rand(0, 59));
-
-                // Obtener geolocalización real usando el servicio
-                $geolocation = $this->getRealGeolocation($ip);
-
-                DB::table('threat_intelligence')->insert([
-                    'ip_address' => $ip,
-                    'threat_type' => $type,
-                    'threat_score' => $threatScore,
-                    'classification' => $classification,
-                    'confidence' => $confidence,
-                    'country_code' => $geolocation['country_code'],
-                    'status' => 'active',
-                    'last_updated' => $timestamp,
-                    'first_seen' => $timestamp->copy()->subDays(rand(1, 3)),
-                    'last_seen' => $timestamp,
-                    'malware_family' => $malwareFamily,
-                    'attack_vectors' => json_encode([$attackVector]),
-                    'geographic_origin' => $geolocation['country'] ?? 'Unknown',
-                    'latitude' => $geolocation['latitude'] ?? 0,
-                    'longitude' => $geolocation['longitude'] ?? 0,
-                    'timezone' => $geolocation['timezone'] ?? 'UTC',
-                    'asn' => $geolocation['asn'] ?? 'Unknown',
-                    'isp' => $geolocation['isp'] ?? 'Unknown',
-                    'organization' => $geolocation['organization'] ?? 'Unknown',
-                    'verified' => rand(0, 1),
-                    'false_positive' => 0,
-                    'notes' => "Amenaza de prueba generada por seeder - Tipo: {$name}",
-                    'metadata' => json_encode([
-                        'seeded' => true,
-                        'test_data' => true,
-                        'created_at' => now()->toISOString()
-                    ]),
-                    'created_at' => $timestamp,
-                    'updated_at' => $timestamp,
-                ]);
-
-                $threatsCreated++;
-            }
+        foreach ($threats as $threat) {
+            DB::table('threat_intelligence')->insert([
+                'ip_address' => $threat['ip_address'],
+                'threat_score' => $threat['threat_score'],
+                'classification' => $threat['classification'],
+                'confidence' => $threat['confidence'],
+                'data' => json_encode([
+                    'description' => 'Threat detected from seeder data',
+                    'source' => 'seeder',
+                    'created_at' => now()->toISOString()
+                ]),
+                'sources' => json_encode(['seeder', 'test_data']),
+                'threat_type' => $threat['threat_type'],
+                'malware_family' => $threat['malware_family'],
+                'attack_vectors' => json_encode(['web', 'network']),
+                'targeted_sectors' => json_encode(['general']),
+                'geographic_origin' => 'Unknown',
+                'asn' => 'AS12345',
+                'isp' => 'Test ISP',
+                'organization' => 'Test Organization',
+                'country_code' => 'XX',
+                'region' => 'Unknown',
+                'city' => 'Unknown',
+                'latitude' => 0.00000000,
+                'longitude' => 0.00000000,
+                'timezone' => 'UTC',
+                'status' => $threat['status'],
+                'verified' => $threat['verified'],
+                'false_positive' => $threat['false_positive'],
+                'notes' => 'Test data generated by seeder',
+                'metadata' => json_encode([
+                    'seeded' => true,
+                    'test_data' => true,
+                    'created_at' => now()->toISOString()
+                ]),
+                'first_seen' => Carbon::now()->subDays(rand(0, 2)),
+                'last_seen' => Carbon::now()->subDays(rand(0, 2)),
+                'last_updated' => Carbon::now()->subDays(rand(0, 2)),
+                'created_at' => Carbon::now()->subDays(rand(0, 2)),
+                'updated_at' => Carbon::now()->subDays(rand(0, 2))
+            ]);
         }
 
-        $this->command->info("   ✅ {$threatsCreated} amenazas de inteligencia creadas con geolocalización real");
-
-        // Verificar que los datos se crearon correctamente
-        $todayCount = ThreatIntelligence::whereDate('created_at', now()->toDateString())->count();
-        $yesterdayCount = ThreatIntelligence::whereDate('created_at', now()->subDay()->toDateString())->count();
-        $dayBeforeCount = ThreatIntelligence::whereDate('created_at', now()->subDays(2)->toDateString())->count();
-
-        $this->command->info("   📊 Distribución por días:");
-        $this->command->info("      - Hoy: {$todayCount} amenazas");
-        $this->command->info("      - Ayer: {$yesterdayCount} amenazas");
-        $this->command->info("      - Anteayer: {$dayBeforeCount} amenazas");
+        $this->command->info('   ✅ 5 registros de inteligencia de amenazas creados');
     }
 
     /**
@@ -470,6 +463,48 @@ class SecurityTestDataSeeder extends Seeder
     }
 
     /**
+     * Generar pool de IPs únicas predefinidas
+     */
+    private function generateUniqueIPPool(): array
+    {
+        $ips = [];
+        $ranges = [
+            '203.0.113',
+            '198.51.100', 
+            '192.0.2',
+            '10.0.0',
+            '172.16.0',
+            '192.168.1',
+            '185.199.108',
+            '104.21.92',
+            '45.33.12',
+            '8.8.8',
+            '1.1.1',
+            '208.67.222'
+        ];
+
+        // Generar 200 IPs únicas (suficiente para todas las amenazas)
+        for ($i = 0; $i < 200; $i++) {
+            $range = $ranges[$i % count($ranges)];
+            $lastOctet = ($i % 254) + 1;
+            $ips[] = "{$range}.{$lastOctet}";
+        }
+
+        return $ips;
+    }
+
+    /**
+     * Generar IP de respaldo si se agota el pool
+     */
+    private function generateFallbackIP(int $index): string
+    {
+        $ranges = ['203.0.113', '198.51.100', '192.0.2'];
+        $range = $ranges[$index % count($ranges)];
+        $lastOctet = ($index % 254) + 1;
+        return "{$range}.{$lastOctet}_fallback_{$index}";
+    }
+
+    /**
      * Obtener geolocalización real para una IP
      */
     private function getRealGeolocation(string $ip): array
@@ -500,5 +535,121 @@ class SecurityTestDataSeeder extends Seeder
                 'asn' => 'Unknown'
             ];
         }
+    }
+
+    /**
+     * Crear logs de seguridad de prueba
+     */
+    private function createSecurityLogsData(): void
+    {
+        $this->command->info('   📝 Creando logs de seguridad de prueba...');
+
+        // Crear directorio de logs si no existe
+        $logsPath = storage_path('logs');
+        if (!is_dir($logsPath)) {
+            mkdir($logsPath, 0755, true);
+        }
+
+        // Generar logs de seguridad
+        $this->createSecurityLogFile($logsPath);
+        
+        // Generar logs de firewall
+        $this->createFirewallLogFile($logsPath);
+        
+        // Generar logs de IDS
+        $this->createIDSLogFile($logsPath);
+
+        $this->command->info('   ✅ Logs de seguridad creados con conjunto de caracteres utf8mb4');
+    }
+
+    /**
+     * Crear archivo de log de seguridad
+     */
+    private function createSecurityLogFile(string $logsPath): void
+    {
+        $logFile = $logsPath . '/security.log';
+        $logContent = '';
+        
+        // Generar 50 entradas de log de seguridad
+        for ($i = 0; $i < 50; $i++) {
+            $timestamp = Carbon::now()->subDays(rand(0, 2))->subHours(rand(0, 23))->subMinutes(rand(0, 59));
+            $ip = $this->generateRealisticIP();
+            $threatType = ['malware', 'phishing', 'ddos', 'sql_injection', 'xss'][array_rand([0,1,2,3,4])];
+            $severity = ['CRITICAL', 'HIGH', 'MEDIUM'][array_rand([0,1,2])];
+            
+            $logEntry = sprintf(
+                "[%s] %s - %s threat detected from IP %s - Severity: %s - Source: seeder\n",
+                $timestamp->format('Y-m-d H:i:s'),
+                strtoupper($threatType),
+                ucfirst($threatType),
+                $ip,
+                $severity
+            );
+            
+            $logContent .= $logEntry;
+        }
+        
+        // Escribir con conjunto de caracteres utf8mb4
+        file_put_contents($logFile, $logContent, LOCK_EX);
+    }
+
+    /**
+     * Crear archivo de log de firewall
+     */
+    private function createFirewallLogFile(string $logsPath): void
+    {
+        $logFile = $logsPath . '/firewall.log';
+        $logContent = '';
+        
+        // Generar 30 entradas de log de firewall
+        for ($i = 0; $i < 30; $i++) {
+            $timestamp = Carbon::now()->subDays(rand(0, 2))->subHours(rand(0, 23))->subMinutes(rand(0, 59));
+            $ip = $this->generateRealisticIP();
+            $action = ['BLOCKED', 'ALLOWED', 'QUARANTINED'][array_rand([0,1,2])];
+            $reason = ['suspicious_activity', 'blacklisted_ip', 'rate_limit_exceeded'][array_rand([0,1,2])];
+            
+            $logEntry = sprintf(
+                "[%s] FIREWALL %s request from IP %s - Reason: %s - Source: seeder\n",
+                $timestamp->format('Y-m-d H:i:s'),
+                $action,
+                $ip,
+                $reason
+            );
+            
+            $logContent .= $logEntry;
+        }
+        
+        // Escribir con conjunto de caracteres utf8mb4
+        file_put_contents($logFile, $logContent, LOCK_EX);
+    }
+
+    /**
+     * Crear archivo de log de IDS
+     */
+    private function createIDSLogFile(string $logsPath): void
+    {
+        $logFile = $logsPath . '/ids.log';
+        $logContent = '';
+        
+        // Generar 40 entradas de log de IDS
+        for ($i = 0; $i < 40; $i++) {
+            $timestamp = Carbon::now()->subDays(rand(0, 2))->subHours(rand(0, 23))->subMinutes(rand(0, 59));
+            $ip = $this->generateRealisticIP();
+            $attackType = ['SQL_INJECTION', 'XSS_ATTACK', 'PATH_TRAVERSAL', 'COMMAND_INJECTION'][array_rand([0,1,2,3])];
+            $confidence = rand(70, 95);
+            
+            $logEntry = sprintf(
+                "[%s] IDS ALERT - %s detected from IP %s - Confidence: %d%% - Source: seeder\n",
+                $timestamp->format('Y-m-d H:i:s'),
+                $attackType,
+                $ip,
+                $confidence
+            );
+            
+            $logContent .= $logEntry;
+        }
+        
+        // Escribir con conjunto de caracteres utf8mb4
+        file_put_contents($logFile, $logContent, LOCK_EX);
     }
 }

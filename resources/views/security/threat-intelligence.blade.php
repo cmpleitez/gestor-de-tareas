@@ -4,8 +4,8 @@
     <div class="container-fluid" data-risk-distribution="{{ trim(json_encode($risk_distribution ?? [])) }}"
         data-threats-by-country="{{ trim(json_encode($threats_by_country ?? [])) }}">
         <!-- ========================================
-                                                HEADER DE INTELIGENCIA DE AMENAZAS
-                                                ======================================== -->
+                                                    HEADER DE INTELIGENCIA DE AMENAZAS
+                                                    ======================================== -->
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card bg-gradient-danger text-white">
@@ -43,8 +43,8 @@
 
 
         <!-- ========================================
-                                                ANÁLISIS VISUAL DE AMENAZAS
-                                                ======================================== -->
+                                                    ANÁLISIS VISUAL DE AMENAZAS
+                                                    ======================================== -->
         <div class="row mb-4">
             <!-- Gráfico de Evolución Temporal -->
             <div class="col-12">
@@ -65,8 +65,8 @@
         </div>
 
         <!-- ========================================
-                                                FILTROS Y BÚSQUEDA DE AMENAZAS
-                                                ======================================== -->
+                                                    FILTROS Y BÚSQUEDA DE AMENAZAS
+                                                    ======================================== -->
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card shadow">
@@ -123,8 +123,8 @@
         </div>
 
         <!-- ========================================
-                                                TABLA DE AMENAZAS
-                                                ======================================== -->
+                                                    TABLA DE AMENAZAS
+                                                    ======================================== -->
         <div class="row">
             <div class="col-12">
                 <div class="card shadow mb-4">
@@ -183,8 +183,8 @@
     </div>
 
     <!-- ========================================
-                                            MODALES Y COMPONENTES ADICIONALES
-                                            ======================================== -->
+                                                MODALES Y COMPONENTES ADICIONALES
+                                                ======================================== -->
 
     <!-- Modal de Detalles de Amenaza -->
     <div class="modal fade" id="threatDetailsModal" tabindex="-1">
@@ -311,6 +311,22 @@
 @stop
 
 @section('js')
+    <!-- Mostrar mensajes de error con Toastr -->
+    @if (isset($error_message))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                if (typeof toastr !== 'undefined') {
+                    toastr.error("{{ $error_message }}", 'Error de Inteligencia de Amenazas', {
+                        timeOut: 8000,
+                        extendedTimeOut: 2000,
+                        closeButton: true,
+                        progressBar: true
+                    });
+                }
+            });
+        </script>
+    @endif
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         // Variables globales
@@ -574,7 +590,6 @@
                     minute: '2-digit'
                 }).format(date);
             } catch (error) {
-                console.warn('Error formateando fecha:', dateString, error);
                 return 'Error de fecha';
             }
         }

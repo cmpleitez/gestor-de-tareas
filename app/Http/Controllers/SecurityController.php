@@ -12,7 +12,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
+
 use Illuminate\Support\Facades\Schema;
 use App\Services\GeolocationService;
 use Carbon\Carbon;
@@ -143,8 +143,7 @@ class SecurityController extends Controller
 
 
 
-            // DEBUG: Para depuración, descomenta la siguiente línea:
-            // dd($logs->values()->toArray(), $pagination);
+
 
 
             // Asegurar que logs sea siempre un array válido
@@ -163,8 +162,7 @@ class SecurityController extends Controller
                 $logsArray = [];
             }
 
-            // DEBUG: Verificar el tipo de datos antes de enviar
-            // dd('DEBUG: $logsArray antes de enviar:', $logsArray, 'Tipo:', gettype($logsArray), 'Count:', is_array($logsArray) ? count($logsArray) : 'N/A');
+
 
             return view('security.logs', [
                 'logs' => $logsArray,
@@ -192,12 +190,11 @@ class SecurityController extends Controller
      */
     private function parseLogLine(string $line): ?array
     {
-        // DEBUG: Log de la línea que se está parseando (COMENTADO PARA EVITAR LOOP)
-        // Log::debug("Parseando línea: " . substr($line, 0, 100));
+
 
         // Patrón 1: [timestamp] source.level: mensaje (formato Laravel estándar)
         if (preg_match('/^\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\] (\w+)\.(\w+): (.+)$/', $line, $matches)) {
-            // Log::debug("✅ Patrón 1 exitoso: " . $matches[2] . "." . $matches[3]);
+
             return [
                 'timestamp' => $matches[1],
                 'source' => $matches[2],
@@ -213,7 +210,7 @@ class SecurityController extends Controller
 
             // Intentar extraer source.level del mensaje
             if (preg_match('/^(\w+)\.(\w+): (.+)$/', $message, $subMatches)) {
-                // Log::debug("✅ Patrón 2 exitoso: " . $subMatches[1] . "." . $subMatches[2]);
+
                 return [
                     'timestamp' => $matches[1],
                     'source' => $subMatches[1],
@@ -224,7 +221,6 @@ class SecurityController extends Controller
             }
 
             // Si no tiene source.level, usar 'system' como fuente por defecto
-            // Log::debug("✅ Patrón 2 genérico: usando 'system' como fuente");
             return [
                 'timestamp' => $matches[1],
                 'source' => 'system',
@@ -236,7 +232,7 @@ class SecurityController extends Controller
 
         // Patrón 3: Línea sin timestamp (usar timestamp actual)
         if (trim($line) && !preg_match('/^\[/', $line)) {
-            // Log::debug("✅ Patrón 3: línea sin timestamp, usando timestamp actual");
+
             return [
                 'timestamp' => now()->format('Y-m-d H:i:s'),
                 'source' => 'system',
@@ -246,7 +242,7 @@ class SecurityController extends Controller
             ];
         }
 
-        // Log::debug("❌ Ningún patrón coincide");
+
         return null;
     }
 
@@ -287,7 +283,6 @@ class SecurityController extends Controller
 
             return view('security.index', $dashboardData);
         } catch (\Exception $e) {
-            Log::error('Error en dashboard de seguridad: ' . $e->getMessage());
             return view('security.index', [
                 'risk_distribution' => [0, 0, 0],
                 'threats_by_country' => [],
@@ -295,6 +290,7 @@ class SecurityController extends Controller
                 'recent_events' => collect(),
                 'threat_trends' => [],
                 'system_performance' => [],
+                'error_message' => 'Error al cargar el dashboard de seguridad: ' . $e->getMessage()
             ]);
         }
     }
@@ -314,7 +310,7 @@ class SecurityController extends Controller
             $uniqueIPsCount = $events->whereNotNull('ip_address')->pluck('ip_address')->unique()->count();
             $totalEventsCount = $events->count();
 
-            Log::info("Eventos cargados: {$totalEventsCount}, Críticos: {$criticalEventsCount}, Altos: {$highEventsCount}, Medios: {$mediumEventsCount}, IPs únicas: {$uniqueIPsCount}");
+
 
             return view('security.events', [
                 'events' => $events,
@@ -325,8 +321,6 @@ class SecurityController extends Controller
                 'totalEventsCount' => $totalEventsCount,
             ]);
         } catch (\Exception $e) {
-            Log::error('Error en events: ' . $e->getMessage());
-
             // En caso de error, retornar vista con datos vacíos
             return view('security.events', [
                 'events' => collect(),
@@ -335,6 +329,7 @@ class SecurityController extends Controller
                 'mediumEventsCount' => 0,
                 'uniqueIPsCount' => 0,
                 'totalEventsCount' => 0,
+                'error_message' => 'Error al cargar eventos de seguridad: ' . $e->getMessage()
             ]);
         }
     }
@@ -347,14 +342,14 @@ class SecurityController extends Controller
                 ->orderBy('created_at', 'desc')
                 ->get();
 
-            // Calcular estadísticas
+            // Calcular estadísticas basadas en classification mapeada a niveles de riesgo
             $totalThreats = $threats->count();
             $activeThreats = $threats->where('status', 'active')->count();
-            $criticalThreats = $threats->where('classification', 'critical')->count();
-            $highThreats = $threats->where('classification', 'high')->count();
-
-            // Log para debugging
-            Log::info("Estadísticas de amenazas - Total: {$totalThreats}, Activas: {$activeThreats}, Críticas: {$criticalThreats}, Altas: {$highThreats}");
+            
+            // Mapear clasificaciones existentes a niveles de riesgo
+            $criticalThreats = $threats->whereIn('classification', ['malware', 'phishing'])->count();
+            $highThreats = $threats->whereIn('classification', ['ddos', 'sql_injection'])->count();
+            $mediumThreats = $threats->whereIn('classification', ['xss'])->count();
 
             // Datos de evolución (últimos 3 días) - Formato para Chart.js
             $serverEvolutionData = [
@@ -364,32 +359,26 @@ class SecurityController extends Controller
                 'medium' => []
             ];
 
-            // Log para debugging
-            Log::info('Generando datos de evolución para threat-intelligence');
-
+            // Generar datos de evolución para los últimos 3 días
             for ($i = 2; $i >= 0; $i--) {
                 $date = now()->subDays($i)->format('M d'); // Formato corto para el gráfico
                 $serverEvolutionData['dates'][] = $date;
 
-                // Contar amenazas por nivel de riesgo para cada día
+                // Contar amenazas por nivel de riesgo para cada día basado en classification mapeada
                 $dayStart = now()->subDays($i)->startOfDay();
                 $dayEnd = now()->subDays($i)->endOfDay();
 
-                $serverEvolutionData['critical'][] = ThreatIntelligence::where('classification', 'critical')
-                    ->whereBetween('created_at', [$dayStart, $dayEnd])
-                    ->count();
+                $dayThreats = ThreatIntelligence::whereBetween('created_at', [$dayStart, $dayEnd])->get();
 
-                $serverEvolutionData['high'][] = ThreatIntelligence::where('classification', 'high')
-                    ->whereBetween('created_at', [$dayStart, $dayEnd])
-                    ->count();
-
-                $serverEvolutionData['medium'][] = ThreatIntelligence::where('classification', 'medium')
-                    ->whereBetween('created_at', [$dayStart, $dayEnd])
-                    ->count();
+                $serverEvolutionData['critical'][] = $dayThreats->whereIn('classification', ['malware', 'phishing'])->count();
+                $serverEvolutionData['high'][] = $dayThreats->whereIn('classification', ['ddos', 'sql_injection'])->count();
+                $serverEvolutionData['medium'][] = $dayThreats->whereIn('classification', ['xss'])->count();
             }
 
-            // Log para debugging
-            Log::info('Datos de evolución generados:', $serverEvolutionData);
+            // Obtener tipos de amenazas únicos para los filtros
+            $threatTypes = $threats->pluck('threat_type')->unique()->filter()->mapWithKeys(function($type) {
+                return [$type => ucfirst(str_replace('_', ' ', $type))];
+            })->toArray();
 
             return view('security.threat-intelligence', [
                 'threats' => $threats,
@@ -398,18 +387,26 @@ class SecurityController extends Controller
                 'activeThreats' => $activeThreats,
                 'criticalThreats' => $criticalThreats,
                 'highThreats' => $highThreats,
+                'mediumThreats' => $mediumThreats,
+                'threatTypes' => $threatTypes,
             ]);
         } catch (\Exception $e) {
-            Log::error('Error en threatIntelligence: ' . $e->getMessage());
-
             // En caso de error, retornar vista con datos vacíos
             return view('security.threat-intelligence', [
                 'threats' => collect(),
-                'serverEvolutionData' => [],
+                'serverEvolutionData' => [
+                    'dates' => [],
+                    'critical' => [],
+                    'high' => [],
+                    'medium' => []
+                ],
                 'totalThreats' => 0,
                 'activeThreats' => 0,
                 'criticalThreats' => 0,
                 'highThreats' => 0,
+                'mediumThreats' => 0,
+                'threatTypes' => [],
+                'error_message' => 'Error al cargar inteligencia de amenazas: ' . $e->getMessage()
             ]);
         }
     }
@@ -433,8 +430,6 @@ class SecurityController extends Controller
                 'mediumIPs' => $riskDistribution['medium'] ?? 0,
             ]);
         } catch (\Exception $e) {
-            Log::error('Error en ipReputation: ' . $e->getMessage());
-
             // En caso de error, retornar vista con datos vacíos
             return view('security.ip-reputation', [
                 'ipReputations' => collect(),
@@ -445,6 +440,7 @@ class SecurityController extends Controller
                 'criticalIPs' => 0,
                 'highIPs' => 0,
                 'mediumIPs' => 0,
+                'error_message' => 'Error al cargar reputación de IPs: ' . $e->getMessage()
             ]);
         }
     }

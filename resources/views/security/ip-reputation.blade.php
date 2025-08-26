@@ -341,6 +341,22 @@
 @stop
 
 @section('js')
+    <!-- Mostrar mensajes de error con Toastr -->
+    @if (isset($error_message))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                if (typeof toastr !== 'undefined') {
+                    toastr.error("{{ $error_message }}", 'Error de Reputación de IPs', {
+                        timeOut: 8000,
+                        extendedTimeOut: 2000,
+                        closeButton: true,
+                        progressBar: true
+                    });
+                }
+            });
+        </script>
+    @endif
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         // Variables globales
@@ -682,7 +698,7 @@
         }
 
         function updateIPReputation() {
-            console.log('Actualizando reputación de IPs...');
+            // Actualizando reputación de IPs
             showNotification('Actualización iniciada', 'info');
         }
 

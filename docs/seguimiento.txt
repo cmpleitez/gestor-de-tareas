@@ -47,10 +47,8 @@
 234567890
 345678901
 
-🟢 crear logs en la nube:
-    New-Item -Path "/var/www/html/storage/logs/security.log" -ItemType File -Force
-    New-Item -Path "/var/www/html/storage/logs/firewall.log" -ItemType File -Force
-    New-Item -Path "/var/www/html/storage/logs/ids.log" -ItemType File -Force
+
+🟢 agregar validadores de funcionamiento y mensajes de error para el usuario en el grupo de rutas "security", evitando el uso de escritura en el log de laravel
 🟢 agregar mensajes de error en los try catch del modulo de seguridad
 🟢 eliminar el campo geolocalizacion porque es decorativo
 🟢 aplicar filtros automatizados

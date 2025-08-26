@@ -4,7 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
+
 
 class GeolocationService
 {
@@ -41,7 +41,6 @@ class GeolocationService
             return $geolocation;
 
         } catch (\Exception $e) {
-            Log::error("Error obteniendo geolocalización para IP {$ip}: " . $e->getMessage());
             return $this->getBasicGeolocation($ip);
         }
     }
@@ -76,7 +75,7 @@ class GeolocationService
                 }
             }
         } catch (\Exception $e) {
-            Log::warning("Error con ipapi.co para IP {$ip}: " . $e->getMessage());
+            // Error silencioso con ipapi.co
         }
 
         return null;
@@ -114,7 +113,7 @@ class GeolocationService
                 }
             }
         } catch (\Exception $e) {
-            Log::warning("Error con ipinfo.io para IP {$ip}: " . $e->getMessage());
+            // Error silencioso con ipinfo.io
         }
 
         return null;
@@ -202,7 +201,6 @@ class GeolocationService
             return $updated;
 
         } catch (\Exception $e) {
-            Log::error('Error actualizando geolocalización de amenazas: ' . $e->getMessage());
             return 0;
         }
     }
