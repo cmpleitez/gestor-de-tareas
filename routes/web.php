@@ -108,7 +108,6 @@ Route::middleware([
         Route::group(['prefix' => 'security'], function () {
             // Dashboard principal de seguridad
             Route::get('/', [SecurityController::class, 'index'])->name('security.index');
-            Route::get('reports', [SecurityController::class, 'reports'])->name('security.reports');                        
             // Eventos de seguridad
             Route::get('events', [SecurityController::class, 'events'])->name('security.events');
 

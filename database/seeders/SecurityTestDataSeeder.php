@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use App\Models\ThreatIntelligence;
 
 class SecurityTestDataSeeder extends Seeder
 {
@@ -123,8 +124,8 @@ class SecurityTestDataSeeder extends Seeder
                 $uri = $testURIs[array_rand($testURIs)];
                 $userAgent = $userAgents[array_rand($userAgents)];
 
-                // Generar timestamp realista (últimas 48 horas para que aparezcan en Top 10)
-                $timestamp = Carbon::now()->subHours(rand(0, 48))->addMinutes(rand(0, 59));
+                // Generar timestamp realista (últimos 3 días incluyendo hoy)
+                $timestamp = Carbon::now()->subDays(rand(0, 2))->subHours(rand(0, 23))->subMinutes(rand(0, 59));
 
                 // Crear geolocalización realista
                 $geolocation = [
@@ -230,9 +231,9 @@ class SecurityTestDataSeeder extends Seeder
                 ]),
                 'blacklisted' => $ipData['reputation_score'] > 70,
                 'whitelisted' => $ipData['reputation_score'] < 20,
-                'last_seen' => Carbon::now()->subMinutes(rand(1, 1440)),
+                'last_seen' => Carbon::now()->subDays(rand(0, 2))->subHours(rand(0, 23))->subMinutes(rand(0, 59)),
                 'created_at' => Carbon::now()->subDays(rand(0, 2)), // Últimos 3 días (0, 1, 2)
-                'updated_at' => Carbon::now()->subMinutes(rand(1, 1440)),
+                'updated_at' => Carbon::now()->subDays(rand(0, 2))->subHours(rand(0, 23))->subMinutes(rand(0, 59)),
             ]);
         }
         $this->command->info('   ✅ 8 registros de reputación de IPs creados');
@@ -290,22 +291,27 @@ class SecurityTestDataSeeder extends Seeder
 
         $threatsCreated = 0;
 
+        $usedIPs = []; // Array para evitar IPs duplicadas
+
         foreach ($threatTypes as $type => $name) {
-            // Crear múltiples amenazas por tipo
-            $threatCount = rand(2, 5);
+            // Crear múltiples amenazas por tipo - Aumentar para más datos
+            $threatCount = rand(5, 10);
 
             for ($i = 0; $i < $threatCount; $i++) {
+                // Generar IP única
+                do {
+                    $ip = $this->generateRealisticIP();
+                } while (in_array($ip, $usedIPs));
+
+                $usedIPs[] = $ip; // Agregar IP a la lista de usadas
                 $threatScore = $this->generateRealisticThreatScore();
                 $classification = $this->getRiskLevel($threatScore);
                 $confidence = rand(70, 95);
                 $malwareFamily = $malwareFamilies[array_rand($malwareFamilies)];
                 $attackVector = $attackVectors[array_rand($attackVectors)];
 
-                // Generar timestamp realista (últimos 7 días)
-                $timestamp = Carbon::now()->subDays(rand(0, 7))->subHours(rand(0, 23))->subMinutes(rand(0, 59));
-
-                // Generar IP realista
-                $ip = $this->generateRealisticIP();
+                // Generar timestamp realista (últimos 3 días incluyendo hoy)
+                $timestamp = Carbon::now()->subDays(rand(0, 2))->subHours(rand(0, 23))->subMinutes(rand(0, 59));
 
                 // Obtener geolocalización real usando el servicio
                 $geolocation = $this->getRealGeolocation($ip);
@@ -347,6 +353,16 @@ class SecurityTestDataSeeder extends Seeder
         }
 
         $this->command->info("   ✅ {$threatsCreated} amenazas de inteligencia creadas con geolocalización real");
+
+        // Verificar que los datos se crearon correctamente
+        $todayCount = ThreatIntelligence::whereDate('created_at', now()->toDateString())->count();
+        $yesterdayCount = ThreatIntelligence::whereDate('created_at', now()->subDay()->toDateString())->count();
+        $dayBeforeCount = ThreatIntelligence::whereDate('created_at', now()->subDays(2)->toDateString())->count();
+
+        $this->command->info("   📊 Distribución por días:");
+        $this->command->info("      - Hoy: {$todayCount} amenazas");
+        $this->command->info("      - Ayer: {$yesterdayCount} amenazas");
+        $this->command->info("      - Anteayer: {$dayBeforeCount} amenazas");
     }
 
     /**

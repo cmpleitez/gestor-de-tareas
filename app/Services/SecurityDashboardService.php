@@ -15,22 +15,22 @@ class SecurityDashboardService
     public function getRiskLevelDistribution(): array
     {
         return Cache::remember('security.risk_distribution', 600, function () {
-            $last30d = Carbon::now()->subDays(30);
+            $last3d = Carbon::now()->subDays(3);
 
             // Solo 3 niveles: Crítico, Alto y Medio
             $distribution = [];
 
             // Contar eventos por rango de threat_score
             $distribution['critical'] = SecurityEvent::where('threat_score', '>=', 80)
-                ->where('created_at', '>=', $last30d)
+                ->where('created_at', '>=', $last3d)
                 ->count();
 
             $distribution['high'] = SecurityEvent::whereBetween('threat_score', [60, 79])
-                ->where('created_at', '>=', $last30d)
+                ->where('created_at', '>=', $last3d)
                 ->count();
 
             $distribution['medium'] = SecurityEvent::whereBetween('threat_score', [40, 59])
-                ->where('created_at', '>=', $last30d)
+                ->where('created_at', '>=', $last3d)
                 ->count();
 
             // Asegurar que todos los niveles estén presentes
@@ -51,7 +51,7 @@ class SecurityDashboardService
     public function getThreatsByCountry(): array
     {
         return Cache::remember('security.threats_by_country', 900, function () {
-            $last30d = Carbon::now()->subDays(30);
+            $last3d = Carbon::now()->subDays(3);
 
             return SecurityEvent::selectRaw('
                     JSON_UNQUOTE(JSON_EXTRACT(geolocation, "$.country")) as country,
@@ -60,7 +60,7 @@ class SecurityDashboardService
                 ')
                 ->whereNotNull('geolocation')
                 ->where('threat_score', '>=', 40) // Solo nivel Medio, Alto y Crítico
-                ->where('created_at', '>=', $last30d)
+                ->where('created_at', '>=', $last3d)
                 ->groupBy('country')
                 ->orderByDesc('count')
                 ->limit(10)
@@ -83,7 +83,7 @@ class SecurityDashboardService
     public function getTopSuspiciousIPs(): Collection
     {
         return Cache::remember('security.top_suspicious_ips', 600, function () {
-            $last7d = Carbon::now()->subDays(7);
+            $last3d = Carbon::now()->subDays(3);
 
             return SecurityEvent::select('ip_address')
                 ->selectRaw('AVG(threat_score) as avg_threat_score')
@@ -91,7 +91,7 @@ class SecurityDashboardService
                 ->selectRaw('MAX(threat_score) as max_threat_score')
                 ->selectRaw('JSON_UNQUOTE(JSON_EXTRACT(geolocation, "$.country")) as country')
                 ->where('threat_score', '>=', 60)
-                ->where('created_at', '>=', $last7d)
+                ->where('created_at', '>=', $last3d)
                 ->groupBy('ip_address', 'country')
                 ->orderByDesc('avg_threat_score')
                 ->limit(10)
@@ -126,8 +126,8 @@ class SecurityDashboardService
             $now = Carbon::now();
             $trends = [];
 
-            // Últimos 7 días
-            for ($i = 6; $i >= 0; $i--) {
+            // Últimos 3 días
+            for ($i = 2; $i >= 0; $i--) {
                 $date = $now->copy()->subDays($i);
                 $startOfDay = $date->copy()->startOfDay();
                 $endOfDay = $date->copy()->endOfDay();

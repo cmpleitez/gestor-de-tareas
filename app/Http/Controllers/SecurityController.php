@@ -37,50 +37,59 @@ class SecurityController extends Controller
             // Parámetros de paginación
             $perPage = $request->get('per_page', 25);
             $page = $request->get('page', 1);
-            Log::info("=== INICIO DE LOGS DE SEGURIDAD ===");
-            Log::info("Página de logs solicitada: {$page}");
 
             // Filtros
             $source = $request->get('source');
             $search = $request->get('search');
             $ip = $request->get('ip');
             $date = $request->get('date');
-            
-            Log::info("Filtros aplicados - Source: {$source}, Search: {$search}, IP: {$ip}, Date: {$date}");
 
-            // Generar logs de ejemplo para demostración (sin leer archivos locales)
+            // Leer logs reales del sistema de seguridad (EXCLUYENDO laravel.log para evitar loop infinito)
             $logs = collect();
-            
-            // Crear logs de ejemplo para evitar singularidad
-            $exampleLogs = [
-                [
-                    'timestamp' => now()->format('Y-m-d H:i:s'),
-                    'source' => 'security',
-                    'message' => 'Sistema de seguridad iniciado correctamente',
-                    'ip' => '127.0.0.1',
-                    'user_id' => 'system'
-                ],
-                [
-                    'timestamp' => now()->subMinutes(5)->format('Y-m-d H:i:s'),
-                    'source' => 'firewall',
-                    'message' => 'Regla de firewall aplicada: bloqueo IP 192.168.1.100',
-                    'ip' => '192.168.1.100',
-                    'user_id' => 'admin'
-                ],
-                [
-                    'timestamp' => now()->subMinutes(10)->format('Y-m-d H:i:s'),
-                    'source' => 'ids',
-                    'message' => 'Intento de intrusión detectado desde 10.0.0.50',
-                    'ip' => '10.0.0.50',
-                    'user_id' => null
-                ]
+            $filesToRead = [];
+
+            // Definir archivos de logs de seguridad a leer
+            $logFiles = [
+                'security' => storage_path('logs/security.log'),
+                'firewall' => storage_path('logs/firewall.log'),
+                'ids' => storage_path('logs/ids.log')
             ];
-            
-            foreach ($exampleLogs as $log) {
-                $logs->push($log);
+
+            // Leer cada archivo de log si existe
+            foreach ($logFiles as $logSource => $filePath) {
+                if (file_exists($filePath) && is_readable($filePath)) {
+                    $fileToRead = $logSource;
+                    $filesToRead[] = $fileToRead;
+
+                    try {
+                        $fileContent = file_get_contents($filePath);
+                        if ($fileContent) {
+                            $lines = explode("\n", $fileContent);
+
+                            foreach ($lines as $line) {
+                                $line = trim($line);
+                                if (empty($line))
+                                    continue;
+
+                                $parsedLog = $this->parseLogLine($line);
+                                if ($parsedLog) {
+                                    $parsedLog['source'] = $logSource;
+                                    $logs->push($parsedLog);
+                                }
+                            }
+                        }
+                    } catch (\Exception $e) {
+                        // Error silencioso para evitar loop infinito
+                    }
+                }
             }
-            
-            Log::info("Logs de ejemplo generados: " . $logs->count() . " entradas");
+
+
+
+            // Asegurar que $logs sea siempre una colección válida
+            if ($logs->isEmpty()) {
+                $logs = collect();
+            }
 
             // APLICAR FILTROS (incluyendo fuente)
             if ($source && $source !== 'all') {
@@ -88,34 +97,38 @@ class SecurityController extends Controller
                     return $logEntry['source'] === $source;
                 });
             }
-            
+
             if ($search || $ip || $date) {
                 $logs = $logs->filter(function ($logEntry) use ($search, $ip, $date) {
                     // Filtro por búsqueda de texto
                     if ($search && !str_contains(strtolower($logEntry['message']), strtolower($search))) {
                         return false;
                     }
-                    
+
                     // Filtro por IP
                     if ($ip && !str_contains($logEntry['ip'], $ip)) {
                         return false;
                     }
-                    
+
                     // Filtro por fecha
                     if ($date && !str_starts_with($logEntry['timestamp'], $date)) {
                         return false;
                     }
-                    
+
                     return true;
                 });
             }
 
-            // Ordenar por timestamp más reciente
-            $logs = $logs->sortByDesc('timestamp');
-            
+            // Ordenar por timestamp más reciente (solo si hay logs)
+            if ($logs->isNotEmpty()) {
+                $logs = $logs->sortByDesc('timestamp');
+            }
+
             // Paginar
             $totalLogs = $logs->count();
-            $logs = $logs->forPage($page, $perPage);
+            if ($totalLogs > 0) {
+                $logs = $logs->forPage($page, $perPage);
+            }
 
             // Generar datos de paginación
             $pagination = [
@@ -127,29 +140,41 @@ class SecurityController extends Controller
                 'to' => min($page * $perPage, $totalLogs),
             ];
 
-            // DEBUG: Log de información antes de enviar a la vista (COMENTADO PARA EVITAR LOOP)
-            // Log::info("Enviando logs a la vista", [
-            //     'total_logs' => $logs->count(),
-            //     'source_requested' => $source,
-            //     'files_read' => $filesToRead,
-            //     'pagination' => $pagination
-            // ]);
+
+
 
             // DEBUG: Para depuración, descomenta la siguiente línea:
             // dd($logs->values()->toArray(), $pagination);
-            
-            Log::info("Retornando vista con {$logs->count()} logs y paginación: " . json_encode($pagination));
-            
+
+
+            // Asegurar que logs sea siempre un array válido
+            $logsArray = $logs->isNotEmpty() ? $logs->values()->toArray() : [];
+
+            // Filtrar elementos vacíos o nulos
+            $logsArray = array_filter($logsArray, function ($log) {
+                return !empty($log) && is_array($log) && !empty($log['message']);
+            });
+
+            // Reindexar el array después del filtrado
+            $logsArray = array_values($logsArray);
+
+            // Validación final antes de enviar a la vista
+            if (!is_array($logsArray)) {
+                $logsArray = [];
+            }
+
+            // DEBUG: Verificar el tipo de datos antes de enviar
+            // dd('DEBUG: $logsArray antes de enviar:', $logsArray, 'Tipo:', gettype($logsArray), 'Count:', is_array($logsArray) ? count($logsArray) : 'N/A');
+
             return view('security.logs', [
-                'logs' => $logs->values()->toArray(),
+                'logs' => $logsArray,
                 'pagination' => $pagination
             ]);
 
         } catch (\Exception $e) {
-            Log::error('Error en controlador de logs: ' . $e->getMessage());
-
+            // Error silencioso para evitar loop infinito
             return view('security.logs', [
-                'logs' => collect(),
+                'logs' => [],
                 'pagination' => [
                     'current_page' => 1,
                     'per_page' => 25,
@@ -185,7 +210,7 @@ class SecurityController extends Controller
         // Patrón 2: [timestamp] mensaje (formato genérico)
         if (preg_match('/^\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\] (.+)$/', $line, $matches)) {
             $message = $matches[2];
-            
+
             // Intentar extraer source.level del mensaje
             if (preg_match('/^(\w+)\.(\w+): (.+)$/', $message, $subMatches)) {
                 // Log::debug("✅ Patrón 2 exitoso: " . $subMatches[1] . "." . $subMatches[2]);
@@ -197,12 +222,12 @@ class SecurityController extends Controller
                     'user_id' => $this->extractUserIdFromMessage($subMatches[3]),
                 ];
             }
-            
-            // Si no tiene source.level, usar 'laravel' como fuente por defecto
-            // Log::debug("✅ Patrón 2 genérico: usando 'laravel' como fuente");
+
+            // Si no tiene source.level, usar 'system' como fuente por defecto
+            // Log::debug("✅ Patrón 2 genérico: usando 'system' como fuente");
             return [
                 'timestamp' => $matches[1],
-                'source' => 'laravel',
+                'source' => 'system',
                 'message' => $message,
                 'ip' => $this->extractIPFromMessage($message),
                 'user_id' => $this->extractUserIdFromMessage($message),
@@ -214,7 +239,7 @@ class SecurityController extends Controller
             // Log::debug("✅ Patrón 3: línea sin timestamp, usando timestamp actual");
             return [
                 'timestamp' => now()->format('Y-m-d H:i:s'),
-                'source' => 'laravel',
+                'source' => 'system',
                 'message' => $line,
                 'ip' => $this->extractIPFromMessage($line),
                 'user_id' => $this->extractUserIdFromMessage($line),
@@ -252,12 +277,12 @@ class SecurityController extends Controller
     {
         try {
             $dashboardData = [
-                'risk_distribution' => [0, 0, 0],
-                'threats_by_country' => [],
-                'top_suspicious_ips' => collect(),
-                'recent_events' => collect(),
-                'threat_trends' => [],
-                'system_performance' => [],
+                'risk_distribution' => $this->dashboardService->getRiskLevelDistribution(),
+                'threats_by_country' => $this->dashboardService->getThreatsByCountry(),
+                'top_suspicious_ips' => $this->dashboardService->getTopSuspiciousIPs(),
+                'recent_events' => $this->dashboardService->getRecentEvents(10),
+                'threat_trends' => $this->dashboardService->getThreatTrends(),
+                'system_performance' => $this->dashboardService->getSystemPerformance(),
             ];
 
             return view('security.index', $dashboardData);
@@ -277,8 +302,8 @@ class SecurityController extends Controller
     public function events()
     {
         try {
-            // Obtener eventos de seguridad de los últimos 7 días
-            $events = SecurityEvent::where('created_at', '>=', now()->subDays(7))
+            // Obtener eventos de seguridad solo de hoy
+            $events = SecurityEvent::whereDate('created_at', now()->toDateString())
                 ->orderBy('created_at', 'desc')
                 ->get();
 
@@ -301,7 +326,7 @@ class SecurityController extends Controller
             ]);
         } catch (\Exception $e) {
             Log::error('Error en events: ' . $e->getMessage());
-            
+
             // En caso de error, retornar vista con datos vacíos
             return view('security.events', [
                 'events' => collect(),
@@ -317,41 +342,70 @@ class SecurityController extends Controller
     public function threatIntelligence()
     {
         try {
-            // Obtener amenazas de inteligencia de los últimos 30 días
-            $threats = ThreatIntelligence::where('created_at', '>=', now()->subDays(30))
+            // Obtener amenazas de inteligencia de los últimos 3 días
+            $threats = ThreatIntelligence::where('created_at', '>=', now()->subDays(3))
                 ->orderBy('created_at', 'desc')
                 ->get();
 
             // Calcular estadísticas
             $totalThreats = $threats->count();
             $activeThreats = $threats->where('status', 'active')->count();
-            $criticalThreats = $threats->where('threat_level', 'critical')->count();
-            $highThreats = $threats->where('threat_level', 'high')->count();
+            $criticalThreats = $threats->where('classification', 'critical')->count();
+            $highThreats = $threats->where('classification', 'high')->count();
 
-            // Datos de evolución (últimos 7 días)
-            $evolutionData = [];
-            for ($i = 6; $i >= 0; $i--) {
-                $date = now()->subDays($i)->format('Y-m-d');
-                $count = ThreatIntelligence::whereDate('created_at', $date)->count();
-                $evolutionData[] = [
-                    'date' => $date,
-                    'count' => $count
-                ];
+            // Log para debugging
+            Log::info("Estadísticas de amenazas - Total: {$totalThreats}, Activas: {$activeThreats}, Críticas: {$criticalThreats}, Altas: {$highThreats}");
+
+            // Datos de evolución (últimos 3 días) - Formato para Chart.js
+            $serverEvolutionData = [
+                'dates' => [],
+                'critical' => [],
+                'high' => [],
+                'medium' => []
+            ];
+
+            // Log para debugging
+            Log::info('Generando datos de evolución para threat-intelligence');
+
+            for ($i = 2; $i >= 0; $i--) {
+                $date = now()->subDays($i)->format('M d'); // Formato corto para el gráfico
+                $serverEvolutionData['dates'][] = $date;
+
+                // Contar amenazas por nivel de riesgo para cada día
+                $dayStart = now()->subDays($i)->startOfDay();
+                $dayEnd = now()->subDays($i)->endOfDay();
+
+                $serverEvolutionData['critical'][] = ThreatIntelligence::where('classification', 'critical')
+                    ->whereBetween('created_at', [$dayStart, $dayEnd])
+                    ->count();
+
+                $serverEvolutionData['high'][] = ThreatIntelligence::where('classification', 'high')
+                    ->whereBetween('created_at', [$dayStart, $dayEnd])
+                    ->count();
+
+                $serverEvolutionData['medium'][] = ThreatIntelligence::where('classification', 'medium')
+                    ->whereBetween('created_at', [$dayStart, $dayEnd])
+                    ->count();
             }
+
+            // Log para debugging
+            Log::info('Datos de evolución generados:', $serverEvolutionData);
 
             return view('security.threat-intelligence', [
                 'threats' => $threats,
-                'evolutionData' => $evolutionData,
+                'serverEvolutionData' => $serverEvolutionData,
                 'totalThreats' => $totalThreats,
                 'activeThreats' => $activeThreats,
                 'criticalThreats' => $criticalThreats,
                 'highThreats' => $highThreats,
             ]);
         } catch (\Exception $e) {
+            Log::error('Error en threatIntelligence: ' . $e->getMessage());
+
             // En caso de error, retornar vista con datos vacíos
             return view('security.threat-intelligence', [
                 'threats' => collect(),
-                'evolutionData' => [],
+                'serverEvolutionData' => [],
                 'totalThreats' => 0,
                 'activeThreats' => 0,
                 'criticalThreats' => 0,
@@ -367,7 +421,7 @@ class SecurityController extends Controller
             $ipReputations = $this->simpleSecurity->getIPReputations();
             $riskDistribution = $this->simpleSecurity->getRiskDistribution();
             $countryDistribution = $this->simpleSecurity->getCountryDistribution();
-            
+
             return view('security.ip-reputation', [
                 'ipReputations' => $ipReputations,
                 'riskDistribution' => $riskDistribution,
@@ -380,7 +434,7 @@ class SecurityController extends Controller
             ]);
         } catch (\Exception $e) {
             Log::error('Error en ipReputation: ' . $e->getMessage());
-            
+
             // En caso de error, retornar vista con datos vacíos
             return view('security.ip-reputation', [
                 'ipReputations' => collect(),

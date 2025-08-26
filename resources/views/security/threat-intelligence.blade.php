@@ -321,7 +321,7 @@
 
         // Datos reales enviados desde el controlador
         const serverThreats = {!! json_encode($threats ?? []) !!};
-        const serverEvolutionData = {!! json_encode($evolutionData ?? []) !!};
+        const serverEvolutionData = {!! json_encode($serverEvolutionData ?? []) !!};
 
         // Inicialización
         document.addEventListener('DOMContentLoaded', function() {
@@ -367,6 +367,12 @@
                         data: serverEvolutionData.high || [],
                         borderColor: '#f6c23e',
                         backgroundColor: 'rgba(246, 194, 62, 0.1)',
+                        tension: 0.4
+                    }, {
+                        label: 'Amenazas Medias',
+                        data: serverEvolutionData.medium || [],
+                        borderColor: '#36b9cc',
+                        backgroundColor: 'rgba(54, 185, 204, 0.1)',
                         tension: 0.4
                     }]
                 },
