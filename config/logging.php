@@ -151,9 +151,7 @@ return [
             'replace_placeholders' => true,
         ],
 
-        'emergency' => [
-            'path' => storage_path('logs/laravel.log'),
-        ],
+
     ],
 
 ];

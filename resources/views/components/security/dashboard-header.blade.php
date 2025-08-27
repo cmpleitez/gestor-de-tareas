@@ -11,7 +11,7 @@
                 <div class="row align-items-center justify-content-center">
                     <div class="col-md-11">
                         <h6 class="m-0 align-items-center" style="display: flex; align-items: center;">
-                            <i class="bx bxs-check-shield me-3 text-dark" style="padding-left: 0rem !important; padding-right: 0.2rem !important; font-size: 3rem;"></i>
+                            <i class="bx bxs-check-shield me-3 text-dark" style="padding-left: 0rem !important; padding-right: 0.2rem !important; font-size: 2rem;"></i>
                             {{ $title }}
                         </h6>
                     </div>

@@ -61,28 +61,23 @@
 @section('contenedor')
     <div class="container-fluid" data-risk-distribution="{{ trim(json_encode($risk_distribution ?? [])) }}"
         data-threats-by-country="{{ trim(json_encode($threats_by_country ?? [])) }}">
-        <!-- ========================================
-                                                                                                                        HEADER DE EVENTOS DE SEGURIDAD
-                                                                                                                        ======================================== -->
-        <div class="row mb-4">
+
+        <div class="row">
             <div class="col-12">
-                <div class="card bg-gradient-primary text-white">
-                    <div class="card-body">
-                        <div class="row align-items-center">
-                            <div class="col">
-                                <h4 class="card-title text-white mb-1">
-                                    <i class="fas fa-shield-alt me-2"></i>
-                                    Eventos de Seguridad
-                                </h4>
-                                <p class="card-text text-white-50 mb-0">
-                                    Monitoreo y análisis detallado de eventos de seguridad en tiempo real
-                                </p>
+                <div class="card mb-0">
+                    <div class="card-body p-0">
+                        <div class="row align-items-center justify-content-center">
+                            <div class="col-md-11">
+                                <h6 class="m-0 align-items-center" style="display: flex; align-items: center;">
+                                    <i class="bx bxs-check-shield me-3 text-dark"
+                                        style="padding-left: 0rem !important; padding-right: 0.2rem !important; font-size: 2rem;"></i>
+                                    EVENTOS DE SEGURIDAD
+                                </h6>
                             </div>
-                            <div class="col-auto">
-                                <div class="d-flex align-items-center">
-                                    <span class="badge bg-light text-dark me-2">MONITORANDO</span>
-                                    <div class="spinner-border spinner-border-sm text-white" role="status">
-                                        <span class="visually-hidden">Cargando...</span>
+                            <div class="col-md-1 text-center">
+                                <div class="d-flex justify-content-end align-items-center">
+                                    <div class="security-status-indicator">
+                                        <div class="pulse-dot bg-danger"></div>
                                     </div>
                                 </div>
                             </div>
@@ -92,9 +87,10 @@
             </div>
         </div>
 
+
         <!-- ========================================
-                                                                                                                        FILTROS Y CONTROLES
-                                                                                                                        ======================================== -->
+                                                                                                                                    FILTROS Y CONTROLES
+                                                                                                                                    ======================================== -->
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card shadow">
@@ -146,8 +142,8 @@
         </div>
 
         <!-- ========================================
-                                                                                                                        TABLA DE EVENTOS
-                                                                                                                        ======================================== -->
+                                                                                                                                    TABLA DE EVENTOS
+                                                                                                                                    ======================================== -->
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card shadow">
