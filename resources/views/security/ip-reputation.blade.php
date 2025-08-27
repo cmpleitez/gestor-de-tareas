@@ -4,28 +4,22 @@
     <div class="container-fluid" data-risk-distribution="{{ trim(json_encode($risk_distribution ?? [])) }}"
         data-threats-by-country="{{ trim(json_encode($threats_by_country ?? [])) }}">
         <!-- Header de Reputación de IPs -->
-        <div class="row mb-4">
+        <div class="row">
             <div class="col-12">
-                <div class="card bg-gradient-warning text-white">
-                    <div class="card-body">
-                        <div class="row align-items-center">
-                            <div class="col-md-8">
-                                <h1 class="mb-2">
-                                    <i class="fas fa-globe me-3"></i>
-                                    Reputación de IPs
-                                </h1>
-                                <p class="mb-0 fs-5">
-                                    Análisis avanzado de reputación de direcciones IP con Machine Learning y fuentes
-                                    externas
-                                </p>
+                <div class="card mb-0">
+                    <div class="card-body p-0">
+                        <div class="row align-items-center justify-content-center">
+                            <div class="col-md-11">
+                                <h6 class="m-0 align-items-center" style="display: flex; align-items: center;">
+                                    <i class="bx bxs-check-shield me-3 text-dark"
+                                        style="padding-left: 0rem !important; padding-right: 0.2rem !important; font-size: 2rem;"></i>
+                                    REPUTACIÓN DE IPs
+                                </h6>
                             </div>
-                            <div class="col-md-4 text-end">
+                            <div class="col-md-1 text-center">
                                 <div class="d-flex justify-content-end align-items-center">
-                                    <div class="me-4">
-                                        <div class="fs-6 opacity-75">IPs Monitoreadas</div>
-                                        <div class="fs-4 fw-bold" id="monitored-ips-count">
-                                            {{ $totalIPs ?? 0 }}
-                                        </div>
+                                    <div class="security-status-indicator">
+                                        <div class="pulse-dot bg-danger"></div>
                                     </div>
                                 </div>
                             </div>
@@ -39,14 +33,11 @@
         <!-- Métricas eliminadas - Solo se muestran los gráficos -->
 
         <!-- Gráficos de Análisis -->
-        <div class="row mb-4">
-            <div class="col-xl-6 col-lg-7">
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">
-                            <i class="fas fa-chart-pie me-2"></i>
-                            Distribución por Nivel de Riesgo (Últimos 3 días)
-                        </h6>
+        <div class="row mt-1 gap-3">
+            <div class="col-md-6" style="padding-left: 1rem; padding-right: 1rem;">
+                <div class="card h-100" style="margin-bottom: 0rem;">
+                    <div class="card-header">
+                        <span class="card-title" style="font-size: 0.875rem; font-weight: 500;">Distribución por Nivel de Riesgo (Últimos 3 días)</span>
                     </div>
                     <div class="card-body">
                         <div class="chart-area" style="height: 500px;">
@@ -97,14 +88,10 @@
                     </div>
                 </div>
             </div>
-
-            <div class="col-xl-6 col-lg-5">
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">
-                            <i class="fas fa-globe me-2"></i>
-                            IPs por País (Últimos 3 días)
-                        </h6>
+            <div class="col-md-6" style="padding-left: 0rem; padding-right: 0rem;">
+                <div class="card h-100" style="margin-bottom: 0rem;">
+                    <div class="card-header">
+                        <span class="card-title" style="font-size: 0.875rem; font-weight: 500;">IPs por País (Últimos 3 días)</span>
                     </div>
                     <div class="card-body">
                         <div class="chart-area" style="height: 500px;">
@@ -129,14 +116,11 @@
         </div>
 
         <!-- Filtros de Búsqueda -->
-        <div class="row mb-4">
+        <div class="row mt-1">
             <div class="col-12">
-                <div class="card shadow">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">
-                            <i class="fas fa-filter me-2"></i>
-                            Filtros de Búsqueda
-                        </h6>
+                <div class="card" style="margin-bottom: 0rem;">
+                    <div class="card-header">
+                        <span class="card-title" style="font-size: 0.875rem; font-weight: 500;">Filtros de Búsqueda</span>
                     </div>
                     <div class="card-body">
                         <form id="ip-filter-form">
@@ -180,20 +164,11 @@
         </div>
 
         <!-- Tabla de Reputación de IPs -->
-        <div class="row">
+        <div class="row mt-1">
             <div class="col-12">
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                        <h6 class="m-0 font-weight-bold text-primary">
-                            <i class="fas fa-list me-2"></i>
-                            Base de Datos de Reputación (Últimos 3 días)
-                        </h6>
-                        <div class="d-flex">
-                            <button class="btn btn-outline-info btn-sm" onclick="updateIPReputation()">
-                                <i class="fas fa-sync-alt me-2"></i>
-                                Actualizar
-                            </button>
-                        </div>
+                <div class="card" style="margin-bottom: 0rem;">
+                    <div class="card-header">
+                        <span class="card-title" style="font-size: 0.875rem; font-weight: 500;">Base de Datos de Reputación (Últimos 3 días)</span>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">

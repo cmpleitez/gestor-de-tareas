@@ -65,30 +65,68 @@
             color: #212529;
             margin-left: 0.5rem;
         }
+
+        /* Indicador de estado de seguridad */
+        .security-status-indicator {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pulse-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .pulse-dot.bg-danger {
+            background-color: #dc3545;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+            }
+
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+            }
+
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+            }
+        }
     </style>
 @stop
 
 @section('contenedor')
     <div class="container-fluid">
         <!-- ========================================
-                                    HEADER DE LOGS DE SEGURIDAD
-                                    ======================================== -->
+                                                                                            HEADER DE LOGS DE SEGURIDAD
+                                                                                            ======================================== -->
         <div class="row">
             <div class="col-12">
-                <div class="card bg-gradient-primary text-white">
-                    <div class="card-body">
-                        <div class="row align-items-center">
-                            <div class="col">
-                                <h4 class="card-title mb-1">
-                                    <i class="fas fa-file-alt me-2"></i>
-                                    Logs de Seguridad
-                                </h4>
-                                <p class="card-text text-white-50 mb-0">
-                                    Gestión y análisis completo de logs del sistema de monitoreo de seguridad
-                                </p>
+                <div class="card mb-0 p-1">
+                    <div class="card-body p-0">
+                        <div class="row align-items-center justify-content-center">
+                            <div class="col-md-11">
+                                <h6 class="m-0 align-items-center" style="display: flex; align-items: center;">
+                                    <i class="bx bxs-check-shield me-3 text-dark"
+                                        style="padding-left: 0rem !important; padding-right: 0.2rem !important; font-size: 2rem;"></i>
+                                    EVENTOS DE SEGURIDAD
+                                </h6>
                             </div>
-                            <div class="col-auto">
-                                <!-- Elementos de debug eliminados -->
+                            <div class="col-md-1 text-center">
+                                <div class="d-flex justify-content-end align-items-center">
+                                    <div class="security-status-indicator">
+                                        <div class="pulse-dot bg-danger"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -96,23 +134,17 @@
             </div>
         </div>
 
-
-
         <!-- ========================================
-                                    FILTROS DE LOGS
-                            ======================================== -->
-        <div class="row">
+                                                                                            FILTROS DE LOGS
+                                                                                    ======================================== -->
+        <div class="row mt-1">
             <div class="col-12">
-                <div class="card shadow">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">
-                            <i class="fas fa-filter me-2"></i>
-                            Filtros de Búsqueda
-                        </h6>
+                <div class="card" style="margin-bottom: 0rem;">
+                    <div class="card-header">
+                        <span class="card-title" style="font-size: 0.875rem; font-weight: 500;">Filtros de Búsqueda</span>
                     </div>
                     <div class="card-body">
                         <form id="logFilterForm" class="row g-3" method="GET" action="{{ route('security.logs') }}">
-
                             <div class="col-md-2">
                                 <label for="log-source" class="form-label">Fuente</label>
                                 <select class="form-select" id="log-source">
@@ -122,18 +154,15 @@
                                     <option value="ids">IDS</option>
                                 </select>
                             </div>
-
-
-
                             <div class="col-md-4">
                                 <label for="log-search" class="form-label">Búsqueda de Texto</label>
                                 <input type="text" class="form-control" id="log-search" placeholder="Buscar en logs...">
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label for="log-ip" class="form-label">IP Específica</label>
                                 <input type="text" class="form-control" id="log-ip" placeholder="192.168.1.1">
                             </div>
-                            <div class="col-md-4 d-flex align-items-end">
+                            <div class="col-md-3 d-flex align-items-end">
                                 <button type="button" class="btn btn-outline-secondary w-100" onclick="clearFilters()">
                                     <i class="fas fa-times me-2"></i>
                                     Limpiar Filtros
@@ -146,20 +175,13 @@
         </div>
 
         <!-- ========================================
-                                    VISUALIZADOR DE LOGS
-                                    ======================================== -->
-        <div class="row mb-4">
+                                                                                            VISUALIZADOR DE LOGS
+                                                                                            ======================================== -->
+        <div class="row mt-1">
             <div class="col-12">
-                <div class="card shadow">
-                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                        <h6 class="m-0 font-weight-bold text-primary">
-                            <i class="fas fa-file-alt me-2"></i>
-                            Visualizador de Logs
-                        </h6>
-                        <button class="btn btn-success btn-sm" onclick="downloadLogs()">
-                            <i class="fas fa-download me-1"></i>
-                            Descargar Logs
-                        </button>
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title" style="font-size: 0.875rem; font-weight: 500;">Visualizador de Logs</span>
                     </div>
                     <div class="card-body">
                         <div class="log-viewer" id="logViewer">
