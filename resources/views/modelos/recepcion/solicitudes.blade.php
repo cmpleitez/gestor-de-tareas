@@ -330,123 +330,120 @@
 {{-- ITEMS DESTINATARIOS PARA CADA ROL --}}
 <div class="row">
     <div class="col-12">
-        @if (!auth()->user()->hasRole('Operador'))
-        <div class="accordion" id="accordionWrapa2">
-            <div class="card collapse-header border-0 overflow-hidden">
-                <div id="heading5" class="card-header" data-toggle="collapse" data-target="#accordion5"
-                    aria-expanded="false" aria-controls="accordion5" role="tablist"
-                    style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); border: none; margin: 0; cursor: pointer; transition: all 0.3s ease;">
-                    <div class="d-flex align-items-center justify-content-between w-100">
-                        <div class="d-flex align-items-center">
-                            <div class="d-flex align-items-center" style="padding: 0.75rem;">
-                                <i class="bx bx-target-lock text-white" style="font-size: 1.1rem;"></i>
+        @if (auth()->user()->main_role != 'Operador')
+            <div class="accordion" id="accordionWrapa2">
+                <div class="card collapse-header border-0 overflow-hidden">
+                    <div id="heading5" class="card-header" data-toggle="collapse" data-target="#accordion5"
+                        aria-expanded="false" aria-controls="accordion5" role="tablist"
+                        style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); border: none; margin: 0; cursor: pointer; transition: all 0.3s ease;">
+                        <div class="d-flex align-items-center justify-content-between w-100">
+                            <div class="d-flex align-items-center">
+                                <div class="d-flex align-items-center" style="padding: 0.75rem;">
+                                    <i class="bx bx-target-lock text-white" style="font-size: 1.1rem;"></i>
+                                </div>
+                                <div class="d-flex flex-column align-items-start justify-content-center">
+                                    <h6 class="mb-0 text-white font-weight-500"
+                                        style="font-size: 1rem; letter-spacing: 0.3px;">
+                                        @if (auth()->user()->main_role == 'Recepcionista')
+                                            <span class="font-weight-600">{{ auth()->user()->area->area }}</span>
+                                        @elseif(auth()->user()->main_role == 'Supervisor')
+                                            <span class="font-weight-600">{{ auth()->user()->equipos()->first()->equipo
+                                            }}</span>
+                                        @elseif(auth()->user()->main_role == 'Gestor')
+                                            @php $operador_por_defecto = $operadores->random(); @endphp
+                                            <span class="font-weight-600">{{ $operador_por_defecto->name }}</span>
+                                        @endif
+                                    </h6>
+                                    <small class="text-white-50" style="font-size: 0.8rem;">
+                                        Selecciona el item destino para impulsar las solicitudes
+                                    </small>
+                                </div>
                             </div>
-                            <div class="d-flex flex-column align-items-start justify-content-center">
-                                <h6 class="mb-0 text-white font-weight-500"
-                                    style="font-size: 1rem; letter-spacing: 0.3px;">
-                                    @if (auth()->user()->hasRole('Recepcionista'))
-                                    <span class="font-weight-600">{{ auth()->user()->area->area }}</span>
-                                    @elseif(auth()->user()->hasRole('Supervisor'))
-                                    <span class="font-weight-600">{{ auth()->user()->equipos()->first()->equipo
-                                        }}</span>
-                                    @elseif(auth()->user()->hasRole('Gestor'))
-                                    @php $operador_por_defecto = $operadores->random(); @endphp
-                                    <span class="font-weight-600">{{ $operador_por_defecto->name }}</span>
-                                    @endif
-                                </h6>
-                                <small class="text-white-50" style="font-size: 0.8rem;">
-                                    Selecciona el item destino para impulsar las solicitudes
-                                </small>
+                            <div>
+                                <i class="bx bx-chevron-down text-white accordion-arrow"
+                                    style="font-size: 1rem; transition: transform 0.3s ease;"></i>
                             </div>
-                        </div>
-                        <div>
-                            <i class="bx bx-chevron-down text-white accordion-arrow"
-                                style="font-size: 1rem; transition: transform 0.3s ease;"></i>
                         </div>
                     </div>
-                </div>
-                <div id="accordion5" role="tabpanel" data-parent="#accordionWrapa2" aria-labelledby="heading5"
-                    class="collapse">
-                    <div class="card-content">
-                        <div class="card-body" style="background: #f8f9fa; padding: 1rem;">
-                            @if (auth()->user()->hasRole('Recepcionista') && isset($areas))
-                            {{-- RECEPCIONISTA --}}
-                            <div class="row" style="display: flex; align-items: stretch;">
-                                @foreach ($areas as $area)
-                                <div class="col-md-3">
-                                    <div class="selectable-item {{ $area->id == auth()->user()->area_id ? 'selected' : '' }}"
-                                        onclick="selectItem('area_{{ $area->id }}')">
-                                        <div class="item-body">
-                                            <div class="item-info">
-                                                <div class="item-name">{{ $area->area }}</div>
-                                                <div class="item-desc">Área de trabajo</div>
+                    <div id="accordion5" role="tabpanel" data-parent="#accordionWrapa2" aria-labelledby="heading5"
+                        class="collapse">
+                        <div class="card-content">
+                            <div class="card-body" style="background: #f8f9fa; padding: 1rem;">
+                                @if (auth()->user()->main_role == 'Recepcionista' && isset($areas))
+                                    <div class="row" style="display: flex; align-items: stretch;">
+                                        @foreach ($areas as $area)
+                                        <div class="col-md-3">
+                                            <div class="selectable-item {{ $area->id == auth()->user()->area_id ? 'selected' : '' }}"
+                                                onclick="selectItem('area_{{ $area->id }}')">
+                                                <div class="item-body">
+                                                    <div class="item-info">
+                                                        <div class="item-name">{{ $area->area }}</div>
+                                                        <div class="item-desc">Área de trabajo</div>
+                                                    </div>
+                                                    <div class="radio-indicator"></div>
+                                                </div>
+                                                <input type="radio" id="area_{{ $area->id }}" name="area_destino"
+                                                    value="{{ $area->id }}" {{ $area->id == auth()->user()->area_id ? 'checked'
+                                                : '' }}
+                                                style="display: none;">
                                             </div>
-                                            <div class="radio-indicator"></div>
                                         </div>
-                                        <input type="radio" id="area_{{ $area->id }}" name="area_destino"
-                                            value="{{ $area->id }}" {{ $area->id == auth()->user()->area_id ? 'checked'
-                                        : '' }}
-                                        style="display: none;">
+                                        @endforeach
                                     </div>
-                                </div>
-                                @endforeach
-                            </div>
-                            @elseif (auth()->user()->hasRole('Supervisor') && isset($equipos))
-                            {{-- SUPERVISOR --}}
-                            <div class="row" style="display: flex; align-items: stretch;">
-                                @foreach ($equipos as $equipo)
-                                <div class="col-md-3">
-                                    <div class="selectable-item {{ $equipo->id == auth()->user()->equipos->first()->id ? 'selected' : '' }}"
-                                        onclick="selectItem('equipo_{{ $equipo->id }}')">
-                                        <div class="item-body">
-                                            <div class="item-info">
-                                                <div class="item-name">{{ $equipo->equipo }}</div>
-                                                <div class="item-desc">Equipo de trabajo</div>
+                                @elseif (auth()->user()->main_role == 'Supervisor' && isset($equipos))
+                                    <div class="row" style="display: flex; align-items: stretch;">
+                                        @foreach ($equipos as $equipo)
+                                        <div class="col-md-3">
+                                            <div class="selectable-item {{ $equipo->id == auth()->user()->equipos->first()->id ? 'selected' : '' }}"
+                                                onclick="selectItem('equipo_{{ $equipo->id }}')">
+                                                <div class="item-body">
+                                                    <div class="item-info">
+                                                        <div class="item-name">{{ $equipo->equipo }}</div>
+                                                        <div class="item-desc">Equipo de trabajo</div>
+                                                    </div>
+                                                    <div class="radio-indicator"></div>
+                                                </div>
+                                                <input type="radio" id="equipo_{{ $equipo->id }}" name="equipo_destino"
+                                                    value="{{ $equipo->id }}" {{ $equipo->id ==
+                                                auth()->user()->equipos->first()->id ? 'checked' : '' }}
+                                                style="display: none;">
                                             </div>
-                                            <div class="radio-indicator"></div>
                                         </div>
-                                        <input type="radio" id="equipo_{{ $equipo->id }}" name="equipo_destino"
-                                            value="{{ $equipo->id }}" {{ $equipo->id ==
-                                        auth()->user()->equipos->first()->id ? 'checked' : '' }}
-                                        style="display: none;">
+                                        @endforeach
                                     </div>
-                                </div>
-                                @endforeach
-                            </div>
-                            @elseif (auth()->user()->hasRole('Gestor') && isset($operadores))
-                            {{-- GESTOR --}}
-                            <div class="row" style="display: flex; align-items: stretch;">
-                                @php $operador_por_defecto = $operadores->random(); @endphp
-                                @foreach ($operadores as $operador)
-                                <div class="col-md-3">
-                                    <div class="selectable-item {{ $operador_por_defecto->id == $operador->id ? 'selected' : '' }}"
-                                        onclick="selectItem('operador_{{ $operador->id }}')">
-                                        <div class="item-body">
-                                            <div class="item-info">
-                                                <div class="item-name">{{ $operador->name }}</div>
-                                                <div class="item-desc">Operador calificado</div>
+                                @elseif (auth()->user()->main_role == 'Gestor' && isset($operadores)) 
+                                    <div class="row" style="display: flex; align-items: stretch;">
+                                        @php $operador_por_defecto = $operadores->random(); @endphp
+                                        @foreach ($operadores as $operador)
+                                        <div class="col-md-3">
+                                            <div class="selectable-item {{ $operador_por_defecto->id == $operador->id ? 'selected' : '' }}"
+                                                onclick="selectItem('operador_{{ $operador->id }}')">
+                                                <div class="item-body">
+                                                    <div class="item-info">
+                                                        <div class="item-name">{{ $operador->name }}</div>
+                                                        <div class="item-desc">Operador calificado</div>
+                                                    </div>
+                                                    <div class="radio-indicator"></div>
+                                                </div>
+                                                <input type="radio" id="operador_{{ $operador->id }}" name="operador_destino"
+                                                    value="{{ $operador->id }}" {{ $operador_por_defecto->id == $operador->id ?
+                                                'checked' : '' }}
+                                                style="display: none;">
                                             </div>
-                                            <div class="radio-indicator"></div>
                                         </div>
-                                        <input type="radio" id="operador_{{ $operador->id }}" name="operador_destino"
-                                            value="{{ $operador->id }}" {{ $operador_por_defecto->id == $operador->id ?
-                                        'checked' : '' }}
-                                        style="display: none;">
+                                        @endforeach
                                     </div>
-                                </div>
-                                @endforeach
+                                @else
+                                    <div class="text-center text-muted py-4">
+                                        <i class="bx bx-info-circle" style="font-size: 2rem;"></i>
+                                        <p class="mt-2 mb-0">No hay elementos disponibles para tu rol.</p>
+                                    </div>
+                                @endif
                             </div>
-                            @else
-                            <div class="text-center text-muted py-4">
-                                <i class="bx bx-info-circle" style="font-size: 2rem;"></i>
-                                <p class="mt-2 mb-0">No hay elementos disponibles para tu rol.</p>
-                            </div>
-                            @endif
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
         @endif
     </div>
 </div>
@@ -463,12 +460,12 @@
                     </div>
                     <h6 class="mb-0 text-white font-weight-600" style="font-size: 0.9rem;">Recibidas</h6>
                     <div class="ml-auto d-flex align-items-center">
-                        @if (auth()->user()->hasRole('Gestor') || auth()->user()->hasRole('Supervisor'))
-                        <button type="button" class="btn btn-sm btn-outline-light mr-2" id="btn-distribuir-todas"
-                            data-toggle="tooltip" data-placement="top" title="Impulsar todas las solicitudes"
-                            style="border: 1px solid rgba(255,255,255,0.3); background: transparent; padding: 4px 8px; font-size: 0.8rem;">
-                            <i class="bx bxs-send" style="font-size: 0.8rem;"></i>
-                        </button>
+                        @if (auth()->user()->main_role == 'Gestor' || auth()->user()->main_role == 'Supervisor')
+                            <button type="button" class="btn btn-sm btn-outline-light mr-2" id="btn-distribuir-todas"
+                                data-toggle="tooltip" data-placement="top" title="Impulsar todas las solicitudes"
+                                style="border: 1px solid rgba(255,255,255,0.3); background: transparent; padding: 4px 8px; font-size: 0.8rem;">
+                                <i class="bx bxs-send" style="font-size: 0.8rem;"></i>
+                            </button>
                         @endif
                         <span class="badge badge-white text-dark" id="contador-recibidas">{{ count($recibidas) }}</span>
                     </div>
@@ -549,13 +546,13 @@
 <script>
     //SELECCIONANDO EL ITEM DESTINATARIO
         let userRole = '';
-        @if (auth()->user()->hasRole('Recepcionista'))
+        @if (auth()->user()->main_role == 'Recepcionista')
             userRole = 'Recepcionista';
-        @elseif (auth()->user()->hasRole('Supervisor'))
+        @elseif (auth()->user()->main_role == 'Supervisor')
             userRole = 'Supervisor';
-        @elseif (auth()->user()->hasRole('Gestor'))
+        @elseif (auth()->user()->main_role == 'Gestor')
             userRole = 'Gestor';
-        @elseif (auth()->user()->hasRole('Operador'))
+        @elseif (auth()->user()->main_role == 'Operador')
             userRole = 'Operador';
         @endif
         function selectItem(radioId) { // Función para seleccionar items
@@ -651,9 +648,9 @@
                 if (result.value === true) {
                     // Determinar la URL según el rol del usuario
                     let url = '';
-                    @if (auth()->user()->hasRole('Gestor'))
+                    @if (auth()->user()->main_role == 'Gestor')
                         url = '{{ route('recepcion.delegar-todas') }}';
-                    @elseif (auth()->user()->hasRole('Supervisor'))
+                    @elseif (auth()->user()->main_role == 'Supervisor')
                         url = '{{ route('recepcion.asignar-todas') }}';
                     @endif
 

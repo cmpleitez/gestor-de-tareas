@@ -48,9 +48,8 @@
 345678901
 
 
-🟢 verificar los servicios de config/security
-...🟢 maquetando modulo de seguridad
-optimizar config/security.php
+
+
 
 analisis de la factura digital ocean:
 DigitalOcean:
@@ -77,16 +76,18 @@ DigitalOcean:
         Tu módulo de seguridad puede usarse sin límites mensuales de transferencia.    
 
 SEGURIDAD:
+    🟢 optimizar config/security.php
+    🟢 verificar los servicios de config/security
     🟢 implementar el ssl
     🟢 agregar validadores de funcionamiento y mensajes de error para el usuario en el grupo de rutas "security", evitando el uso de escritura en el log de laravel
     🟢 agregar mensajes de error en los try catch del modulo de seguridad
     🟢 eliminar el campo geolocalizacion porque es decorativo
     🟢 retirar campos de las tablas que no esten siendo utilizados por las vistas y retirarlos tambien los procesos que recopilen sus datos
-
     🟢 revisar las opciones de chat de cursor
     🟢 mantener los equipos de trabajo para tener potencia en flexibilidad y evitar la estructura organizativa que suele ser variable y dar fuertes golpes a los datos y a la seguridad del sistema
 
 SERVICIOS:
+    
 ...🟢 implementar un nuevo campo para distinguir el rol principal para el uso de la gestion de tareas
         verificar y delimitar casos de roles multiples
     🟢 construir de control de calidad para el gestor
