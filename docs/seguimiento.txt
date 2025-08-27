@@ -76,44 +76,27 @@ DigitalOcean:
         La transferencia gratuita es PERMANENTE y real. Cada mes tienes derecho a 1366 GB sin costo adicional. Tu factura de $6.05 es por los servicios, no por la transferencia de datos.
         Tu módulo de seguridad puede usarse sin límites mensuales de transferencia.    
 
+SEGURIDAD:
+    🟢 implementar el ssl
+    🟢 agregar validadores de funcionamiento y mensajes de error para el usuario en el grupo de rutas "security", evitando el uso de escritura en el log de laravel
+    🟢 agregar mensajes de error en los try catch del modulo de seguridad
+    🟢 eliminar el campo geolocalizacion porque es decorativo
+    🟢 retirar campos de las tablas que no esten siendo utilizados por las vistas y retirarlos tambien los procesos que recopilen sus datos
 
-🟢 agregar validadores de funcionamiento y mensajes de error para el usuario en el grupo de rutas "security", evitando el uso de escritura en el log de laravel
-🟢 agregar mensajes de error en los try catch del modulo de seguridad
-🟢 eliminar el campo geolocalizacion porque es decorativo
-🟢 aplicar filtros automatizados
-🟢 medir el peso de las consultas y procesos en la zona de seguridad del sistema
-🟢 la api de geolocalizacion no esta funcionando
-🟢 dar seguridad a nginx porque no es pache el motor donde trabajamos con todo
-🟢 via enginx posiblemente esten llegando, toda la configuracion de forge sites se ve que es de nginx sin embargo la IA entendio que era apache
-🟢 consultar que significan las fuentes de Filtros de Búsqueda de security/logs y confirmar lo que se va quedar
-🟢 retirar campos de las tablas que no esten siendo utilizados por las vistas y retirarlos tambien los procesos que recopilen sus datos
-🟢 retirar procesos de los middlewares que no esten siendo utilizados en las vistas de security
-🟢 revisar las opciones de chat de cursor
-🟢 verificar si el deploy de forge no esta originando permisos al folder raíz
-🟢 mantener los equipos de trabajo para tener potencia en flexibilidad y evitar la estructura organizativa que suele ser variable y dar fuertes golpes a los datos y a la seguridad del sistema
+    🟢 revisar las opciones de chat de cursor
+    🟢 mantener los equipos de trabajo para tener potencia en flexibilidad y evitar la estructura organizativa que suele ser variable y dar fuertes golpes a los datos y a la seguridad del sistema
 
+SERVICIOS:
 ...🟢 implementar un nuevo campo para distinguir el rol principal para el uso de la gestion de tareas
         verificar y delimitar casos de roles multiples
-🟢 compactando las herramientas de seguridad y el uso de cuota mensual en transacciones
-        verificando que los servicios muestren datos reales:
-            ...eliminando todo lo que no funciona o esta de mas
-                evaluar si se necesita, preguntar en verdad se recopila y decidir
-        agregar datos complementarios a las vistas
-        maquetar
+    🟢 construir de control de calidad para el gestor
+    🟢 proceso de rechazo de una solicitud o anulación
+    🟢 entrega de una solicitud al beneficiario
+    🟢 revisar proceso de priorizacion
+    🟢 global cruds.edit: si hay historial no se puede editar
+    🟢 servicio controlado: para cambiar el dui a una persona por motivos de error involuntario a la hora de registrar ese dui en el formulario de registro de usuarios
+    🟢 register: asegurar el id del usuario con un aumento no automático sino programatico
 
-🟢 registrar las extensiones que hacen funcionar los links goto
-🟢 construir de control de calidad para el gestor
-🟢 proceso de rechazo de una solicitud o anulación
-🟢 entrega de una solicitud al beneficiario
-🟢 revisar proceso de priorizacion
-🟢 corregir el problema de lentitud de red que se origina despues de suceder un error de sistema: Slow network is detected.
-🟢 global cruds.edit: si hay historial no se puede editar
-🟢 servicio controlado: para cambiar el dui a una persona por motivos de error involuntario a la hora de registrar ese dui en el formulario de registro de usuarios
-🟢 register: asegurar el id del usuario con un aumento no automático sino programatico
-
-   🟢 potenciar el documento que incluye: procedimiento y los servicios informáticos a construir
-   🟢 necesitamos pegar el dominio a forge y a digital ocean
-   🟢 implementar el ssl
 
 🟠 rage agains the machine & limp bizkit & korn & alice in chains
     ...limp bizkit: im broke
