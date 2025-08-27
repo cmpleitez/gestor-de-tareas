@@ -47,6 +47,7 @@
 234567890
 345678901
 
+...🟢 maquetando modulo de seguridad
 
 🟢 agregar validadores de funcionamiento y mensajes de error para el usuario en el grupo de rutas "security", evitando el uso de escritura en el log de laravel
 🟢 agregar mensajes de error en los try catch del modulo de seguridad
