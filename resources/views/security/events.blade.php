@@ -91,14 +91,11 @@
         <!-- ========================================
                                                                                                                                     FILTROS Y CONTROLES
                                                                                                                                     ======================================== -->
-        <div class="row mb-4">
+        <div class="row mt-1">
             <div class="col-12">
-                <div class="card shadow">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">
-                            <i class="fas fa-filter me-2"></i>
-                            Filtros de Búsqueda
-                        </h6>
+                <div class="card" style="margin-bottom: 0rem;">
+                    <div class="card-header">
+                        <span class="card-title" style="font-size: 0.875rem; font-weight: 500;">Filtros de Búsqueda</span>
                     </div>
                     <div class="card-body">
                         <form id="filterForm" class="row g-3">
@@ -144,22 +141,11 @@
         <!-- ========================================
                                                                                                                                     TABLA DE EVENTOS
                                                                                                                                     ======================================== -->
-        <div class="row mb-4">
+        <div class="row mt-1">
             <div class="col-12">
-                <div class="card shadow">
-                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                        <h6 class="m-0 font-weight-bold text-primary">
-                            <i class="fas fa-list me-2"></i>
-                            Eventos de Seguridad
-                        </h6>
-                        <div class="d-flex align-items-center">
-                            <span class="badge bg-secondary me-3" id="total-events">Total: 0</span>
-                            <div class="btn-group" role="group">
-                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="refreshEvents()">
-                                    <i class="fas fa-sync-alt"></i>
-                                </button>
-                            </div>
-                        </div>
+                <div class="card" style="margin-bottom: 0rem;">
+                    <div class="card-header">
+                        <span class="card-title" style="font-size: 0.875rem; font-weight: 500;">Eventos de Seguridad</span>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
