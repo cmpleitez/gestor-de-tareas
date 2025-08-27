@@ -4,33 +4,24 @@
     <div class="container-fluid" data-risk-distribution="{{ trim(json_encode($risk_distribution ?? [])) }}"
         data-threats-by-country="{{ trim(json_encode($threats_by_country ?? [])) }}">
         <!-- ========================================
-                                                    HEADER DE INTELIGENCIA DE AMENAZAS
-                                                    ======================================== -->
-        <div class="row mb-4">
+                                                            HEADER DE INTELIGENCIA DE AMENAZAS
+                                                            ======================================== -->
+        <div class="row">
             <div class="col-12">
-                <div class="card bg-gradient-danger text-white">
-                    <div class="card-body">
-                        <div class="row align-items-center">
-                            <div class="col-md-8">
-                                <h1 class="mb-2">
-                                    <i class="fas fa-brain me-3"></i>
-                                    Inteligencia de Amenazas
-                                </h1>
-                                <p class="mb-0 fs-5">
-                                    Análisis avanzado de amenazas con Machine Learning y correlación de datos de múltiples
-                                    fuentes
-                                </p>
+                <div class="card mb-0">
+                    <div class="card-body p-0">
+                        <div class="row align-items-center justify-content-center">
+                            <div class="col-md-11">
+                                <h6 class="m-0 align-items-center" style="display: flex; align-items: center;">
+                                    <i class="bx bxs-check-shield me-3 text-dark"
+                                        style="padding-left: 0rem !important; padding-right: 0.2rem !important; font-size: 2rem;"></i>
+                                    INTELIGENCIA DE AMENAZAS
+                                </h6>
                             </div>
-                            <div class="col-md-4 text-end">
+                            <div class="col-md-1 text-center">
                                 <div class="d-flex justify-content-end align-items-center">
-                                    <div class="me-4">
-                                        <div class="fs-6 opacity-75">Amenazas Activas</div>
-                                        <div class="fs-4 fw-bold" id="active-threats-count">
-                                            <i class="fas fa-spinner fa-spin"></i>
-                                        </div>
-                                    </div>
-                                    <div class="threat-status-indicator">
-                                        <div class="pulse-dot bg-warning"></div>
+                                    <div class="security-status-indicator">
+                                        <div class="pulse-dot bg-danger"></div>
                                     </div>
                                 </div>
                             </div>
@@ -43,18 +34,16 @@
 
 
         <!-- ========================================
-                                                    ANÁLISIS VISUAL DE AMENAZAS
-                                                    ======================================== -->
-        <div class="row mb-4">
+                                                            ANÁLISIS VISUAL DE AMENAZAS
+                                                            ======================================== -->
+        <div class="row mt-1">
             <!-- Gráfico de Evolución Temporal -->
             <div class="col-12">
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">
-                            <i class="fas fa-chart-line me-2"></i>
-                            Evolución de Amenazas (Últimos 3 días)
-                        </h6>
+                <div class="card" style="margin-bottom: 0rem;">
+                    <div class="card-header">
+                        <span class="card-title" style="font-size: 0.875rem; font-weight: 500;">Evolución de Amenazas (Últimos 3 días)</span>
                     </div>
+                
                     <div class="card-body">
                         <div class="chart-area">
                             <canvas id="threatEvolutionChart"></canvas>
@@ -65,16 +54,13 @@
         </div>
 
         <!-- ========================================
-                                                    FILTROS Y BÚSQUEDA DE AMENAZAS
-                                                    ======================================== -->
-        <div class="row mb-4">
+                                                            FILTROS Y BÚSQUEDA DE AMENAZAS
+                                                            ======================================== -->
+        <div class="row mt-1">
             <div class="col-12">
-                <div class="card shadow">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">
-                            <i class="fas fa-filter me-2"></i>
-                            Filtros de Búsqueda
-                        </h6>
+                <div class="card" style="margin-bottom: 0rem;">
+                    <div class="card-header">
+                        <span class="card-title" style="font-size: 0.875rem; font-weight: 500;">Filtros de Búsqueda</span>
                     </div>
                     <div class="card-body">
                         <form id="threats-filter-form">
@@ -123,18 +109,16 @@
         </div>
 
         <!-- ========================================
-                                                    TABLA DE AMENAZAS
-                                                    ======================================== -->
-        <div class="row">
+                                                            TABLA DE AMENAZAS
+                                                            ======================================== -->
+        <div class="row mt-1">
             <div class="col-12">
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                        <h6 class="m-0 font-weight-bold text-primary">
-                            <i class="fas fa-list me-2"></i>
-                            Base de Datos de Amenazas (Últimos 3 días)
-                        </h6>
-
+                <div class="card" style="margin-bottom: 0rem;">
+                    <div class="card-header">
+                        <span class="card-title" style="font-size: 0.875rem; font-weight: 500;">Base de Datos de Amenazas
+                            (Últimos 3 días)</span>
                     </div>
+
                     <div class="card-body">
                         <div class="table-responsive">
                             <table class="table table-bordered" id="threats-table" width="100%" cellspacing="0">
@@ -183,8 +167,8 @@
     </div>
 
     <!-- ========================================
-                                                MODALES Y COMPONENTES ADICIONALES
-                                                ======================================== -->
+                                                        MODALES Y COMPONENTES ADICIONALES
+                                                        ======================================== -->
 
     <!-- Modal de Detalles de Amenaza -->
     <div class="modal fade" id="threatDetailsModal" tabindex="-1">
