@@ -45,10 +45,7 @@
 023456783
 123456784
 234567890
-345678901
-
-
-
+456789012
 
 
 analisis de la factura digital ocean:
@@ -87,9 +84,12 @@ SEGURIDAD:
     🟢 mantener los equipos de trabajo para tener potencia en flexibilidad y evitar la estructura organizativa que suele ser variable y dar fuertes golpes a los datos y a la seguridad del sistema
 
 SERVICIOS:
-    
-...🟢 implementar un nuevo campo para distinguir el rol principal para el uso de la gestion de tareas
-        verificar y delimitar casos de roles multiples
+
+    🟢 crear primero maquetacion para catalogo de productos y carrito de compras, y luego las funcionalidades
+
+    ...🟢 user.index: revsiar el párpadeo infinito del tooltip 
+
+    🟢 agregar try catch a todos los controladores que lean y escriban en tablas
     🟢 construir de control de calidad para el gestor
     🟢 proceso de rechazo de una solicitud o anulación
     🟢 entrega de una solicitud al beneficiario

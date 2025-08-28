@@ -34,6 +34,7 @@
     <link href="{{ asset('app-assets/css/pages/dashboard-analytics.css') }}" rel="stylesheet">
     <link href="{{ asset('app-assets/css/plugins/forms/validation/form-validation.css') }}" rel="stylesheet">
     <link href="{{ asset('app-assets/css/plugins/extensions/toastr.css') }}" rel="stylesheet">
+    <link href="{{ asset('app-assets/css/popovers.css') }}" rel="stylesheet">
 
     <!-- END: All CSS-->
 
@@ -549,6 +550,211 @@
             -webkit-box-orient: vertical;
         }
 
+        /* ===== ESTILOS PERSONALIZADOS PARA POPOVERS ===== */
+
+        /* Popover base con fondo oscuro elegante */
+        .popover {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%) !important;
+            border: 1px solid #2d3748 !important;
+            border-radius: 12px !important;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
+            max-width: 300px !important;
+        }
+
+        /* Flecha del popover */
+        .popover .arrow::before {
+            border-top-color: #1a1a2e !important;
+        }
+
+        .popover .arrow::after {
+            border-top-color: #1a1a2e !important;
+        }
+
+        /* Contenido del popover */
+        .popover .popover-body {
+            background: transparent !important;
+            color: #ffffff !important;
+            font-family: 'IBM Plex Sans', sans-serif !important;
+            font-size: 0.9rem !important;
+            font-weight: 500 !important;
+            line-height: 1.4 !important;
+            padding: 12px 16px !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        /* Iconos dentro del popover */
+        .popover .popover-body i {
+            margin-right: 6px !important;
+            font-size: 1rem !important;
+            vertical-align: middle !important;
+        }
+
+        /* Efectos de hover para elementos con popover */
+        [data-toggle="popover"]:hover {
+            transform: translateY(-1px) !important;
+            transition: all 0.2s ease-in-out !important;
+        }
+
+        /* Estilos específicos para diferentes tipos de popover */
+        .popover.popover-primary {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 50%, #2c3e50 100%) !important;
+        }
+
+        .popover.popover-success {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 50%, #27ae60 100%) !important;
+        }
+
+        .popover.popover-warning {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 50%, #f39c12 100%) !important;
+        }
+
+        .popover.popover-danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 50%, #e74c3c 100%) !important;
+        }
+
+        /* Mejoras adicionales para legibilidad */
+        .popover .popover-body {
+            position: relative !important;
+        }
+
+        .popover .popover-body::before {
+            content: '' !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            background: rgba(255, 255, 255, 0.05) !important;
+            border-radius: 8px !important;
+            pointer-events: none !important;
+        }
+
+        /* Animación de entrada */
+        .popover.fade {
+            transition: opacity 0.15s linear, transform 0.15s ease-out !important;
+        }
+
+        .popover.fade.show {
+            transform: scale(1) translateY(0) !important;
+        }
+
+        .popover.fade:not(.show) {
+            transform: scale(0.95) translateY(-5px) !important;
+        }
+
+        /* Flecha del popover */
+        .popover .arrow::before {
+            border-top-color: #1a1a2e !important;
+        }
+
+        .popover .arrow::after {
+            border-top-color: #1a1a2e !important;
+        }
+
+        /* Contenido del popover */
+        .popover .popover-body {
+            background: transparent !important;
+            color: #ffffff !important;
+            font-family: 'IBM Plex Sans', sans-serif !important;
+            font-size: 0.9rem !important;
+            font-weight: 500 !important;
+            line-height: 1.4 !important;
+            padding: 12px 16px !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        /* Iconos dentro del popover */
+        .popover .popover-body i {
+            margin-right: 6px !important;
+            font-size: 1rem !important;
+            vertical-align: middle !important;
+        }
+
+        /* Efectos de hover para elementos con popover */
+        [data-toggle="popover"]:hover {
+            transform: translateY(-1px) !important;
+            transition: all 0.2s ease-in-out !important;
+        }
+
+        /* Estilos específicos para diferentes tipos de popover */
+        .popover.popover-primary {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 50%, #2c3e50 100%) !important;
+        }
+
+        .popover.popover-success {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 50%, #27ae60 100%) !important;
+        }
+
+        .popover.popover-warning {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 50%, #f39c12 100%) !important;
+        }
+
+        .popover.popover-danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 50%, #e74c3c 100%) !important;
+        }
+
+        /* Mejoras adicionales para legibilidad */
+        .popover .popover-body {
+            position: relative !important;
+        }
+
+        .popover .popover-body::before {
+            content: '' !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            background: rgba(255, 255, 255, 0.05) !important;
+            border-radius: 8px !important;
+            pointer-events: none !important;
+        }
+
+        /* Animación de entrada */
+        .popover.fade {
+            transition: opacity 0.15s linear, transform 0.15s ease-out !important;
+        }
+
+        .popover.fade.show {
+            transform: scale(1) translateY(0) !important;
+        }
+
+        .popover.fade:not(.show) {
+            transform: scale(0.95) translateY(-5px) !important;
+        }
+
+        /* ===== ESTILOS PARA TOOLTIPS ===== */
+
+        /* Tooltip base con fondo oscuro elegante */
+        .tooltip-inner {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%) !important;
+            color: #ffffff !important;
+            font-family: 'IBM Plex Sans', sans-serif !important;
+            font-size: 0.875rem !important;
+            font-weight: 500 !important;
+            border-radius: 8px !important;
+            padding: 8px 12px !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+            max-width: 250px !important;
+        }
+
+        /* Flecha del tooltip */
+        .tooltip.bs-tooltip-top .arrow::before {
+            border-top-color: #1a1a2e !important;
+        }
+
+        .tooltip.bs-tooltip-bottom .arrow::before {
+            border-bottom-color: #1a1a2e !important;
+        }
+
+        .tooltip.bs-tooltip-left .arrow::before {
+            border-left-color: #1a1a2e !important;
+        }
+
+        .tooltip.bs-tooltip-right .arrow::before {
+            border-right-color: #1a1a2e !important;
+        }
+
         /* ===== RESPONSIVE ===== */
 
         @media (max-width: 768px) {
@@ -587,16 +793,16 @@
                         </ul>
                         <ul class="nav navbar-nav bookmark-icons">
                             <li class="nav-item d-none d-lg-block"><a class="nav-link" href="app-email.html"
-                                    data-toggle="tooltip" data-placement="top" title="Email"><i
+                                    data-toggle="tooltip" data-placement="top" data-title="Email"><i
                                         class="ficon bx bx-envelope"></i></a></li>
                             <li class="nav-item d-none d-lg-block"><a class="nav-link" href="app-chat.html"
-                                    data-toggle="tooltip" data-placement="top" title="Chat"><i
+                                    data-toggle="tooltip" data-placement="top" data-title="Chat"><i
                                         class="ficon bx bx-chat"></i></a></li>
                             <li class="nav-item d-none d-lg-block"><a class="nav-link" href="app-todo.html"
-                                    data-toggle="tooltip" data-placement="top" title="Todo"><i
+                                    data-toggle="tooltip" data-placement="top" data-title="Todo"><i
                                         class="ficon bx bx-check-circle"></i></a></li>
                             <li class="nav-item d-none d-lg-block"><a class="nav-link" href="app-calendar.html"
-                                    data-toggle="tooltip" data-placement="top" title="Calendar"><i
+                                    data-toggle="tooltip" data-placement="top" data-title="Calendar"><i
                                         class="ficon bx bx-calendar-alt"></i></a></li>
                         </ul>
                         <ul class="nav navbar-nav">
@@ -895,10 +1101,53 @@
     <script src="{{ asset('app-assets/vendors/js/tables/datatable/pdfmake.min.js') }}"></script>
     <script src="{{ asset('app-assets/vendors/js/tables/datatable/vfs_fonts.js') }}"></script>
     <script src="{{ asset('app-assets/vendors/js/charts/chart.min.js') }}"></script>
+    <script src="{{ asset('app-assets/js/popovers-init.js') }}"></script>
     <!-- END: Vendor JavaScript -->
 
     <!-- ... otros scripts ... -->
     <script>
+        // Función genérica para reinicializar popovers con tiempo de espera (GLOBAL)
+        function reInitializePopovers() {
+            setTimeout(function() {
+                $('[data-toggle="popover"]').each(function() {
+                    var $this = $(this);
+
+                    // Evitar inicializar popovers ya inicializados
+                    if ($this.data('bs.popover')) {
+                        return;
+                    }
+
+                    var content = $this.attr('data-content') || $this.attr('data-title');
+
+                    // Determinar el tipo de popover basado en el contenido
+                    var popoverClass = '';
+                    if (content && (content.includes('Eliminar') || content.includes('Desactivar'))) {
+                        popoverClass = 'popover-danger';
+                    } else if (content && (content.includes('Editar') || content.includes('Actualizar'))) {
+                        popoverClass = 'popover-warning';
+                    } else if (content && (content.includes('Activar') || content.includes('Asignar'))) {
+                        popoverClass = 'popover-success';
+                    } else if (content && (content.includes('Equipos') || content.includes('Roles'))) {
+                        popoverClass = 'popover-primary';
+                    }
+
+                    try {
+                        $this.popover({
+                            html: true,
+                            container: 'body',
+                            trigger: 'hover',
+                            template: '<div class="popover ' + popoverClass +
+                                '" role="tooltip"><div class="arrow"></div><div class="popover-body"></div></div>'
+                        });
+
+                        console.log('Popover reinicializado:', content);
+                    } catch (error) {
+                        console.error('Error al reinicializar popover:', error);
+                    }
+                });
+            }, 300); // 300ms de espera para asegurar que DataTables terminó
+        }
+
         $(document).ready(function() {
             //Captura de alertas del backend
             @if (Session::has('success'))
@@ -920,35 +1169,41 @@
             @if (Session::has('danger'))
                 toastr.error("{{ Session::get('danger') }}");
             @endif
-            // Inicializar DataTable
-            if ($.fn.DataTable) {
-                var table = $('.zero-configuration').DataTable({
-                    "language": {
-                        "url": "/app-assets/Spanish.json"
-                    },
-                    "responsive": true,
-                    "autoWidth": false,
-                    "order": [
-                        [0, 'asc'],
-                        [1, 'asc'],
-                        [2, 'asc']
-                    ],
-                    "pageLength": 50, // Mostrar 50 registros por defecto
-                    "lengthMenu": [
-                        [10, 25, 50, 100, -1],
-                        [10, 25, 50, 100, "Todos"]
-                    ] // Opciones de paginación
-                });
-                // Inicializar tooltips de Bootstrap 4
-                $('[data-toggle="tooltip"]').tooltip();
-                // Reinicializar tooltips después de cada evento de DataTables
-                table.on('draw', function() {
-                    $('[data-toggle="tooltip"]').tooltip();
-                });
-            } else {
-                console.error('DataTables no está disponible');
-            }
+            // Inicializar popovers globalmente para todas las vistas
+            function initializePopovers() {
+                $('[data-toggle="popover"]').each(function() {
+                    var $this = $(this);
 
+                    // Evitar inicializar popovers ya inicializados
+                    if ($this.data('bs.popover')) {
+                        return;
+                    }
+
+                    var content = $this.attr('data-content') || $this.attr('data-title');
+
+                    // Determinar el tipo de popover basado en el contenido
+                    var popoverClass = '';
+                    if (content.includes('Eliminar') || content.includes('Desactivar')) {
+                        popoverClass = 'popover-danger';
+                    } else if (content.includes('Editar') || content.includes('Actualizar')) {
+                        popoverClass = 'popover-warning';
+                    } else if (content.includes('Activar') || content.includes('Asignar')) {
+                        popoverClass = 'popover-success';
+                    } else if (content.includes('Equipos') || content.includes('Roles')) {
+                        popoverClass = 'popover-primary';
+                    }
+
+                    $this.popover({
+                        html: true,
+                        container: 'body',
+                        trigger: 'hover',
+                        template: '<div class="popover ' + popoverClass +
+                            '" role="tooltip"><div class="arrow"></div><div class="popover-body"></div></div>'
+                    });
+                });
+            }
+            // Inicialización inmediata
+            initializePopovers();
         });
     </script>
     <!-- ... otros scripts ... -->

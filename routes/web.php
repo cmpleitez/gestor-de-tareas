@@ -36,7 +36,7 @@ Route::middleware(['auth'])->group(function () {
     })->middleware(['throttle:6,1'])->name('verification.send');
 });
 
-// Rutas protegidas que requieren verificación de correo
+//Rutas protegidas que requieren verificación de correo
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),

@@ -38,7 +38,9 @@
                                         <th>Equipo</th>
                                         <th class="text-center">Creado</th>
                                         <th class="text-center">Actualizado</th>
-                                        @can('autorizar')<th class="text-center">Estado</th>@endcan
+                                        @can('autorizar')
+                                            <th class="text-center">Estado</th>
+                                        @endcan
                                         <th class="text-center">Tablero de control</th>
                                     </tr>
                                 </thead>
@@ -53,17 +55,19 @@
                                             {{-- ACTIVAR --}}
                                             @can('autorizar')
                                                 <td class="text-center">
-                                                    <form action="{{ route('equipo.activate', $equipo->id) }}" method="POST" style="display: inline;">
+                                                    <form action="{{ route('equipo.activate', $equipo->id) }}" method="POST"
+                                                        style="display: inline;">
                                                         @csrf
-                                                        <div class="custom-control custom-switch" style="transform: scale(0.6); margin: 0;"
-                                                            data-toggle="tooltip" data-placement="top" data-animation="false"
-                                                            data-trigger="hover" data-html="true"
-                                                            data-title="<i class='bx bxs-error-circle'></i> {{ $equipo->activo ? 'Desactivar' : 'Activar' }} {{ $equipo->equipo }}">
-                                                            <input id="activate_{{ $equipo->id }}" type="checkbox" class="custom-control-input" 
-                                                                @if($equipo->activo) checked @endif
-                                                                onchange="this.form.submit();"
-                                                            >
-                                                            <label class="custom-control-label" for="activate_{{ $equipo->id }}"></label>
+                                                        <div class="custom-control custom-switch"
+                                                            style="transform: scale(0.6); margin: 0;" data-toggle="popover"
+                                                            data-placement="top" data-html="true"
+                                                            data-content="<i class='bx bxs-error-circle'></i> {{ $equipo->activo ? 'Desactivar' : 'Activar' }} {{ $equipo->equipo }}">
+                                                            <input id="activate_{{ $equipo->id }}" type="checkbox"
+                                                                class="custom-control-input"
+                                                                @if ($equipo->activo) checked @endif
+                                                                onchange="this.form.submit();">
+                                                            <label class="custom-control-label"
+                                                                for="activate_{{ $equipo->id }}"></label>
                                                         </div>
                                                     </form>
                                                 </td>
@@ -74,9 +78,8 @@
                                                     {{-- EDITAR --}}
                                                     @can('editar')
                                                         <a href="{{ route('equipo.edit', $equipo->id) }}" role="button"
-                                                            data-toggle="tooltip" data-placement="top" data-animation="false"
-                                                            data-trigger="hover" data-html="true"
-                                                            data-title="<i class='bx bxs-error-circle'></i> Editar datos de {{ $equipo->equipo }}"
+                                                            data-toggle="popover" data-placement="top" data-html="true"
+                                                            data-content="<i class='bx bxs-error-circle'></i> Editar datos de {{ $equipo->equipo }}"
                                                             class="button_edit align-center">
                                                             <i class="bx bxs-edit-alt"></i>
                                                         </a>
@@ -84,9 +87,8 @@
                                                     {{-- ELIMINAR --}}
                                                     @can('eliminar')
                                                         <a href="{{ route('equipo.destroy', $equipo->id) }}" role="button"
-                                                            data-toggle="tooltip" data-placement="top" data-animation="false"
-                                                            data-trigger="hover" data-html="true"
-                                                            data-title="<i class='bx bxs-eraser'></i> Eliminar {{ $equipo->equipo }}"
+                                                            data-toggle="popover" data-placement="top" data-html="true"
+                                                            data-content="<i class='bx bxs-eraser'></i> Eliminar {{ $equipo->equipo }}"
                                                             class="button_delete align-center">
                                                             <i class="bx bxs-eraser"></i>
                                                         </a>
@@ -102,7 +104,9 @@
                                         <th>Equipo</th>
                                         <th class="text-center">Creado</th>
                                         <th class="text-center">Actualizado</th>
-                                        @can('autorizar')<th class="text-center">Estado</th>@endcan
+                                        @can('autorizar')
+                                            <th class="text-center">Estado</th>
+                                        @endcan
                                         <th class="text-center">Tablero de control</th>
                                     </tr>
                                 </tfoot>
@@ -129,4 +133,74 @@
 
     {{-- Componente de orientación para tablas --}}
     @include('components.orientation-manager')
+
+    <script>
+        // ===== INICIALIZACIÓN ESPECÍFICA DE POPOVERS PARA EQUIPOS =====
+        $(document).ready(function() {
+            // Función para inicializar popovers con clases contextuales
+            function initializeEquipoPopovers() {
+                $('[data-toggle="popover"]').each(function() {
+                    var $this = $(this);
+
+                    // Evitar inicializar popovers ya inicializados
+                    if ($this.data('bs.popover')) {
+                        return;
+                    }
+
+                    var content = $this.attr('data-content') || $this.attr('data-title');
+
+                    // Determinar el tipo de popover basado en el contenido
+                    var popoverClass = '';
+                    if (content && (content.includes('Eliminar') || content.includes('Desactivar'))) {
+                        popoverClass = 'popover-danger';
+                    } else if (content && (content.includes('Editar'))) {
+                        popoverClass = 'popover-warning';
+                    } else if (content && (content.includes('Activar'))) {
+                        popoverClass = 'popover-success';
+                    }
+
+                    try {
+                        $this.popover({
+                            html: true,
+                            container: 'body',
+                            trigger: 'hover',
+                            template: '<div class="popover ' + popoverClass +
+                                '" role="tooltip"><div class="arrow"></div><div class="popover-body"></div></div>'
+                        });
+
+                        console.log('Popover inicializado:', content);
+                    } catch (error) {
+                        console.error('Error al inicializar popover:', error);
+                    }
+                });
+            }
+
+            // Inicializar DataTable con callback inteligente
+            if ($.fn.DataTable) {
+                var table = $('.zero-configuration').DataTable({
+                    "language": {
+                        "url": "/app-assets/Spanish.json"
+                    },
+                    "responsive": true,
+                    "autoWidth": false,
+                    "order": [
+                        [0, 'asc']
+                    ],
+                    "pageLength": 50,
+                    "lengthMenu": [
+                        [10, 25, 50, 100, -1],
+                        [10, 25, 50, 100, "Todos"]
+                    ],
+                    "initComplete": function() {
+                        // DataTables terminó completamente - reinicializando popovers
+                        console.log('DataTables completado - reinicializando popovers');
+                        reInitializePopovers();
+                    }
+                });
+            } else {
+                console.error('DataTables no está disponible');
+            }
+        });
+    </script>
+
 @stop

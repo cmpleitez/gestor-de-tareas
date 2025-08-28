@@ -13,8 +13,8 @@ alwaysApply: true
     ✅ Cuando diga "nivel 3", debes elegir en orden de prioridad uno de los siguientes modelos IA
         1º. Gpt-5-fast
         2º. Otros modelos IA rápidos
-    ✅ Cuando diga "bajar modelo" dependiendo en que nivel te encuentres debes cambiar al proximo modelo segun correlativo
-    ✅ Cuando diga "elevar modelo" dependiendo en que nivel te encuentres debes cambiar al anterior modelo segun correlativo
+    ✅ Cuando diga "baja modelo" dependiendo en que nivel te encuentres debes cambiar al proximo modelo segun correlativo
+    ✅ Cuando diga "eleva modelo" dependiendo en que nivel te encuentres debes cambiar al anterior modelo segun correlativo
     ✅ Debes mencionar al principio y al final de cada respuesta tuya el modelo que estas usando para la misma.
     ✅ Cuando diga: esta línea o lineas me refiero a que ya hice referencia dichas líneas con CTRL+L o he hecho referencia a un archivo en especifico
     ✅ Ante cualquier peticion de mi parte: busca primero en la pestaña activa y luego en las demás. 

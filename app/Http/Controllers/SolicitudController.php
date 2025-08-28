@@ -6,13 +6,15 @@ use App\Models\Solicitud;
 use App\Http\Requests\SolicitudStoreRequest;
 use App\Http\Requests\SolicitudUpdateRequest;
 use App\Models\Tarea;
+use App\Models\User;
 
 class SolicitudController extends Controller
 {
     public function index()
     {
         $solicitudes = Solicitud::orderBy('id', 'desc')->paginate(15);
-        return view('modelos.solicitud.index', compact('solicitudes'));
+        $operador_por_defecto = User::where('activo', true)->inRandomOrder()->first();
+        return view('modelos.solicitud.index', compact('solicitudes', 'operador_por_defecto'));
     }
 
     public function create()

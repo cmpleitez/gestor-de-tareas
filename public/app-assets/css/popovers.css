@@ -1,0 +1,91 @@
+/* ===== ESTILOS PERSONALIZADOS PARA POPOVERS ===== */
+
+/* Popover base con fondo oscuro elegante */
+.popover {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%) !important;
+    border: 1px solid #2d3748 !important;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
+    max-width: 300px !important;
+}
+
+/* Flecha del popover */
+.popover .arrow::before {
+    border-top-color: #1a1a2e !important;
+}
+
+.popover .arrow::after {
+    border-top-color: #1a1a2e !important;
+}
+
+/* Contenido del popover */
+.popover .popover-body {
+    background: transparent !important;
+    color: #ffffff !important;
+    font-family: 'IBM Plex Sans', sans-serif !important;
+    font-size: 0.9rem !important;
+    font-weight: 500 !important;
+    line-height: 1.4 !important;
+    padding: 12px 16px !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Iconos dentro del popover */
+.popover .popover-body i {
+    margin-right: 6px !important;
+    font-size: 1rem !important;
+    vertical-align: middle !important;
+}
+
+/* Efectos de hover para elementos con popover */
+[data-toggle="popover"]:hover {
+    transform: translateY(-1px) !important;
+    transition: all 0.2s ease-in-out !important;
+}
+
+/* Estilos específicos para diferentes tipos de popover */
+.popover.popover-primary {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 50%, #2c3e50 100%) !important;
+}
+
+.popover.popover-success {
+    background: linear-gradient(135deg, #27ae60 0%, #2ecc71 50%, #27ae60 100%) !important;
+}
+
+.popover.popover-warning {
+    background: linear-gradient(135deg, #f39c12 0%, #e67e22 50%, #f39c12 100%) !important;
+}
+
+.popover.popover-danger {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 50%, #e74c3c 100%) !important;
+}
+
+/* Mejoras adicionales para legibilidad */
+.popover .popover-body {
+    position: relative !important;
+}
+
+.popover .popover-body::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-radius: 8px !important;
+    pointer-events: none !important;
+}
+
+/* Animación de entrada */
+.popover.fade {
+    transition: opacity 0.15s linear, transform 0.15s ease-out !important;
+}
+
+.popover.fade.show {
+    transform: scale(1) translateY(0) !important;
+}
+
+.popover.fade:not(.show) {
+    transform: scale(0.95) translateY(-5px) !important;
+}
