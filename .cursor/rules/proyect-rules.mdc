@@ -6,10 +6,9 @@ alwaysApply: true
         1°. o3
         2°. Claude Opus
     ✅ Cuando diga "nivel 2", debes elegir en orden de prioridad uno de los siguientes modelos IA
-        1°. Grok 4
+        1°. Claude sonnet 4
         2°. Gpt-5
         3°. Gemini 2.5 pro max
-        4°. Claude sonnet 4
     ✅ Cuando diga "nivel 3", debes elegir en orden de prioridad uno de los siguientes modelos IA
         1º. Gpt-5-fast
         2º. Otros modelos IA rápidos
@@ -68,3 +67,4 @@ alwaysApply: true
     ✅Tareas: son partes integrales de la solicitud las cuales son procesadas por el area operativa originando varios de los estados de avance.
     ✅ beneficiario: el usuario que tenga este rol
     ✅ usuario calificado: es aquel que tiene asignada la solicitud que está solicitando el beneficiario
+    ✅ Has tus pruebas aplicando la solución a un solo control para evitar arruinar el funcioamiento del resto

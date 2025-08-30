@@ -34,7 +34,7 @@
     <link href="{{ asset('app-assets/css/pages/dashboard-analytics.css') }}" rel="stylesheet">
     <link href="{{ asset('app-assets/css/plugins/forms/validation/form-validation.css') }}" rel="stylesheet">
     <link href="{{ asset('app-assets/css/plugins/extensions/toastr.css') }}" rel="stylesheet">
-    <link href="{{ asset('app-assets/css/popovers.css') }}" rel="stylesheet">
+
 
     <!-- END: All CSS-->
 
@@ -550,178 +550,7 @@
             -webkit-box-orient: vertical;
         }
 
-        /* ===== ESTILOS PERSONALIZADOS PARA POPOVERS ===== */
 
-        /* Popover base con fondo oscuro elegante */
-        .popover {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%) !important;
-            border: 1px solid #2d3748 !important;
-            border-radius: 12px !important;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
-            max-width: 300px !important;
-        }
-
-        /* Flecha del popover */
-        .popover .arrow::before {
-            border-top-color: #1a1a2e !important;
-        }
-
-        .popover .arrow::after {
-            border-top-color: #1a1a2e !important;
-        }
-
-        /* Contenido del popover */
-        .popover .popover-body {
-            background: transparent !important;
-            color: #ffffff !important;
-            font-family: 'IBM Plex Sans', sans-serif !important;
-            font-size: 0.9rem !important;
-            font-weight: 500 !important;
-            line-height: 1.4 !important;
-            padding: 12px 16px !important;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-        }
-
-        /* Iconos dentro del popover */
-        .popover .popover-body i {
-            margin-right: 6px !important;
-            font-size: 1rem !important;
-            vertical-align: middle !important;
-        }
-
-        /* Efectos de hover para elementos con popover */
-        [data-toggle="popover"]:hover {
-            transform: translateY(-1px) !important;
-            transition: all 0.2s ease-in-out !important;
-        }
-
-        /* Estilos específicos para diferentes tipos de popover */
-        .popover.popover-primary {
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 50%, #2c3e50 100%) !important;
-        }
-
-        .popover.popover-success {
-            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 50%, #27ae60 100%) !important;
-        }
-
-        .popover.popover-warning {
-            background: linear-gradient(135deg, #f39c12 0%, #e67e22 50%, #f39c12 100%) !important;
-        }
-
-        .popover.popover-danger {
-            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 50%, #e74c3c 100%) !important;
-        }
-
-        /* Mejoras adicionales para legibilidad */
-        .popover .popover-body {
-            position: relative !important;
-        }
-
-        .popover .popover-body::before {
-            content: '' !important;
-            position: absolute !important;
-            top: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
-            bottom: 0 !important;
-            background: rgba(255, 255, 255, 0.05) !important;
-            border-radius: 8px !important;
-            pointer-events: none !important;
-        }
-
-        /* Animación de entrada */
-        .popover.fade {
-            transition: opacity 0.15s linear, transform 0.15s ease-out !important;
-        }
-
-        .popover.fade.show {
-            transform: scale(1) translateY(0) !important;
-        }
-
-        .popover.fade:not(.show) {
-            transform: scale(0.95) translateY(-5px) !important;
-        }
-
-        /* Flecha del popover */
-        .popover .arrow::before {
-            border-top-color: #1a1a2e !important;
-        }
-
-        .popover .arrow::after {
-            border-top-color: #1a1a2e !important;
-        }
-
-        /* Contenido del popover */
-        .popover .popover-body {
-            background: transparent !important;
-            color: #ffffff !important;
-            font-family: 'IBM Plex Sans', sans-serif !important;
-            font-size: 0.9rem !important;
-            font-weight: 500 !important;
-            line-height: 1.4 !important;
-            padding: 12px 16px !important;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-        }
-
-        /* Iconos dentro del popover */
-        .popover .popover-body i {
-            margin-right: 6px !important;
-            font-size: 1rem !important;
-            vertical-align: middle !important;
-        }
-
-        /* Efectos de hover para elementos con popover */
-        [data-toggle="popover"]:hover {
-            transform: translateY(-1px) !important;
-            transition: all 0.2s ease-in-out !important;
-        }
-
-        /* Estilos específicos para diferentes tipos de popover */
-        .popover.popover-primary {
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 50%, #2c3e50 100%) !important;
-        }
-
-        .popover.popover-success {
-            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 50%, #27ae60 100%) !important;
-        }
-
-        .popover.popover-warning {
-            background: linear-gradient(135deg, #f39c12 0%, #e67e22 50%, #f39c12 100%) !important;
-        }
-
-        .popover.popover-danger {
-            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 50%, #e74c3c 100%) !important;
-        }
-
-        /* Mejoras adicionales para legibilidad */
-        .popover .popover-body {
-            position: relative !important;
-        }
-
-        .popover .popover-body::before {
-            content: '' !important;
-            position: absolute !important;
-            top: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
-            bottom: 0 !important;
-            background: rgba(255, 255, 255, 0.05) !important;
-            border-radius: 8px !important;
-            pointer-events: none !important;
-        }
-
-        /* Animación de entrada */
-        .popover.fade {
-            transition: opacity 0.15s linear, transform 0.15s ease-out !important;
-        }
-
-        .popover.fade.show {
-            transform: scale(1) translateY(0) !important;
-        }
-
-        .popover.fade:not(.show) {
-            transform: scale(0.95) translateY(-5px) !important;
-        }
 
         /* ===== ESTILOS PARA TOOLTIPS ===== */
 
@@ -821,15 +650,14 @@
                         <li class="nav-item d-none d-lg-block"><a class="nav-link nav-link-expand"><i
                                     class="ficon bx bx-fullscreen"></i></a></li>
                         <li class="dropdown dropdown-user nav-item">
-                            <a class="dropdown-toggle nav-link dropdown-user-link" href="#"
-                                data-toggle="dropdown">
+                            <a class="dropdown-toggle nav-link dropdown-user-link" href="#" data-toggle="dropdown">
                                 <div class="user-nav d-sm-flex d-none">
                                     <span class="user-name">{{ auth()->user()->name }}</span>
                                     <span class="user-status text-gray-600 d-flex align-items-center"
                                         onclick="copyToClipboard(event, '{{ auth()->user()->email }}')">
                                         <i class="bx bx-copy" style="cursor: pointer; padding-right: 0.5rem;"></i>
-                                        <span
-                                            class="hover:text-gray-900 !important transition-colors duration-200">{{ auth()->user()->email }}</span>
+                                        <span class="hover:text-gray-900 !important transition-colors duration-200">{{
+                                            auth()->user()->email }}</span>
                                     </span>
                                     <script>
                                         function copyToClipboard(event, text) {
@@ -888,24 +716,23 @@
                                     </script>
                                     <span class="user-status" style="color: #0056b3; font-weight: 600;">
                                         @if (auth()->check())
-                                            Conectado como
-                                            {{ auth()->user()->main_role }}
+                                        Conectado como
+                                        {{ auth()->user()->main_role }}
                                         @else
-                                            <span style="color: #d90429; font-weight: 600;">Desconectado</span>
+                                        <span style="color: #d90429; font-weight: 600;">Desconectado</span>
                                         @endif
                                     </span>
                                 </div>
                                 <div class="avatar">
                                     @if (auth()->check())
-                                        @php $photoPath = auth()->user()->profile_photo_path; @endphp
-                                        @if ($photoPath && Storage::disk('public')->exists($photoPath))
-                                            <img src="{{ Storage::url($photoPath) }}" alt="avatar"
-                                                style="height: 45px; width: 45px; object-fit: cover;">
-                                        @else
-                                            <img src="{{ asset('app-assets/images/pages/operador.png') }}"
-                                                alt="avatar"
-                                                style="height: 45px; width: 45px; object-fit: contain;">
-                                        @endif
+                                    @php $photoPath = auth()->user()->profile_photo_path; @endphp
+                                    @if ($photoPath && Storage::disk('public')->exists($photoPath))
+                                    <img src="{{ Storage::url($photoPath) }}" alt="avatar"
+                                        style="height: 45px; width: 45px; object-fit: cover;">
+                                    @else
+                                    <img src="{{ asset('app-assets/images/pages/operador.png') }}" alt="avatar"
+                                        style="height: 45px; width: 45px; object-fit: contain;">
+                                    @endif
                                     @endif
                                 </div>
                             </a>
@@ -959,87 +786,87 @@
                             data-i18n="Menu Levels">Servicios</span></a>
                     <ul class="menu-content" style="display: block;">
                         @role('Beneficiario')
-                            <li><a href="{{ Route('recepcion.create') }}">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Recepciones</span>
-                                </a></li>
+                        <li><a href="{{ Route('recepcion.create') }}">
+                                <i class="bx bx-right-arrow-alt"></i>
+                                <span class="menu-item" data-i18n="Second Level">Recepciones</span>
+                            </a></li>
                         @endrole
                         @role('Operador')
-                            <li><a href="#">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Disponible</span>
-                                </a></li>
+                        <li><a href="#">
+                                <i class="bx bx-right-arrow-alt"></i>
+                                <span class="menu-item" data-i18n="Second Level">Disponible</span>
+                            </a></li>
                         @endrole
                         @role('Administrador')
-                            <li>
-                                <a href="#">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Administración</span>
-                                </a>
-                                <ul class="menu-content" style="display: block;">
-                                    <li><a href="{{ Route('equipo') }}">
-                                            <i class="bx bx-right-arrow-alt"></i>
-                                            <span class="menu-item" data-i18n="Third Level">Equipos</span></a>
-                                    </li>
-                                    <li><a href="#">
-                                            <i class="bx bx-right-arrow-alt"></i>
-                                            <span class="menu-item" data-i18n="Third Level">Disponible</span>
-                                        </a></li>
-                                </ul>
-                            </li>
+                        <li>
+                            <a href="#">
+                                <i class="bx bx-right-arrow-alt"></i>
+                                <span class="menu-item" data-i18n="Second Level">Administración</span>
+                            </a>
+                            <ul class="menu-content" style="display: block;">
+                                <li><a href="{{ Route('equipo') }}">
+                                        <i class="bx bx-right-arrow-alt"></i>
+                                        <span class="menu-item" data-i18n="Third Level">Equipos</span></a>
+                                </li>
+                                <li><a href="#">
+                                        <i class="bx bx-right-arrow-alt"></i>
+                                        <span class="menu-item" data-i18n="Third Level">Disponible</span>
+                                    </a></li>
+                            </ul>
+                        </li>
                         @endrole
 
                     </ul>
                 </li>
                 @role('SuperAdmin')
-                    <li class=" nav-item"><a href="#"><i class="bx bx-cog"></i><span class="menu-title"
-                                data-i18n="Menu Levels">Administración</span></a>
-                        <ul class="menu-content" style="display: block;">
-                            <li><a href="{{ Route('user') }}">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Usuarios</span>
-                                </a></li>
-                            <li><a href="{{ Route('equipo') }}">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Equipos</span>
-                                </a></li>
-                            <li><a href="{{ Route('tarea') }}">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Tareas</span>
-                                </a></li>
-                            <li><a href="{{ Route('solicitud') }}">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Solicitudes</span>
-                                </a></li>
-                        </ul>
-                    </li>
-                    <li class=" nav-item"><a href="#"><i class="bx bx-shield"></i><span class="menu-title"
-                                data-i18n="Menu Levels">Monitoreo de Seguridad</span></a>
-                        <ul class="menu-content" style="display: block;">
-                            <li><a href="{{ Route('security.index') }}">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Dashboard</span>
-                                </a></li>
-                            <li><a href="{{ Route('security.events') }}">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Eventos</span>
-                                </a></li>
-                            <li><a href="{{ Route('security.threat-intelligence') }}">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Inteligencia de Amenazas</span>
-                                </a></li>
-                            <li><a href="{{ Route('security.ip-reputation') }}">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Reputación de IPs</span>
-                                </a></li>
+                <li class=" nav-item"><a href="#"><i class="bx bx-cog"></i><span class="menu-title"
+                            data-i18n="Menu Levels">Administración</span></a>
+                    <ul class="menu-content" style="display: block;">
+                        <li><a href="{{ Route('user') }}">
+                                <i class="bx bx-right-arrow-alt"></i>
+                                <span class="menu-item" data-i18n="Second Level">Usuarios</span>
+                            </a></li>
+                        <li><a href="{{ Route('equipo') }}">
+                                <i class="bx bx-right-arrow-alt"></i>
+                                <span class="menu-item" data-i18n="Second Level">Equipos</span>
+                            </a></li>
+                        <li><a href="{{ Route('tarea') }}">
+                                <i class="bx bx-right-arrow-alt"></i>
+                                <span class="menu-item" data-i18n="Second Level">Tareas</span>
+                            </a></li>
+                        <li><a href="{{ Route('solicitud') }}">
+                                <i class="bx bx-right-arrow-alt"></i>
+                                <span class="menu-item" data-i18n="Second Level">Solicitudes</span>
+                            </a></li>
+                    </ul>
+                </li>
+                <li class=" nav-item"><a href="#"><i class="bx bx-shield"></i><span class="menu-title"
+                            data-i18n="Menu Levels">Monitoreo de Seguridad</span></a>
+                    <ul class="menu-content" style="display: block;">
+                        <li><a href="{{ Route('security.index') }}">
+                                <i class="bx bx-right-arrow-alt"></i>
+                                <span class="menu-item" data-i18n="Second Level">Dashboard</span>
+                            </a></li>
+                        <li><a href="{{ Route('security.events') }}">
+                                <i class="bx bx-right-arrow-alt"></i>
+                                <span class="menu-item" data-i18n="Second Level">Eventos</span>
+                            </a></li>
+                        <li><a href="{{ Route('security.threat-intelligence') }}">
+                                <i class="bx bx-right-arrow-alt"></i>
+                                <span class="menu-item" data-i18n="Second Level">Inteligencia de Amenazas</span>
+                            </a></li>
+                        <li><a href="{{ Route('security.ip-reputation') }}">
+                                <i class="bx bx-right-arrow-alt"></i>
+                                <span class="menu-item" data-i18n="Second Level">Reputación de IPs</span>
+                            </a></li>
 
-                            <li><a href="{{ Route('security.logs') }}">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Logs</span>
-                                </a></li>
+                        <li><a href="{{ Route('security.logs') }}">
+                                <i class="bx bx-right-arrow-alt"></i>
+                                <span class="menu-item" data-i18n="Second Level">Logs</span>
+                            </a></li>
 
-                        </ul>
-                    </li>
+                    </ul>
+                </li>
                 @endrole
                 <li class=" navigation-header"><span>Soporte</span>
                 </li>
@@ -1084,6 +911,10 @@
     <!-- END: Critical JavaScript (Emergency Load) -->
 
     <!-- BEGIN: Vendor JavaScript -->
+    <!-- BEGIN: Theme JS (para tooltips) -->
+    <script src="{{ asset('app-assets/js/core/app.js') }}"></script>
+    <script src="{{ asset('app-assets/js/scripts/components.js') }}"></script>
+    <!-- END: Theme JS -->
     <script src="{{ asset('app-assets/fonts/LivIconsEvo/js/LivIconsEvo.tools.js') }}"></script>
     <script src="{{ asset('app-assets/fonts/LivIconsEvo/js/LivIconsEvo.defaults.js') }}"></script>
     <script src="{{ asset('app-assets/fonts/LivIconsEvo/js/LivIconsEvo.min.js') }}"></script>
@@ -1101,53 +932,11 @@
     <script src="{{ asset('app-assets/vendors/js/tables/datatable/pdfmake.min.js') }}"></script>
     <script src="{{ asset('app-assets/vendors/js/tables/datatable/vfs_fonts.js') }}"></script>
     <script src="{{ asset('app-assets/vendors/js/charts/chart.min.js') }}"></script>
-    <script src="{{ asset('app-assets/js/popovers-init.js') }}"></script>
+
     <!-- END: Vendor JavaScript -->
 
     <!-- ... otros scripts ... -->
     <script>
-        // Función genérica para reinicializar popovers con tiempo de espera (GLOBAL)
-        function reInitializePopovers() {
-            setTimeout(function() {
-                $('[data-toggle="popover"]').each(function() {
-                    var $this = $(this);
-
-                    // Evitar inicializar popovers ya inicializados
-                    if ($this.data('bs.popover')) {
-                        return;
-                    }
-
-                    var content = $this.attr('data-content') || $this.attr('data-title');
-
-                    // Determinar el tipo de popover basado en el contenido
-                    var popoverClass = '';
-                    if (content && (content.includes('Eliminar') || content.includes('Desactivar'))) {
-                        popoverClass = 'popover-danger';
-                    } else if (content && (content.includes('Editar') || content.includes('Actualizar'))) {
-                        popoverClass = 'popover-warning';
-                    } else if (content && (content.includes('Activar') || content.includes('Asignar'))) {
-                        popoverClass = 'popover-success';
-                    } else if (content && (content.includes('Equipos') || content.includes('Roles'))) {
-                        popoverClass = 'popover-primary';
-                    }
-
-                    try {
-                        $this.popover({
-                            html: true,
-                            container: 'body',
-                            trigger: 'hover',
-                            template: '<div class="popover ' + popoverClass +
-                                '" role="tooltip"><div class="arrow"></div><div class="popover-body"></div></div>'
-                        });
-
-                        console.log('Popover reinicializado:', content);
-                    } catch (error) {
-                        console.error('Error al reinicializar popover:', error);
-                    }
-                });
-            }, 300); // 300ms de espera para asegurar que DataTables terminó
-        }
-
         $(document).ready(function() {
             //Captura de alertas del backend
             @if (Session::has('success'))
@@ -1169,41 +958,7 @@
             @if (Session::has('danger'))
                 toastr.error("{{ Session::get('danger') }}");
             @endif
-            // Inicializar popovers globalmente para todas las vistas
-            function initializePopovers() {
-                $('[data-toggle="popover"]').each(function() {
-                    var $this = $(this);
-
-                    // Evitar inicializar popovers ya inicializados
-                    if ($this.data('bs.popover')) {
-                        return;
-                    }
-
-                    var content = $this.attr('data-content') || $this.attr('data-title');
-
-                    // Determinar el tipo de popover basado en el contenido
-                    var popoverClass = '';
-                    if (content.includes('Eliminar') || content.includes('Desactivar')) {
-                        popoverClass = 'popover-danger';
-                    } else if (content.includes('Editar') || content.includes('Actualizar')) {
-                        popoverClass = 'popover-warning';
-                    } else if (content.includes('Activar') || content.includes('Asignar')) {
-                        popoverClass = 'popover-success';
-                    } else if (content.includes('Equipos') || content.includes('Roles')) {
-                        popoverClass = 'popover-primary';
-                    }
-
-                    $this.popover({
-                        html: true,
-                        container: 'body',
-                        trigger: 'hover',
-                        template: '<div class="popover ' + popoverClass +
-                            '" role="tooltip"><div class="arrow"></div><div class="popover-body"></div></div>'
-                    });
-                });
-            }
-            // Inicialización inmediata
-            initializePopovers();
+            
         });
     </script>
     <!-- ... otros scripts ... -->
