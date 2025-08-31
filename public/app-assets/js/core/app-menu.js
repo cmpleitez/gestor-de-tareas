@@ -47,10 +47,9 @@
               if ($('.main-menu-content li.sidebar-group-active').length) {
                 activeEl = document.querySelector('.main-menu-content li.sidebar-group-active');
               }
-            }
-            else{
+            }else{              
               menu = document.querySelector('.main-menu-content');
-              // activeEl = activeEl.getBoundingClientRect().top + menu.scrollTop;
+              activeEl = activeEl.getBoundingClientRect().top + menu.scrollTop;
               // If active element's top position is less than 2/3 (66%) of menu height than do not scroll
               if (activeEl > parseInt((menu.clientHeight * 2) / 3)) {
                 var start = menu.scrollTop,
@@ -573,6 +572,12 @@
         // Change menu wrapper, menu container, menu navigation classes
         menuWrapper.removeClass().addClass('main-menu menu-fixed menu-shadow');
 
+        if ($body.data('layout') === "dark-layout" || $body.data('layout') === "semi-dark-layout") {
+          menuWrapper.addClass('menu-dark');
+        }
+        else {
+          menuWrapper.addClass('menu-light');
+        }
         // menuContainer.removeClass().addClass('main-menu-content');
         menuNavigation.removeClass().addClass('navigation navigation-main');
 

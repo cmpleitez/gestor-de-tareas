@@ -790,6 +790,10 @@
                                 <i class="bx bx-right-arrow-alt"></i>
                                 <span class="menu-item" data-i18n="Second Level">Recepciones</span>
                             </a></li>
+                        <li><a href="{{ route('producto.index') }}">
+                                <i class="bx bx-package"></i>
+                                <span class="menu-item" data-i18n="Second Level">Catálogo</span>
+                            </a></li>
                         @endrole
                         @role('Operador')
                         <li><a href="#">
@@ -912,6 +916,7 @@
 
     <!-- BEGIN: Vendor JavaScript -->
     <!-- BEGIN: Theme JS (para tooltips) -->
+    <script src="{{ asset('app-assets/js/core/app-menu.js') }}"></script>
     <script src="{{ asset('app-assets/js/core/app.js') }}"></script>
     <script src="{{ asset('app-assets/js/scripts/components.js') }}"></script>
     <!-- END: Theme JS -->

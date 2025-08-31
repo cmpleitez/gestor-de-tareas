@@ -118,7 +118,7 @@ Route::middleware([
             Route::get('ip-reputation', [SecurityController::class, 'ipReputation'])->name('security.ip-reputation');
 
             // Reportes de seguridad
-        
+
 
             // Logs de seguridad
             Route::get('logs', [SecurityController::class, 'logs'])->name('security.logs');
@@ -131,6 +131,7 @@ Route::middleware([
             Route::get('security-events', [SecurityController::class, 'getSecurityEvents'])->name('security.security-events');
             Route::get('events/data', [SecurityController::class, 'getEventsData'])->name('security.events-data');
         });
+
     });
 
     //OPERADORES
@@ -158,6 +159,15 @@ Route::middleware([
         Route::group(['prefix' => 'recepcion'], function () {
             Route::get('create', [RecepcionController::class, 'create'])->name('recepcion.create');
             Route::post('store', [RecepcionController::class, 'store'])->name('recepcion.store');
+        });
+
+        // ========================================
+        // RUTAS DEL CATÁLOGO DE PRODUCTOS
+        // ========================================
+        Route::group(['prefix' => 'producto'], function () {
+            Route::get('/', function () {
+                return view('modelos.producto.index');
+            })->name('producto.index');
         });
     });
 });
