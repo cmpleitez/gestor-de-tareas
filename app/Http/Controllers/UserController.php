@@ -2,14 +2,11 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\QueryException;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\Log;
-use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Exception;
 
 use Spatie\Permission\Models\Role;
@@ -22,7 +19,7 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::with('area.oficina', 'equipos', 'roles')->whereNotIn('id', ['1'])->get();
+        $users = User::with('oficina', 'equipos', 'roles')->whereNotIn('id', ['1'])->get();
         return view('modelos.user.index', compact('users'));
     }
 

@@ -26,11 +26,6 @@ class Recepcion extends Model
         return $this->belongsTo(Oficina::class);
     }
 
-    public function area()
-    {
-        return $this->belongsTo(Area::class);
-    }
-
     public function role()
     {
         return $this->belongsTo(Role::class);

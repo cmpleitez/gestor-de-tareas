@@ -47,13 +47,18 @@
               if ($('.main-menu-content li.sidebar-group-active').length) {
                 activeEl = document.querySelector('.main-menu-content li.sidebar-group-active');
               }
-            }else{              
+            }
+
+            // Verificar que activeEl existe antes de acceder a getBoundingClientRect
+            if (activeEl && activeEl.getBoundingClientRect) {
               menu = document.querySelector('.main-menu-content');
-              activeEl = activeEl.getBoundingClientRect().top + menu.scrollTop;
-              // If active element's top position is less than 2/3 (66%) of menu height than do not scroll
-              if (activeEl > parseInt((menu.clientHeight * 2) / 3)) {
-                var start = menu.scrollTop,
-                  change = activeEl - start - parseInt(menu.clientHeight / 2);
+              if (menu) {
+                var activeElTop = activeEl.getBoundingClientRect().top + menu.scrollTop;
+                // If active element's top position is less than 2/3 (66%) of menu height than do not scroll
+                if (activeElTop > parseInt((menu.clientHeight * 2) / 3)) {
+                  var start = menu.scrollTop,
+                    change = activeElTop - start - parseInt(menu.clientHeight / 2);
+                }
               }
             }
             setTimeout(function () {
@@ -232,26 +237,26 @@
 
       // Horizontal layout submenu drawer scrollbar
       if (menuType == 'horizontal-menu') {
-        $('li.dropdown-submenu').on('mouseenter', function(){
-          if(!$(this).parent('.dropdown').hasClass('show')){
+        $('li.dropdown-submenu').on('mouseenter', function () {
+          if (!$(this).parent('.dropdown').hasClass('show')) {
             $(this).removeClass('openLeft');
           }
           var dd = $(this).find('.dropdown-menu');
-          if(dd){
-            var pageHeight = $( window ).height(),
-            ddTop = dd.offset().top,
-            ddLeft = dd.offset().left,
-            ddWidth = dd.width(),
-            ddHeight = dd.height();
-            if(((pageHeight - ddTop) - ddHeight - 28) < 1) {
+          if (dd) {
+            var pageHeight = $(window).height(),
+              ddTop = dd.offset().top,
+              ddLeft = dd.offset().left,
+              ddWidth = dd.width(),
+              ddHeight = dd.height();
+            if (((pageHeight - ddTop) - ddHeight - 28) < 1) {
               var maxHeight = (pageHeight - ddTop - 25);
-              $(this).find('.dropdown-menu').css({'max-height': maxHeight+'px', 'overflow-y': 'auto','overflow-x': 'hidden'});
+              $(this).find('.dropdown-menu').css({ 'max-height': maxHeight + 'px', 'overflow-y': 'auto', 'overflow-x': 'hidden' });
               var menu_content = new PerfectScrollbar('li.dropdown-submenu.show .dropdown-menu', {
                 wheelPropagation: false
               });
             }
             // Add class to horizontal sub menu if screen width is small
-            if(ddLeft + ddWidth - (window.innerWidth - 16) >= 0) {
+            if (ddLeft + ddWidth - (window.innerWidth - 16) >= 0) {
               $(this).addClass('openLeft');
             }
           }
@@ -499,10 +504,10 @@
       $('.menu-livicon').removeLiviconEvo();
 
       // Initialize Menu Icons with configs
-      $.each($('.menu-livicon'), function(i){
+      $.each($('.menu-livicon'), function (i) {
         var $this = $(this),
-        icon = $this.data('icon'),
-        iconStyle = $('#main-menu-navigation').data("icon-style");
+          icon = $this.data('icon'),
+          iconStyle = $('#main-menu-navigation').data("icon-style");
 
         $this.addLiviconEvo({
           name: icon,
@@ -514,11 +519,11 @@
           solidColor: menuIconColorsObj.iconSolidColor,
           fillColor: menuIconColorsObj.iconFillColor,
           strokeColorAlt: menuIconColorsObj.iconStrokeColorAlt,
-          afterAdd: function() {
+          afterAdd: function () {
             if (i === $(".main-menu-content .menu-livicon").length - 1) {
               // When hover over any menu item, start animation and stop all other animation
-              $(".main-menu-content .nav-item a").on("mouseenter", function() {
-               if ($(".main-menu-content .menu-livicon").length) {
+              $(".main-menu-content .nav-item a").on("mouseenter", function () {
+                if ($(".main-menu-content .menu-livicon").length) {
                   $(".main-menu-content .menu-livicon").stopLiviconEvo()
                   $(this)
                     .find(".menu-livicon")

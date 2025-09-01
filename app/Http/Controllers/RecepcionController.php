@@ -22,7 +22,6 @@ class RecepcionController extends Controller
     public function solicitudes()
     {
         $user = auth()->user();
-        $user->load('area');
         $operador_por_defecto = User::where('activo', true)->inRandomOrder()->first();
         $recepciones = Recepcion::where('user_id_destino', $user->id)
             ->with(['solicitud', 'estado', 'usuarioDestino', 'area', 'role'])
@@ -30,7 +29,7 @@ class RecepcionController extends Controller
             ->limit(5)
             ->get();
         $atencionIds = $recepciones->pluck('atencion_id')->unique();
-        $usuariosDestinoPorAtencion = Recepcion::with(['usuarioDestino', 'role', 'area'])
+        $usuariosDestinoPorAtencion = Recepcion::with(['usuarioDestino', 'role'])
             ->whereIn('atencion_id', $atencionIds)
             ->get()
             ->groupBy('atencion_id')
@@ -41,8 +40,8 @@ class RecepcionController extends Controller
                         'profile_photo_url' => $recepcion->usuarioDestino && $recepcion->usuarioDestino->profile_photo_url
                         ? $recepcion->usuarioDestino->profile_photo_url
                         : asset('app-assets/images/pages/operador.png'),
-                        'recepcion_role_name' => $recepcion->role->name ?? 'Sin rol',
-                        'area_name' => $recepcion->area->area ?? 'Sin área',
+                        'recepcion_role_name' => $recepcion->role->name,
+                        'oficina_name' => $recepcion->oficina->oficina,
                     ];
                 })->values();
             });
@@ -63,7 +62,7 @@ class RecepcionController extends Controller
                 'titulo' => $tarjeta->solicitud->solicitud,
                 'users' => $usuariosDestino,
                 'user_name' => $tarjeta->usuarioDestino->name,
-                'area' => $tarjeta->area->area,
+                'oficina' => $tarjeta->oficina->oficina,
             ];
         });
         $recibidas = $tarjetas->where('estado_id', 1)->sortBy('created_at')->values()->toArray();
@@ -74,14 +73,11 @@ class RecepcionController extends Controller
             'progreso' => $progreso,
             'resueltas' => $resueltas,
             'operador_por_defecto' => $operador_por_defecto,
-            'areas' => Area::where('oficina_id', $user->area->oficina_id)->get(),
             'equipos' => Equipo::whereHas('usuarios.area', function ($query) use ($user) {
                 $query->where('id', $user->area_id);
             })->get(),
             'operadores' => User::whereHas('roles', function ($query) {
                 $query->where('name', 'Operador');
-            })->whereHas('area', function ($query) use ($user) {
-                $query->where('id', $user->area_id);
             })->where('activo', true)->get(),
         ];
 
@@ -209,20 +205,20 @@ class RecepcionController extends Controller
 
     public function store(Request $request)
     {
-        //Seleccionando un recepcionista aleatorio de la oficina destino
-        $user = auth()->user()->load('area.oficina.zona.distrito');
-        $recepcionistas = User::whereHas('roles', function ($query) {
-            $query->where('name', 'Recepcionista');
-        })->whereHas('area', function ($query) use ($user) {
-            $query->where('oficina_id', $user->area->oficina_id);
-        })->get();
-        if ($recepcionistas->isEmpty()) {
-            return back()->with('error', 'La funcionalidad se encuentra inhabilitada, consulte con el administrador del sistema');
-        }
-        $recepcionista = $recepcionistas->random();
-        //Iniciando la transacción
         DB::beginTransaction();
         try {
+            //Seleccionando un recepcionista aleatorio de la oficina destino
+            $user = auth()->user();
+            $recepcionistas = User::whereHas('roles', function ($query) {
+                $query->where('name', 'Recepcionista');
+            })->whereHas('oficina', function ($query) use ($user) {
+                $query->where('id', $user->oficina_id);
+            })->get();
+            if ($recepcionistas->isEmpty()) {
+                return back()->with('error', 'La funcionalidad se encuentra inhabilitada, consulte con el administrador del sistema');
+            }
+            $recepcionista = $recepcionistas->random();
+            //Iniciando la transacción
             $atencion = new Atencion(); //Creando el número de atención
             $atencion->id = (new KeyMaker())->generate('Atencion', $request->solicitud_id);
             $atencion->solicitud_id = $request->solicitud_id;
@@ -232,10 +228,7 @@ class RecepcionController extends Controller
             $recepcion = new Recepcion(); //Creando la recepción
             $recepcion->id = (new KeyMaker())->generate('Recepcion', $request->solicitud_id);
             $recepcion->solicitud_id = $request->solicitud_id;
-            $recepcion->oficina_id = $recepcionista->area->oficina_id;
-            $recepcion->area_id = $user->area_id;
-            $recepcion->zona_id = $user->area->oficina->zona_id;
-            $recepcion->distrito_id = $user->area->oficina->zona->distrito_id;
+            $recepcion->oficina_id = $recepcionista->oficina_id;
             $recepcion->user_id_origen = auth()->user()->id;
             $recepcion->user_id_destino = $recepcionista->id;
             $recepcion->role_id = Role::where('name', 'Recepcionista')->first()->id;
@@ -249,7 +242,7 @@ class RecepcionController extends Controller
             return back()->with('error', 'Ocurrió un error cuando se intentaba enviar la solicitud:' . $e->getMessage())->with('toast_position', 'top-center');
         }
         DB::commit(); //Finalizando la transacción
-        return redirect()->route('recepcion.create')->with('success', 'La solicitud número "' . KeyRipper::rip($atencion_id) . '" ha sido recibida en el area ' . $user->area->area)->with('toast_position', 'top-center');
+        return redirect()->route('recepcion.create')->with('success', 'La solicitud número "' . KeyRipper::rip($atencion_id) . '" ha sido recibida en la oficina ' . $user->oficina->oficina)->with('toast_position', 'top-center');
     }
 
     public function derivar($recepcion_id, $area_id)

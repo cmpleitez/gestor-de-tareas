@@ -9,11 +9,6 @@ class Oficina extends Model
 {
     use HasFactory;
 
-    public function zona()
-    {
-        return $this->belongsTo(Zona::class);
-    }
-
     public function users()
     {
         return $this->hasMany(User::class);
@@ -27,11 +22,6 @@ class Oficina extends Model
     public function actividades()
     {
         return $this->hasMany(Actividad::class);
-    }
-
-    public function areas()
-    {
-        return $this->hasMany(Area::class);
     }
 
 }

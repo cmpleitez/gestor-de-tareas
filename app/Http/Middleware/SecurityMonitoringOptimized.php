@@ -2,18 +2,17 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\SecurityEvent;
+use App\Services\GeolocationService;
+use App\Services\SimpleSecurityService;
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
-use App\Models\SecurityEvent;
-use App\Services\SimpleSecurityService;
-use App\Services\GeolocationService;
 
 class SecurityMonitoringOptimized
 {
     protected $simpleSecurity;
     protected $geolocationService;
-    
+
     // Configuración mínima y eficiente
     protected $config = [
         'max_requests_per_hour' => 100,
@@ -33,25 +32,25 @@ class SecurityMonitoringOptimized
         try {
             // CAPA 1: Escaneo rápido sin consultas a BD
             $threatScore = $this->quickThreatScan($request);
-            
+
             // CAPA 2: Análisis profundo solo si es necesario
             if ($threatScore >= 40) { // Capturar eventos medios, altos y críticos
                 $detailedScore = $this->detailedThreatAnalysis($request);
-                
+
                 // Registrar evento de seguridad para todos los niveles de riesgo
                 if ($detailedScore >= 40) {
                     $this->logSecurityEvent($request, $detailedScore);
-                    
+
                     // Solo bloquear si es crítico
                     if ($detailedScore >= 80) {
                         return $this->generateBlockResponse();
                     }
                 }
             }
-            
+
             // Continuar normalmente
             return $next($request);
-            
+
         } catch (\Exception $e) {
             // En caso de error, permitir la request sin escribir a laravel.log
             return $next($request);
@@ -64,16 +63,36 @@ class SecurityMonitoringOptimized
     protected function quickThreatScan(Request $request): float
     {
         $threatScore = 0;
-        $payload = $request->getContent() . json_encode($request->all());
-        
+
+        // Validar y limpiar el contenido antes del procesamiento
+        $content = $request->getContent();
+        $allData = $request->all();
+
+        // Asegurar codificación UTF-8 válida
+        if (!mb_check_encoding($content, 'UTF-8')) {
+            $content = mb_convert_encoding($content, 'UTF-8', 'auto');
+        }
+
+        // Limpiar datos antes de json_encode
+        $cleanData = [];
+        foreach ($allData as $key => $value) {
+            if (is_string($value) && !mb_check_encoding($value, 'UTF-8')) {
+                $cleanData[$key] = mb_convert_encoding($value, 'UTF-8', 'auto');
+            } else {
+                $cleanData[$key] = $value;
+            }
+        }
+
+        $payload = $content . json_encode($cleanData, JSON_UNESCAPED_UNICODE);
+
         // Patrones críticos simples
         $criticalPatterns = [
             'sql_injection' => ['/union\s+select/i', '/drop\s+table/i', '/--/'],
             'xss_attack' => ['/<script/i', '/javascript:/i', '/onload=/i'],
             'path_traversal' => ['/\.\.\//', '/\.\.\\\\/', '/%2e%2e%2f/'],
-            'command_injection' => ['/;/', '/\|/', '/&&/', '/`/']
+            'command_injection' => ['/;/', '/\|/', '/&&/', '/`/'],
         ];
-        
+
         foreach ($criticalPatterns as $attackType => $patterns) {
             foreach ($patterns as $pattern) {
                 if (preg_match($pattern, $payload)) {
@@ -81,7 +100,7 @@ class SecurityMonitoringOptimized
                 }
             }
         }
-        
+
         return min(100, $threatScore);
     }
 
@@ -91,14 +110,14 @@ class SecurityMonitoringOptimized
     protected function detailedThreatAnalysis(Request $request): float
     {
         $ip = $request->ip();
-        
+
         // Usar el servicio simple de seguridad
         $threatAnalysis = $this->simpleSecurity->analyzeThreats($ip);
         $patternScore = $this->quickThreatScan($request);
-        
+
         // Score total: máximo entre análisis de comportamiento y patrones
         $totalScore = max($threatAnalysis['total_score'], $patternScore);
-        
+
         return $totalScore;
     }
 
@@ -109,10 +128,10 @@ class SecurityMonitoringOptimized
     {
         $action = $threatScore >= 80 ? 'block' : 'monitor';
         $ip = $request->ip();
-        
+
         // Obtener geolocalización de la IP
         $geolocation = $this->geolocationService->getGeolocation($ip);
-        
+
         // Crear evento en base de datos
         SecurityEvent::create([
             'ip_address' => $ip,
@@ -123,7 +142,7 @@ class SecurityMonitoringOptimized
             'risk_level' => $this->categorizeRisk($threatScore),
             'category' => $this->detectAttackCategory($request),
             'source' => 'middleware',
-            'geolocation' => $geolocation
+            'geolocation' => $geolocation,
         ]);
 
         // Escribir a log de seguridad específico con utf8mb4
@@ -138,7 +157,7 @@ class SecurityMonitoringOptimized
         $logFile = storage_path('logs/security.log');
         $timestamp = now()->format('Y-m-d H:i:s');
         $riskLevel = $this->categorizeRisk($threatScore);
-        
+
         $logEntry = sprintf(
             "[%s] %s - IP: %s | URI: %s | Method: %s | Threat Score: %.2f | Risk: %s | Category: %s | Geo: %s, %s\n",
             $timestamp,
@@ -174,7 +193,7 @@ class SecurityMonitoringOptimized
             'error' => 'Access denied',
             'reason' => 'Security policy violation',
             'incident_id' => uniqid('SEC-'),
-            'contact' => config('security.contact_email', 'admin@example.com')
+            'contact' => config('security.contact_email', 'admin@example.com'),
         ], 403);
     }
 
@@ -187,17 +206,26 @@ class SecurityMonitoringOptimized
             'sql_injection' => 25,
             'xss_attack' => 20,
             'path_traversal' => 15,
-            'command_injection' => 30
+            'command_injection' => 30,
         ];
-        
+
         return $weights[$attackType] ?? 10;
     }
 
     protected function categorizeRisk(float $score): string
     {
-        if ($score >= 80) return 'critical';
-        if ($score >= 60) return 'high';
-        if ($score >= 40) return 'medium';
+        if ($score >= 80) {
+            return 'critical';
+        }
+
+        if ($score >= 60) {
+            return 'high';
+        }
+
+        if ($score >= 40) {
+            return 'medium';
+        }
+
         // Solo retornar los 3 niveles principales
         return 'medium';
     }
@@ -207,9 +235,18 @@ class SecurityMonitoringOptimized
      */
     protected function getThreatReason(float $score): string
     {
-        if ($score >= 80) return 'Critical threat detected - Immediate action required';
-        if ($score >= 60) return 'High threat detected - Close monitoring required';
-        if ($score >= 40) return 'Medium threat detected - Investigation recommended';
+        if ($score >= 80) {
+            return 'Critical threat detected - Immediate action required';
+        }
+
+        if ($score >= 60) {
+            return 'High threat detected - Close monitoring required';
+        }
+
+        if ($score >= 40) {
+            return 'Medium threat detected - Investigation recommended';
+        }
+
         // Solo retornar los 3 niveles principales
         return 'Medium threat detected - Investigation recommended';
     }
@@ -219,24 +256,43 @@ class SecurityMonitoringOptimized
      */
     protected function detectAttackCategory(Request $request): string
     {
-        $payload = $request->getContent() . json_encode($request->all());
-        
+        // Usar la misma lógica de limpieza que quickThreatScan
+        $content = $request->getContent();
+        $allData = $request->all();
+
+        // Asegurar codificación UTF-8 válida
+        if (!mb_check_encoding($content, 'UTF-8')) {
+            $content = mb_convert_encoding($content, 'UTF-8', 'auto');
+        }
+
+        // Limpiar datos antes de json_encode
+        $cleanData = [];
+        foreach ($allData as $key => $value) {
+            if (is_string($value) && !mb_check_encoding($value, 'UTF-8')) {
+                $cleanData[$key] = mb_convert_encoding($value, 'UTF-8', 'auto');
+            } else {
+                $cleanData[$key] = $value;
+            }
+        }
+
+        $payload = $content . json_encode($cleanData, JSON_UNESCAPED_UNICODE);
+
         if (preg_match('/union\s+select|drop\s+table|--/i', $payload)) {
             return 'sql_injection';
         }
-        
+
         if (preg_match('/<script|javascript:|onload=/i', $payload)) {
             return 'xss_attack';
         }
-        
+
         if (preg_match('/\.\.\/|\.\.\\\\|%2e%2e%2f/i', $payload)) {
             return 'path_traversal';
         }
-        
+
         if (preg_match('/;|\||&&|`/i', $payload)) {
             return 'command_injection';
         }
-        
+
         return 'suspicious_activity';
     }
 }

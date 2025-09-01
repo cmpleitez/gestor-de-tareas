@@ -50,7 +50,6 @@
                         <table id="datatable" class="table zero-configuration table-hover">
                             <thead>
                                 <tr>
-                                    <th>Area</th>
                                     <th>Oficina</th>
                                     <th>Equipo</th>
                                     <th>DUI</th>
@@ -69,8 +68,7 @@
                                 @foreach ($users as $user)
                                 <tr>
                                     {{-- CAMPOS --}}
-                                    <td>{{ $user->area->area }}</td>
-                                    <td>{{ $user->area->oficina->oficina }}</td>
+                                    <td>{{ $user->oficina->oficina }}</td>
                                     <td>{{ $user->equipos->pluck('equipo')->first() }}</td>
                                     <td>{{ $user->dui }}</td>
                                     <td>{{ $user->name }}</td>
@@ -160,7 +158,6 @@
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <th>Area</th>
                                     <th>Oficina</th>
                                     <th>Equipo</th>
                                     <th>DUI</th>

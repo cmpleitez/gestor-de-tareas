@@ -41,6 +41,10 @@
 234567890
 456789012
 
+🟠 Soporte IA Digital Ocean:
+    https://docs.digitalocean.com/support/
+    https://www.digitalocean.com/company/contact/sales?referrer=pricing/managed-databases
+    https://www.digitalocean.com/community/tools/bandwidth?active=%5B%7B%22slug%22%3A%22s-1vcpu-2gb%22%2C%22type%22%3A%22droplet%22%2C%22hours%22%3A722%2C%22consumption%22%3A1500%2C%22nodes%22%3A1%7D%5D&additional=0
 
 🟠 analisis de la factura digital ocean:
 DigitalOcean:
@@ -75,10 +79,15 @@ SEGURIDAD:
     🟢 revisar las opciones de chat de cursor
 
 SERVICIOS:
-    
-    ...🟢 retirar toda la estructura organizativa y dejar solo los equipos de trabajo
-            ...ajustar las dependencias
+    🟢 retirar toda la estructura organizativa y dejar solo los equipos de trabajo
+        ajustar las dependencias
 
+    ...🟢 reducir la cantidad de roles
+
+    🟢 los logs de seguridad siguen causando problemas en el log de laravel, será mejor eliminar el servicio de losg completo, igual en lugar de registrar los incidentes de seguridad en un log mejor se registran en las tablas en todo caso, y si esto fuera imprescindibles no eliminarlo
+    🟢 evaluar si eliminar las tareas programadas porque originan letras chinas en el log de laravel
+    🟢 se ha estado comprobando que cuando suceden errores normales y se tratan de escribir en laravel.log, se estan escribiendo en caracteres chinos podría deberse a los logs de seguridad implementados recientemente
+    🟢 la creación de usuarios debe realizarse desde dentro del sistema
     🟢 crear imagenes con su codigo con letra grande y visible en un proceso por lotes, luego que el usuario haya tomado todas las fotos o sin ellas en su caso
     🟢 agrega ubicacion geografica según estructura: departamento y municipio
     🟢 crear primero maquetacion para catalogo de productos y carrito de compras, y luego las funcionalidades

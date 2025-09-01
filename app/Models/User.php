@@ -11,7 +11,6 @@ use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Auth\Authenticatable as AuthenticatableTrait;
 use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable implements MustVerifyEmail
@@ -88,14 +87,9 @@ class User extends Authenticatable implements MustVerifyEmail
         return asset('app-assets/images/pages/operador.png');
     }
 
-    public function area()
-    {
-        return $this->belongsTo(Area::class);
-    }
-
     public function oficina()
     {
-        return $this->hasOneThrough(Oficina::class, Area::class);
+        return $this->belongsTo(Oficina::class);
     }
 
     public function equipos()

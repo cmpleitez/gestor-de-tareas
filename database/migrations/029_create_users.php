@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->foreignId('role_id')->default(7);
+            $table->foreignId('oficina_id')->default(1);
             $table->string('dui',9)->unique();
             $table->string('name');
             $table->string('email')->unique();
@@ -23,6 +24,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('role_id')->references('id')->on('roles');
+            $table->foreign('oficina_id')->references('id')->on('oficinas');
         });
     }
 

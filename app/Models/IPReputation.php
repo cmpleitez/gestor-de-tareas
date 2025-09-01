@@ -10,15 +10,8 @@ use Illuminate\Database\Eloquent\Builder;
 class IPReputation extends Model
 {
     use HasFactory;
-
-    /**
-     * La tabla asociada al modelo
-     */
     protected $table = 'ip_reputations';
 
-    /**
-     * Los atributos que son asignables masivamente
-     */
     protected $fillable = [
         'ip_address',
         'reputation_score',

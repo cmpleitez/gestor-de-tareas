@@ -53,9 +53,6 @@ class SecurityEvent extends Model
         'metadata'
     ];
 
-    /**
-     * Los atributos que deben ser agregados al array del modelo
-     */
     protected $appends = [
         'formatted_risk_level',
         'formatted_severity',
@@ -63,139 +60,84 @@ class SecurityEvent extends Model
         'age_in_minutes'
     ];
 
-    /**
-     * Relación con el usuario (si está autenticado)
-     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-
-
-    /**
-     * Relación con eventos relacionados (misma IP)
-     */
     public function relatedEvents(): HasMany
     {
         return $this->hasMany(SecurityEvent::class, 'ip_address', 'ip_address')
             ->where('id', '!=', $this->id);
     }
 
-    /**
-     * Relación con eventos de la misma sesión
-     */
     public function sessionEvents(): HasMany
     {
         return $this->hasMany(SecurityEvent::class, 'session_id', 'session_id')
             ->where('id', '!=', $this->id);
     }
 
-    /**
-     * Scope para eventos de alto riesgo
-     */
     public function scopeHighRisk(Builder $query): Builder
     {
         return $query->where('threat_score', '>=', 60);
     }
 
-    /**
-     * Scope para eventos críticos
-     */
     public function scopeCritical(Builder $query): Builder
     {
         return $query->where('threat_score', '>=', 80);
     }
 
-
-
-    /**
-     * Scope para eventos de una IP específica
-     */
     public function scopeFromIP(Builder $query, string $ip): Builder
     {
         return $query->where('ip_address', $ip);
     }
 
-    /**
-     * Scope para eventos de un usuario específico
-     */
     public function scopeFromUser(Builder $query, int $userId): Builder
     {
         return $query->where('user_id', $userId);
     }
 
-    /**
-     * Scope para eventos de una categoría específica
-     */
     public function scopeInCategory(Builder $query, string $category): Builder
     {
         return $query->where('category', $category);
     }
 
-    /**
-     * Scope para eventos de una severidad específica
-     */
     public function scopeWithSeverity(Builder $query, string $severity): Builder
     {
         return $query->where('severity', $severity);
     }
 
-    /**
-     * Scope para eventos recientes (últimas 24 horas)
-     */
     public function scopeRecent(Builder $query): Builder
     {
         return $query->where('created_at', '>=', now()->subDay());
     }
 
-    /**
-     * Scope para eventos de una ventana de tiempo específica
-     */
     public function scopeInTimeWindow(Builder $query, $startTime, $endTime): Builder
     {
         return $query->whereBetween('created_at', [$startTime, $endTime]);
     }
 
-    /**
-     * Scope para eventos con score de amenaza en un rango
-     */
     public function scopeWithThreatScoreRange(Builder $query, float $min, float $max): Builder
     {
         return $query->whereBetween('threat_score', [$min, $max]);
     }
 
-    /**
-     * Scope para eventos de una fuente específica
-     */
     public function scopeFromSource(Builder $query, string $source): Builder
     {
         return $query->where('source', $source);
     }
 
-
-
-    /**
-     * Obtener el nivel de riesgo formateado
-     */
     public function getFormattedRiskLevelAttribute(): string
     {
         return ucfirst($this->risk_level ?? 'unknown');
     }
 
-    /**
-     * Obtener la severidad formateada
-     */
     public function getFormattedSeverityAttribute(): string
     {
         return ucfirst($this->severity ?? 'unknown');
     }
 
 
-
-    /**
-     * Obtener la edad del evento en minutos
-     */
     public function getAgeInMinutesAttribute(): int
     {
         return $this->created_at->diffInMinutes(now());
