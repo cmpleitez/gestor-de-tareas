@@ -77,13 +77,12 @@ SEGURIDAD:
 SERVICIOS:
     
     ...🟢 retirar toda la estructura organizativa y dejar solo los equipos de trabajo
+            ...ajustar las dependencias
 
-
+    🟢 crear imagenes con su codigo con letra grande y visible en un proceso por lotes, luego que el usuario haya tomado todas las fotos o sin ellas en su caso
     🟢 agrega ubicacion geografica según estructura: departamento y municipio
-    
     🟢 crear primero maquetacion para catalogo de productos y carrito de compras, y luego las funcionalidades
         se creo catalogo pendiente paginacion y funcionalidades
-    
     🟢 se detectan dos categorias: tipo de producto, marca y tipo de comercializacion: al detalle o mayoreo
     🟢 crear funcionalidad de combos personalizables
     🟢 agregar try catch a todos los controladores que lean y escriban en tablas

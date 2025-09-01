@@ -6,7 +6,6 @@ use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
 use App\Actions\Fortify\UpdateUserPassword;
 use App\Actions\Fortify\UpdateUserProfileInformation;
-use App\Actions\Fortify\CustomRegisterViewResponse;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -35,7 +34,7 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
 
         RateLimiter::for('login', function (Request $request) {
-            $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())).'|'.$request->ip());
+            $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())) . '|' . $request->ip());
 
             return Limit::perMinute(5)->by($throttleKey);
         });
@@ -48,13 +47,8 @@ class FortifyServiceProvider extends ServiceProvider
             return view('auth.login');
         });
 
-        $this->app->singleton(
-            \Laravel\Fortify\Contracts\RegisterViewResponse::class,
-            \App\Actions\Fortify\CustomRegisterViewResponse::class
-        );
-
         Fortify::registerView(function () {
-            return app(CustomRegisterViewResponse::class);
+            return view('auth.register');
         });
 
         Fortify::verifyEmailView(function () {

@@ -33,7 +33,6 @@ class User extends Authenticatable implements MustVerifyEmail
         'dui',
         'email',
         'password',
-        'area_id',
         'role_id',
         'profile_photo_path'
     ];

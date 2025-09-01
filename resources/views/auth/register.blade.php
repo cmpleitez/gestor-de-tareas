@@ -300,25 +300,6 @@
                                     </div>
                                     @enderror
                                 </div>
-                                <div class="col-sm-12"> {{-- Area --}}
-                                    <div class="form-group">
-                                        <label for="area_id">Area</label>
-                                        <select class="select2 form-control" id="area_id" name="area_id"
-                                            data-validation-required-message="La area es requerida" required>
-                                            @foreach ($areas as $area)
-                                            <option value="{{ $area->id }}" {{ old('area_id')==$area->id ? 'selected' :
-                                                '' }}>
-                                                {{ $area->area }}
-                                            </option>
-                                            @endforeach
-                                        </select>
-                                        @error('area_id')
-                                        <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
-                                            {{ $errors->first('area_id') }}
-                                        </div>
-                                        @enderror
-                                    </div>
-                                </div>
                                 <div class="col-sm-12"> {{-- Correo --}}
                                     <div class="form-group">
                                         <label>Correo electrónico</label>
