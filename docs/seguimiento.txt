@@ -25,12 +25,6 @@
     Rt -> Ep: Revertir movimiento
     Rt -> Re: Revertir movimiento
 ✨ inteligencia artificial ayuda segun el texto libre escrito por el beneficiario, a elegir a éste último, la solicitud de catalogo más adecuada, incluye confirmación del beneficiario
-🟠 PROCEDIMIENTO:
-    1. El beneficiario envia solicitud al recepcionista de la oficina a la que está suscrito, del distrito y zona a los que pertenece segun residencia
-    2. La solicitud entra en el rango de maniobra: oficina
-    3. El recepcionista la deriva al supervisor del area seleccionada
-    4. La solicitud entra en rango de maniobra: area
-    5. El supervisor la asigna al gestor del area, quien es miembro de un equipo
     
     --------------------------- fin de zona de distribucion de solicitudes -----------------------
 
@@ -77,18 +71,21 @@ SEGURIDAD:
     🟢 verificar los servicios de config/security
     🟢 implementar el ssl
     🟢 agregar validadores de funcionamiento y mensajes de error para el usuario en el grupo de rutas "security", evitando el uso de escritura en el log de laravel
-    🟢 agregar mensajes de error en los try catch del modulo de seguridad
-    🟢 eliminar el campo geolocalizacion porque es decorativo
     🟢 retirar campos de las tablas que no esten siendo utilizados por las vistas y retirarlos tambien los procesos que recopilen sus datos
     🟢 revisar las opciones de chat de cursor
-    🟢 mantener los equipos de trabajo para tener potencia en flexibilidad y evitar la estructura organizativa que suele ser variable y dar fuertes golpes a los datos y a la seguridad del sistema
 
 SERVICIOS:
-
-    🟢 crear primero maquetacion para catalogo de productos y carrito de compras, y luego las funcionalidades
-        ...se creo catalogo pendiente paginacion y funcionalidades
     
+    ...🟢 retirar toda la estructura organizativa y dejar solo los equipos de trabajo
 
+
+    🟢 agrega ubicacion geografica según estructura: departamento y municipio
+    
+    🟢 crear primero maquetacion para catalogo de productos y carrito de compras, y luego las funcionalidades
+        se creo catalogo pendiente paginacion y funcionalidades
+    
+    🟢 se detectan dos categorias: tipo de producto, marca y tipo de comercializacion: al detalle o mayoreo
+    🟢 crear funcionalidad de combos personalizables
     🟢 agregar try catch a todos los controladores que lean y escriban en tablas
     🟢 construir de control de calidad para el gestor
     🟢 proceso de rechazo de una solicitud o anulación
@@ -97,7 +94,12 @@ SERVICIOS:
     🟢 global cruds.edit: si hay historial no se puede editar
     🟢 servicio controlado: para cambiar el dui a una persona por motivos de error involuntario a la hora de registrar ese dui en el formulario de registro de usuarios
     🟢 register: asegurar el id del usuario con un aumento no automático sino programatico
-
+    🟢 Ajustar procedimiento:
+        1. El beneficiario envia solicitud al recepcionista de la oficina a la que está suscrito, del distrito y zona a los que pertenece segun residencia
+        2. La solicitud entra en el rango de maniobra: oficina
+        3. El recepcionista la deriva al supervisor del area seleccionada
+        4. La solicitud entra en rango de maniobra: area
+        5. El supervisor la asigna al gestor del area, quien es miembro de un equipo
 
 🟠 rage agains the machine & limp bizkit & korn & alice in chains
     ...limp bizkit: im broke

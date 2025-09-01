@@ -10,12 +10,9 @@ return new class extends Migration
     {
         Schema::create('oficinas', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('zona_id');
             $table->string('oficina', 128)->unique();
             $table->boolean('activo')->default(true);
             $table->timestamps();
-
-            $table->foreign('zona_id')->references('id')->on('zonas');
         });
     }
 

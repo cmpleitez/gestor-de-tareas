@@ -13,9 +13,6 @@ return new class extends Migration
             $table->foreignId('solicitud_id');
             $table->foreignId('role_id');
             $table->foreignId('oficina_id');
-            $table->foreignId('area_id');
-            $table->foreignId('zona_id');
-            $table->foreignId('distrito_id');
             $table->foreignId('user_id_origen');
             $table->foreignId('user_id_destino');
             $table->foreignId('estado_id');
@@ -29,9 +26,6 @@ return new class extends Migration
             $table->foreign('solicitud_id')->references('id')->on('solicitudes');
             $table->foreign('oficina_id')->references('id')->on('oficinas');
             $table->foreign('role_id')->references('id')->on('roles');
-            $table->foreign('area_id')->references('id')->on('areas');
-            $table->foreign('zona_id')->references('id')->on('zonas');
-            $table->foreign('distrito_id')->references('id')->on('distritos');
             $table->foreign('user_id_origen')->references('id')->on('users');
             $table->foreign('user_id_destino')->references('id')->on('users');
             $table->foreign('atencion_id')->references('id')->on('atenciones');

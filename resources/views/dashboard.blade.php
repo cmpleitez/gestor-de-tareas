@@ -790,7 +790,7 @@
                                 <i class="bx bx-right-arrow-alt"></i>
                                 <span class="menu-item" data-i18n="Second Level">Recepciones</span>
                             </a></li>
-                        <li><a href="{{ route('producto.index') }}">
+                        <li><a href="{{ route('producto') }}">
                                 <i class="bx bx-package"></i>
                                 <span class="menu-item" data-i18n="Second Level">Catálogo</span>
                             </a></li>

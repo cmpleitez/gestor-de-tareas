@@ -1,23 +1,20 @@
 <?php
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+
 use App\Http\Controllers\EquipoController;
 use App\Http\Controllers\RecepcionController;
 use App\Http\Controllers\SecurityController;
 use App\Http\Controllers\SolicitudController;
 use App\Http\Controllers\TareaController;
 use App\Http\Controllers\UserController;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProductoController;
 
 // Rutas públicas
 Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
-
-/* Route::group(['prefix' => 'user'], function () { //Usuarios
-Route::get('create', [userController::class, 'create'])->name('user.create');
-Route::post('store', [userController::class, 'store'])->name('user.store');
-}); */
 
 // Rutas de verificación de correo
 Route::middleware(['auth'])->group(function () {
@@ -102,36 +99,17 @@ Route::middleware([
             Route::post('activate/{solicitud}', [solicitudController::class, 'activate'])->name('solicitud.activate');
         });
 
-        // ========================================
-        // RUTAS DEL DASHBOARD DE SEGURIDAD
-        // ========================================
         Route::group(['prefix' => 'security'], function () {
-            // Dashboard principal de seguridad
             Route::get('/', [SecurityController::class, 'index'])->name('security.index');
-            // Eventos de seguridad
             Route::get('events', [SecurityController::class, 'events'])->name('security.events');
-
-            // Inteligencia de amenazas
             Route::get('threat-intelligence', [SecurityController::class, 'threatIntelligence'])->name('security.threat-intelligence');
-
-            // Reputación de IPs
             Route::get('ip-reputation', [SecurityController::class, 'ipReputation'])->name('security.ip-reputation');
-
-            // Reportes de seguridad
-
-
-            // Logs de seguridad
             Route::get('logs', [SecurityController::class, 'logs'])->name('security.logs');
-
-            // Acciones de seguridad (AJAX)
             Route::post('whitelist-ip', [SecurityController::class, 'whitelistIP'])->name('security.whitelist-ip');
-
-            // API endpoints para datos
             Route::get('dashboard-stats', [SecurityController::class, 'getDashboardStats'])->name('security.dashboard-stats');
             Route::get('security-events', [SecurityController::class, 'getSecurityEvents'])->name('security.security-events');
             Route::get('events/data', [SecurityController::class, 'getEventsData'])->name('security.events-data');
         });
-
     });
 
     //OPERADORES
@@ -161,13 +139,8 @@ Route::middleware([
             Route::post('store', [RecepcionController::class, 'store'])->name('recepcion.store');
         });
 
-        // ========================================
-        // RUTAS DEL CATÁLOGO DE PRODUCTOS
-        // ========================================
         Route::group(['prefix' => 'producto'], function () {
-            Route::get('/', function () {
-                return view('modelos.producto.index');
-            })->name('producto.index');
+            Route::get('/', [ProductoController::class, 'index'])->name('producto');
         });
     });
 });
