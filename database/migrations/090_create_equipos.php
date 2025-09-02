@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('equipos', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('oficina_id')->constrained('oficinas');
             $table->string('equipo', 128)->unique();
             $table->boolean('activo')->default(true);
             $table->timestamps();

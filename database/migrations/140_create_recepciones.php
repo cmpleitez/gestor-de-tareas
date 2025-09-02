@@ -10,26 +10,18 @@ return new class extends Migration
     {
         Schema::create('recepciones', function (Blueprint $table) {
             $table->char('id', 12)->primary();
-            $table->foreignId('solicitud_id');
-            $table->foreignId('role_id');
-            $table->foreignId('oficina_id');
-            $table->foreignId('user_id_origen');
-            $table->foreignId('user_id_destino');
-            $table->foreignId('estado_id');
+            $table->foreignId('solicitud_id')->constrained('solicitudes');
+            $table->foreignId('role_id')->constrained('roles');
+            $table->foreignId('oficina_id')->constrained('oficinas');
+            $table->foreignId('user_id_origen')->constrained('users');
+            $table->foreignId('user_id_destino')->constrained('users');
+            $table->foreignId('estado_id')->constrained('estados');
             $table->decimal('avance', 5, 2)->default(0.00);
-            $table->char('atencion_id', 12)->foreignId();
+            $table->char('atencion_id', 12)->constrained('atenciones');
             $table->string('detalle');
             $table->string('observacion')->nullable();
             $table->boolean('activo')->default(true);
             $table->timestamps();
-            
-            $table->foreign('solicitud_id')->references('id')->on('solicitudes');
-            $table->foreign('oficina_id')->references('id')->on('oficinas');
-            $table->foreign('role_id')->references('id')->on('roles');
-            $table->foreign('user_id_origen')->references('id')->on('users');
-            $table->foreign('user_id_destino')->references('id')->on('users');
-            $table->foreign('atencion_id')->references('id')->on('atenciones');
-            $table->foreign('estado_id')->references('id')->on('estados');
         });
     }
 

@@ -22,9 +22,12 @@ class RecepcionController extends Controller
     public function solicitudes()
     {
         $user = auth()->user();
-        $operador_por_defecto = User::where('activo', true)->inRandomOrder()->first();
+        $operador_por_defecto = User::where('oficina_id', $user->oficina_id)->where('activo', true)->inRandomOrder()->first();
         $recepciones = Recepcion::where('user_id_destino', $user->id)
-            ->with(['solicitud', 'estado', 'usuarioDestino', 'area', 'role'])
+            ->with(['solicitud', 'estado', 'usuarioDestino', 'oficina', 'role'])
+            ->whereHas('oficina', function ($query) use ($user) {
+                $query->where('id', $user->oficina_id);
+            })
             ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get();
@@ -36,8 +39,8 @@ class RecepcionController extends Controller
             ->map(function ($grupo) {
                 return $grupo->map(function ($recepcion) {
                     return [
-                        'name' => $recepcion->usuarioDestino->name ?? 'Sin asignar',
-                        'profile_photo_url' => $recepcion->usuarioDestino && $recepcion->usuarioDestino->profile_photo_url
+                        'name' => $recepcion->usuarioDestino->name,
+                        'profile_photo_url' => $recepcion->usuarioDestino->profile_photo_url
                         ? $recepcion->usuarioDestino->profile_photo_url
                         : asset('app-assets/images/pages/operador.png'),
                         'recepcion_role_name' => $recepcion->role->name,
@@ -45,7 +48,6 @@ class RecepcionController extends Controller
                     ];
                 })->values();
             });
-
         $tarjetas = $recepciones->map(function ($tarjeta) use ($usuariosDestinoPorAtencion) {
             $usuariosDestino = $usuariosDestinoPorAtencion->get($tarjeta->atencion_id, collect());
             return [
@@ -73,26 +75,16 @@ class RecepcionController extends Controller
             'progreso' => $progreso,
             'resueltas' => $resueltas,
             'operador_por_defecto' => $operador_por_defecto,
-            'equipos' => Equipo::whereHas('usuarios.area', function ($query) use ($user) {
-                $query->where('id', $user->area_id);
-            })->get(),
+            'equipos' => Equipo::where('oficina_id', $user->oficina_id)->get(),
             'operadores' => User::whereHas('roles', function ($query) {
                 $query->where('name', 'Operador');
+            })->whereHas('oficina', function ($query) use ($user) {
+                $query->where('id', $user->oficina_id);
             })->where('activo', true)->get(),
         ];
-
         if (auth()->user()->main_role == 'Recepcionista') {
-            $user->load('area.oficina');
-            if ($data['areas']->isEmpty()) {
-                return back()->with('error', 'No hay areas disponibles para asignar las solicitudes');
-            }
-        } elseif (auth()->user()->main_role == 'Supervisor') {
             if ($data['equipos']->isEmpty()) {
-                return back()->with('error', 'No hay equipos disponibles para asignar las solicitudes');
-            }
-        } elseif (auth()->user()->main_role == 'Gestor') {
-            if ($data['operadores']->isEmpty()) {
-                return back()->with('error', 'No hay operadores disponibles para asignar las solicitudes');
+                return back()->with('error', 'No hay equipos de trabajo disponibles para asignar las solicitudes');
             }
         }
         return view('modelos.recepcion.solicitudes', $data);
@@ -149,19 +141,6 @@ class RecepcionController extends Controller
             ];
         });
         return response()->json($nuevas);
-    }
-
-    public function areas(Solicitud $solicitud)
-    {
-        $user = auth()->user()->load('area.oficina.zona');
-        $areas = Area::where('zona_id', $user->area->oficina->zona_id)
-            ->whereHas('oficinas.users.solicitudes', function ($query) use ($solicitud) {
-                $query->where('solicitudes.id', $solicitud->id);
-            })->get();
-        return response()->json([
-            'areas' => $areas,
-            'cantidad_operadores' => $areas->count(),
-        ]);
     }
 
     public function equipos(Solicitud $solicitud)
@@ -428,9 +407,12 @@ class RecepcionController extends Controller
         ]);
     }
 
-    public function delegar($recepcion_id, $user_id)
+    public function delegar($recepcion, $equipo)
     {
-        //Validación
+
+        dd($recepcion, $equipo);
+
+/*         //Validación
         $recepcion = Recepcion::find($recepcion_id);
         if (!$recepcion) {
             return response()->json(['success' => false, 'message' => 'No se encontró la recepción solicitada'], 404);
@@ -478,7 +460,7 @@ class RecepcionController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['success' => false, 'message' => 'Ocurrió un error al delegar la solicitud:' . $e->getMessage()]);
-        }
+        } */
     }
 
     public function delegarTodas(Request $request)

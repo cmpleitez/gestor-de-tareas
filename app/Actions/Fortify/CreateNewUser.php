@@ -1,19 +1,19 @@
 <?php
 namespace App\Actions\Fortify;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Storage;
-use Laravel\Fortify\Contracts\CreatesNewUsers;
-use Laravel\Jetstream\Jetstream;
-use Illuminate\Validation\Rule;
-use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\Gd\Driver;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Exception;
 
 use App\Models\User;
 use App\Rules\ValidDui;
+use Exception;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
+use Laravel\Fortify\Contracts\CreatesNewUsers;
+use Laravel\Jetstream\Jetstream;
+
 class CreateNewUser implements CreatesNewUsers
 {
     use PasswordValidationRules;
@@ -22,7 +22,6 @@ class CreateNewUser implements CreatesNewUsers
     {
         // DEPURACIÓN: mostrar el input recibido
         //dd($input); // Detiene la ejecución y muestra el contenido recibido
-
 
         //VALIDANDO
         $validated = Validator::make($input, [
@@ -35,7 +34,7 @@ class CreateNewUser implements CreatesNewUsers
         ], [
             'profile_photo_path.max' => 'La imagen no debe superar los 512KB.',
             'profile_photo_path.mimes' => 'Solo se permiten imágenes en formato JPEG o PNG.',
-            'profile_photo_path.image' => 'El archivo debe ser una imagen válida.'
+            'profile_photo_path.image' => 'El archivo debe ser una imagen válida.',
         ])->validate();
 
         //dd($validated); // Depuración: mostrar el array validado
@@ -64,7 +63,7 @@ class CreateNewUser implements CreatesNewUsers
                     throw new Exception('Error al procesar la imagen: ' . $e->getMessage());
                 }
             }
-            $user->assignRole('Beneficiario'); //Asignar el rol de Beneficiario
+            $user->assignRole('Cliente'); //Asignar el rol de Cliente
             DB::commit();
             return $user;
         } catch (Exception $e) {

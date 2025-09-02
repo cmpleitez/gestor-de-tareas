@@ -1,15 +1,14 @@
 <?php
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-
 use App\Http\Controllers\EquipoController;
+use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\RecepcionController;
 use App\Http\Controllers\SecurityController;
 use App\Http\Controllers\SolicitudController;
 use App\Http\Controllers\TareaController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\ProductoController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 // Rutas públicas
 Route::get('/', function () {
@@ -119,9 +118,14 @@ Route::middleware([
             Route::get('areas/{solicitud}', [recepcionController::class, 'areas'])->name('recepcion.areas');
             Route::get('equipos/{solicitud}', [recepcionController::class, 'equipos'])->name('recepcion.equipos');
             Route::get('operadores/{solicitud}', [recepcionController::class, 'operadores'])->name('recepcion.operadores');
-            Route::post('derivar/{recepcion_id}/{area_id}', [RecepcionController::class, 'derivar'])->name('recepcion.derivar');
+            
+/*             Route::post('derivar/{recepcion_id}/{area_id}', [RecepcionController::class, 'derivar'])->name('recepcion.derivar');
             Route::post('asignar/{recepcion_id}/{equipo_id}', [RecepcionController::class, 'asignar'])->name('recepcion.asignar');
             Route::post('delegar/{recepcion_id}/{user_id}', [RecepcionController::class, 'delegar'])->name('recepcion.delegar');
+ */            
+            Route::post('delegar/{recepcion}/{equipo}', [RecepcionController::class, 'delegar'])->name('recepcion.delegar');
+
+
             Route::post('iniciar-tareas/{recepcion_id}', [RecepcionController::class, 'iniciarTareas'])->name('recepcion.iniciar-tareas');
             Route::get('tareas/{recepcion_id}', [RecepcionController::class, 'tareas'])->name('recepcion.tareas');
             Route::post('reportar-tarea/{actividad_id}', [RecepcionController::class, 'reportarTarea'])->name('recepcion.reportar-tarea');
@@ -132,8 +136,8 @@ Route::middleware([
         });
     });
 
-    //BENEFICIARIOS
-    Route::group(['middleware' => ['role:Beneficiario']], function () {
+    //CLIENTES
+    Route::group(['middleware' => ['role:Cliente']], function () {
         Route::group(['prefix' => 'recepcion'], function () {
             Route::get('create', [RecepcionController::class, 'create'])->name('recepcion.create');
             Route::post('store', [RecepcionController::class, 'store'])->name('recepcion.store');

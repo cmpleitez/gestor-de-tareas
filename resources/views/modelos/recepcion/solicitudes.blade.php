@@ -27,12 +27,7 @@
                                 <h6 class="mb-0 text-white font-weight-500"
                                     style="font-size: 1rem; letter-spacing: 0.3px;">
                                     @if (auth()->user()->main_role == 'Recepcionista')
-                                    <span class="font-weight-600">{{ auth()->user()->area->area }}</span>
-                                    @elseif(auth()->user()->main_role == 'Supervisor')
-                                    <span class="font-weight-600">{{ auth()->user()->equipos()->first()->equipo
-                                        }}</span>
-                                    @elseif(auth()->user()->main_role == 'Gestor')
-                                    <span class="font-weight-600">{{ $operador_por_defecto->name }}</span>
+                                        <span class="font-weight-600">{{ auth()->user()->equipos()->first()->equipo }}</span>
                                     @endif
                                 </h6>
                                 <small class="text-white-50" style="font-size: 0.8rem;">
@@ -440,25 +435,8 @@
             }
             let url = ''; //Seleccionando la ruta a la que se va a enviar la solicitud
             let selectedValue = null;
-            if (userRole === 'Recepcionista') { //Derivar
-                selectedValue = $('input[name="area_destino"]:checked').val();
-                if (!selectedValue) {
-                    Swal.fire({
-                        position: 'top-end',
-                        type: 'warning',
-                        title: 'Debes seleccionar un área destino',
-                        showConfirmButton: false,
-                        timer: 2000,
-                        confirmButtonClass: 'btn btn-primary',
-                        buttonsStyling: false
-                    });
-                    $(evt.from).append(evt.item);
-                    return;
-                }
-                url = '{{ route('recepcion.derivar', ['recepcion_id' => ':id', 'area_id' => ':area']) }}'
-                    .replace(':id', solicitudId)
-                    .replace(':area', selectedValue);
-            } else if (userRole === 'Supervisor') { //Asignar
+            if (userRole === 'Supervisor') { //Derivar
+            } else if (userRole === 'Recepcionista') { //Asignar
                 selectedValue = $('input[name="equipo_destino"]:checked').val();
                 if (!selectedValue) {
                     Swal.fire({
@@ -473,27 +451,10 @@
                     $(evt.from).append(evt.item);
                     return;
                 }
-                url = '{{ route('recepcion.asignar', ['recepcion_id' => ':id', 'equipo_id' => ':equipo']) }}'
-                    .replace(':id', solicitudId)
-                    .replace(':equipo', selectedValue);
+                url = '{{ route('recepcion.delegar', ['recepcion' => ':recepcion_id', 'equipo' => ':equipo_id']) }}'
+                    .replace(':recepcion_id', solicitudId)
+                    .replace(':equipo_id', selectedValue);
             } else if (userRole === 'Gestor') { //Delegar
-                selectedValue = $('input[name="operador_destino"]:checked').val();
-                if (!selectedValue) {
-                    Swal.fire({
-                        position: 'top-end',
-                        type: 'warning',
-                        title: 'Debes seleccionar un operador destino',
-                        showConfirmButton: false,
-                        timer: 2000,
-                        confirmButtonClass: 'btn btn-primary',
-                        buttonsStyling: false
-                    });
-                    $(evt.from).append(evt.item);
-                    return;
-                }
-                url = '{{ route('recepcion.delegar', ['recepcion_id' => ':id', 'user_id' => ':user']) }}'
-                    .replace(':id', solicitudId)
-                    .replace(':user', selectedValue);
             } else if (userRole === 'Operador') { //Iniciar tareas
                 url = '{{ route('recepcion.iniciar-tareas', ['recepcion_id' => ':id']) }}'
                     .replace(':id', solicitudId);

@@ -1,15 +1,14 @@
 <?php
 namespace Database\Seeders;
+
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use Carbon\Carbon;
-
-use App\Models\User;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
-
 
 class UserSeeder extends Seeder
 {
@@ -25,14 +24,16 @@ class UserSeeder extends Seeder
 
         //EQUIPOS
         DB::table('equipos')->insert([
-            'equipo'              => 'Técnicos en suspensión',
-            'created_at'        => Carbon::now(),
-            'updated_at'        => Carbon::now(),
+            'oficina_id' => 1,
+            'equipo' => 'Técnicos en suspensión',
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
         ]);
         DB::table('equipos')->insert([
-            'equipo'              => 'Técnicos en luces adaptativas',
-            'created_at'        => Carbon::now(),
-            'updated_at'        => Carbon::now(),
+            'oficina_id' => 1,
+            'equipo' => 'Técnicos en luces adaptativas',
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
         ]);
 
         //CREACION DE PERMISOS
@@ -55,10 +56,10 @@ class UserSeeder extends Seeder
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
         $role = Role::create(['name' => 'SuperAdmin']);
         $role->givePermissionTo(['ver', 'crear', 'editar', 'activar', 'eliminar', 'autorizar']);
-        
+
         $role = Role::create(['name' => 'Administrador']);
         $role->givePermissionTo(['ver', 'crear', 'editar', 'activar', 'eliminar']);
-        
+
         $role = Role::create(['name' => 'Recepcionista']);
         $role->givePermissionTo(['ver', 'crear', 'editar', 'activar', 'derivar']);
 
@@ -67,24 +68,24 @@ class UserSeeder extends Seeder
 
         $role = Role::create(['name' => 'Gestor']);
         $role->givePermissionTo(['ver', 'delegar']);
-        
+
         $role = Role::create(['name' => 'Operador']);
         $role->givePermissionTo(['ver', 'crear', 'editar']);
 
-        $role = Role::create(['name' => 'Beneficiario']);
+        $role = Role::create(['name' => 'Cliente']);
         $role->givePermissionTo(['ver', 'crear', 'editar']);
 
         //USUARIOS
         DB::table('users')->insert([
-            'role_id'           => 1,
-            'name'              => 'Superadmin',
-            'dui'               => '012345678',
-            'email'             => 'cpleitez.2024@gmail.com',
+            'role_id' => 1,
+            'name' => 'Superadmin',
+            'dui' => '012345678',
+            'email' => 'cpleitez.2024@gmail.com',
             'email_verified_at' => Carbon::now(),
-            'password'          => bcrypt('p@5t15al5abana'),
-            'remember_token'    => Str::random(10),
-            'created_at'        => Carbon::now(),
-            'updated_at'        => Carbon::now(),
+            'password' => bcrypt('p@5t15al5abana'),
+            'remember_token' => Str::random(10),
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
         ]);
 
         //ENROLANDO AL ADMINISTRADOR

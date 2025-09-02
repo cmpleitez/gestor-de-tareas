@@ -14,6 +14,10 @@ class Equipo extends Model
     public function usuarios()
     {
         return $this->belongsToMany(User::class);
-        
+    }
+
+    public function oficina()
+    {
+        return $this->belongsTo(Oficina::class);
     }
 }

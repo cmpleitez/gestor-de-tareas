@@ -83,6 +83,9 @@ SERVICIOS:
         ajustar las dependencias
 
     ...🟢 reducir la cantidad de roles
+        url = '{{ route('recepcion.delegar-todas') }}';
+        url = '{{ route('recepcion.asignar-todas') }}';
+
 
     🟢 los logs de seguridad siguen causando problemas en el log de laravel, será mejor eliminar el servicio de losg completo, igual en lugar de registrar los incidentes de seguridad en un log mejor se registran en las tablas en todo caso, y si esto fuera imprescindibles no eliminarlo
     🟢 evaluar si eliminar las tareas programadas porque originan letras chinas en el log de laravel
