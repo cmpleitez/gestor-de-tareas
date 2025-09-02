@@ -359,7 +359,6 @@ class RecepcionController extends Controller
         $asignacionesExitosas = 0;
         $asignacionesFallidas = 0;
         $errores = [];
-
         // Procesar cada recepción
         foreach ($recepciones as $recepcion) {
             try {
@@ -375,7 +374,6 @@ class RecepcionController extends Controller
                 }
                 //Elegir un gestor aleatorio
                 $gestorSeleccionado = $gestores->random();
-
                 //Usar el método asignar como sub-proceso
                 $response = $this->asignar($recepcion->id, $gestorSeleccionado->id);
                 if ($response->getData()->success) {
@@ -410,7 +408,7 @@ class RecepcionController extends Controller
     public function delegar($recepcion, $equipo)
     {
 
-        dd($recepcion, $equipo);
+        return $equipo;
 
 /*         //Validación
         $recepcion = Recepcion::find($recepcion_id);
@@ -434,10 +432,11 @@ class RecepcionController extends Controller
         if ($delegada) {
             return response()->json(['success' => false, 'message' => 'La solicitud con número de atención ' . $delegada->atencion_id . ' ya ha sido delegada al ' . $delegada->role->name . ' ' . $delegada->usuarioDestino->name . ' en el área ' . $delegada->area->area]);
         }
+            */
         //Delegando la solicitud
         DB::beginTransaction();
         try {
-            $new_recepcion = new Recepcion();
+/*             $new_recepcion = new Recepcion();
             $new_recepcion->id = (new KeyMaker())->generate('Recepcion', $recepcion->solicitud_id);
             $new_recepcion->solicitud_id = $recepcion->solicitud_id;
             $new_recepcion->oficina_id = $recepcion->oficina_id;
@@ -455,12 +454,12 @@ class RecepcionController extends Controller
             $recepcion->activo = true; //Validar solicitud y actualizar estado - Copia Gestor
             $recepcion->estado_id = Estado::where('estado', 'En progreso')->first()->id;
             $recepcion->save();
-            DB::commit();
+            DB::commit(); */
             return response()->json(['success' => true, 'message' => 'La solicitud "' . $recepcion->atencion_id . '" ha sido delegada a ' . $user->name . ' del área ' . $recepcion->area->area]);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['success' => false, 'message' => 'Ocurrió un error al delegar la solicitud:' . $e->getMessage()]);
-        } */
+        }
     }
 
     public function delegarTodas(Request $request)

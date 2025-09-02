@@ -86,7 +86,8 @@ SERVICIOS:
         url = '{{ route('recepcion.delegar-todas') }}';
         url = '{{ route('recepcion.asignar-todas') }}';
 
-
+    🟢 el operador ya no dará clic a cada tarea para procesarla se hara de manera automatica al realizar la accion respectiva en la funncionalidad correspondiente
+    🟢 popovers retirar area y agregar equipo de trabajo
     🟢 los logs de seguridad siguen causando problemas en el log de laravel, será mejor eliminar el servicio de losg completo, igual en lugar de registrar los incidentes de seguridad en un log mejor se registran en las tablas en todo caso, y si esto fuera imprescindibles no eliminarlo
     🟢 evaluar si eliminar las tareas programadas porque originan letras chinas en el log de laravel
     🟢 se ha estado comprobando que cuando suceden errores normales y se tratan de escribir en laravel.log, se estan escribiendo en caracteres chinos podría deberse a los logs de seguridad implementados recientemente
