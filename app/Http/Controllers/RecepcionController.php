@@ -2,7 +2,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Actividad;
-use App\Models\Area;
 use App\Models\Atencion;
 use App\Models\Equipo;
 use App\Models\Estado;
@@ -24,8 +23,8 @@ class RecepcionController extends Controller
         $user = auth()->user();
         $operador_por_defecto = User::where('oficina_id', $user->oficina_id)->where('activo', true)->inRandomOrder()->first();
         $recepciones = Recepcion::where('user_id_destino', $user->id)
-            ->with(['solicitud', 'estado', 'usuarioDestino', 'oficina', 'role'])
-            ->whereHas('oficina', function ($query) use ($user) {
+            ->with(['atencion.solicitud', 'usuarioDestino', 'atencion.oficina', 'atencion.estado', 'role'])
+            ->whereHas('atencion.oficina', function ($query) use ($user) {
                 $query->where('id', $user->oficina_id);
             })
             ->orderBy('created_at', 'desc')
@@ -44,7 +43,7 @@ class RecepcionController extends Controller
                         ? $recepcion->usuarioDestino->profile_photo_url
                         : asset('app-assets/images/pages/operador.png'),
                         'recepcion_role_name' => $recepcion->role->name,
-                        'oficina_name' => $recepcion->oficina->oficina,
+                        'oficina_name' => $recepcion->atencion->oficina->oficina,
                     ];
                 })->values();
             });
@@ -54,17 +53,17 @@ class RecepcionController extends Controller
                 'atencion_id' => $tarjeta->atencion_id,
                 'created_at' => $tarjeta->created_at->toISOString(),
                 'detalle' => $tarjeta->detalle,
-                'estado' => $tarjeta->estado->estado,
-                'estado_id' => $tarjeta->estado->id,
+                'estado' => $tarjeta->atencion->estado->estado,
+                'estado_id' => $tarjeta->atencion->estado->id,
                 'fecha_relativa' => Carbon::parse($tarjeta->created_at)->diffForHumans(),
-                'porcentaje_progreso' => $tarjeta->avance,
-                'recepcion_id' => $tarjeta->id,
+                'porcentaje_progreso' => $tarjeta->atencion->avance,
+                'recepcion_id' => $tarjeta->atencion->id,
                 'role_name' => $tarjeta->role->name,
-                'solicitud_id_ripped' => KeyRipper::rip($tarjeta->atencion_id),
-                'titulo' => $tarjeta->solicitud->solicitud,
+                'atencion_id_ripped' => KeyRipper::rip($tarjeta->atencion_id),
+                'titulo' => $tarjeta->atencion->solicitud->solicitud,
                 'users' => $usuariosDestino,
                 'user_name' => $tarjeta->usuarioDestino->name,
-                'oficina' => $tarjeta->oficina->oficina,
+                'oficina' => $tarjeta->atencion->oficina->oficina,
             ];
         });
         $recibidas = $tarjetas->where('estado_id', 1)->sortBy('created_at')->values()->toArray();
@@ -74,7 +73,7 @@ class RecepcionController extends Controller
             'recibidas' => $recibidas,
             'progreso' => $progreso,
             'resueltas' => $resueltas,
-            'operador_por_defecto' => $operador_por_defecto,
+            'operador_por_defecto' => $operador_por_defecto, //hay que revisar para que sirte este dato
             'equipos' => Equipo::where('oficina_id', $user->oficina_id)->get(),
             'operadores' => User::whereHas('roles', function ($query) {
                 $query->where('name', 'Operador');
@@ -82,7 +81,7 @@ class RecepcionController extends Controller
                 $query->where('id', $user->oficina_id);
             })->where('activo', true)->get(),
         ];
-        if (auth()->user()->main_role == 'Recepcionista') {
+        if (auth()->user()->main_role == 'Receptor') {
             if ($data['equipos']->isEmpty()) {
                 return back()->with('error', 'No hay equipos de trabajo disponibles para asignar las solicitudes');
             }
@@ -186,35 +185,36 @@ class RecepcionController extends Controller
     {
         DB::beginTransaction();
         try {
-            //Seleccionando un recepcionista aleatorio de la oficina destino
+            //SELECCIONANDO UN RECEPTOR
             $user = auth()->user();
-            $recepcionistas = User::whereHas('roles', function ($query) {
-                $query->where('name', 'Recepcionista');
+            $Receptors = User::whereHas('roles', function ($query) {
+                $query->where('name', 'Receptor');
             })->whereHas('oficina', function ($query) use ($user) {
                 $query->where('id', $user->oficina_id);
             })->get();
-            if ($recepcionistas->isEmpty()) {
+            if ($Receptors->isEmpty()) {
                 return back()->with('error', 'La funcionalidad se encuentra inhabilitada, consulte con el administrador del sistema');
             }
-            $recepcionista = $recepcionistas->random();
-            //Iniciando la transacción
+            $Receptor = $Receptors->random();
+            //REGISTRANDO LA SOLICITUD
             $atencion = new Atencion(); //Creando el número de atención
             $atencion->id = (new KeyMaker())->generate('Atencion', $request->solicitud_id);
             $atencion->solicitud_id = $request->solicitud_id;
+            $atencion->oficina_id = $user->oficina_id;
             $atencion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
+            $atencion->avance = 0.00;
+            $atencion->activo = false; //Por defecto invalidada, se valida al ejemplo: procesar el carrito originando una orden de compra válida, luego una tarea programada borra cada cieto tiempo todos los registros con condicion nula en este campo
             $atencion_id = $atencion->id;
             $atencion->save();
             $recepcion = new Recepcion(); //Creando la recepción
             $recepcion->id = (new KeyMaker())->generate('Recepcion', $request->solicitud_id);
-            $recepcion->solicitud_id = $request->solicitud_id;
-            $recepcion->oficina_id = $recepcionista->oficina_id;
-            $recepcion->user_id_origen = auth()->user()->id;
-            $recepcion->user_id_destino = $recepcionista->id;
-            $recepcion->role_id = Role::where('name', 'Recepcionista')->first()->id;
-            $recepcion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
             $recepcion->atencion_id = $atencion_id;
+            $recepcion->role_id = Role::where('name', 'Receptor')->first()->id;
+            $recepcion->user_id_origen = auth()->user()->id;
+            $recepcion->user_id_destino = $Receptor->id;
+            $recepcion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
             $recepcion->detalle = $request->detalle;
-            $recepcion->activo = false; //Por defecto invalidada, se valida al derivar la solicitud
+            $recepcion->activo = false; //Por defecto invalidada, se valida al ejemplo: procesar el carrito originando una orden de compra válida, luego una tarea programada borra cada cieto tiempo todos los registros con condicion nula en este campo
             $recepcion->save();
         } catch (\Exception $e) {
             DB::rollBack();
@@ -234,13 +234,13 @@ class RecepcionController extends Controller
         if (!$area) {
             return response()->json(['success' => false, 'message' => 'No se encontró el área solicitada'], 404);
         }
-        //Validando el número de atención
+//Validando el número de atención
         $role_id = Role::where('name', 'Supervisor')->first()->id;
         $derivada = Recepcion::where('atencion_id', $recepcion->atencion_id)->where('role_id', $role_id)->first();
         if ($derivada) {
             return response()->json(['success' => false, 'message' => 'La solicitud con número de atención ' . $derivada->atencion_id . ' ya ha sido derivada a ' . $derivada->usuarioDestino->name . ' en el área ' . $derivada->area->area]);
         }
-        //Seleccionando el supervisor
+//Seleccionando el supervisor
         $supervisores = User::whereHas('roles', function ($query) {
             $query->where('name', 'Supervisor');
         })->whereHas('area', function ($query) use ($area) {
@@ -251,7 +251,7 @@ class RecepcionController extends Controller
         }
         $supervisor = $supervisores->random();
         try {
-            //Derivando la solicitud
+//Derivando la solicitud
             DB::beginTransaction();
             try {
                 $new_recepcion = new Recepcion(); //Creando solicitud - Copia Supervisor
@@ -269,7 +269,7 @@ class RecepcionController extends Controller
                 $new_recepcion->detalle = $recepcion->detalle;
                 $new_recepcion->activo = false;
                 $new_recepcion->save();
-                $recepcion->activo = true; //Validar solicitud y actualizar estado - Copia Recepcionista
+                $recepcion->activo = true; //Validar solicitud y actualizar estado - Copia Receptor
                 $recepcion->estado_id = Estado::where('estado', 'En progreso')->first()->id;
                 $recepcion->save();
                 DB::commit(); //Finalizando la transacción
@@ -284,249 +284,61 @@ class RecepcionController extends Controller
         }
     }
 
-    public function asignar($recepcion_id, $equipo_id)
+    public function asignar(Recepcion $recepcion, Equipo $equipo)
     {
-        //Validando
-        $recepcion = Recepcion::find($recepcion_id);
-        if (!$recepcion) {
-            return response()->json(['success' => false, 'message' => 'No se encontró la recepción solicitada'], 404);
-        }
-        $equipo = Equipo::find($equipo_id);
+        //Validación
+        $equipos = Equipo::whereHas('users.solicitudes', function ($query) use ($recepcion) { //seleccionar los equipos que tienen operadores habilitados para la solicitud
+            $query->where('solicitud_id', $recepcion->atencion->solicitud->id);
+        })->where('activo', true)->get();
+        $equipo = $equipos->inRandomOrder()->first();
         if (!$equipo) {
-            return response()->json(['success' => false, 'message' => 'No se encontró el equipo solicitado'], 404);
+            return response()->json(['warning' => true, 'message' => 'No hay equipos disponibles para asignar la solicitud'], 422);
         }
-        $role_id = Role::where('name', 'Gestor')->first()->id;
-        $asignada = Recepcion::where('atencion_id', $recepcion->atencion_id)->where('role_id', $role_id)->first();
-        if ($asignada) {
-            return response()->json(['success' => false, 'message' => 'La solicitud con número de atención ' . $asignada->atencion_id . ' ya ha sido asignada al ' . $asignada->role->name . ' ' . $asignada->usuarioDestino->name . ' en el área ' . $asignada->area->area]);
-        }
-        //Seleccionando el gestor
-        $gestores = User::whereHas('roles', function ($query) {
-            $query->where('name', 'Gestor');
-        })->whereHas('area', function ($query) use ($recepcion) {
-            $query->where('id', $recepcion->area_id);
-        })->whereHas('equipos', function ($query) use ($equipo) {
-            $query->where('equipos.id', $equipo->id);
+
+        $operadores = User::whereHas('mainRole', function ($query) {
+            $query->where('name', 'Operador');
         })->get();
-        if ($gestores->isEmpty()) {
-            Log::warning('No se encontró gestor para equipo', ['equipo_id' => $equipo->id]);
-            return response()->json(['success' => false, 'message' => 'No hay gestor disponible para este equipo'], 422);
-        }
-        $gestor = $gestores->random();
-        //Asignando la solicitud
-        DB::beginTransaction();
-        try {
-            $new_recepcion = new Recepcion(); //Creando solicitud - Copia Gestor
-            $new_recepcion->id = (new KeyMaker())->generate('Recepcion', $recepcion->solicitud_id);
-            $new_recepcion->solicitud_id = $recepcion->solicitud_id;
-            $new_recepcion->oficina_id = $recepcion->oficina_id;
-            $new_recepcion->area_id = $recepcion->area_id;
-            $new_recepcion->zona_id = $recepcion->zona_id;
-            $new_recepcion->distrito_id = $recepcion->distrito_id;
-            $new_recepcion->user_id_origen = auth()->user()->id;
-            $new_recepcion->user_id_destino = $gestor->id;
-            $new_recepcion->role_id = $role_id;
-            $new_recepcion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
-            $new_recepcion->atencion_id = $recepcion->atencion_id;
-            $new_recepcion->detalle = $recepcion->detalle;
-            $new_recepcion->activo = false;
-            $new_recepcion->save();
-            $recepcion->activo = true; //Validar solicitud y actualizar estado - Copia Supervisor
-            $recepcion->estado_id = Estado::where('estado', 'En progreso')->first()->id;
-            $recepcion->save();
-            DB::commit(); //Finalizando la transacción
-            return response()->json(['success' => true, 'message' => 'La solicitud "' . $recepcion->atencion_id . '" ha sido asignada a ' . $recepcion->usuarioDestino->name . ' del area ' . $recepcion->area->area]);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json(['success' => false, 'message' => 'Ocurrió un error al asignar la solicitud:' . $e->getMessage()]);
-        }
-    }
-    public function asignarTodas(Request $request)
-    {
-        // Obtener los IDs de las tarjetas desde el frontend
-        $recepcionIds = $request->input('recepcion_ids', []);
-        if (empty($recepcionIds)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'No hay solicitudes recibidas para asignar',
-            ]);
-        }
-        // Obtener las recepciones basadas en los IDs enviados desde el frontend
-        $recepciones = Recepcion::whereIn('id', $recepcionIds)
-            ->where('user_id_destino', auth()->user()->id)
-            ->where('estado_id', 1) // Estado "Recibida"
-            ->get();
-        $asignacionesExitosas = 0;
-        $asignacionesFallidas = 0;
-        $errores = [];
-        // Procesar cada recepción
-        foreach ($recepciones as $recepcion) {
-            try {
-                //Elegir un usuario con rol "Gestor" que pertenezca al area de la solicitud
-                $gestores = User::whereHas('roles', function ($query) {
-                    $query->where('name', 'Gestor');
-                })->where('area_id', $recepcion->area_id)->get();
-                if ($gestores->isEmpty()) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'No hay gestores disponibles para asignar las solicitudes',
-                    ]);
-                }
-                //Elegir un gestor aleatorio
-                $gestorSeleccionado = $gestores->random();
-                //Usar el método asignar como sub-proceso
-                $response = $this->asignar($recepcion->id, $gestorSeleccionado->id);
-                if ($response->getData()->success) {
-                    $asignacionesExitosas++;
-                    // Actualizar el estado de la recepción original a "En progreso"
-                    $recepcion->estado_id = Estado::where('estado', 'En progreso')->first()->id;
-                    $recepcion->save();
-                } else {
-                    $asignacionesFallidas++;
-                    $errores[] = "Recepción ID {$recepcion->id} - Solicitud {$recepcion->atencion_id}: " . $response->getData()->message;
-                }
 
-            } catch (\Exception $e) {
-                $asignacionesFallidas++;
-                $errores[] = "Recepción ID {$recepcion->id} - Solicitud {$recepcion->atencion_id}: Error - " . $e->getMessage();
-            }
-        }
-        $mensaje = "Asignación masiva efectuada. ";
-        $mensaje .= "Exitosas: {$asignacionesExitosas}, ";
-        $mensaje .= "Fallidas: {$asignacionesFallidas}";
-        return response()->json([
-            'success' => true,
-            'message' => $mensaje,
-            'asignaciones_exitosas' => $asignacionesExitosas,
-            'asignaciones_fallidas' => $asignacionesFallidas,
-            'total_procesadas' => $recepciones->count(),
-            'errores' => $errores,
-            'tarjetas_asignadas' => $recepciones->where('estado_id', 2)->pluck('id')->toArray(),
-        ]);
+        Log::info("usuarios con el rol de Operador: " . json_encode($operadores));
+
+//->whereHas('equipo', function ($query) use ($equipo) {
+//    $query->where('equipo_id', $equipo->id);
+
+        //log::info("equipos cuyos operadores tienen habilidades para resolver la solicitud " . $recepcion->atencion->solicitud->solicitud . ": " . json_encode($equipos));
+        //log::info("usuarios con el rol de Operador que pertenecen al equipo " . $equipo->equipo . ": " . json_encode($operadores));
+
+        /*
+    //Delegando la solicitud
+    DB::beginTransaction();
+    try {
+    $new_recepcion = new Recepcion();
+    $new_recepcion->id = (new KeyMaker())->generate('Recepcion', $recepcion->solicitud_id);
+    $new_recepcion->solicitud_id = $recepcion->solicitud_id;
+    $new_recepcion->oficina_id = $recepcion->oficina_id;
+    $new_recepcion->area_id = $recepcion->area_id;
+    $new_recepcion->zona_id = $recepcion->zona_id;
+    $new_recepcion->distrito_id = $recepcion->distrito_id;
+    $new_recepcion->user_id_origen = auth()->user()->id;
+    $new_recepcion->user_id_destino = $user->id;
+    $new_recepcion->role_id = $role_id;
+    $new_recepcion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
+    $new_recepcion->atencion_id = $recepcion->atencion_id;
+    $new_recepcion->detalle = $recepcion->detalle;
+    $new_recepcion->activo = false;
+    $new_recepcion->save();
+    $recepcion->activo = true; //Validar solicitud y actualizar estado - Copia Gestor
+    $recepcion->estado_id = Estado::where('estado', 'En progreso')->first()->id;
+    $recepcion->save();
+    DB::commit();
+
+    return response()->json(['success' => true, 'message' => 'La solicitud "' . (new KeyRipper())->rip($recepcion->atencion_id) . '" ha sido asignada al equipo de trabajo ' . $equipo->equipo], 200);
+    } catch (\Exception $e) {
+    DB::rollBack();
+    return response()->json(['success' => false, 'message' => 'Ocurrió un error al asignar la solicitud:' . $e->getMessage()]);
     }
 
-    public function delegar($recepcion, $equipo)
-    {
+     */
 
-        return $equipo;
-
-/*         //Validación
-        $recepcion = Recepcion::find($recepcion_id);
-        if (!$recepcion) {
-            return response()->json(['success' => false, 'message' => 'No se encontró la recepción solicitada'], 404);
-        }
-        $user = User::find($user_id);
-        if (!$user) {
-            return response()->json(['success' => false, 'message' => 'No se encontró el usuario solicitado'], 404);
-        }
-        $user->load('solicitudes');
-        $operador_habilitado = $user->solicitudes->where('id', $recepcion->solicitud_id)->first(); //Validando que el operador tenga el nivel de habilidades necesario para resolver la solicitud
-        if (!$operador_habilitado) {
-            return response()->json(['success' => false, 'message' => 'El operador no tiene el nivel de habilidades necesario para resolver la solicitud'], 422);
-        }
-        $copia_operador = Recepcion::with('estado')->where('atencion_id', $recepcion->atencion_id)->whereHas('role', function ($q) {
-            $q->where('name', 'Operador');
-        })->first();
-        $role_id = Role::where('name', 'Operador')->first()->id; //Validando el número de atención
-        $delegada = Recepcion::where('atencion_id', $recepcion->atencion_id)->where('role_id', $role_id)->first();
-        if ($delegada) {
-            return response()->json(['success' => false, 'message' => 'La solicitud con número de atención ' . $delegada->atencion_id . ' ya ha sido delegada al ' . $delegada->role->name . ' ' . $delegada->usuarioDestino->name . ' en el área ' . $delegada->area->area]);
-        }
-            */
-        //Delegando la solicitud
-        DB::beginTransaction();
-        try {
-/*             $new_recepcion = new Recepcion();
-            $new_recepcion->id = (new KeyMaker())->generate('Recepcion', $recepcion->solicitud_id);
-            $new_recepcion->solicitud_id = $recepcion->solicitud_id;
-            $new_recepcion->oficina_id = $recepcion->oficina_id;
-            $new_recepcion->area_id = $recepcion->area_id;
-            $new_recepcion->zona_id = $recepcion->zona_id;
-            $new_recepcion->distrito_id = $recepcion->distrito_id;
-            $new_recepcion->user_id_origen = auth()->user()->id;
-            $new_recepcion->user_id_destino = $user->id;
-            $new_recepcion->role_id = $role_id;
-            $new_recepcion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
-            $new_recepcion->atencion_id = $recepcion->atencion_id;
-            $new_recepcion->detalle = $recepcion->detalle;
-            $new_recepcion->activo = false;
-            $new_recepcion->save();
-            $recepcion->activo = true; //Validar solicitud y actualizar estado - Copia Gestor
-            $recepcion->estado_id = Estado::where('estado', 'En progreso')->first()->id;
-            $recepcion->save();
-            DB::commit(); */
-            return response()->json(['success' => true, 'message' => 'La solicitud "' . $recepcion->atencion_id . '" ha sido delegada a ' . $user->name . ' del área ' . $recepcion->area->area]);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json(['success' => false, 'message' => 'Ocurrió un error al delegar la solicitud:' . $e->getMessage()]);
-        }
-    }
-
-    public function delegarTodas(Request $request)
-    {
-        // Obtener los IDs de las tarjetas desde el frontend
-        $recepcionIds = $request->input('recepcion_ids', []);
-
-        if (empty($recepcionIds)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'No hay solicitudes recibidas para delegar',
-            ]);
-        }
-
-        // Obtener las recepciones basadas en los IDs enviados desde el frontend
-        $recepciones = Recepcion::whereIn('id', $recepcionIds)
-            ->where('user_id_destino', auth()->user()->id)
-            ->where('estado_id', 1) // Estado "Recibida"
-            ->get();
-        $delegacionesExitosas = 0;
-        $delegacionesFallidas = 0;
-        $errores = [];
-        // Procesar cada recepción
-        foreach ($recepciones as $recepcion) {
-            try {
-                //Obtener usuarios con rol "Operador" del area de la solicitud
-                $operadores = User::whereHas('roles', function ($query) {
-                    $query->where('name', 'Operador');
-                })->where('area_id', $recepcion->area_id)->get();
-                if ($operadores->count() == 0) {
-                    $delegacionesFallidas++;
-                    $errores[] = "Recepción ID {$recepcion->id} - Solicitud {$recepcion->atencion_id}: No tiene usuarios calificados disponibles";
-                    continue;
-                }
-                //Seleccionar usuario aleatorio si hay más de uno
-                $operadorSeleccionado = $operadores->random();
-                //Usar el método delegar como sub-proceso
-                $response = $this->delegar($recepcion->id, $operadorSeleccionado->id);
-                if ($response->getData()->success) {
-                    $delegacionesExitosas++;
-                    // Actualizar el estado de la recepción original a "En progreso"
-                    $recepcion->estado_id = Estado::where('estado', 'En progreso')->first()->id;
-                    $recepcion->save();
-                } else {
-                    $delegacionesFallidas++;
-                    $errores[] = "Recepción ID {$recepcion->id} - Solicitud {$recepcion->atencion_id}: " . $response->getData()->message;
-                }
-            } catch (\Exception $e) {
-                $delegacionesFallidas++;
-                $errores[] = "Recepción ID {$recepcion->id} - Solicitud {$recepcion->atencion_id}: Error - " . $e->getMessage();
-            }
-        }
-
-        // Preparar mensaje de respuesta
-        $mensaje = "Delegación masiva efectuada. ";
-        $mensaje .= "Exitosas: {$delegacionesExitosas}, ";
-        $mensaje .= "Fallidas: {$delegacionesFallidas}";
-
-        return response()->json([
-            'success' => true,
-            'message' => $mensaje,
-            'delegaciones_exitosas' => $delegacionesExitosas,
-            'delegaciones_fallidas' => $delegacionesFallidas,
-            'total_procesadas' => $recepciones->count(),
-            'errores' => $errores,
-            'tarjetas_delegadas' => $recepciones->where('estado_id', 2)->pluck('id')->toArray(),
-        ]);
     }
 
     public function iniciarTareas(string $recepcion_id)
@@ -636,6 +448,7 @@ class RecepcionController extends Controller
             'solicitud_actualizada' => $solicitudActualizada,
         ]);
     }
+
     public function avanceTablero(Request $request)
     {
         $user = auth()->user();

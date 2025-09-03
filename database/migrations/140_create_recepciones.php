@@ -10,14 +10,11 @@ return new class extends Migration
     {
         Schema::create('recepciones', function (Blueprint $table) {
             $table->char('id', 12)->primary();
-            $table->foreignId('solicitud_id')->constrained('solicitudes');
+            $table->char('atencion_id', 12)->constrained('atenciones');
             $table->foreignId('role_id')->constrained('roles');
-            $table->foreignId('oficina_id')->constrained('oficinas');
             $table->foreignId('user_id_origen')->constrained('users');
             $table->foreignId('user_id_destino')->constrained('users');
             $table->foreignId('estado_id')->constrained('estados');
-            $table->decimal('avance', 5, 2)->default(0.00);
-            $table->char('atencion_id', 12)->constrained('atenciones');
             $table->string('detalle');
             $table->string('observacion')->nullable();
             $table->boolean('activo')->default(true);

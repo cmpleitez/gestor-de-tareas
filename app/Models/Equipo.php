@@ -11,7 +11,7 @@ class Equipo extends Model
 
     protected $fillable = ['equipo'];
 
-    public function usuarios()
+    public function users()
     {
         return $this->belongsToMany(User::class);
     }

@@ -12,4 +12,9 @@ class Estado extends Model
     {
         return $this->hasMany(Recepcion::class);
     }
+
+    public function atenciones()
+    {
+        return $this->hasMany(Atencion::class);
+    }
 }

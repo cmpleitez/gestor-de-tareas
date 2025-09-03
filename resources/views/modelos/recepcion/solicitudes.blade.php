@@ -26,7 +26,7 @@
                                     <div class="d-flex flex-column align-items-start justify-content-center">
                                         <h6 class="mb-0 text-white font-weight-500"
                                             style="font-size: 1rem; letter-spacing: 0.3px;">
-                                            @if (auth()->user()->main_role == 'Recepcionista')
+                                            @if (auth()->user()->main_role == 'Receptor')
                                                 <span
                                                     class="font-weight-600">{{ auth()->user()->equipos()->first()->equipo }}</span>
                                             @endif
@@ -46,7 +46,7 @@
                             class="collapse">
                             <div class="card-content">
                                 <div class="card-body" style="background: #f8f9fa; padding: 1rem;">
-                                    @if (auth()->user()->main_role == 'Recepcionista' && isset($equipos))
+                                    @if (auth()->user()->main_role == 'Receptor' && isset($equipos))
                                         <div class="row" style="display: flex; align-items: stretch;">
                                             @foreach ($equipos as $equipo)
                                                 <div class="col-md-3">
@@ -178,8 +178,8 @@
     <script>
         //SELECCIONANDO EL ITEM DESTINATARIO
         let userRole = '';
-        @if (auth()->user()->main_role == 'Recepcionista')
-            userRole = 'Recepcionista';
+        @if (auth()->user()->main_role == 'Receptor')
+            userRole = 'Receptor';
         @elseif (auth()->user()->main_role == 'Supervisor')
             userRole = 'Supervisor';
         @elseif (auth()->user()->main_role == 'Gestor')
@@ -249,123 +249,6 @@
                 hide: 100
             }
         });
-        //MANEJO DEL CLICK DEL BOTON TODAS LAS SOLICITUDES
-        $(document).on('click', '#btn-distribuir-todas', function() {
-            let recepcionIds = []; // Recolectar todas las tarjetas que se encuentren en la bandeja "recibidas"
-            $('#columna-recibidas .solicitud-card').each(function() {
-                let recepcionId = $(this).data('id');
-                if (recepcionId && recepcionId !== 'null' && recepcionId !== 'undefined') {
-                    recepcionIds.push(recepcionId);
-                }
-            });
-            if (recepcionIds.length === 0) {
-                Swal.fire({
-                    position: 'top-end',
-                    type: 'warning',
-                    title: 'No hay solicitudes en la bandeja de recibidas',
-                    showConfirmButton: false,
-                    timer: 2000
-                });
-                return;
-            }
-            Swal.fire({
-                title: '¿Distribuir todas las solicitudes?',
-                text: 'Esta acción distribuirá ${recepcionIds.length} solicitudes recibidas.',
-                type: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Sí, delegar',
-                cancelButtonText: 'Cancelar'
-            }).then((result) => {
-                if (result.value === true) {
-                    // Determinar la URL según el rol del usuario
-                    let url = '';
-                    @if (auth()->user()->main_role == 'Gestor')
-                        url = '{{ route('recepcion.delegar-todas') }}';
-                    @elseif (auth()->user()->main_role == 'Supervisor')
-                        url = '{{ route('recepcion.asignar-todas') }}';
-                    @endif
-                    $.ajax({
-                        url: url,
-                        method: 'POST',
-                        data: {
-                            _token: $('meta[name="csrf-token"]').attr('content'),
-                            recepcion_ids: recepcionIds
-                        },
-                        success: function(response) {
-                            if (response.success) {
-                                // Mostrar mensaje principal de éxito
-                                Swal.fire({
-                                    position: 'top-end',
-                                    type: 'success',
-                                    title: response.message,
-                                    showConfirmButton: false,
-                                    timer: 3000
-                                });
-                                // Mover tarjetas procesadas exitosamente al tablero "En progreso"
-                                const tarjetasProcesadas = response.tarjetas_delegadas ||
-                                    response.tarjetas_asignadas || [];
-                                if (tarjetasProcesadas.length > 0) {
-                                    tarjetasProcesadas.forEach(function(recepcionId) {
-                                        const tarjeta = $(
-                                            `.solicitud-card[data-id="${recepcionId}"]`
-                                        );
-                                        if (tarjeta.length > 0) {
-                                            // Mover la tarjeta al tablero "En progreso"
-                                            $('#columna-progreso').append(tarjeta);
-
-                                            // Actualizar el color del estado
-                                            const estadoElement = tarjeta.find(
-                                                '.solicitud-estado');
-                                            estadoElement.css({
-                                                'color': '#17a2b8',
-                                                'font-size': '0.8em',
-                                                'margin-top': '5px'
-                                            });
-                                        }
-                                    });
-                                }
-                                // Mostrar solo los primeros 5 errores con toastr sin tiempo de cierre
-                                if (response.errores && response.errores.length > 0) {
-                                    const primerosErrores = response.errores.slice(0, 5);
-                                    primerosErrores.forEach(function(error) {
-                                        toastr.error(error, '', {
-                                            timeOut: 0,
-                                            extendedTimeOut: 0,
-                                            closeButton: true,
-                                            preventDuplicates: false,
-                                            newestOnTop: true,
-                                            autoDismiss: false,
-                                            tapToDismiss: false,
-                                            hideDuration: 0,
-                                            showDuration: 0
-                                        });
-                                    });
-                                }
-                            } else {
-                                Swal.fire({
-                                    position: 'top-end',
-                                    type: 'error',
-                                    title: response.message,
-                                    showConfirmButton: false,
-                                    timer: 3000
-                                });
-                            }
-                        },
-                        error: function(xhr, status, error) {
-                            Swal.fire({
-                                position: 'top-end',
-                                type: 'error',
-                                title: 'Error al delegar solicitudes',
-                                showConfirmButton: false,
-                                timer: 3000
-                            });
-                        }
-                    });
-                }
-            });
-        });
         //ACTUALIZAR EL MOVIMIENTO DE LA TARJETA, TANTO EN EL BACKEND Y COMO EN EL FRONTEND
         function updatePosition(solicitudId, nuevaColumna, evt) {
             let nuevoEstadoId = 1; //Iniciando parametros
@@ -394,8 +277,7 @@
             }
             let url = ''; //Seleccionando la ruta a la que se va a enviar la solicitud
             let selectedValue = null;
-            if (userRole === 'Supervisor') { //Derivar
-            } else if (userRole === 'Recepcionista') { //Asignar
+            if (userRole === 'Receptor') { //Asignar
                 selectedValue = $('input[name="equipo_destino"]:checked').val();
                 if (!selectedValue) {
                     Swal.fire({
@@ -410,19 +292,13 @@
                     $(evt.from).append(evt.item);
                     return;
                 }
-                url = '{{ route('recepcion.delegar', ['recepcion' => ':recepcion_id', 'equipo' => ':equipo_id']) }}'
+                url = '{{ route('recepcion.asignar', ['recepcion' => ':recepcion_id', 'equipo' => ':equipo_id']) }}'
                     .replace(':recepcion_id', solicitudId)
                     .replace(':equipo_id', selectedValue);
-            } else if (userRole === 'Gestor') { //Delegar
             } else if (userRole === 'Operador') { //Iniciar tareas
                 url = '{{ route('recepcion.iniciar-tareas', ['recepcion_id' => ':id']) }}'
                     .replace(':id', solicitudId);
             }
-
-            
-            //depuracion
-            console.log(url);
-
             $.ajax({ //Enviando la solicitud a la ruta seleccionada
                 url: url,
                 method: 'POST',
@@ -538,7 +414,7 @@
         $(document).on('click', '.solicitud-card', function() {
             const $card = $(this);
             const titulo = $card.find('.solicitud-titulo').text().trim();
-            const atencion = $card.find('.solicitud-id').text().trim();
+            const atencion = $card.find('.atencion-id').text().trim();
             const recepcionId = $card.data('id');
             $('#sidebar-card-title').text(titulo); // Rellenar la información en el sidebar
             $('#sidebar-card-body').html('<p>' + atencion + '</p>');
@@ -777,6 +653,7 @@
                 });
             }
         }
+
         function actualizarContadores() { // Función para actualizar los contadores de las columnas
             const recibidas = $('#columna-recibidas .solicitud-card').length;
             const progreso = $('#columna-progreso .solicitud-card').length;
@@ -786,6 +663,7 @@
             $('#contador-resueltas').text(resueltas);
             actualizarMensajeColumnaVacia(); // NUEVO: actualizar mensajes de columnas vacías
         }
+
         function obtenerAtencionIdsTableros() {
             let ids = [];
             $('.solicitud-card').each(function() {
@@ -796,6 +674,7 @@
             });
             return [...new Set(ids)]; // Eliminar repetidos usando Set
         }
+
         function consultarAvancesTablero() {
             let atencionIds = obtenerAtencionIdsTableros();
             if (atencionIds.length === 0) {
@@ -982,6 +861,7 @@
                 }
             });
         }
+
         function generarTarjetaSolicitud(tarjeta, animar = false, tipo = 'recibidas') {
             const titulo = tarjeta.titulo && tarjeta.detalle ?
                 `${tarjeta.titulo} - ${tarjeta.detalle}` :
@@ -1027,33 +907,29 @@
                 });
             }
             return `
-        <div class="solicitud-card ${animar ? 'animar-llegada' : ''} border-${borderColor}" 
+                <div class="solicitud-card ${animar ? 'animar-llegada' : ''} border-${borderColor}" 
                 data-id="${tarjeta.recepcion_id}"
                 data-atencion-id="${tarjeta.atencion_id}"
                 data-estado-id="${tarjeta.estado_id}"
                 data-fecha="${tarjeta.created_at}">
-            
-            <div class="solicitud-titulo">${titulo}</div>
-            
-            <div class="row">
-                <div class="solicitud-id text-center">
-                    <small style="font-size: 0.7rem;">${tarjeta.solicitud_id_ripped}</small>
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="solicitud-titulo flex-grow-1">${titulo}</div>
+                    <div class="text-right ml-2">
+                        <div style="font-size: 0.9rem; font-weight: 600;">${tarjeta.atencion_id_ripped}</div>
+                        <div style="font-size: 0.6rem; color: #6c757d;">${tarjeta.fecha_relativa}</div>
+                    </div>
                 </div>
-                <div class="fecha-solicitud">${tarjeta.fecha_relativa}</div>
+                <div class="solicitud-estado" style="font-size: 11px; color: ${estadoColor}; margin-top: 5px;">
+                    Estado: ${tarjeta.estado}
+                </div>
+                <div class="progress-divider" data-atencion-id="${tarjeta.atencion_id}" data-avance="${tarjeta.porcentaje_progreso}"></div>
+                <div class="users-container" style="display: flex; align-items: center; justify-content: end; margin-top: 8px; padding-top: 6px;">
+                    ${usersHtml}
+                </div>
             </div>
-            
-            <div class="solicitud-estado" style="font-size: 11px; color: ${estadoColor}; margin-top: 5px;">
-                Estado: ${tarjeta.estado}
-            </div>
-            
-            <div class="progress-divider" data-atencion-id="${tarjeta.atencion_id}" data-avance="${tarjeta.porcentaje_progreso}"></div>
-            
-            <div class="users-container" style="display: flex; align-items: center; justify-content: end; margin-top: 8px; padding-top: 6px;">
-                ${usersHtml}
-            </div>
-        </div>
-    `;
+        `;
         }
+
         function obtenerRecepcionIdsExistentes() {
             let ids = [];
             $('.solicitud-card').each(function() {
@@ -1064,6 +940,7 @@
             });
             return ids;
         }
+
         function cargarNuevasRecibidas() {
             let cantidadTarjetas = $('#columna-recibidas .solicitud-card')
                 .length; // Evitar consulta si hay 3 o más tarjetas (parametrizable posteriormente)

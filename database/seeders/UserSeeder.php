@@ -60,7 +60,7 @@ class UserSeeder extends Seeder
         $role = Role::create(['name' => 'Administrador']);
         $role->givePermissionTo(['ver', 'crear', 'editar', 'activar', 'eliminar']);
 
-        $role = Role::create(['name' => 'Recepcionista']);
+        $role = Role::create(['name' => 'Receptor']);
         $role->givePermissionTo(['ver', 'crear', 'editar', 'activar', 'derivar']);
 
         $role = Role::create(['name' => 'Supervisor']);

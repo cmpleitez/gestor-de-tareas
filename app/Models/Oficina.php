@@ -24,4 +24,9 @@ class Oficina extends Model
         return $this->hasMany(Actividad::class);
     }
 
+    public function atenciones()
+    {
+        return $this->hasMany(Atencion::class);
+    }
+
 }

@@ -14,4 +14,19 @@ class Atencion extends Model
     {
         return $this->hasMany(Recepcion::class);
     }
+
+    public function oficina()
+    {
+        return $this->belongsTo(Oficina::class);
+    }
+
+    public function estado()
+    {
+        return $this->belongsTo(Estado::class);
+    }
+
+    public function solicitud()
+    {
+        return $this->belongsTo(Solicitud::class);
+    }
 }

@@ -46,6 +46,8 @@
     https://www.digitalocean.com/company/contact/sales?referrer=pricing/managed-databases
     https://www.digitalocean.com/community/tools/bandwidth?active=%5B%7B%22slug%22%3A%22s-1vcpu-2gb%22%2C%22type%22%3A%22droplet%22%2C%22hours%22%3A722%2C%22consumption%22%3A1500%2C%22nodes%22%3A1%7D%5D&additional=0
 
+🟠 El modelo Role maneja el rol principal del usuario, spatie permissions maneja los roles multiples
+
 🟠 analisis de la factura digital ocean:
 DigitalOcean:
     ¿Cómo funciona la transferencia gratuita?
@@ -81,11 +83,22 @@ SEGURIDAD:
 SERVICIOS:
     🟢 retirar toda la estructura organizativa y dejar solo los equipos de trabajo
         ajustar las dependencias
+            tablas
+            
+            frontend
+                ...solicitudes: impulsando una solicitud hacia "En progreso"
+                trabajando en recepcionController.asignar: 
+                    $operadores = User::whereHas('role', function ($query) {
+                        $query->where('name', 'Operador');
+                    })->get();
+                        ia ajusto user.php para resolver un conflicto que habia con spatie permissions
 
-    ...🟢 reducir la cantidad de roles
+            controladores
+            seeders
+
+    🟢 reducir la cantidad de roles
         url = '{{ route('recepcion.delegar-todas') }}';
         url = '{{ route('recepcion.asignar-todas') }}';
-
     🟢 el operador ya no dará clic a cada tarea para procesarla se hara de manera automatica al realizar la accion respectiva en la funncionalidad correspondiente
     🟢 popovers retirar area y agregar equipo de trabajo
     🟢 los logs de seguridad siguen causando problemas en el log de laravel, será mejor eliminar el servicio de losg completo, igual en lugar de registrar los incidentes de seguridad en un log mejor se registran en las tablas en todo caso, y si esto fuera imprescindibles no eliminarlo

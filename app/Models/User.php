@@ -3,15 +3,15 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -33,7 +33,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'email',
         'password',
         'role_id',
-        'profile_photo_path'
+        'profile_photo_path',
     ];
 
     /**
@@ -122,19 +122,16 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsToMany(Tarea::class, 'actividades', 'user_id_destino');
     }
 
-    // Relación con el rol principal
-    public function role()
+    public function mainRole()
     {
-        return $this->belongsTo(Role::class);
+        return $this->belongsTo(Role::class, 'role_id');
     }
 
-    // Método para obtener el rol principal
     public function getMainRoleAttribute()
     {
-        return $this->role ? $this->role->name : null;
+        return $this->mainRole ? $this->mainRole->name : null;
     }
 
-    // Método para obtener el primer rol (compatibilidad con roles múltiples)
     public function getFirstRoleAttribute()
     {
         return $this->roles->first() ? $this->roles->first()->name : null;
