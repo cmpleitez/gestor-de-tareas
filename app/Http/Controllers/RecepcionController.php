@@ -286,59 +286,41 @@ class RecepcionController extends Controller
 
     public function asignar(Recepcion $recepcion, Equipo $equipo)
     {
-        //Validación
-        $equipos = Equipo::whereHas('users.solicitudes', function ($query) use ($recepcion) { //seleccionar los equipos que tienen operadores habilitados para la solicitud
-            $query->where('solicitud_id', $recepcion->atencion->solicitud->id);
-        })->where('activo', true)->get();
-        $equipo = $equipos->inRandomOrder()->first();
-        if (!$equipo) {
-            return response()->json(['warning' => true, 'message' => 'No hay equipos disponibles para asignar la solicitud'], 422);
+
+        return (new KeyMaker())->generate('Recepcion', $recepcion->id);
+
+        try {
+            //VALIDACIÓN
+            $operadores = User::whereHas('equipos', function($q1) use ($equipo) { $q1->where('equipo_id', $equipo->id); })
+            ->whereHas('mainRole', function($q1){ $q1->where('name', 'Operador'); })
+            ->where('activo', true)
+            ->get();
+            if ($operadores->isEmpty()) {
+                return response()->json(['warning' => true, 'message' => 'No hay operadores disponibles para asignar la solicitud'], 422);
+            }
+            $operador = $operadores->random();
+            //PROCESO
+            DB::beginTransaction();
+            $new_recepcion = new Recepcion();
+            $new_recepcion->id = (new KeyMaker())->generate('Recepcion', $recepcion->id);
+            $new_recepcion->atencion_id = $recepcion->atencion_id;
+            $new_recepcion->user_id_origen = auth()->user()->id;
+            $new_recepcion->user_id_destino = $operador->id;
+            $new_recepcion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
+            $new_recepcion->detalle = $recepcion->detalle;
+            $new_recepcion->activo = false;
+            $new_recepcion->save();
+            $recepcion->activo = true; //Validar solicitud y actualizar estado - Copia Operador
+            $recepcion->estado_id = Estado::where('estado', 'En progreso')->first()->id;
+            $atencion_id = $recepcion->atencion_id;
+            $recepcion->save();
+            //RESULTADO
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'La solicitud "' . (new KeyRipper())->rip($atencion_id) . '" ha sido asignada al operador ' . $operador->name], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => 'Ocurrió un error al asignar la solicitud:' . $e->getMessage()]);
         }
-
-        $operadores = User::whereHas('mainRole', function ($query) {
-            $query->where('name', 'Operador');
-        })->get();
-
-        Log::info("usuarios con el rol de Operador: " . json_encode($operadores));
-
-//->whereHas('equipo', function ($query) use ($equipo) {
-//    $query->where('equipo_id', $equipo->id);
-
-        //log::info("equipos cuyos operadores tienen habilidades para resolver la solicitud " . $recepcion->atencion->solicitud->solicitud . ": " . json_encode($equipos));
-        //log::info("usuarios con el rol de Operador que pertenecen al equipo " . $equipo->equipo . ": " . json_encode($operadores));
-
-        /*
-    //Delegando la solicitud
-    DB::beginTransaction();
-    try {
-    $new_recepcion = new Recepcion();
-    $new_recepcion->id = (new KeyMaker())->generate('Recepcion', $recepcion->solicitud_id);
-    $new_recepcion->solicitud_id = $recepcion->solicitud_id;
-    $new_recepcion->oficina_id = $recepcion->oficina_id;
-    $new_recepcion->area_id = $recepcion->area_id;
-    $new_recepcion->zona_id = $recepcion->zona_id;
-    $new_recepcion->distrito_id = $recepcion->distrito_id;
-    $new_recepcion->user_id_origen = auth()->user()->id;
-    $new_recepcion->user_id_destino = $user->id;
-    $new_recepcion->role_id = $role_id;
-    $new_recepcion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
-    $new_recepcion->atencion_id = $recepcion->atencion_id;
-    $new_recepcion->detalle = $recepcion->detalle;
-    $new_recepcion->activo = false;
-    $new_recepcion->save();
-    $recepcion->activo = true; //Validar solicitud y actualizar estado - Copia Gestor
-    $recepcion->estado_id = Estado::where('estado', 'En progreso')->first()->id;
-    $recepcion->save();
-    DB::commit();
-
-    return response()->json(['success' => true, 'message' => 'La solicitud "' . (new KeyRipper())->rip($recepcion->atencion_id) . '" ha sido asignada al equipo de trabajo ' . $equipo->equipo], 200);
-    } catch (\Exception $e) {
-    DB::rollBack();
-    return response()->json(['success' => false, 'message' => 'Ocurrió un error al asignar la solicitud:' . $e->getMessage()]);
-    }
-
-     */
-
     }
 
     public function iniciarTareas(string $recepcion_id)

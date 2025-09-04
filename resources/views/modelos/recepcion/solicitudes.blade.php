@@ -12,7 +12,7 @@
     {{-- ITEMS DESTINATARIOS PARA CADA ROL --}}
     <div class="row">
         <div class="col-12">
-            @if (auth()->user()->main_role != 'Operador')
+            @if (optional(auth()->user()->mainRole)->name != 'Operador')
                 <div class="accordion" id="accordionWrapa2">
                     <div class="card collapse-header border-0 overflow-hidden">
                         <div id="heading5" class="card-header" data-toggle="collapse" data-target="#accordion5"
@@ -26,7 +26,7 @@
                                     <div class="d-flex flex-column align-items-start justify-content-center">
                                         <h6 class="mb-0 text-white font-weight-500"
                                             style="font-size: 1rem; letter-spacing: 0.3px;">
-                                            @if (auth()->user()->main_role == 'Receptor')
+                                            @if (optional(auth()->user()->mainRole)->name == 'Receptor')
                                                 <span
                                                     class="font-weight-600">{{ auth()->user()->equipos()->first()->equipo }}</span>
                                             @endif
@@ -46,7 +46,7 @@
                             class="collapse">
                             <div class="card-content">
                                 <div class="card-body" style="background: #f8f9fa; padding: 1rem;">
-                                    @if (auth()->user()->main_role == 'Receptor' && isset($equipos))
+                                    @if (optional(auth()->user()->mainRole)->name == 'Receptor' && isset($equipos))
                                         <div class="row" style="display: flex; align-items: stretch;">
                                             @foreach ($equipos as $equipo)
                                                 <div class="col-md-3">
@@ -93,13 +93,7 @@
                         </div>
                         <h6 class="mb-0 text-white font-weight-600" style="font-size: 0.9rem;">Recibidas</h6>
                         <div class="ml-auto d-flex align-items-center">
-                            @if (auth()->user()->main_role == 'Gestor' || auth()->user()->main_role == 'Supervisor')
-                                <button type="button" class="btn btn-sm btn-outline-light mr-2" id="btn-distribuir-todas"
-                                    data-toggle="tooltip" data-placement="top" title="Impulsar todas las solicitudes"
-                                    style="border: 1px solid rgba(255,255,255,0.3); background: transparent; padding: 4px 8px; font-size: 0.8rem;">
-                                    <i class="bx bxs-send" style="font-size: 0.8rem;"></i>
-                                </button>
-                            @endif
+
                             <span class="badge badge-white text-dark"
                                 id="contador-recibidas">{{ count($recibidas) }}</span>
                         </div>
@@ -176,17 +170,9 @@
     <!-- END: Critical JavaScript (Emergency Load) -->
 
     <script>
-        //SELECCIONANDO EL ITEM DESTINATARIO
-        let userRole = '';
-        @if (auth()->user()->main_role == 'Receptor')
-            userRole = 'Receptor';
-        @elseif (auth()->user()->main_role == 'Supervisor')
-            userRole = 'Supervisor';
-        @elseif (auth()->user()->main_role == 'Gestor')
-            userRole = 'Gestor';
-        @elseif (auth()->user()->main_role == 'Operador')
-            userRole = 'Operador';
-        @endif
+        //SELECCIONANDO EL ITEM DESTINATARIO (desde BD, sin hardcode)
+        let userRole = @json(optional(auth()->user()->mainRole)->name) || '';
+
         function selectItem(radioId) { // Función para seleccionar items
             document.querySelectorAll('.selectable-item').forEach(selector => { // Desmarcar todos los selectores
                 selector.classList.remove('selected');
@@ -275,7 +261,7 @@
                     estadoColor = '#28a745';
                     break;
             }
-            let url = ''; //Seleccionando la ruta a la que se va a enviar la solicitud
+            let url = null; //Seleccionando la ruta a la que se va a enviar la solicitud
             let selectedValue = null;
             if (userRole === 'Receptor') { //Asignar
                 selectedValue = $('input[name="equipo_destino"]:checked').val();
@@ -298,6 +284,10 @@
             } else if (userRole === 'Operador') { //Iniciar tareas
                 url = '{{ route('recepcion.iniciar-tareas', ['recepcion_id' => ':id']) }}'
                     .replace(':id', solicitudId);
+            }
+            if (!url) {
+                $(evt.from).append(evt.item);
+                return;
             }
             $.ajax({ //Enviando la solicitud a la ruta seleccionada
                 url: url,

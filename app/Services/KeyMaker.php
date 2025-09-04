@@ -3,7 +3,7 @@
 namespace App\Services;
 
 class KeyMaker {
-    public function generate(string $model, int $solicitud_id): string {
+    public function generate(string $model, string $solicitud_id): string {
         $anio_actual = date('Y'); // 4 dígitos
         $solicitud_id_padded = str_pad($solicitud_id, 3, '0', STR_PAD_LEFT); // 3 dígitos
         $patron_busqueda = $anio_actual . $solicitud_id_padded; // Buscar el máximo correlativo para la misma combinación de año y solicitud_id

@@ -743,7 +743,7 @@
                                     Perfil</a>
                                 <a class="dropdown-item" href="{{ route('recepcion.solicitudes') }}"><i
                                         class="bx bx-check-square mr-50"></i>
-                                    Mis tareas</a>
+                                    Mis ventas</a>
                                 <div class="dropdown-divider mb-0"></div>
                                 <form method="POST" action="{{ route('logout') }}" style="display: inline;">
                                     @csrf

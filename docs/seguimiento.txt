@@ -48,6 +48,10 @@
 
 🟠 El modelo Role maneja el rol principal del usuario, spatie permissions maneja los roles multiples
 
+🟠 El uso de combos debería resolver el problema de las equivocaciones entre los codigos de un producto y otro producto
+
+🟠 la orden de compra se define por "atencion.id" y el combo solicitado se define como "recepcion.id"
+
 🟠 analisis de la factura digital ocean:
 DigitalOcean:
     ¿Cómo funciona la transferencia gratuita?
@@ -81,17 +85,46 @@ SEGURIDAD:
     🟢 revisar las opciones de chat de cursor
 
 SERVICIOS:
+
+    ...🟢 Procedimiento:
+        . Cliente: visualmente agrega el combo al carrito, puede repetir ésta acción indefinidamente, por el momento no tiene un limite definido.
+        . Sistema: registra en base de datos el combo agregado, el registro queda en condicion "inactivo = no validado por el usuario"
+        . Cliente: visualmente entra al carrito y personaliza el combo recien agregado luego presiona el boton "Enviar"
+        . Sistema: crea así una "Orden de Compra" válida. (tipo_documento_id="orden de compra"; "activo = validado" )
+        . Sistema establece la orden de compra el estado de "Recibida"
+        . Operador:
+            .consulta las ordenes de compra que ha recibido (recepcion.usuarioDestino), dando clic en perfil del usuario / mis ventas
+            .toma la orden por prioridad o la toma por orden de llegada,
+                .procesa las tareas respectivas (tabla de recibidas / clic a la tarjeta )
+                    .iniciar el despacho
+                        .clic en la tarea o arrastra la tarjeta al tablero "En progreso"
+                        .sistema traslada la orden de compra para el tablero de "En progreso"
+                    .creación de una factura digital:
+                        .da clic en la tarjeta de la tabla de recibidas y luego en la tarea respectiva
+                        .sistema: habre la orden de compra para que pueda revisarla
+                        .revisa la existencia en stock y que la cantidad sea un dato común o usual, dando clic en el boton <Stock>
+                        .da clic en guadar (validando los cambios)
+                        .sistema: torna el tipo de documento en una factura (tipo_documento_id="factura"), y queda habierta la posibilidad para que si en algun momento implementamos una pasarela de pagos el documento pueda convertirse una vez pagado en un recibo "tipo_doucmento_id=recibo"
+                        .sistema: publica el avance del proceso
+                    .envío de la factura digital
+                        .da clic en la tarea
+                        .sistema: envia el correo con la factura digital adjunta y confirma el envío.
+                        .sistema: publica avance del proceso
+        . Cliente: efectua el pago y se lo hace saber al Receptor con un mensaje de whatsapp adjuntandole el número de orden (de compra)
+        . Receptor delega al Operador:
+            .retirar fisicamente los productos del almacen y prepara el paquete para su entega
+            .ubicar en el sistema (perfil del usuario / mis ventas / tabla de recibidas), dicho número de orden
+            .aplicar en el sistema despachar y descargar stock
+            .sistema: actualiza el inventario y finaliza la orden de compra trasladandola al tablero de "Resueltas"
+        . Sistema: corre una tarea programada para eliminar todos combos no validados por el usuario que pasaron en esa condicion por varios dias (la cantidad de dias no se define aún)
+
     🟢 retirar toda la estructura organizativa y dejar solo los equipos de trabajo
         ajustar las dependencias
             tablas
             
             frontend
                 ...solicitudes: impulsando una solicitud hacia "En progreso"
-                trabajando en recepcionController.asignar: 
-                    $operadores = User::whereHas('role', function ($query) {
-                        $query->where('name', 'Operador');
-                    })->get();
-                        ia ajusto user.php para resolver un conflicto que habia con spatie permissions
+                    keymaker esta generando esta llave "202520250020000100001"; La causa: a KeyMaker::generate() le estás pasando un ID completo (formato AAAA+XXX+CCCCC), y la clase vuelve a anteponer el año y a concatenar el correlativo. Por eso ves “2025 2025 ... 00001 00001”.
 
             controladores
             seeders
@@ -119,12 +152,6 @@ SERVICIOS:
     🟢 global cruds.edit: si hay historial no se puede editar
     🟢 servicio controlado: para cambiar el dui a una persona por motivos de error involuntario a la hora de registrar ese dui en el formulario de registro de usuarios
     🟢 register: asegurar el id del usuario con un aumento no automático sino programatico
-    🟢 Ajustar procedimiento:
-        1. El beneficiario envia solicitud al recepcionista de la oficina a la que está suscrito, del distrito y zona a los que pertenece segun residencia
-        2. La solicitud entra en el rango de maniobra: oficina
-        3. El recepcionista la deriva al supervisor del area seleccionada
-        4. La solicitud entra en rango de maniobra: area
-        5. El supervisor la asigna al gestor del area, quien es miembro de un equipo
 
 🟠 rage agains the machine & limp bizkit & korn & alice in chains
     ...limp bizkit: im broke
