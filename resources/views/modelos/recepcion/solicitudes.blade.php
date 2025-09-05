@@ -400,6 +400,7 @@
                 }
             });
         }
+
         //MOSTRAR TAREAS EN SIDEBAR
         $(document).on('click', '.solicitud-card', function() {
             const $card = $(this);
@@ -477,6 +478,7 @@
                 limpiarClasesDrag();
             }
         });
+
         //ACTUALIZAR EL ESTADO DE LA TAREA
         function selectTask(taskId) { // Función para seleccionar tareas
             const checkbox = document.getElementById(taskId); // Marcar/desmarcar el checkbox
@@ -502,6 +504,10 @@
                     },
                     success: function(response) {
                         if (response.success) {
+
+log::info(response.all());
+
+
                             updateProgressByPercentage(response.atencion_id, response.progreso.porcentaje);
                             if (response.todas_resueltas && response
                                 .solicitud_actualizada) { // Verificar si todas las tareas están resueltas

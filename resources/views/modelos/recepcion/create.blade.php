@@ -12,7 +12,7 @@
                     <div class="row mt-1">
                         <div class="col-md-12 d-flex justify-content-between" style="padding: 0rem;">
                             <div class="col-md-10 align-items-center" style="padding-left: 0.5rem;">
-                                <p>NUEVA SOLICITUD demo</p>
+                                <p>NUEVA SOLICITUD</p>
                             </div>
                         </div>
                     </div>

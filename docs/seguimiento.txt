@@ -129,6 +129,8 @@ SERVICIOS:
             controladores
             seeders
 
+    🟢 ajustar la lectura del rol principal en el perfil del usuario del dashboard
+    🟢 verificar si el middleware funciona sin necesidad de las tareas programadas
     🟢 reducir la cantidad de roles
         url = '{{ route('recepcion.delegar-todas') }}';
         url = '{{ route('recepcion.asignar-todas') }}';
