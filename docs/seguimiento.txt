@@ -83,18 +83,22 @@ SEGURIDAD:
     🟢 agregar validadores de funcionamiento y mensajes de error para el usuario en el grupo de rutas "security", evitando el uso de escritura en el log de laravel
     🟢 retirar campos de las tablas que no esten siendo utilizados por las vistas y retirarlos tambien los procesos que recopilen sus datos
     🟢 revisar las opciones de chat de cursor
+    🟢 hacer pruebas simuladas de ataques para recibir alertas reales
 
 SERVICIOS:
-
-    ...🟢 Procedimiento:
+    🟢 verificar si es bueno agregar el cliente a la tarjeta
+    ...🟢 revisar la proporcion de los logos
+    🟢 Procedimiento:
         . Cliente: visualmente agrega el combo al carrito, puede repetir ésta acción indefinidamente, por el momento no tiene un limite definido.
         . Sistema: registra en base de datos el combo agregado, el registro queda en condicion "inactivo = no validado por el usuario"
         . Cliente: visualmente entra al carrito y personaliza el combo recien agregado luego presiona el boton "Enviar"
         . Sistema: crea así una "Orden de Compra" válida. (tipo_documento_id="orden de compra"; "activo = validado" )
         . Sistema establece la orden de compra el estado de "Recibida"
-        . Operador:
+        . Receptor: Tendrá la vista el kanvan y lo refrescará con cierta frecuencia vigilando si hay ordenes nuevas
+        . Receptor: Al detectar una orden nueva la asignará al operador designado
+        . Operador: 
             .consulta las ordenes de compra que ha recibido (recepcion.usuarioDestino), dando clic en perfil del usuario / mis ventas
-            .toma la orden por prioridad o la toma por orden de llegada,
+            .toma la orden por prioridad o la toma por orden de llegada
                 .procesa las tareas respectivas (tabla de recibidas / clic a la tarjeta )
                     .iniciar el despacho
                         .clic en la tarea o arrastra la tarjeta al tablero "En progreso"
@@ -111,49 +115,32 @@ SERVICIOS:
                         .sistema: envia el correo con la factura digital adjunta y confirma el envío.
                         .sistema: publica avance del proceso
         . Cliente: efectua el pago y se lo hace saber al Receptor con un mensaje de whatsapp adjuntandole el número de orden (de compra)
-        . Receptor delega al Operador:
-            .retirar fisicamente los productos del almacen y prepara el paquete para su entega
+        . Operador:
+            .verifica pago de factura en coordinación con el Receptor
+            .retira fisicamente los productos del almacen y preparar el paquete para su entrega
+            .realiza el envío o entrega de los productos
             .ubicar en el sistema (perfil del usuario / mis ventas / tabla de recibidas), dicho número de orden
             .aplicar en el sistema despachar y descargar stock
             .sistema: actualiza el inventario y finaliza la orden de compra trasladandola al tablero de "Resueltas"
         . Sistema: corre una tarea programada para eliminar todos combos no validados por el usuario que pasaron en esa condicion por varios dias (la cantidad de dias no se define aún)
-
-    🟢 retirar toda la estructura organizativa y dejar solo los equipos de trabajo
-        ajustar las dependencias
-            tablas
-            
-            frontend
-                ...solicitudes: impulsando una solicitud hacia "En progreso"
-                    keymaker esta generando esta llave "202520250020000100001"; La causa: a KeyMaker::generate() le estás pasando un ID completo (formato AAAA+XXX+CCCCC), y la clase vuelve a anteponer el año y a concatenar el correlativo. Por eso ves “2025 2025 ... 00001 00001”.
-
-            controladores
-            seeders
-
     🟢 ajustar la lectura del rol principal en el perfil del usuario del dashboard
     🟢 verificar si el middleware funciona sin necesidad de las tareas programadas
-    🟢 reducir la cantidad de roles
-        url = '{{ route('recepcion.delegar-todas') }}';
-        url = '{{ route('recepcion.asignar-todas') }}';
-    🟢 el operador ya no dará clic a cada tarea para procesarla se hara de manera automatica al realizar la accion respectiva en la funncionalidad correspondiente
-    🟢 popovers retirar area y agregar equipo de trabajo
-    🟢 los logs de seguridad siguen causando problemas en el log de laravel, será mejor eliminar el servicio de losg completo, igual en lugar de registrar los incidentes de seguridad en un log mejor se registran en las tablas en todo caso, y si esto fuera imprescindibles no eliminarlo
-    🟢 evaluar si eliminar las tareas programadas porque originan letras chinas en el log de laravel
-    🟢 se ha estado comprobando que cuando suceden errores normales y se tratan de escribir en laravel.log, se estan escribiendo en caracteres chinos podría deberse a los logs de seguridad implementados recientemente
-    🟢 la creación de usuarios debe realizarse desde dentro del sistema
-    🟢 crear imagenes con su codigo con letra grande y visible en un proceso por lotes, luego que el usuario haya tomado todas las fotos o sin ellas en su caso
-    🟢 agrega ubicacion geografica según estructura: departamento y municipio
-    🟢 crear primero maquetacion para catalogo de productos y carrito de compras, y luego las funcionalidades
-        se creo catalogo pendiente paginacion y funcionalidades
-    🟢 se detectan dos categorias: tipo de producto, marca y tipo de comercializacion: al detalle o mayoreo
+    🟢 limpiar codigo sin uso que pudo haber dejado el retiro de la estructura organizativa
+    🟢 en kanvan los popovers hacen un efecto mostrando un parpadeo de la imagen de los mismos en la esquina superior derecha
+    🟢 verificar que el middleware de seguridad en realidad detecte las amenazas
+    🟢 mantener deshabilitadas las tareas programadas hasta que se averigue cual de ellas está originando inconsistencias en el laravel.log
+    🟢 cambiar el registro de nuevos usuarios hacia dentro del sistema
+    🟢 agregar un campo para el codigo físico del producto y mantenerlo visible en el catalogo de productos
+    🟢 construir funcionalidades del catalogo de productos
+    🟢 se detectan dos categorias: tipo de producto y marca
     🟢 crear funcionalidad de combos personalizables
     🟢 agregar try catch a todos los controladores que lean y escriban en tablas
-    🟢 construir de control de calidad para el gestor
-    🟢 proceso de rechazo de una solicitud o anulación
-    🟢 entrega de una solicitud al beneficiario
-    🟢 revisar proceso de priorizacion
+    🟢 proceso de anulación de una orden de compra
+    🟢 proceso de solicitud de revision sobre una orden de compra
+    🟢 auditoria de actividades sobre una orden de compra
     🟢 global cruds.edit: si hay historial no se puede editar
-    🟢 servicio controlado: para cambiar el dui a una persona por motivos de error involuntario a la hora de registrar ese dui en el formulario de registro de usuarios
-    🟢 register: asegurar el id del usuario con un aumento no automático sino programatico
+    🟢 revisar si se mantendrá el dui o se retira
+    🟢 register: asegurar el id del usuario con un aumento no automático sino programatico, revisar qué otras tablas necesitan este manejo controlado de llaves
 
 🟠 rage agains the machine & limp bizkit & korn & alice in chains
     ...limp bizkit: im broke

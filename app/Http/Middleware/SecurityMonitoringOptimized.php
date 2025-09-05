@@ -33,9 +33,26 @@ class SecurityMonitoringOptimized
             // CAPA 1: Escaneo rápido sin consultas a BD
             $threatScore = $this->quickThreatScan($request);
 
+            // Instrumentación temporal: traza del score inicial
+            $probeFile = storage_path('logs/security_probe.log');
+            file_put_contents(
+                $probeFile,
+                '[' . now()->format('Y-m-d H:i:s') . '] pre-detail URI: ' . $request->getRequestUri() .
+                ' | Method: ' . $request->method() . ' | Score1: ' . number_format($threatScore, 2) . PHP_EOL,
+                FILE_APPEND | LOCK_EX
+            );
+
             // CAPA 2: Análisis profundo solo si es necesario
             if ($threatScore >= 40) { // Capturar eventos medios, altos y críticos
                 $detailedScore = $this->detailedThreatAnalysis($request);
+
+                // Instrumentación temporal: traza del score detallado
+                file_put_contents(
+                    $probeFile,
+                    '[' . now()->format('Y-m-d H:i:s') . '] detailed score: ' . number_format($detailedScore, 2) .
+                    ' | IP: ' . $request->ip() . PHP_EOL,
+                    FILE_APPEND | LOCK_EX
+                );
 
                 // Registrar evento de seguridad para todos los niveles de riesgo
                 if ($detailedScore >= 40) {

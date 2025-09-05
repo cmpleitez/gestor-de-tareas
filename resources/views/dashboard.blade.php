@@ -6,13 +6,13 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
-    <meta name="description" content="Gestor de tareas">
-    <meta name="keywords" content="gestor, gestión, tareas, actividades, proyectos">
+    <meta name="description" content="Gestor de Ventas">
+    <meta name="keywords" content="">
     <meta name="author" content="">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     {{-- Titulo de la aplicación --}}
-    <title>{{ auth()->user()->main_role }} - ALFA.{{ config('app.version') }}</title>
+    <title>{{ auth()->user()->mainRole->name }} - ALFA.{{ config('app.version') }}</title>
     <link rel="apple-touch-icon" href="{{ asset('app-assets/images/icons/favicon-32x32.png') }}">
     <link rel="shortcut icon" type="image/svg+xml" href="{{ asset('app-assets/images/icons/favicon-32x32.png') }}">
     <link href="https://fonts.googleapis.com/css?family=Rubik:300,400,500,600%7CIBM+Plex+Sans:300,400,500,600,700"

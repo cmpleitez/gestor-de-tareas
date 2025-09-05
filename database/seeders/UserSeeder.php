@@ -94,7 +94,7 @@ class UserSeeder extends Seeder
 
         //CREACION DE TAREAS
         DB::table('tareas')->insert([
-            'tarea' => 'iniciar el despacho',
+            'tarea' => 'Iniciar el despacho',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
@@ -109,7 +109,7 @@ class UserSeeder extends Seeder
             'updated_at' => Carbon::now(),
         ]);
         DB::table('tareas')->insert([
-            'tarea' => 'Retirar y despachar productos del almacen',
+            'tarea' => 'Descargar Stock',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);

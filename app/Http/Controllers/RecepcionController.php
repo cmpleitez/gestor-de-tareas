@@ -53,11 +53,11 @@ class RecepcionController extends Controller
                 'atencion_id' => $tarjeta->atencion_id,
                 'created_at' => $tarjeta->created_at->toISOString(),
                 'detalle' => $tarjeta->detalle,
-                'estado' => $tarjeta->atencion->estado->estado,
-                'estado_id' => $tarjeta->atencion->estado->id,
+                'estado' => $tarjeta->estado->estado,
+                'estado_id' => $tarjeta->estado->id,
                 'fecha_relativa' => Carbon::parse($tarjeta->created_at)->diffForHumans(),
                 'porcentaje_progreso' => $tarjeta->atencion->avance,
-                'recepcion_id' => $tarjeta->atencion->id,
+                'recepcion_id' => $tarjeta->id,
                 'role_name' => $tarjeta->role->name,
                 'atencion_id_ripped' => KeyRipper::rip($tarjeta->atencion_id),
                 'titulo' => $tarjeta->atencion->solicitud->solicitud,
@@ -95,6 +95,7 @@ class RecepcionController extends Controller
         $recepcionIdsExistentes = $request->input('recepcion_ids', []);
         $query = Recepcion::where('user_id_destino', $user->id)
             ->where('estado_id', 1)
+            ->with(['atencion'])
             ->orderBy('created_at', 'desc')
             ->limit(5);
         if (!empty($recepcionIdsExistentes)) {
@@ -133,7 +134,7 @@ class RecepcionController extends Controller
                 'user_name' => $tarjeta->usuarioDestino->name,
                 'area' => $tarjeta->area->area,
                 'role_name' => $tarjeta->role->name,
-                'porcentaje_progreso' => $tarjeta->avance,
+                'porcentaje_progreso' => optional($tarjeta->atencion)->avance ?? 0,
                 'solicitud_id_ripped' => KeyRipper::rip($tarjeta->atencion_id),
                 'fecha_relativa' => Carbon::parse($tarjeta->fecha_hora_solicitud)->diffForHumans(),
                 'created_at' => $tarjeta->created_at,
@@ -288,10 +289,10 @@ class RecepcionController extends Controller
     {
         try {
             //VALIDACIÓN
-            $operadores = User::whereHas('equipos', function($q1) use ($equipo) { $q1->where('equipo_id', $equipo->id); })
-            ->whereHas('mainRole', function($q1){ $q1->where('name', 'Operador'); })
-            ->where('activo', true)
-            ->get();
+            $operadores = User::whereHas('equipos', function ($q1) use ($equipo) {$q1->where('equipo_id', $equipo->id);})
+                ->whereHas('mainRole', function ($q1) {$q1->where('name', 'Operador');})
+                ->where('activo', true)
+                ->get();
             if ($operadores->isEmpty()) {
                 return response()->json(['warning' => true, 'message' => 'No hay operadores disponibles para asignar la solicitud'], 422);
             }
@@ -380,7 +381,7 @@ class RecepcionController extends Controller
         try {
             DB::beginTransaction();
             $actividad = Actividad::find($actividad_id); //Validando
-            $atencion_id = $actividad->recepcion->atencion->atencion_id;
+            $atencion_id = $actividad->recepcion->atencion_id;
             $recepcion_id = $actividad->recepcion_id;
             if (!$actividad) {
                 return response()->json(['success' => false, 'message' => 'No se encontró la tarea'], 404);
@@ -396,12 +397,17 @@ class RecepcionController extends Controller
             $actividad->save();
             $total_actividades = Actividad::where('recepcion_id', $recepcion_id)->count();
             $actividades_resueltas = Actividad::where('recepcion_id', $recepcion_id)
-            ->where('estado_id', Estado::where('estado', 'Resuelta')->first()->id)
-            ->count();
+                ->where('estado_id', Estado::where('estado', 'Resuelta')->first()->id)
+                ->count();
             $procentaje_progreso = $total_actividades > 0
             ? round(($actividades_resueltas / $total_actividades) * 100, 2)
             : 0;
-            Atencion::where('id', $atencion_id)->update(['avance' => $procentaje_progreso]); // Actualizar el campo avance en tabla atencion para que todas las recepciones tenga la informacion
+            // Actualizar avance de la atención sin asignación masiva
+            $atencion = $actividad->recepcion->atencion;
+            if ($atencion) {
+                $atencion->avance = $procentaje_progreso;
+                $atencion->save();
+            }
             $todas_resueltas = ($actividades_resueltas === $total_actividades); // Verificar si todas las tareas están resueltas
             $solicitud_actualizada = false;
             if ($todas_resueltas && $nuevoEstado === 'Resuelta') { // Actualizar el estado de la solicitud a "Resuelta"
@@ -429,8 +435,8 @@ class RecepcionController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                'success' => false, 
-                'message' => 'Error al actualizar la tarea: ' . $e->getMessage()
+                'success' => false,
+                'message' => 'Error al actualizar la tarea: ' . $e->getMessage(),
             ], 500);
         }
     }
@@ -438,18 +444,18 @@ class RecepcionController extends Controller
     public function avanceTablero(Request $request)
     {
 
-log::info($request->all());
-        
+        log::info($request->all());
+
         $user = auth()->user();
         $atencionIds = $request->input('atencion_ids', []);
         if (!is_array($atencionIds) || empty($atencionIds)) {
             return response()->json([]);
         }
         $estadosTablero = [1, 2, 3]; // 1: Recibida, 2: En progreso, 3: Resuelta
-        $recepciones = Recepcion::with('usuarioDestino')->where('user_id_destino', $user->id)
+        $recepciones = Recepcion::with(['usuarioDestino', 'atencion'])->where('user_id_destino', $user->id)
             ->whereIn('estado_id', $estadosTablero)
             ->whereIn('atencion_id', $atencionIds)
-            ->select('atencion_id', 'avance', 'estado_id')
+            ->select('atencion_id', 'estado_id')
             ->get();
 
         $todosPorAtencion = Recepcion::with(['usuarioDestino', 'role', 'area'])
@@ -477,7 +483,7 @@ log::info($request->all());
         $resultado = $recepciones->map(function ($recepcion) use ($todosPorAtencion) {
             return [
                 'atencion_id' => $recepcion->atencion_id,
-                'avance' => $recepcion->avance,
+                'avance' => optional($recepcion->atencion)->avance ?? 0,
                 'estado_id' => $recepcion->estado_id,
                 'recepciones' => $todosPorAtencion->get($recepcion->atencion_id, collect()),
             ];

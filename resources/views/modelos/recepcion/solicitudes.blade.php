@@ -504,10 +504,6 @@
                     },
                     success: function(response) {
                         if (response.success) {
-
-log::info(response.all());
-
-
                             updateProgressByPercentage(response.atencion_id, response.progreso.porcentaje);
                             if (response.todas_resueltas && response
                                 .solicitud_actualizada) { // Verificar si todas las tareas están resueltas
