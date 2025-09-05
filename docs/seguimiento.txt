@@ -87,7 +87,6 @@ SEGURIDAD:
 
 SERVICIOS:
     🟢 verificar si es bueno agregar el cliente a la tarjeta
-    ...🟢 revisar la proporcion de los logos
     🟢 Procedimiento:
         . Cliente: visualmente agrega el combo al carrito, puede repetir ésta acción indefinidamente, por el momento no tiene un limite definido.
         . Sistema: registra en base de datos el combo agregado, el registro queda en condicion "inactivo = no validado por el usuario"
@@ -123,11 +122,9 @@ SERVICIOS:
             .aplicar en el sistema despachar y descargar stock
             .sistema: actualiza el inventario y finaliza la orden de compra trasladandola al tablero de "Resueltas"
         . Sistema: corre una tarea programada para eliminar todos combos no validados por el usuario que pasaron en esa condicion por varios dias (la cantidad de dias no se define aún)
-    🟢 ajustar la lectura del rol principal en el perfil del usuario del dashboard
-    🟢 verificar si el middleware funciona sin necesidad de las tareas programadas
-    🟢 limpiar codigo sin uso que pudo haber dejado el retiro de la estructura organizativa
+    ...🟢 limpiar codigo sin uso que pudo haber dejado el retiro de la estructura organizativa
     🟢 en kanvan los popovers hacen un efecto mostrando un parpadeo de la imagen de los mismos en la esquina superior derecha
-    🟢 verificar que el middleware de seguridad en realidad detecte las amenazas
+    🟢 verificar si el middleware funciona sin necesidad de las tareas programadas y verificar que el middleware de seguridad en realidad detecte las amenazas
     🟢 mantener deshabilitadas las tareas programadas hasta que se averigue cual de ellas está originando inconsistencias en el laravel.log
     🟢 cambiar el registro de nuevos usuarios hacia dentro del sistema
     🟢 agregar un campo para el codigo físico del producto y mantenerlo visible en el catalogo de productos

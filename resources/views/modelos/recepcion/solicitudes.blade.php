@@ -9,7 +9,7 @@
 @endsection
 
 @section('contenedor')
-    {{-- ITEMS DESTINATARIOS PARA CADA ROL --}}
+    {{-- EQUIPOS DE TRABAJO DESTINO --}}
     <div class="row">
         <div class="col-12">
             @if (optional(auth()->user()->mainRole)->name != 'Operador')
@@ -32,7 +32,7 @@
                                             @endif
                                         </h6>
                                         <small class="text-white-50" style="font-size: 0.8rem;">
-                                            Selecciona el item destino para impulsar las solicitudes
+                                            Selecciona el equipo de trabajo destino para impulsar las solicitudes
                                         </small>
                                     </div>
                                 </div>
@@ -170,9 +170,8 @@
     <!-- END: Critical JavaScript (Emergency Load) -->
 
     <script>
-        //SELECCIONANDO EL ITEM DESTINATARIO (desde BD, sin hardcode)
+        //SELECCIONANDO EL ITEM DESTINATARIO
         let userRole = @json(optional(auth()->user()->mainRole)->name) || '';
-
         function selectItem(radioId) { // Función para seleccionar items
             document.querySelectorAll('.selectable-item').forEach(selector => { // Desmarcar todos los selectores
                 selector.classList.remove('selected');

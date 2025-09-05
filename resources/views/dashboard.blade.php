@@ -768,7 +768,7 @@
                     <a class="navbar-brand align-items-baseline" href="{{ route('dashboard') }}">
                         <div class="brand-logo">
                             <img src="{{ asset('app-assets/images/icons/favicon-32x32.png') }}" alt="logo"
-                                style="width: 2.5rem; height: 2rem; object-fit: contain;">
+                                style="width: 2.5rem; height: 2rem; object-fit: fill;">
                         </div>
                         <h2 class="brand-text mb-0"></h2>
                     </a>
