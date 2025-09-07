@@ -1,7 +1,6 @@
 @extends('dashboard')
 
 @section('css')
-    <!-- SweetAlert2 CSS Local -->
     <link href="{{ asset('app-assets/vendors/css/extensions/sweetalert2.min.css') }}" rel="stylesheet">
     <link href="{{ asset('app-assets/css/bootstrap-extended.css') }}" rel="stylesheet">
     <link href="{{ asset('app-assets/css/pages/app-kanban.css') }}" rel="stylesheet">
@@ -83,7 +82,7 @@
     </div>
     {{-- TABLEROS KANBAN --}}
     <div class="row kanban-container" style="display: flex; align-items: stretch;">
-        <div class="col-md-4"> {{-- RECIBIDAS --}}
+        <div class="col-md-4"> {{-- Recibidas --}}
             <div class="card border-0 overflow-hidden">
                 <div class="card-header"
                     style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); border: none; margin: 0;">
@@ -106,7 +105,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4"> {{-- EN PROGRESO --}}
+        <div class="col-md-4"> {{-- En Progreso --}}
             <div class="card border-0 overflow-hidden">
                 <div class="card-header"
                     style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); border: none; margin: 0;">
@@ -126,7 +125,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4"> {{-- RESUELTAS --}}
+        <div class="col-md-4"> {{-- Resueltas --}}
             <div class="card border-0 overflow-hidden">
                 <div class="card-header"
                     style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); border: none; margin: 0;">
@@ -147,7 +146,7 @@
             </div>
         </div>
     </div>
-    <div class="kanban-overlay"></div> {{-- OVERLAY KANBAN --}}
+    <div class="kanban-overlay"></div> {{-- Overlay Kanban --}}
     <div class="kanban-sidebar">
         <div class="d-flex justify-content-between align-items-center border-bottom px-1"
             style="background: linear-gradient(156deg, #221627 0%, #4e2a5d 100%); border: none; margin: 0; padding: 0.75rem 1rem; min-height: 52px;">
@@ -225,7 +224,119 @@
                 });
             });
         }
-        $('[data-toggle="popover"]').popover({ // Inicializar popovers de Bootstrap
+        //FUNCIONES PARA LA CARGA INICIAL DE LAS TARJETAS
+        function cargarTarjetasIniciales(tarjetas) {
+            if (tarjetas.recibidas && tarjetas.recibidas.length > 0) { // Cargar tarjetas recibidas
+                tarjetas.recibidas.forEach(function(tarjeta) {
+                    let html = generarTarjetaSolicitud(tarjeta, false, 'recibidas');
+                    $('#columna-recibidas').append(html);
+                });
+            }
+            if (tarjetas.progreso && tarjetas.progreso.length > 0) { // Cargar tarjetas en progreso
+                tarjetas.progreso.forEach(function(tarjeta) {
+                    let html = generarTarjetaSolicitud(tarjeta, false, 'progreso');
+                    $('#columna-progreso').append(html);
+                });
+            }
+            if (tarjetas.resueltas && tarjetas.resueltas.length > 0) { // Cargar tarjetas resueltas
+                tarjetas.resueltas.forEach(function(tarjeta) {
+                    let html = generarTarjetaSolicitud(tarjeta, false, 'resueltas');
+                    $('#columna-resueltas').append(html);
+                });
+            }
+            actualizarContadores(); // Actualizar contadores y mensajes
+            actualizarMensajeColumnaVacia();
+            $('[data-toggle="popover"]').popover({ // Inicializar popovers para las tarjetas cargadas
+                html: true,
+                container: 'body',
+                trigger: 'hover',
+                delay: {
+                    show: 100,
+                    hide: 100
+                }
+            });
+        }
+
+        function generarTarjetaSolicitud(tarjeta, animar = false, tipo = 'recibidas') {
+            const titulo = tarjeta.titulo && tarjeta.detalle ?
+                `${tarjeta.titulo} - ${tarjeta.detalle}` :
+                tarjeta.titulo || tarjeta.detalle || 'Sin título';
+            let borderColor, estadoColor, badgeColor; // Configurar colores según el tipo de tarjeta
+            switch (tipo) {
+                case 'recibidas':
+                    borderColor = 'badge-secondary'; // Usar nombre estándar
+                    estadoColor = '#2c3e50'; // Color que coincide con el header del tablero
+                    badgeColor = 'badge-secondary';
+                    break;
+                case 'progreso':
+                    borderColor = 'badge-primary'; // Usar nombre estándar
+                    estadoColor = '#17a2b8';
+                    badgeColor = 'badge-primary';
+                    break;
+                case 'resueltas':
+                    borderColor = 'badge-success'; // Usar nombre estándar
+                    estadoColor = '#28a745';
+                    badgeColor = 'badge-success';
+                    break;
+                default:
+                    borderColor = 'badge-secondary';
+                    estadoColor = '#2c3e50';
+                    badgeColor = 'badge-secondary';
+            }
+            let usersHtml = ''; // Generar HTML de usuarios
+            if (tarjeta.users && tarjeta.users.length > 0) {
+                tarjeta.users.forEach(function(user) {
+                    const avatar = user.profile_photo_url ?
+                        `<img src="${user.profile_photo_url}" alt="Usuario" class="avatar" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;">` :
+                        `<div class="avatar" style="width: 32px; height: 32px; border-radius: 50%; background: #e9ecef; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #6c757d;">${user.name ? user.name[0] : '?'}</div>`;
+                    usersHtml += `
+                <div style="margin: 0;" data-toggle="popover" 
+                    data-title="${user.name || 'Sin asignar'}" 
+                    data-content="<span class='badge badge-pill ${badgeColor}'>${user.recepcion_role_name || 'Sin rol'}</span> 
+                    <span class='badge badge-pill ${badgeColor}'>${user.area_name || 'Sin área'}</span>"
+                    data-trigger="hover"
+                    data-placement="top">
+                    ${avatar}
+                </div>
+            `;
+                });
+            }
+            return `
+                <div class="solicitud-card ${animar ? 'animar-llegada' : ''} border-${borderColor}" 
+                data-id="${tarjeta.recepcion_id}"
+                data-atencion-id="${tarjeta.atencion_id}"
+                data-estado-id="${tarjeta.estado_id}"
+                data-fecha="${tarjeta.created_at}">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="solicitud-titulo flex-grow-1">${titulo}</div>
+                    <div class="text-right ml-2">
+                        <div style="font-size: 0.9rem; font-weight: 600;">${tarjeta.atencion_id_ripped}</div>
+                        <div style="font-size: 0.6rem; color: #6c757d;">${tarjeta.fecha_relativa}</div>
+                    </div>
+                </div>
+                <div class="solicitud-estado" style="font-size: 11px; color: ${estadoColor}; margin-top: 5px;">
+                    Estado: ${tarjeta.estado}
+                </div>
+                <div class="progress-divider" data-atencion-id="${tarjeta.atencion_id}" data-avance="${tarjeta.porcentaje_progreso}"></div>
+                <div class="users-container" style="display: flex; align-items: center; justify-content: end; margin-top: 8px; padding-top: 6px;">
+                    ${usersHtml}
+                </div>
+            </div>
+        `;
+        }
+
+        function obtenerRecepcionIdsExistentes() {
+            let ids = [];
+            $('.solicitud-card').each(function() {
+                let recepcionId = $(this).data('id');
+                if (recepcionId && recepcionId !== 'null' && recepcionId !== 'undefined') {
+                    ids.push(recepcionId);
+                }
+            });
+            return ids;
+        }        
+        //INICIALIZAR POPOVERS
+        $('[data-toggle="popover"]').popover({
             html: true,
             container: 'body',
             trigger: 'hover',
@@ -399,14 +510,13 @@
                 }
             });
         }
-
         //MOSTRAR TAREAS EN SIDEBAR
         $(document).on('click', '.solicitud-card', function() {
             const $card = $(this);
             const titulo = $card.find('.solicitud-titulo').text().trim();
             const atencion = $card.find('.atencion-id').text().trim();
             const recepcionId = $card.data('id');
-            $('#sidebar-card-title').text(titulo); // Rellenar la información en el sidebar
+            $('#sidebar-card-title').text(titulo); 
             $('#sidebar-card-body').html('<p>' + atencion + '</p>');
             cargarTareas(recepcionId); // Cargar y dibujar las tareas
             $('.kanban-overlay').addClass('show'); // Mostrar overlay y sidebar
@@ -415,7 +525,7 @@
             limpiarClasesDrag(); // Limpiar clases de drag and drop al abrir el overlay
         });
 
-        function cargarTareas(recepcionId) { // Función para cargar y dibujar las tareas
+        function cargarTareas(recepcionId) { // Función para cargar tareas
             $.ajax({
                 url: '{{ route('recepcion.tareas', ['recepcion_id' => ':id']) }}'.replace(':id', recepcionId),
                 type: 'GET',
@@ -432,7 +542,7 @@
             });
         }
 
-        function dibujarTareas(tareas) { // Función para dibujar las tareas en el sidebar
+        function dibujarTareas(tareas) { // Función para dibujar las tareas
             if (tareas.length === 0) {
                 $('#sidebar-card-body').append(
                     '<div class="text-center text-muted py-3"><i class="bx bx-task text-muted"></i><div class="mt-2">Sin tareas asignadas</div></div>'
@@ -511,7 +621,7 @@
                                 ); // Mover la tarjeta al tablero de resueltas
                                 if (tarjeta.length > 0) {
                                     tarjeta.css('border-left-color',
-                                        '#28a745'); // Actualizar el estado visual de la tarjeta
+                                        '#28a745');
                                     tarjeta.find('.solicitud-estado').text('Estado: Resuelta');
                                     tarjeta.find('.solicitud-estado').css({
                                         'color': '#28a745',
@@ -519,10 +629,9 @@
                                         'margin-top': '5px'
                                     });
                                     tarjeta.attr('data-estado-id', 3);
-                                    $('#columna-resueltas').append(
-                                        tarjeta); // Mover la tarjeta al tablero de resueltas
+                                    $('#columna-resueltas').append(tarjeta);
                                     actualizarContadores();
-                                    Swal.fire({ // Mostrar mensaje de éxito
+                                    Swal.fire({
                                         position: 'top-end',
                                         type: 'success',
                                         title: '¡Todas las tareas completadas! Solicitud movida a Resueltas',
@@ -533,13 +642,13 @@
                                     });
                                 }
                             } else {
-                                Swal.fire({ // Mensaje normal para tarea individual
+                                Swal.fire({
                                     position: 'top-end',
                                     type: 'success',
                                     title: 'Tarea ' + String(actividadId).slice(-4) +
                                         ' se reportó como ' + nuevoEstado,
                                     showConfirmButton: false,
-                                    timer: 1500,
+                                    timer: 500,
                                     confirmButtonClass: 'btn btn-primary',
                                     buttonsStyling: false
                                 });
@@ -550,7 +659,7 @@
                                 type: 'error',
                                 title: response.message,
                                 showConfirmButton: true,
-                                timer: 6000,
+                                timer: 60000,
                                 confirmButtonClass: 'btn btn-danger',
                                 buttonsStyling: false
                             });
@@ -566,7 +675,7 @@
                             type: 'error',
                             title: mensaje,
                             showConfirmButton: true,
-                            timer: 6000,
+                            timer: 60000,
                             confirmButtonClass: 'btn btn-danger',
                             buttonsStyling: false
                         });
@@ -574,12 +683,12 @@
                 });
             }
         }
-        $(document).on('click', '.kanban-overlay, .kanban-sidebar .close-icon',
-            function() { //Cerrar sidebar al hacer clic en overlay o en el icono de cierre
+        //CERRAR SIDEBAR
+        $(document).on('click', '.kanban-overlay, .kanban-sidebar .close-icon', 
+            function() {
                 $('.kanban-overlay').removeClass('show');
                 $('.kanban-sidebar').removeClass('show');
                 $('body').removeClass('sidebar-open'); // Reactivar scroll de la página principal
-
 
                 //VERIFICAR SI SE USA
                 $('.solicitud-card').removeClass(
@@ -588,7 +697,7 @@
                 $('.sortable-fallback').remove();
             }
         );
-        //CERRAR SIDEBAR
+        //CERRAR EL ACCORDION
         $(document).on('change', 'input[name="equipo_destino"]', function() {
             const equipoId = $(this).val();
             const equipoNombre = $(this).closest('div').find('.item-name').text().trim();
@@ -820,117 +929,6 @@
                 }
             });
         }
-        //FUNCIONES PARA LA CARGA INICIAL DE LAS TARJETAS
-        function cargarTarjetasIniciales(tarjetas) {
-            if (tarjetas.recibidas && tarjetas.recibidas.length > 0) { // Cargar tarjetas recibidas
-                tarjetas.recibidas.forEach(function(tarjeta) {
-                    let html = generarTarjetaSolicitud(tarjeta, false, 'recibidas');
-                    $('#columna-recibidas').append(html);
-                });
-            }
-            if (tarjetas.progreso && tarjetas.progreso.length > 0) { // Cargar tarjetas en progreso
-                tarjetas.progreso.forEach(function(tarjeta) {
-                    let html = generarTarjetaSolicitud(tarjeta, false, 'progreso');
-                    $('#columna-progreso').append(html);
-                });
-            }
-            if (tarjetas.resueltas && tarjetas.resueltas.length > 0) { // Cargar tarjetas resueltas
-                tarjetas.resueltas.forEach(function(tarjeta) {
-                    let html = generarTarjetaSolicitud(tarjeta, false, 'resueltas');
-                    $('#columna-resueltas').append(html);
-                });
-            }
-            actualizarContadores(); // Actualizar contadores y mensajes
-            actualizarMensajeColumnaVacia();
-            $('[data-toggle="popover"]').popover({ // Inicializar popovers para las tarjetas cargadas
-                html: true,
-                container: 'body',
-                trigger: 'hover',
-                delay: {
-                    show: 100,
-                    hide: 100
-                }
-            });
-        }
-
-        function generarTarjetaSolicitud(tarjeta, animar = false, tipo = 'recibidas') {
-            const titulo = tarjeta.titulo && tarjeta.detalle ?
-                `${tarjeta.titulo} - ${tarjeta.detalle}` :
-                tarjeta.titulo || tarjeta.detalle || 'Sin título';
-            let borderColor, estadoColor, badgeColor; // Configurar colores según el tipo de tarjeta
-            switch (tipo) {
-                case 'recibidas':
-                    borderColor = 'badge-secondary'; // Usar nombre estándar
-                    estadoColor = '#2c3e50'; // Color que coincide con el header del tablero
-                    badgeColor = 'badge-secondary';
-                    break;
-                case 'progreso':
-                    borderColor = 'badge-primary'; // Usar nombre estándar
-                    estadoColor = '#17a2b8';
-                    badgeColor = 'badge-primary';
-                    break;
-                case 'resueltas':
-                    borderColor = 'badge-success'; // Usar nombre estándar
-                    estadoColor = '#28a745';
-                    badgeColor = 'badge-success';
-                    break;
-                default:
-                    borderColor = 'badge-secondary';
-                    estadoColor = '#2c3e50';
-                    badgeColor = 'badge-secondary';
-            }
-            let usersHtml = ''; // Generar HTML de usuarios
-            if (tarjeta.users && tarjeta.users.length > 0) {
-                tarjeta.users.forEach(function(user) {
-                    const avatar = user.profile_photo_url ?
-                        `<img src="${user.profile_photo_url}" alt="Usuario" class="avatar" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;">` :
-                        `<div class="avatar" style="width: 32px; height: 32px; border-radius: 50%; background: #e9ecef; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #6c757d;">${user.name ? user.name[0] : '?'}</div>`;
-                    usersHtml += `
-                <div style="margin: 0;" data-toggle="popover" 
-                    data-title="${user.name || 'Sin asignar'}" 
-                    data-content="<span class='badge badge-pill ${badgeColor}'>${user.recepcion_role_name || 'Sin rol'}</span> 
-                    <span class='badge badge-pill ${badgeColor}'>${user.area_name || 'Sin área'}</span>"
-                    data-trigger="hover"
-                    data-placement="top">
-                    ${avatar}
-                </div>
-            `;
-                });
-            }
-            return `
-                <div class="solicitud-card ${animar ? 'animar-llegada' : ''} border-${borderColor}" 
-                data-id="${tarjeta.recepcion_id}"
-                data-atencion-id="${tarjeta.atencion_id}"
-                data-estado-id="${tarjeta.estado_id}"
-                data-fecha="${tarjeta.created_at}">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div class="solicitud-titulo flex-grow-1">${titulo}</div>
-                    <div class="text-right ml-2">
-                        <div style="font-size: 0.9rem; font-weight: 600;">${tarjeta.atencion_id_ripped}</div>
-                        <div style="font-size: 0.6rem; color: #6c757d;">${tarjeta.fecha_relativa}</div>
-                    </div>
-                </div>
-                <div class="solicitud-estado" style="font-size: 11px; color: ${estadoColor}; margin-top: 5px;">
-                    Estado: ${tarjeta.estado}
-                </div>
-                <div class="progress-divider" data-atencion-id="${tarjeta.atencion_id}" data-avance="${tarjeta.porcentaje_progreso}"></div>
-                <div class="users-container" style="display: flex; align-items: center; justify-content: end; margin-top: 8px; padding-top: 6px;">
-                    ${usersHtml}
-                </div>
-            </div>
-        `;
-        }
-
-        function obtenerRecepcionIdsExistentes() {
-            let ids = [];
-            $('.solicitud-card').each(function() {
-                let recepcionId = $(this).data('id');
-                if (recepcionId && recepcionId !== 'null' && recepcionId !== 'undefined') {
-                    ids.push(recepcionId);
-                }
-            });
-            return ids;
-        }
 
         function cargarNuevasRecibidas() {
             let cantidadTarjetas = $('#columna-recibidas .solicitud-card')
@@ -990,7 +988,7 @@
                 }
             });
         }
-        //COMANDOS PARA ACTUALIZAR LOS ELEMENTOS DE LA PÁGINA
+        //CONTROL PRINCIPAL PARA LA CARGA DE DATOS
         $(document).ready(function() {
             const tarjetasIniciales = { // Datos iniciales de las tarjetas
                 recibidas: @json($recibidas),

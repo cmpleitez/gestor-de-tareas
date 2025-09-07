@@ -1,3 +1,4 @@
+🟠 se detectan dos categorias: tipo de producto y marca
 🟠 fortalecer la seguridad del servidor y del sitio
     ❌ LO QUE FORGE NO TIENE POR DEFECTO:
     1. WAF (Web Application Firewall)
@@ -86,6 +87,7 @@ SEGURIDAD:
     🟢 hacer pruebas simuladas de ataques para recibir alertas reales
 
 SERVICIOS:
+    🟢 verificar uno a uno los ervicios de seguridad contra prueba de captacciòn de la amenaza respectiva el que no funcione retirar todo su codigo fuente
     🟢 verificar si es bueno agregar el cliente a la tarjeta
     🟢 Procedimiento:
         . Cliente: visualmente agrega el combo al carrito, puede repetir ésta acción indefinidamente, por el momento no tiene un limite definido.
@@ -122,14 +124,12 @@ SERVICIOS:
             .aplicar en el sistema despachar y descargar stock
             .sistema: actualiza el inventario y finaliza la orden de compra trasladandola al tablero de "Resueltas"
         . Sistema: corre una tarea programada para eliminar todos combos no validados por el usuario que pasaron en esa condicion por varios dias (la cantidad de dias no se define aún)
-    ...🟢 limpiar codigo sin uso que pudo haber dejado el retiro de la estructura organizativa
     🟢 en kanvan los popovers hacen un efecto mostrando un parpadeo de la imagen de los mismos en la esquina superior derecha
     🟢 verificar si el middleware funciona sin necesidad de las tareas programadas y verificar que el middleware de seguridad en realidad detecte las amenazas
     🟢 mantener deshabilitadas las tareas programadas hasta que se averigue cual de ellas está originando inconsistencias en el laravel.log
     🟢 cambiar el registro de nuevos usuarios hacia dentro del sistema
     🟢 agregar un campo para el codigo físico del producto y mantenerlo visible en el catalogo de productos
     🟢 construir funcionalidades del catalogo de productos
-    🟢 se detectan dos categorias: tipo de producto y marca
     🟢 crear funcionalidad de combos personalizables
     🟢 agregar try catch a todos los controladores que lean y escriban en tablas
     🟢 proceso de anulación de una orden de compra
@@ -138,6 +138,10 @@ SERVICIOS:
     🟢 global cruds.edit: si hay historial no se puede editar
     🟢 revisar si se mantendrá el dui o se retira
     🟢 register: asegurar el id del usuario con un aumento no automático sino programatico, revisar qué otras tablas necesitan este manejo controlado de llaves
+    🟢 verificar si el modelo role esta en uso
+    🟢 verificar el modelo user porque hay varias funciones al parecer en desuso
+    🟢 el orden de atencion en elos tableros esta alreves al menos en las en progreso, ok sucede cuando se acaba de soltar una tarjeta pero en la carga se ordenan bien
+    🟢 aun no hay priorizaciòn de tarjetas eso es un servicio a construir
 
 🟠 rage agains the machine & limp bizkit & korn & alice in chains
     ...limp bizkit: im broke

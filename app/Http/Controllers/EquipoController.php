@@ -37,11 +37,6 @@ class EquipoController extends Controller
         return redirect()->route('equipo')->with('success', 'Equipo ' . $equipo->equipo . ' actualizado correctamente');
     }
 
-    public function show(Equipo $equipo)
-    {
-        //
-    }
-
     public function destroy(Equipo $equipo)
     {
         if ($equipo->users()->exists()) {
