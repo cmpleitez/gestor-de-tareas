@@ -1,3 +1,4 @@
+🟠 queda la pauta en usercontroller.update para que cuando se implemente la opcion cambio de nombres se aplique la regla de las dependencias
 🟠 se detectan dos categorias: tipo de producto y marca
 🟠 fortalecer la seguridad del servidor y del sitio
     ❌ LO QUE FORGE NO TIENE POR DEFECTO:
@@ -145,7 +146,6 @@ FUSION SERVICIOS Y GESTOR:
 🟠 rage agains the machine & limp bizkit & korn & alice in chains
     ...limp bizkit: im broke
     ...rage agains the machine: Mic Check
-
 
 Creando el flujo de trabajo:
 https://miro.com/app/board/uXjVLl8VYdo=/

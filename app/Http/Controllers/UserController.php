@@ -1,19 +1,20 @@
 <?php
 namespace App\Http\Controllers;
+
+use App\Models\Equipo;
+use App\Models\Oficina;
+use App\Models\Recepcion;
+use App\Models\Solicitud;
+use App\Models\User;
+use Exception;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Database\QueryException;
-use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\Gd\Driver;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
-use Exception;
-
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
 use Spatie\Permission\Models\Role;
-use App\Models\User;
-use App\Models\Oficina;
-use App\Models\Equipo;
-use App\Models\Solicitud;
 
 class UserController extends Controller
 {
@@ -38,17 +39,26 @@ class UserController extends Controller
     {
         //VALIDANDO
         $validated = $request->validate([
+            'name' => 'sometimes|required|string|max:255',
             'email' => ['email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
             'oficina_id' => 'required|numeric|exists:oficinas,id',
             'profile_photo_path' => 'nullable|image|max:1024',
         ]);
+        // Restringir cambio de name si existen recepciones asociadas como destino
+        $incomingName = $request->input('name');
+        if ($incomingName !== null && $incomingName !== $user->name) {
+            if (Recepcion::where('user_id_destino', $user->id)->exists()) {
+                return back()->with('error', 'No se puede cambiar el nombre porque el usuario tiene recepciones asignadas.');
+            }
+            $validated['name'] = $incomingName;
+        }
         $correo_actualizado = false;
         if ($user->email != $validated['email']) {
             $validated['email_verified_at'] = null;
             $correo_actualizado = true;
         }
-        $mensaje = ($correo_actualizado) ? 'Los datos del usuario han sido actualizados con éxito. Debido a 
-        ue su correo ha cambiado, se le ha enviado una solicitud de verificación su nuevo correo para su respectiva
+        $mensaje = ($correo_actualizado) ? 'Los datos del usuario han sido actualizados con éxito. Debido a
+        que su correo ha cambiado, se le ha enviado una solicitud de verificación su nuevo correo para su respectiva
         validación.' : 'El usuario ha sido actualizado con éxito.';
         //GUARDANDO
         try {
@@ -135,7 +145,6 @@ class UserController extends Controller
         $user->equipos()->sync($equipos);
         return redirect()->route('user')->with('success', 'Los equipos para el usuario ' . $user->name . ' han sido actualizados efectivamente.');
     }
-
 
     public function solicitudesEdit(User $user)
     {
