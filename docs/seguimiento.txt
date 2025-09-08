@@ -1,3 +1,4 @@
+🟠 se detectan dos categorias: tipo de producto y marca
 🟠 fortalecer la seguridad del servidor y del sitio
     ❌ LO QUE FORGE NO TIENE POR DEFECTO:
     1. WAF (Web Application Firewall)
@@ -51,43 +52,7 @@
 🟠 El uso de combos debería resolver el problema de las equivocaciones entre los codigos de un producto y otro producto
 
 🟠 la orden de compra se define por "atencion.id" y el combo solicitado se define como "recepcion.id"
-
-🟠 analisis de la factura digital ocean:
-DigitalOcean:
-    ¿Cómo funciona la transferencia gratuita?
-    ✅ NO es solo para el mes de gratuidad:
-    La transferencia gratuita es PERMANENTE en tu plan
-    Cada mes tienes derecho a 1366 GB de transferencia gratuita
-    No se acaba después del mes de prueba
-    ✅ Es parte de tu plan pagado:
-    Tu factura de $6.05 incluye la transferencia gratuita
-    No pagas extra por usar hasta 1366 GB mensuales
-    Solo pagas si excedes ese límite
-    ¿Qué incluye tu factura de $6.05?
-    Servicios que pagas:
-    Droplet (servidor): ~$15-30/mes
-    Base de datos MySQL: ~$15-30/mes
-    Otros servicios que tengas activos
-    Transferencia de datos:
-    0.29 GB usado: GRATIS (está dentro del límite)
-    Hasta 1366 GB: GRATIS cada mes
-    Solo pagas si excedes 1366 GB
-    Conclusión:
-        La transferencia gratuita es PERMANENTE y real. Cada mes tienes derecho a 1366 GB sin costo adicional. Tu factura de $6.05 es por los servicios, no por la transferencia de datos.
-        Tu módulo de seguridad puede usarse sin límites mensuales de transferencia.    
-
-SEGURIDAD:
-    🟢 optimizar config/security.php
-    🟢 verificar los servicios de config/security
-    🟢 implementar el ssl
-    🟢 agregar validadores de funcionamiento y mensajes de error para el usuario en el grupo de rutas "security", evitando el uso de escritura en el log de laravel
-    🟢 retirar campos de las tablas que no esten siendo utilizados por las vistas y retirarlos tambien los procesos que recopilen sus datos
-    🟢 revisar las opciones de chat de cursor
-    🟢 hacer pruebas simuladas de ataques para recibir alertas reales
-
-SERVICIOS:
-    🟢 verificar si es bueno agregar el cliente a la tarjeta
-    🟢 Procedimiento:
+🟠 Procedimiento:
         . Cliente: visualmente agrega el combo al carrito, puede repetir ésta acción indefinidamente, por el momento no tiene un limite definido.
         . Sistema: registra en base de datos el combo agregado, el registro queda en condicion "inactivo = no validado por el usuario"
         . Cliente: visualmente entra al carrito y personaliza el combo recien agregado luego presiona el boton "Enviar"
@@ -122,22 +87,60 @@ SERVICIOS:
             .aplicar en el sistema despachar y descargar stock
             .sistema: actualiza el inventario y finaliza la orden de compra trasladandola al tablero de "Resueltas"
         . Sistema: corre una tarea programada para eliminar todos combos no validados por el usuario que pasaron en esa condicion por varios dias (la cantidad de dias no se define aún)
-    ...🟢 limpiar codigo sin uso que pudo haber dejado el retiro de la estructura organizativa
-    🟢 en kanvan los popovers hacen un efecto mostrando un parpadeo de la imagen de los mismos en la esquina superior derecha
+
+🟠 analisis de la factura digital ocean:
+DigitalOcean:
+    ¿Cómo funciona la transferencia gratuita?
+    ✅ NO es solo para el mes de gratuidad:
+    La transferencia gratuita es PERMANENTE en tu plan
+    Cada mes tienes derecho a 1366 GB de transferencia gratuita
+    No se acaba después del mes de prueba
+    ✅ Es parte de tu plan pagado:
+    Tu factura de $6.05 incluye la transferencia gratuita
+    No pagas extra por usar hasta 1366 GB mensuales
+    Solo pagas si excedes ese límite
+    ¿Qué incluye tu factura de $6.05?
+    Servicios que pagas:
+    Droplet (servidor): ~$15-30/mes
+    Base de datos MySQL: ~$15-30/mes
+    Otros servicios que tengas activos
+    Transferencia de datos:
+    0.29 GB usado: GRATIS (está dentro del límite)
+    Hasta 1366 GB: GRATIS cada mes
+    Solo pagas si excedes 1366 GB
+    Conclusión:
+        La transferencia gratuita es PERMANENTE y real. Cada mes tienes derecho a 1366 GB sin costo adicional. Tu factura de $6.05 es por los servicios, no por la transferencia de datos.
+        Tu módulo de seguridad puede usarse sin límites mensuales de transferencia.    
+
+SEGURIDAD:
+    🟢 optimizar config/security.php
+    🟢 verificar los servicios de config/security
+    🟢 implementar el ssl
+    🟢 agregar validadores de funcionamiento y mensajes de error para el usuario en el grupo de rutas "security", evitando el uso de escritura en el log de laravel
+    🟢 retirar campos de las tablas que no esten siendo utilizados por las vistas y retirarlos tambien los procesos que recopilen sus datos
+    🟢 revisar las opciones de chat de cursor
+    🟢 hacer pruebas simuladas de ataques para recibir alertas reales
+    🟢 verificar uno a uno los servicios de seguridad contra prueba de captacciòn de la amenaza respectiva el que no funcione retirar todo su codigo fuente
     🟢 verificar si el middleware funciona sin necesidad de las tareas programadas y verificar que el middleware de seguridad en realidad detecte las amenazas
     🟢 mantener deshabilitadas las tareas programadas hasta que se averigue cual de ellas está originando inconsistencias en el laravel.log
-    🟢 cambiar el registro de nuevos usuarios hacia dentro del sistema
-    🟢 agregar un campo para el codigo físico del producto y mantenerlo visible en el catalogo de productos
+
+SERVICIOS:
+    
+    🟢 global cruds.edit: si hay historial no se puede editar
+        .reconstruir el diagrama de datos
+
+FUSION SERVICIOS Y GESTOR:
     🟢 construir funcionalidades del catalogo de productos
-    🟢 se detectan dos categorias: tipo de producto y marca
+    🟢 agregar un campo para el codigo físico del producto y mantenerlo visible en el catalogo de productos
     🟢 crear funcionalidad de combos personalizables
-    🟢 agregar try catch a todos los controladores que lean y escriban en tablas
+    🟢 cambiar el registro de nuevos usuarios hacia dentro del sistema
     🟢 proceso de anulación de una orden de compra
     🟢 proceso de solicitud de revision sobre una orden de compra
     🟢 auditoria de actividades sobre una orden de compra
-    🟢 global cruds.edit: si hay historial no se puede editar
+    🟢 aun no hay priorizaciòn de tarjetas eso es un servicio a construir
     🟢 revisar si se mantendrá el dui o se retira
     🟢 register: asegurar el id del usuario con un aumento no automático sino programatico, revisar qué otras tablas necesitan este manejo controlado de llaves
+    🟢 verificar si es bueno agregar el cliente a la tarjeta
 
 🟠 rage agains the machine & limp bizkit & korn & alice in chains
     ...limp bizkit: im broke

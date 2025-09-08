@@ -37,11 +37,6 @@ class TareaController extends Controller
         return redirect()->route('tarea')->with('success', 'Tarea actualizada correctamente');
     }
 
-    public function show(Tarea $tarea)
-    {
-        return 'show';
-    }
-
     public function destroy(Tarea $tarea)
     {
         if ($tarea->solicitudes()->exists()) {
