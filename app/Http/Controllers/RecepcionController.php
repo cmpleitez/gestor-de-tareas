@@ -20,156 +20,180 @@ class RecepcionController extends Controller
 {
     public function solicitudes()
     {
-        $user = auth()->user();
-        $recepciones = Recepcion::where('user_id_destino', $user->id)
-            ->with(['atencion.solicitud', 'usuarioDestino', 'atencion.oficina', 'atencion.estado', 'role'])
-            ->whereHas('atencion.oficina', function ($query) use ($user) {
-                $query->where('id', $user->oficina_id);
-            })
-            ->orderBy('created_at', 'desc')
-            ->limit(5)
-            ->get();
-        $atencionIds = $recepciones->pluck('atencion_id')->unique();
-        $usuariosDestinoPorAtencion = Recepcion::with(['usuarioDestino', 'role'])
-            ->whereIn('atencion_id', $atencionIds)
-            ->get()
-            ->groupBy('atencion_id')
-            ->map(function ($grupo) {
-                return $grupo->map(function ($recepcion) {
-                    return [
-                        'name' => $recepcion->usuarioDestino->name,
-                        'profile_photo_url' => $recepcion->usuarioDestino->profile_photo_url
-                            ? $recepcion->usuarioDestino->profile_photo_url
-                            : asset('app-assets/images/pages/operador.png'),
-                        'recepcion_role_name' => $recepcion->role->name,
-                        'oficina_name' => $recepcion->atencion->oficina->oficina,
-                    ];
-                })->values();
+        try {
+
+            $user = auth()->user();
+            $recepciones = Recepcion::where('user_id_destino', $user->id)
+                ->with(['atencion.solicitud', 'usuarioDestino', 'atencion.oficina', 'atencion.estado', 'role'])
+                ->whereHas('atencion.oficina', function ($query) use ($user) {
+                    $query->where('id', $user->oficina_id);
+                })
+                ->orderBy('created_at', 'desc')
+                ->limit(5)
+                ->get();
+            $atencionIds = $recepciones->pluck('atencion_id')->unique();
+            $usuariosDestinoPorAtencion = Recepcion::with(['usuarioDestino', 'role'])
+                ->whereIn('atencion_id', $atencionIds)
+                ->get()
+                ->groupBy('atencion_id')
+                ->map(function ($grupo) {
+                    return $grupo->map(function ($recepcion) {
+                        return [
+                            'name' => $recepcion->usuarioDestino->name,
+                            'profile_photo_url' => $recepcion->usuarioDestino->profile_photo_url
+                                ? $recepcion->usuarioDestino->profile_photo_url
+                                : asset('app-assets/images/pages/operador.png'),
+                            'recepcion_role_name' => $recepcion->role->name,
+                            'oficina_name' => $recepcion->atencion->oficina->oficina,
+                        ];
+                    })->values();
+                });
+            $tarjetas = $recepciones->map(function ($tarjeta) use ($usuariosDestinoPorAtencion) {
+                $usuariosDestino = $usuariosDestinoPorAtencion->get($tarjeta->atencion_id, collect());
+                return [
+                    'atencion_id' => $tarjeta->atencion_id,
+                    'created_at' => $tarjeta->created_at->toISOString(),
+                    'detalle' => $tarjeta->detalle,
+                    'estado' => $tarjeta->estado->estado,
+                    'estado_id' => $tarjeta->estado->id,
+                    'fecha_relativa' => Carbon::parse($tarjeta->created_at)->diffForHumans(),
+                    'porcentaje_progreso' => $tarjeta->atencion->avance,
+                    'recepcion_id' => $tarjeta->id,
+                    'role_name' => $tarjeta->role->name,
+                    'atencion_id_ripped' => KeyRipper::rip($tarjeta->atencion_id),
+                    'titulo' => $tarjeta->atencion->solicitud->solicitud,
+                    'users' => $usuariosDestino,
+                    'user_name' => $tarjeta->usuarioDestino->name,
+                    'oficina' => $tarjeta->atencion->oficina->oficina,
+                ];
             });
-        $tarjetas = $recepciones->map(function ($tarjeta) use ($usuariosDestinoPorAtencion) {
-            $usuariosDestino = $usuariosDestinoPorAtencion->get($tarjeta->atencion_id, collect());
-            return [
-                'atencion_id' => $tarjeta->atencion_id,
-                'created_at' => $tarjeta->created_at->toISOString(),
-                'detalle' => $tarjeta->detalle,
-                'estado' => $tarjeta->estado->estado,
-                'estado_id' => $tarjeta->estado->id,
-                'fecha_relativa' => Carbon::parse($tarjeta->created_at)->diffForHumans(),
-                'porcentaje_progreso' => $tarjeta->atencion->avance,
-                'recepcion_id' => $tarjeta->id,
-                'role_name' => $tarjeta->role->name,
-                'atencion_id_ripped' => KeyRipper::rip($tarjeta->atencion_id),
-                'titulo' => $tarjeta->atencion->solicitud->solicitud,
-                'users' => $usuariosDestino,
-                'user_name' => $tarjeta->usuarioDestino->name,
-                'oficina' => $tarjeta->atencion->oficina->oficina,
+            $recibidas = $tarjetas->where('estado_id', 1)->sortBy('created_at')->values()->toArray();
+            $progreso = $tarjetas->where('estado_id', 2)->sortBy('created_at')->values()->toArray();
+            $resueltas = $tarjetas->where('estado_id', 3)->sortBy('created_at')->values()->toArray();
+            $data = [
+                'recibidas' => $recibidas,
+                'progreso' => $progreso,
+                'resueltas' => $resueltas,
+                'equipos' => Equipo::where('oficina_id', $user->oficina_id)->get(),
+                'operadores' => User::whereHas('roles', function ($query) {
+                    $query->where('name', 'Operador');
+                })->whereHas('oficina', function ($query) use ($user) {
+                    $query->where('id', $user->oficina_id);
+                })->where('activo', true)->get(),
             ];
-        });
-        $recibidas = $tarjetas->where('estado_id', 1)->sortBy('created_at')->values()->toArray();
-        $progreso = $tarjetas->where('estado_id', 2)->sortBy('created_at')->values()->toArray();
-        $resueltas = $tarjetas->where('estado_id', 3)->sortBy('created_at')->values()->toArray();
-        $data = [
-            'recibidas' => $recibidas,
-            'progreso' => $progreso,
-            'resueltas' => $resueltas,
-            'equipos' => Equipo::where('oficina_id', $user->oficina_id)->get(),
-            'operadores' => User::whereHas('roles', function ($query) {
-                $query->where('name', 'Operador');
-            })->whereHas('oficina', function ($query) use ($user) {
-                $query->where('id', $user->oficina_id);
-            })->where('activo', true)->get(),
-        ];
-        if (auth()->user()->main_role == 'Receptor') {
-            if ($data['equipos']->isEmpty()) {
-                return back()->with('error', 'No hay equipos de trabajo disponibles para asignar las solicitudes');
+            if (auth()->user()->main_role == 'Receptor') {
+                if ($data['equipos']->isEmpty()) {
+                    return back()->with('error', 'No hay equipos de trabajo disponibles para asignar las solicitudes');
+                }
             }
+            return view('modelos.recepcion.solicitudes', $data);
+        } catch (\Exception $e) {
+            return back()->with('error', 'Ocurrió un error cuando se intentaba obtener las solicitudes:' . $e->getMessage())->with('toast_position', 'top-center');
         }
-        return view('modelos.recepcion.solicitudes', $data);
     }
 
     public function nuevasRecibidas(Request $request)
     {
-        $recepcionIdsExistentes = $request->input('recepcion_ids', []);
-        $query = Recepcion::where('user_id_destino', auth()->user()->id)
-            ->where('estado_id', 1)
-            ->with(['atencion'])
-            ->orderBy('created_at', 'desc')
-            ->limit(5);
-        if (!empty($recepcionIdsExistentes)) {
-            $query->whereNotIn('id', $recepcionIdsExistentes);
-        }
-        $tarjetas = $query->get();
-        $atencionIds = $tarjetas->pluck('atencion_id')->unique();
-        $usuariosDestinoPorAtencion = Recepcion::with(['usuarioDestino', 'role'])
-            ->whereIn('atencion_id', $atencionIds)
-            ->get()
-            ->groupBy('atencion_id')
-            ->map(function ($grupo) {
-                return $grupo->map(function ($recepcion) {
-                    return [
-                        'name' => $recepcion->usuarioDestino->name ?? 'Sin asignar',
-                        'profile_photo_url' => $recepcion->usuarioDestino && $recepcion->usuarioDestino->profile_photo_url
-                            ? $recepcion->usuarioDestino->profile_photo_url
-                            : asset('app-assets/images/pages/operador.png'),
-                        'recepcion_role_name' => $recepcion->role->name ?? 'Sin rol',
-                    ];
-                })->values();
+        try {
+            $recepcionIdsExistentes = $request->input('recepcion_ids', []);
+            $query = Recepcion::where('user_id_destino', auth()->user()->id)
+                ->where('estado_id', 1)
+                ->with(['atencion'])
+                ->orderBy('created_at', 'desc')
+                ->limit(5);
+            if (!empty($recepcionIdsExistentes)) {
+                $query->whereNotIn('id', $recepcionIdsExistentes);
+            }
+            $tarjetas = $query->get();
+            $atencionIds = $tarjetas->pluck('atencion_id')->unique();
+            $usuariosDestinoPorAtencion = Recepcion::with(['usuarioDestino', 'role'])
+                ->whereIn('atencion_id', $atencionIds)
+                ->get()
+                ->groupBy('atencion_id')
+                ->map(function ($grupo) {
+                    return $grupo->map(function ($recepcion) {
+                        return [
+                            'name' => $recepcion->usuarioDestino->name ?? 'Sin asignar',
+                            'profile_photo_url' => $recepcion->usuarioDestino && $recepcion->usuarioDestino->profile_photo_url
+                                ? $recepcion->usuarioDestino->profile_photo_url
+                                : asset('app-assets/images/pages/operador.png'),
+                            'recepcion_role_name' => $recepcion->role->name ?? 'Sin rol',
+                        ];
+                    })->values();
+                });
+            $nuevas = $tarjetas->map(function ($tarjeta) use ($usuariosDestinoPorAtencion) {
+                $usuariosDestino = $usuariosDestinoPorAtencion->get($tarjeta->atencion_id, collect());
+                return [
+                    'recepcion_id' => $tarjeta->id,
+                    'atencion_id' => $tarjeta->atencion_id,
+                    'titulo' => $tarjeta->solicitud->solicitud ?? '',
+                    'detalle' => $tarjeta->detalle,
+                    'estado' => $tarjeta->estado->estado,
+                    'estado_id' => $tarjeta->estado->id,
+                    'users' => $usuariosDestino,
+                    'role_name' => $tarjeta->role->name,
+                    'porcentaje_progreso' => optional($tarjeta->atencion)->avance ?? 0,
+                    'solicitud_id_ripped' => KeyRipper::rip($tarjeta->atencion_id),
+                    'fecha_relativa' => Carbon::parse($tarjeta->fecha_hora_solicitud)->diffForHumans(),
+                    'created_at' => $tarjeta->created_at,
+                ];
             });
-        $nuevas = $tarjetas->map(function ($tarjeta) use ($usuariosDestinoPorAtencion) {
-            $usuariosDestino = $usuariosDestinoPorAtencion->get($tarjeta->atencion_id, collect());
-            return [
-                'recepcion_id' => $tarjeta->id,
-                'atencion_id' => $tarjeta->atencion_id,
-                'titulo' => $tarjeta->solicitud->solicitud ?? '',
-                'detalle' => $tarjeta->detalle,
-                'estado' => $tarjeta->estado->estado,
-                'estado_id' => $tarjeta->estado->id,
-                'users' => $usuariosDestino,
-                'role_name' => $tarjeta->role->name,
-                'porcentaje_progreso' => optional($tarjeta->atencion)->avance ?? 0,
-                'solicitud_id_ripped' => KeyRipper::rip($tarjeta->atencion_id),
-                'fecha_relativa' => Carbon::parse($tarjeta->fecha_hora_solicitud)->diffForHumans(),
-                'created_at' => $tarjeta->created_at,
-            ];
-        });
-        return response()->json($nuevas);
+            return response()->json($nuevas);
+        } catch (\Exception $e) {
+            return back()->with('error', 'Ocurrió un error al obtener las nuevas solicitudes recibidas: ' . $e->getMessage())->with('toast_position', 'top-center');
+        }
     }
 
     public function equipos(Solicitud $solicitud)
     {
-        $equipos = Equipo::whereHas('usuarios.oficina', function ($query) {
-            $query->where('id', auth()->user()->oficina_id);
-        })->whereHas('usuarios.solicitudes', function ($query) use ($solicitud) {
-            $query->where('solicitudes.id', $solicitud->id);
-        })->get();
-        return response()->json([
-            'equipos' => $equipos,
-            'unidades' => $equipos->count(),
-        ]);
+        try {
+            $equipos = Equipo::whereHas('usuarios.oficina', function ($query) {
+                $query->where('id', auth()->user()->oficina_id);
+            })->whereHas('usuarios.solicitudes', function ($query) use ($solicitud) {
+                $query->where('solicitudes.id', $solicitud->id);
+            })->get();
+            return response()->json([
+                'equipos' => $equipos,
+                'unidades' => $equipos->count(),
+            ]);
+        } catch (\Exception $e) {
+            return back()->with('error', 'Ocurrió un error al obtener los equipos: ' . $e->getMessage())->with('toast_position', 'top-center');
+        }
     }
 
     public function operadores(Solicitud $solicitud)
     {
-        $operadores = User::whereHas('roles', function ($query) {
-            $query->where('name', 'Operador');
-        })->whereHas('oficina', function ($query) {
-            $query->where('id', auth()->user()->oficina_id);
-        })->whereHas('solicitudes', function ($query) use ($solicitud) {
-            $query->where('solicitudes.id', $solicitud->id);
-        })->get();
-        $operadores_activos = User::whereHas('roles', function ($query) {
-            $query->where('name', 'Operador');
-        })->where('activo', true)->get();
-        return response()->json([
-            'operadores' => $operadores,
-            'operadores_activos' => $operadores_activos,
-        ]);
+        // Modelo: o3
+        try {
+            $operadores = User::whereHas('roles', function ($query) {
+                $query->where('name', 'Operador');
+            })->whereHas('oficina', function ($query) {
+                $query->where('id', auth()->user()->oficina_id);
+            })->whereHas('solicitudes', function ($query) use ($solicitud) {
+                $query->where('solicitudes.id', $solicitud->id);
+            })->get();
+
+            $operadores_activos = User::whereHas('roles', function ($query) {
+                $query->where('name', 'Operador');
+            })->where('activo', true)->get();
+
+            return response()->json([
+                'operadores' => $operadores,
+                'operadores_activos' => $operadores_activos,
+            ]);
+        } catch (\Exception $e) {
+            return back()->with('error', 'Ocurrió un error al obtener los operadores: ' . $e->getMessage())->with('toast_position', 'top-center');
+        }
     }
 
     public function create()
     {
-        $solicitudes = Solicitud::where('activo', true)->get();
-        return view('modelos.recepcion.create', compact('solicitudes'));
+        try {
+            $solicitudes = Solicitud::where('activo', true)->get();
+            return view('modelos.recepcion.create', compact('solicitudes'));
+        } catch (\Exception $e) {
+            return back()->with('error', 'Ocurrió un error al obtener las solicitudes: ' . $e->getMessage())->with('toast_position', 'top-center');
+        }
     }
 
     public function store(Request $request)
@@ -294,20 +318,24 @@ class RecepcionController extends Controller
 
     public function tareas($recepcion_id)
     {
-        $actividades = Actividad::where('recepcion_id', $recepcion_id)
-            ->with(['tarea', 'estado'])
-            ->get();
-        $tareas = $actividades->map(function ($actividad) {
-            return [
-                'recepcion_id' => $actividad->recepcion_id,
-                'tarea' => $actividad->tarea->tarea,
-                'estado' => $actividad->estado->estado,
-                'estado_id' => $actividad->estado_id,
-                'actividad_id' => $actividad->id,
-                'actividad_id_ripped' => KeyRipper::rip($actividad->id),
-            ];
-        });
-        return response()->json(['tareas' => $tareas]);
+        try {
+            $actividades = Actividad::where('recepcion_id', $recepcion_id)
+                ->with(['tarea', 'estado'])
+                ->get();
+            $tareas = $actividades->map(function ($actividad) {
+                return [
+                    'recepcion_id' => $actividad->recepcion_id,
+                    'tarea' => $actividad->tarea->tarea,
+                    'estado' => $actividad->estado->estado,
+                    'estado_id' => $actividad->estado_id,
+                    'actividad_id' => $actividad->id,
+                    'actividad_id_ripped' => KeyRipper::rip($actividad->id),
+                ];
+            });
+            return response()->json(['tareas' => $tareas]);
+        } catch (\Exception $e) {
+            return back()->with('error', 'Ocurrió un error al obtener las tareas: ' . $e->getMessage())->with('toast_position', 'top-center');
+        }
     }
     public function reportarTarea(Request $request, $actividad_id)
     {
@@ -366,58 +394,58 @@ class RecepcionController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json([
-                'success' => false,
-                'message' => 'Error al actualizar la tarea: ' . $e->getMessage(),
-            ], 500);
+            return back()->with('error', 'Error al actualizar la tarea: ' . $e->getMessage())->with('toast_position', 'top-center');
         }
     }
 
     public function avanceTablero(Request $request)
     {
-        $user = auth()->user();
-        $atencionIds = $request->input('atencion_ids', []);
-        if (!is_array($atencionIds) || empty($atencionIds)) {
-            return response()->json([]);
-        }
-        $estadosTablero = [1, 2, 3]; // 1: Recibida, 2: En progreso, 3: Resuelta
-        $recepciones = Recepcion::with(['usuarioDestino', 'atencion'])->where('user_id_destino', $user->id)
-            ->whereIn('estado_id', $estadosTablero)
-            ->whereIn('atencion_id', $atencionIds)
-            ->select('atencion_id', 'estado_id')
-            ->get();
+        try {
+            $user = auth()->user();
+            $atencionIds = $request->input('atencion_ids', []);
+            if (!is_array($atencionIds) || empty($atencionIds)) {
+                return response()->json([]);
+            }
+            $estadosTablero = [1, 2, 3]; // 1: Recibida, 2: En progreso, 3: Resuelta
+            $recepciones = Recepcion::with(['usuarioDestino', 'atencion'])->where('user_id_destino', $user->id)
+                ->whereIn('estado_id', $estadosTablero)
+                ->whereIn('atencion_id', $atencionIds)
+                ->select('atencion_id', 'estado_id')
+                ->get();
 
-        $todosPorAtencion = Recepcion::with(['usuarioDestino', 'role'])
-            ->whereIn('atencion_id', $recepciones->pluck('atencion_id')->unique())
-            ->get()
-            ->groupBy('atencion_id')
-            ->map(function ($grupo) {
-                return $grupo->map(function ($recepcionItem) {
-                    $profilePhotoUrl = $recepcionItem->usuarioDestino && $recepcionItem->usuarioDestino->profile_photo_url
-                        ? $recepcionItem->usuarioDestino->profile_photo_url
-                        : asset('app-assets/images/pages/operador.png');
+            $todosPorAtencion = Recepcion::with(['usuarioDestino', 'role'])
+                ->whereIn('atencion_id', $recepciones->pluck('atencion_id')->unique())
+                ->get()
+                ->groupBy('atencion_id')
+                ->map(function ($grupo) {
+                    return $grupo->map(function ($recepcionItem) {
+                        $profilePhotoUrl = $recepcionItem->usuarioDestino && $recepcionItem->usuarioDestino->profile_photo_url
+                            ? $recepcionItem->usuarioDestino->profile_photo_url
+                            : asset('app-assets/images/pages/operador.png');
 
-                    return [
-                        'usuarioDestino' => [
-                            'id' => $recepcionItem->usuarioDestino->id ?? null,
-                            'name' => $recepcionItem->usuarioDestino->name ?? 'Sin asignar',
-                            'profile_photo_url' => $profilePhotoUrl,
-                        ],
-                        'role' => $recepcionItem->role,
-                    ];
-                })->values();
+                        return [
+                            'usuarioDestino' => [
+                                'id' => $recepcionItem->usuarioDestino->id ?? null,
+                                'name' => $recepcionItem->usuarioDestino->name ?? 'Sin asignar',
+                                'profile_photo_url' => $profilePhotoUrl,
+                            ],
+                            'role' => $recepcionItem->role,
+                        ];
+                    })->values();
+                });
+
+            $resultado = $recepciones->map(function ($recepcion) use ($todosPorAtencion) {
+                return [
+                    'atencion_id' => $recepcion->atencion_id,
+                    'avance' => optional($recepcion->atencion)->avance ?? 0,
+                    'estado_id' => $recepcion->estado_id,
+                    'recepciones' => $todosPorAtencion->get($recepcion->atencion_id, collect()),
+                ];
             });
-
-        $resultado = $recepciones->map(function ($recepcion) use ($todosPorAtencion) {
-            return [
-                'atencion_id' => $recepcion->atencion_id,
-                'avance' => optional($recepcion->atencion)->avance ?? 0,
-                'estado_id' => $recepcion->estado_id,
-                'recepciones' => $todosPorAtencion->get($recepcion->atencion_id, collect()),
-            ];
-        });
-
-        return response()->json($resultado);
+            return response()->json($resultado);
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error al obtener el avance del tablero: ' . $e->getMessage())->with('toast_position', 'top-center');
+        }
     }
 
 }
