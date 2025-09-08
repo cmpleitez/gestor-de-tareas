@@ -126,10 +126,7 @@ SEGURIDAD:
     🟢 mantener deshabilitadas las tareas programadas hasta que se averigue cual de ellas está originando inconsistencias en el laravel.log
 
 SERVICIOS:
-    
-    🟢 global cruds.edit: si hay historial no se puede editar
-        .reconstruir el diagrama de datos
-
+    🔵 Finalizados por el momento todos servicios informáticos, hasta nuevo aviso    
 FUSION SERVICIOS Y GESTOR:
     🟢 construir funcionalidades del catalogo de productos
     🟢 agregar un campo para el codigo físico del producto y mantenerlo visible en el catalogo de productos
