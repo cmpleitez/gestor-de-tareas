@@ -51,6 +51,26 @@
         }
 
         /* Estilos para niveles bajos eliminados */
+
+        /* Indicador de estado: mantener punto en amarillo y pulso (anillo) en rojo */
+        .security-status-indicator .pulse-dot {
+            animation: pulse-red 2s infinite;
+        }
+
+        @keyframes pulse-red {
+            0% {
+                box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+                /* rojo bootstrap */
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+            }
+        }
     </style>
 
     <!-- BEGIN: Security Dashboard CSS -->
@@ -77,7 +97,7 @@
                             <div class="col-md-1 text-center">
                                 <div class="d-flex justify-content-end align-items-center">
                                     <div class="security-status-indicator">
-                                        <div class="pulse-dot bg-danger"></div>
+                                        <div class="pulse-dot bg-warning"></div>
                                     </div>
                                 </div>
                             </div>
@@ -87,10 +107,8 @@
             </div>
         </div>
 
-
         <!-- ========================================
-                                                                                                                                    FILTROS Y CONTROLES
-                                                                                                                                    ======================================== -->
+                                                                                                                                                                                                                                                                                                ======================================== -->
         <div class="row mt-1">
             <div class="col-12">
                 <div class="card" style="margin-bottom: 0rem;">
@@ -105,29 +123,31 @@
                             </div>
                             <div class="col-md-3">
                                 <label for="category_filter" class="form-label">Categoría</label>
-                                <select class="form-select" id="category_filter">
-                                    <option value="">Todas las categorías</option>
-                                    <option value="suspicious_activity">Actividad Sospechosa</option>
-                                    <option value="brute_force">Fuerza Bruta</option>
-                                    <option value="malware">Malware</option>
-                                    <option value="ddos">DDoS</option>
-                                    <option value="phishing">Phishing</option>
-                                </select>
+                                <input type="text" class="form-control" id="category_filter" list="category_options"
+                                    placeholder="Inyección SQL, XSS, Comandos...">
+                                <datalist id="category_options">
+                                    <option value="Inyección SQL"></option>
+                                    <option value="Ataque XSS"></option>
+                                    <option value="Travesía de Ruta"></option>
+                                    <option value="Inyección de Comandos"></option>
+                                    <option value="Actividad Sospechosa"></option>
+                                </datalist>
                             </div>
                             <div class="col-md-3">
                                 <label for="risk_filter" class="form-label">Nivel de Riesgo</label>
-                                <select class="form-select" id="risk_filter">
-                                    <option value="">Todos los niveles</option>
-                                    <option value="critical">Crítico</option>
-                                    <option value="high">Alto</option>
-                                    <option value="medium">Medio</option>
-                                </select>
+                                <input type="text" class="form-control" id="risk_filter" list="risk_options"
+                                    placeholder="Crítico, Alto, Medio">
+                                <datalist id="risk_options">
+                                    <option value="Crítico"></option>
+                                    <option value="Alto"></option>
+                                    <option value="Medio"></option>
+                                </datalist>
                             </div>
                             <div class="col-md-3">
                                 <label for="date_filter" class="form-label">Fecha</label>
                                 <input type="date" class="form-control" id="date_filter" value="{{ date('Y-m-d') }}">
                             </div>
-                            <div class="col-12">
+                            <div class="col-12 d-flex justify-content-end mt-1">
                                 <button type="button" class="btn btn-outline-secondary" onclick="clearFilters()">
                                     <i class="fas fa-times me-1"></i>Limpiar
                                 </button>
@@ -139,8 +159,8 @@
         </div>
 
         <!-- ========================================
-                                                                                                                                    TABLA DE EVENTOS
-                                                                                                                                    ======================================== -->
+                                                                                                                                                                                                                                                                                                TABLA DE EVENTOS
+                                                                                                                                                                                                                                                                                                ======================================== -->
         <div class="row mt-1">
             <div class="col-12">
                 <div class="card" style="margin-bottom: 0rem;">
@@ -158,7 +178,7 @@
                                         <th>Riesgo</th>
                                         <th>Fecha</th>
                                         <th>País</th>
-                                        <th>Estado</th>
+                                        <th>Resultado</th>
                                     </tr>
                                 </thead>
                                 <tbody id="eventsTableBody">
@@ -207,6 +227,8 @@
         let currentPage = 1;
         let eventsPerPage = 25;
         let allEvents = [];
+        let categoryDropdownArmed = false;
+        let riskDropdownArmed = false;
 
         // Datos reales enviados desde el controlador
         const serverEvents = @json($events ?? []);
@@ -217,6 +239,10 @@
 
             loadEvents();
             setupEventListeners();
+
+            // Limpiar automáticamente al abrir el desplegable (clic en triángulo) para categoría y riesgo
+            attachClearOnDropdownClick('category_filter');
+            attachClearOnDropdownClick('risk_filter');
         });
 
         function setupEventListeners() {
@@ -226,16 +252,29 @@
                 loadEvents();
             });
 
-            // Filtrado automático al cambiar selecciones
-            document.getElementById('category_filter').addEventListener('change', function() {
+            // Categoría: aplicar filtro sólo cuando se seleccione un item del datalist
+            const categoryInputEl = document.getElementById('category_filter');
+            const handleCategoryCommit = function() {
+                const committed = categoryDropdownArmed || isValueInDatalist(categoryInputEl);
+                if (!committed) return;
+                categoryDropdownArmed = false; // consumir el armado
                 currentPage = 1;
                 loadEvents();
-            });
+            };
+            categoryInputEl.addEventListener('input', handleCategoryCommit);
+            categoryInputEl.addEventListener('change', handleCategoryCommit);
 
-            document.getElementById('risk_filter').addEventListener('change', function() {
+            // Riesgo: aplicar filtro sólo cuando se seleccione un item del datalist
+            const riskInputEl = document.getElementById('risk_filter');
+            const handleRiskCommit = function() {
+                const committed = riskDropdownArmed || isValueInDatalist(riskInputEl);
+                if (!committed) return;
+                riskDropdownArmed = false; // consumir el armado
                 currentPage = 1;
                 loadEvents();
-            });
+            };
+            riskInputEl.addEventListener('input', handleRiskCommit);
+            riskInputEl.addEventListener('change', handleRiskCommit);
 
             document.getElementById('date_filter').addEventListener('change', function() {
                 currentPage = 1;
@@ -243,36 +282,113 @@
             });
         }
 
+        // Detectar clic en el área del triángulo del input con datalist y limpiar el control
+        function attachClearOnDropdownClick(inputId) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+
+            input.addEventListener('mousedown', function(e) {
+                const rect = input.getBoundingClientRect();
+                const clickFromRight = rect.right - e.clientX;
+                // Umbral aproximado del área del icono (flecha) ~ 24px
+                if (clickFromRight <= 24) {
+                    input.value = '';
+                    if (inputId === 'category_filter') {
+                        // armar para que el siguiente input dispare filtrado (selección de item)
+                        categoryDropdownArmed = true;
+                    } else if (inputId === 'risk_filter') {
+                        // armar para que el siguiente input dispare filtrado (selección de item)
+                        riskDropdownArmed = true;
+                    } else {
+                        currentPage = 1;
+                        loadEvents();
+                    }
+                }
+            });
+        }
+
+        // Verifica si el valor actual del input coincide exactamente con alguna opción del datalist
+        function isValueInDatalist(inputEl) {
+            const listId = inputEl.getAttribute('list');
+            if (!listId) return false;
+            const dataList = document.getElementById(listId);
+            if (!dataList) return false;
+            const val = inputEl.value.trim().toLowerCase();
+            if (!val) return false;
+            for (let i = 0; i < dataList.options.length; i++) {
+                const optVal = (dataList.options[i].value || '').trim().toLowerCase();
+                if (optVal === val) return true;
+            }
+            return false;
+        }
+
         function loadEvents() {
             // Obtener filtros aplicados
             const ipFilter = document.getElementById('ip_filter').value.trim().toLowerCase();
-            const categoryFilter = document.getElementById('category_filter').value;
-            const riskFilter = document.getElementById('risk_filter').value;
+            // Normalizar categoría desde texto visible a clave interna
+            const categoryInput = document.getElementById('category_filter').value.trim().toLowerCase();
+            const categoryMap = {
+                'inyección sql': 'sql_injection',
+                'inyeccion sql': 'sql_injection',
+                'ataque xss': 'xss_attack',
+                'travesía de ruta': 'path_traversal',
+                'travesia de ruta': 'path_traversal',
+                'inyección de comandos': 'command_injection',
+                'inyeccion de comandos': 'command_injection',
+                'actividad sospechosa': 'suspicious_activity',
+                // Permitir también claves directas
+                'sql_injection': 'sql_injection',
+                'xss_attack': 'xss_attack',
+                'path_traversal': 'path_traversal',
+                'command_injection': 'command_injection',
+                'suspicious_activity': 'suspicious_activity'
+            };
+            const categoryFilter = categoryMap[categoryInput] || '';
+            const riskInput = document.getElementById('risk_filter').value.trim().toLowerCase();
+            const riskMap = {
+                'crítico': 'critical',
+                'critico': 'critical',
+                'alto': 'high',
+                'medio': 'medium',
+                // claves directas
+                'critical': 'critical',
+                'high': 'high',
+                'medium': 'medium'
+            };
+            const riskFilter = riskMap[riskInput] || '';
             const dateFilter = document.getElementById('date_filter').value;
 
             // Usar los datos reales del servidor
-            if (serverEvents && serverEvents.length > 0) {
+            if (Array.isArray(serverEvents) && serverEvents.length > 0) {
                 // Aplicar filtros
                 allEvents = serverEvents.filter(event => {
                     // Filtro por IP
-                    if (ipFilter && !event.ip_address.toLowerCase().includes(ipFilter)) {
+                    const eventIp = (event && event.ip_address ? String(event.ip_address) : '').toLowerCase();
+                    if (ipFilter && !eventIp.includes(ipFilter)) {
                         return false;
                     }
 
                     // Filtro por categoría
-                    if (categoryFilter && event.category !== categoryFilter) {
+                    const eventCategory = (event && event.category ? String(event.category) : '');
+                    if (categoryFilter && eventCategory !== categoryFilter) {
                         return false;
                     }
 
                     // Filtro por nivel de riesgo
-                    if (riskFilter && event.risk_level !== riskFilter) {
+                    const eventRisk = (event && event.risk_level ? String(event.risk_level) : '');
+                    if (riskFilter && eventRisk !== riskFilter) {
                         return false;
                     }
 
-                    // Filtro por fecha (solo mostrar eventos del día seleccionado)
-                    if (dateFilter) {
-                        const eventDate = new Date(event.created_at).toISOString().split('T')[0];
-                        if (eventDate !== dateFilter) {
+                    // Filtro por fecha (aplicar SOLO si no hay otros filtros activos)
+                    const hasActiveNonDateFilter = !!(ipFilter || categoryFilter || riskFilter);
+                    if (dateFilter && !hasActiveNonDateFilter) {
+                        const d = new Date(event.created_at);
+                        const y = d.getFullYear();
+                        const m = String(d.getMonth() + 1).padStart(2, '0');
+                        const da = String(d.getDate()).padStart(2, '0');
+                        const eventDateStr = `${y}-${m}-${da}`;
+                        if (eventDateStr !== dateFilter) {
                             return false;
                         }
                     }
@@ -293,6 +409,9 @@
 
             displayEvents();
             updatePagination();
+
+            // Actualizar indicadores de conteo
+            document.getElementById('total-count').textContent = allEvents.length;
         }
 
         function displayEvents() {
@@ -319,7 +438,20 @@
         function createEventRow(event) {
             const row = document.createElement('tr');
             row.className = `event-row ${event.risk_level}`;
-            row.onclick = () => showEventDetails(event);
+
+            // Normalización de resultado: cubrir estados legados
+            const rawOutcome = (event.outcome || event.status || '').toString().toLowerCase();
+            const outcomeMap = {
+                'blocked': 'blocked',
+                'exploited': 'exploited',
+                'attempted': 'attempted',
+                // Estados legados mapeados
+                'monitored': 'attempted',
+                'open': 'attempted',
+                'investigando': 'attempted',
+                'nuevo': 'attempted'
+            };
+            const outcome = outcomeMap[rawOutcome] || 'unknown';
 
             row.innerHTML = `
             <td><strong>${event.ip_address}</strong></td>
@@ -332,15 +464,25 @@
             </td>
             <td>
                 <span class="badge bg-${getRiskBadgeColor(event.threat_score)}">
-                    ${event.risk_level}
+                    ${formatRisk(event.risk_level)}
                 </span>
             </td>
             <td>${formatDate(event.created_at)}</td>
             <td><i class="fas fa-globe me-1"></i>${event.country}</td>
             <td>
-                <span class="badge bg-${event.status === 'investigando' ? 'warning' : 'info'}">
-                    ${event.status === 'investigando' ? 'Investigando' : 'Nuevo'}
+                <div class="d-flex justify-content-end">
+                <span class="badge bg-${
+                    outcome === 'blocked' ? 'success' :
+                    (outcome === 'exploited' ? 'danger' :
+                    (outcome === 'attempted' ? 'warning' : 'secondary'))
+                }">
+                    ${
+                        outcome === 'blocked' ? 'Bloqueado' :
+                        (outcome === 'exploited' ? 'Explotado' :
+                        (outcome === 'attempted' ? 'Intento' : 'Desconocido'))
+                    }
                 </span>
+                </div>
             </td>
         `;
 
@@ -364,6 +506,16 @@
             return categories[category] || category;
         }
 
+        function formatRisk(risk) {
+            const key = (risk || '').toString().toLowerCase();
+            const map = {
+                'critical': 'Crítico',
+                'high': 'Alto',
+                'medium': 'Medio'
+            };
+            return map[key] || (risk ?? 'Desconocido');
+        }
+
         function formatDate(dateString) {
             const date = new Date(dateString);
             return new Intl.DateTimeFormat('es-ES', {
@@ -383,10 +535,15 @@
         }
 
         function updateDisplayInfo(start, end) {
-            document.getElementById('showing-start').textContent = start + 1;
-            document.getElementById('showing-end').textContent = Math.min(end, allEvents.length);
-            document.getElementById('total-count').textContent = allEvents.length;
-            document.getElementById('total-events').textContent = `Total: ${allEvents.length}`;
+            const elStart = document.getElementById('showing-start');
+            const elEnd = document.getElementById('showing-end');
+            const elTotal = document.getElementById('total-count');
+            const elTotalEvents = document.getElementById('total-events');
+
+            if (elStart) elStart.textContent = start + 1;
+            if (elEnd) elEnd.textContent = Math.min(end, allEvents.length);
+            if (elTotal) elTotal.textContent = allEvents.length;
+            if (elTotalEvents) elTotalEvents.textContent = `Total: ${allEvents.length}`;
         }
 
         function updatePagination() {
@@ -483,12 +640,6 @@
             window.location.reload();
         }
 
-        function showEventDetails(event) {
-            // Aquí se mostraría un modal con detalles del evento
-            alert(
-                `Detalles del evento:\nIP: ${event.ip_address}\nCategoría: ${formatCategory(event.category)}\nScore: ${event.threat_score}\nRiesgo: ${event.risk_level}`
-            );
-        }
     </script>
 
     <!-- BEGIN: Application JavaScript -->

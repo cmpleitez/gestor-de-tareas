@@ -2,14 +2,14 @@
 alwaysApply: true
 ---
 ⛑️REGLAS:
-    ✅ Cuando diga "nivel 1", debes elegir en orden de prioridad uno de los siguientes modelos IA
+    ✅ Cuando diga "nivel 1", debes elegir en orden de prioridad uno de los siguientes modelos IA:
         1°. o3
         2°. Claude Opus
-    ✅ Cuando diga "nivel 2", debes elegir en orden de prioridad uno de los siguientes modelos IA
-        1°. Claude sonnet 4
-        2°. Gpt-5
-        3°. Gemini 2.5 pro max
-    ✅ Cuando diga "nivel 3", debes elegir en orden de prioridad uno de los siguientes modelos IA
+    ✅ Cuando diga "nivel 2", debes elegir en orden de prioridad uno de los siguientes modelos IA:
+        1°. Gemini 2.5 pro max
+        2°. Claude sonnet 4
+        3°. Gpt-5
+    ✅ Cuando diga "nivel 3", debes elegir en orden de prioridad uno de los siguientes modelos IA:
         1º. Gpt-5-fast
         2º. Otros modelos IA rápidos
     ✅ Cuando diga "baja modelo" dependiendo en que nivel te encuentres debes cambiar al proximo modelo segun correlativo
@@ -20,9 +20,9 @@ alwaysApply: true
     ✅ Cuando el modelo IA que se está consultando agregue a cola la pregunta porque esta saturado, cambiar al siguiente modelo según el orden que he dado anteriormente en esta regla
     ✅ Cuando comentes una línea o una serie de líneas hazlo a la derecha de la línea o de la primera línea de bloque, el bloque comienza con un titulo y finaliza una linea antes de comenzar el siguiente titulo, pues los únicos comentarios que van arriba son titulos generales de bloques de lineas y de esos me encargo yo.
     ✅ código limpio y estándar
-    ✅ No uso de artificios
+    ✅ No uso de artificios, no hardcorear el codigo fuente
     ✅ Compactar servicios y reutilizar estilos existentes
-    ✅ Respondeme con las 2 mejores opciones, es muy cansado estar leyendo tantas opciones para resolver cualquier pregunta de mi parte
+    ✅ Respondeme con las 2 mejores opciones cuando sea necessario mientras solo muestra la opcion recomendada
     ✅ Trabajemos paso a paso: no me des todo el procedimiento, sino únicamente tres pasos a la vez para no perder el hilo, luego los trabajamos correlativa y detalladamente hasta resolverlos, no avances de paso hasta que terminemos, dime los nombres completos y exactos de las opciones, su consecutividad y su ubicacion en pantalla o el el sofware respectivo.
     ✅ Cuando yo te diga la frase clave "Iniciemos una configuración", preguntame en que idioma necesito los nombres de las opciones, las distintas herramientas que se configuran a veces están en español y la mayoria de veces en inglés.
     ✅ nunca agregues datos hardcoreados en el frontend, los datos de pueba tendrán origen en los seeders, lo cual indica que los datos se leerán siempre de las tablas de la base de datos.
@@ -54,6 +54,7 @@ alwaysApply: true
             Verificar que cada cambio se aplicó correctamente   
     
     ✅ Ejecuto dos tipos de seeders el seeder de usuarios y el seeder de seguridad, este último no se incluye en el DatabaseSeeder, porque se ejecuta aparte de forma independiente, porque los modelos has estado hardcoreando datos y esta es la manera de depurar ese tipo de conducta que poseen los modelos IA
+    ✅ Evita mostrar el texto de tu pensamiento o procesamientorazonamiento, puedes mostrar el "to-dos" es muy util
 
 💡CONCEPIOS:
 

@@ -113,20 +113,19 @@ DigitalOcean:
         La transferencia gratuita es PERMANENTE y real. Cada mes tienes derecho a 1366 GB sin costo adicional. Tu factura de $6.05 es por los servicios, no por la transferencia de datos.
         Tu módulo de seguridad puede usarse sin límites mensuales de transferencia.    
 
-SEGURIDAD:
     🟢 optimizar config/security.php
     🟢 verificar los servicios de config/security
     🟢 implementar el ssl
     🟢 agregar validadores de funcionamiento y mensajes de error para el usuario en el grupo de rutas "security", evitando el uso de escritura en el log de laravel
     🟢 retirar campos de las tablas que no esten siendo utilizados por las vistas y retirarlos tambien los procesos que recopilen sus datos
     🟢 revisar las opciones de chat de cursor
-    🟢 hacer pruebas simuladas de ataques para recibir alertas reales
-    🟢 verificar uno a uno los servicios de seguridad contra prueba de captacciòn de la amenaza respectiva el que no funcione retirar todo su codigo fuente
-    🟢 verificar si el middleware funciona sin necesidad de las tareas programadas y verificar que el middleware de seguridad en realidad detecte las amenazas
+
+    ...🟢 hacer pruebas reales de ataques para recibir alertas reales
+
     🟢 mantener deshabilitadas las tareas programadas hasta que se averigue cual de ellas está originando inconsistencias en el laravel.log
 
 SERVICIOS:
-    🔵 Finalizados por el momento todos servicios informáticos, hasta nuevo aviso    
+    🔵 Finalizados por el momento todos servicios informáticos, hasta nuevo aviso
 FUSION SERVICIOS Y GESTOR:
     🟢 construir funcionalidades del catalogo de productos
     🟢 agregar un campo para el codigo físico del producto y mantenerlo visible en el catalogo de productos

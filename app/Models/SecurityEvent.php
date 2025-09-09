@@ -1,18 +1,17 @@
 <?php
-
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Builder;
 
 class SecurityEvent extends Model
 {
     use HasFactory;
 
-    protected $table = 'security_events';
+    protected $table    = 'security_events';
     protected $fillable = [
         'ip_address',
         'user_id',
@@ -31,33 +30,36 @@ class SecurityEvent extends Model
         'category',
         'severity',
         'status',
+        'outcome',
+        'response_status',
         'notes',
-        'metadata'
+        'metadata',
     ];
 
     protected $casts = [
-        'threat_score' => 'float',
-        'confidence' => 'float',
-        'payload' => 'array',
-        'headers' => 'array',
-        'geolocation' => 'array',
-        'metadata' => 'array',
+        'threat_score'    => 'float',
+        'confidence'      => 'float',
+        'payload'         => 'array',
+        'headers'         => 'array',
+        'geolocation'     => 'array',
+        'metadata'        => 'array',
+        'response_status' => 'integer',
 
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime'
+        'created_at'      => 'datetime',
+        'updated_at'      => 'datetime',
     ];
 
     protected $hidden = [
         'payload',
         'headers',
-        'metadata'
+        'metadata',
     ];
 
     protected $appends = [
         'formatted_risk_level',
         'formatted_severity',
 
-        'age_in_minutes'
+        'age_in_minutes',
     ];
 
     public function user(): BelongsTo
@@ -137,7 +139,6 @@ class SecurityEvent extends Model
         return ucfirst($this->severity ?? 'unknown');
     }
 
-
     public function getAgeInMinutesAttribute(): int
     {
         return $this->created_at->diffInMinutes(now());
@@ -151,10 +152,6 @@ class SecurityEvent extends Model
         return $this->created_at->diffForHumans();
     }
 
-
-
-
-
     /**
      * Actualizar el score de amenaza
      */
@@ -162,7 +159,7 @@ class SecurityEvent extends Model
     {
         $updateData = [
             'threat_score' => $newScore,
-            'risk_level' => $this->calculateRiskLevel($newScore)
+            'risk_level'   => $this->calculateRiskLevel($newScore),
         ];
 
         if ($reason) {
@@ -211,7 +208,7 @@ class SecurityEvent extends Model
     public function getEventStatistics(): array
     {
         $relatedEvents = $this->getRelatedEventsByIP(100);
-        
+
         return [
             'total_related_events' => $relatedEvents->count(),
             'average_threat_score' => $relatedEvents->avg('threat_score'),
@@ -221,7 +218,7 @@ class SecurityEvent extends Model
                 ->sortDesc()
                 ->keys()
                 ->first(),
-            'threat_trend' => $this->calculateThreatTrend($relatedEvents)
+            'threat_trend'         => $this->calculateThreatTrend($relatedEvents),
         ];
     }
 
@@ -230,9 +227,18 @@ class SecurityEvent extends Model
      */
     protected function calculateRiskLevel(float $score): string
     {
-        if ($score >= 80) return 'critical';
-        if ($score >= 60) return 'high';
-        if ($score >= 40) return 'medium';
+        if ($score >= 80) {
+            return 'critical';
+        }
+
+        if ($score >= 60) {
+            return 'high';
+        }
+
+        if ($score >= 40) {
+            return 'medium';
+        }
+
         // Solo retornar los 3 niveles principales
         return 'medium';
     }
@@ -242,13 +248,21 @@ class SecurityEvent extends Model
      */
     protected function calculateThreatTrend($events): string
     {
-        if ($events->count() < 2) return 'stable';
+        if ($events->count() < 2) {
+            return 'stable';
+        }
 
         $scores = $events->pluck('threat_score')->toArray();
-        $trend = $this->calculateLinearTrend($scores);
+        $trend  = $this->calculateLinearTrend($scores);
 
-        if ($trend > 0.1) return 'increasing';
-        if ($trend < -0.1) return 'decreasing';
+        if ($trend > 0.1) {
+            return 'increasing';
+        }
+
+        if ($trend < -0.1) {
+            return 'decreasing';
+        }
+
         return 'stable';
     }
 
@@ -258,10 +272,12 @@ class SecurityEvent extends Model
     protected function calculateLinearTrend(array $values): float
     {
         $n = count($values);
-        if ($n < 2) return 0;
+        if ($n < 2) {
+            return 0;
+        }
 
-        $sumX = 0;
-        $sumY = 0;
+        $sumX  = 0;
+        $sumY  = 0;
         $sumXY = 0;
         $sumX2 = 0;
 
@@ -293,9 +309,8 @@ class SecurityEvent extends Model
                 $event->severity = $event->calculateSeverity($event->threat_score ?? 0);
             }
 
-            if (is_null($event->status)) {
-                $event->status = 'open';
-            }
+            // Unificar: status = outcome si está definido; por defecto attempted
+            $event->status = $event->outcome ?? ($event->status ?? 'attempted');
         });
 
         // Después de crear un evento
@@ -313,9 +328,18 @@ class SecurityEvent extends Model
      */
     protected function calculateSeverity(float $score): string
     {
-        if ($score >= 80) return 'critical';
-        if ($score >= 60) return 'high';
-        if ($score >= 40) return 'medium';
+        if ($score >= 80) {
+            return 'critical';
+        }
+
+        if ($score >= 60) {
+            return 'high';
+        }
+
+        if ($score >= 40) {
+            return 'medium';
+        }
+
         // Solo retornar los 3 niveles principales
         return 'medium';
     }

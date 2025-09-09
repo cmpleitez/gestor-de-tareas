@@ -1,10 +1,8 @@
 <?php
-
 namespace App\Services;
 
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
-
+use Illuminate\Support\Facades\Http;
 
 class GeolocationService
 {
@@ -15,7 +13,7 @@ class GeolocationService
     {
         // Verificar cache primero
         $cacheKey = "geolocation_{$ip}";
-        $cached = Cache::get($cacheKey);
+        $cached   = Cache::get($cacheKey);
 
         if ($cached) {
             return $cached;
@@ -25,12 +23,12 @@ class GeolocationService
             // Intentar con ipapi.co (gratuito, confiable)
             $geolocation = $this->getFromIpApi($ip);
 
-            if (!$geolocation) {
+            if (! $geolocation) {
                 // Fallback a ipinfo.io
                 $geolocation = $this->getFromIpInfo($ip);
             }
 
-            if (!$geolocation) {
+            if (! $geolocation) {
                 // Fallback a datos básicos
                 $geolocation = $this->getBasicGeolocation($ip);
             }
@@ -46,36 +44,37 @@ class GeolocationService
     }
 
     /**
-     * Obtener geolocalización desde ipapi.co
+     * Obtener geolocalización principal (HTTPS) desde ipwho.is
      */
     private function getFromIpApi(string $ip): ?array
     {
         try {
-            $response = Http::timeout(5)->get("http://ip-api.com/json/{$ip}");
+            $response = Http::timeout(5)->get("https://ipwho.is/{$ip}");
 
             if ($response->successful()) {
                 $data = $response->json();
 
-                if ($data['status'] === 'success') {
+                if (! empty($data['success'])) {
+                    $connection = $data['connection'] ?? [];
                     return [
-                        'country' => $data['country'] ?? 'Unknown',
-                        'country_code' => $data['countryCode'] ?? 'XX',
-                        'region' => $data['regionName'] ?? 'Unknown',
-                        'city' => $data['city'] ?? 'Unknown',
-                        'latitude' => $data['lat'] ?? 0,
-                        'longitude' => $data['lon'] ?? 0,
-                        'timezone' => $data['timezone'] ?? 'UTC',
-                        'isp' => $data['isp'] ?? 'Unknown',
-                        'org' => $data['org'] ?? 'Unknown',
-                        'as' => $data['as'] ?? 'Unknown',
-                        'query' => $ip,
-                        'source' => 'ipapi.co',
-                        'timestamp' => now()->toISOString()
+                        'country'      => $data['country'] ?? 'Unknown',
+                        'country_code' => $data['country_code'] ?? 'XX',
+                        'region'       => $data['region'] ?? 'Unknown',
+                        'city'         => $data['city'] ?? 'Unknown',
+                        'latitude'     => $data['latitude'] ?? 0,
+                        'longitude'    => $data['longitude'] ?? 0,
+                        'timezone'     => $data['timezone'] ?? 'UTC',
+                        'isp'          => $connection['isp'] ?? 'Unknown',
+                        'org'          => $connection['org'] ?? 'Unknown',
+                        'as'           => $connection['asn'] ?? 'Unknown',
+                        'query'        => $ip,
+                        'source'       => 'ipwho.is',
+                        'timestamp'    => now()->toISOString(),
                     ];
                 }
             }
         } catch (\Exception $e) {
-            // Error silencioso con ipapi.co
+            // Error silencioso con ipwho.is
         }
 
         return null;
@@ -96,19 +95,19 @@ class GeolocationService
                     $location = explode(',', $data['loc'] ?? '0,0');
 
                     return [
-                        'country' => $data['country'] ?? 'Unknown',
+                        'country'      => $data['country'] ?? 'Unknown',
                         'country_code' => $data['country'] ?? 'XX',
-                        'region' => $data['region'] ?? 'Unknown',
-                        'city' => $data['city'] ?? 'Unknown',
-                        'latitude' => $location[0] ?? 0,
-                        'longitude' => $location[1] ?? 0,
-                        'timezone' => $data['timezone'] ?? 'UTC',
-                        'isp' => $data['org'] ?? 'Unknown',
-                        'org' => $data['org'] ?? 'Unknown',
-                        'as' => 'Unknown',
-                        'query' => $ip,
-                        'source' => 'ipinfo.io',
-                        'timestamp' => now()->toISOString()
+                        'region'       => $data['region'] ?? 'Unknown',
+                        'city'         => $data['city'] ?? 'Unknown',
+                        'latitude'     => $location[0] ?? 0,
+                        'longitude'    => $location[1] ?? 0,
+                        'timezone'     => $data['timezone'] ?? 'UTC',
+                        'isp'          => $data['org'] ?? 'Unknown',
+                        'org'          => $data['org'] ?? 'Unknown',
+                        'as'           => 'Unknown',
+                        'query'        => $ip,
+                        'source'       => 'ipinfo.io',
+                        'timestamp'    => now()->toISOString(),
                     ];
                 }
             }
@@ -127,39 +126,39 @@ class GeolocationService
         // Detectar si es IP privada
         $isPrivate = filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE);
 
-        if (!$isPrivate) {
+        if (! $isPrivate) {
             return [
-                'country' => 'Unknown',
+                'country'      => 'Unknown',
                 'country_code' => 'XX',
-                'region' => 'Unknown',
-                'city' => 'Unknown',
-                'latitude' => 0,
-                'longitude' => 0,
-                'timezone' => 'UTC',
-                'isp' => 'Unknown',
-                'org' => 'Unknown',
-                'as' => 'Unknown',
-                'query' => $ip,
-                'source' => 'fallback',
-                'timestamp' => now()->toISOString()
+                'region'       => 'Unknown',
+                'city'         => 'Unknown',
+                'latitude'     => 0,
+                'longitude'    => 0,
+                'timezone'     => 'UTC',
+                'isp'          => 'Unknown',
+                'org'          => 'Unknown',
+                'as'           => 'Unknown',
+                'query'        => $ip,
+                'source'       => 'fallback',
+                'timestamp'    => now()->toISOString(),
             ];
         }
 
         // IP privada
         return [
-            'country' => 'Private Network',
+            'country'      => 'Private Network',
             'country_code' => 'PRIVATE',
-            'region' => 'Local',
-            'city' => 'Local',
-            'latitude' => 0,
-            'longitude' => 0,
-            'timezone' => 'UTC',
-            'isp' => 'Private Network',
-            'org' => 'Private Network',
-            'as' => 'Private',
-            'query' => $ip,
-            'source' => 'private',
-            'timestamp' => now()->toISOString()
+            'region'       => 'Local',
+            'city'         => 'Local',
+            'latitude'     => 0,
+            'longitude'    => 0,
+            'timezone'     => 'UTC',
+            'isp'          => 'Private Network',
+            'org'          => 'Private Network',
+            'as'           => 'Private',
+            'query'        => $ip,
+            'source'       => 'private',
+            'timestamp'    => now()->toISOString(),
         ];
     }
 
@@ -181,20 +180,20 @@ class GeolocationService
 
                 if ($geolocation) {
                     $threat->update([
-                        'country_code' => $geolocation['country_code'],
+                        'country_code'      => $geolocation['country_code'],
                         'geographic_origin' => $geolocation['country'],
-                        'latitude' => $geolocation['latitude'],
-                        'longitude' => $geolocation['longitude'],
-                        'timezone' => $geolocation['timezone'],
-                        'isp' => $geolocation['isp'],
-                        'organization' => $geolocation['org'],
-                        'asn' => $geolocation['as']
+                        'latitude'          => $geolocation['latitude'],
+                        'longitude'         => $geolocation['longitude'],
+                        'timezone'          => $geolocation['timezone'],
+                        'isp'               => $geolocation['isp'],
+                        'organization'      => $geolocation['org'],
+                        'asn'               => $geolocation['as'],
                     ]);
 
                     $updated++;
                 }
 
-                // Pausa para no sobrecargar las APIs
+                                // Pausa para no sobrecargar las APIs
                 usleep(100000); // 0.1 segundos
             }
 

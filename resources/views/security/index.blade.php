@@ -10,6 +10,26 @@
     <!-- BEGIN: Security Dashboard CSS -->
     <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/security-dashboard.css') }}">
     <!-- END: Security Dashboard CSS -->
+    <style>
+        /* Forzar halo rojo alrededor del punto amarillo en el dashboard */
+        .security-status-indicator .pulse-dot {
+            animation: pulse-red 2s infinite !important;
+        }
+
+        @keyframes pulse-red {
+            0% {
+                box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+            }
+        }
+    </style>
 @stop
 
 @section('contenedor')
@@ -17,8 +37,8 @@
     <div class="container-fluid" data-risk-distribution="{{ trim(json_encode($risk_distribution ?? $defaultRiskData)) }}"
         data-threats-by-country="{{ trim(json_encode($threats_by_country ?? $defaultCountryData)) }}">
         <!-- ========================================
-        HEADER DEL DASHBOARD DE SEGURIDAD
-        ======================================== -->
+                    HEADER DEL DASHBOARD DE SEGURIDAD
+                    ======================================== -->
         <x-security.dashboard-header />
 
         <!-- GRÁFICOS Y ANÁLISIS VISUALES -->

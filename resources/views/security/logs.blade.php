@@ -78,14 +78,14 @@
             width: 12px;
             height: 12px;
             border-radius: 50%;
-            animation: pulse 2s infinite;
+            animation: pulse-red 2s infinite;
         }
 
-        .pulse-dot.bg-danger {
-            background-color: #dc3545;
+        .pulse-dot.bg-warning {
+            background-color: #ffc107;
         }
 
-        @keyframes pulse {
+        @keyframes pulse-red {
             0% {
                 transform: scale(0.95);
                 box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
@@ -107,8 +107,8 @@
 @section('contenedor')
     <div class="container-fluid">
         <!-- ========================================
-                                                                                            HEADER DE LOGS DE SEGURIDAD
-                                                                                            ======================================== -->
+                                                                                                            HEADER DE LOGS DE SEGURIDAD
+                                                                                                            ======================================== -->
         <div class="row">
             <div class="col-12">
                 <div class="card mb-0 p-1">
@@ -124,7 +124,7 @@
                             <div class="col-md-1 text-center">
                                 <div class="d-flex justify-content-end align-items-center">
                                     <div class="security-status-indicator">
-                                        <div class="pulse-dot bg-danger"></div>
+                                        <div class="pulse-dot bg-warning"></div>
                                     </div>
                                 </div>
                             </div>
@@ -135,8 +135,8 @@
         </div>
 
         <!-- ========================================
-                                                                                            FILTROS DE LOGS
-                                                                                    ======================================== -->
+                                                                                                            FILTROS DE LOGS
+                                                                                                    ======================================== -->
         <div class="row mt-1">
             <div class="col-12">
                 <div class="card" style="margin-bottom: 0rem;">
@@ -147,12 +147,13 @@
                         <form id="logFilterForm" class="row g-3" method="GET" action="{{ route('security.logs') }}">
                             <div class="col-md-2">
                                 <label for="log-source" class="form-label">Fuente</label>
-                                <select class="form-select" id="log-source">
-                                    <option value="all" selected>Todas</option>
-                                    <option value="security">Security</option>
-                                    <option value="firewall">Firewall</option>
-                                    <option value="ids">IDS</option>
-                                </select>
+                                <input type="text" class="form-control" id="log-source" list="log-source-options"
+                                    placeholder="Security, Firewall, IDS">
+                                <datalist id="log-source-options">
+                                    <option value="Security"></option>
+                                    <option value="Firewall"></option>
+                                    <option value="IDS"></option>
+                                </datalist>
                             </div>
                             <div class="col-md-4">
                                 <label for="log-search" class="form-label">Búsqueda de Texto</label>
@@ -175,8 +176,8 @@
         </div>
 
         <!-- ========================================
-                                                                                            VISUALIZADOR DE LOGS
-                                                                                            ======================================== -->
+                                                                                                            VISUALIZADOR DE LOGS
+                                                                                                            ======================================== -->
         <div class="row mt-1">
             <div class="col-12">
                 <div class="card">
@@ -256,6 +257,8 @@
             setupEventListeners();
         });
 
+        let sourceDropdownArmed = false;
+
         function setupEventListeners() {
             // Filtrado automático en tiempo real para búsqueda de texto
             document.getElementById('log-search').addEventListener('input', function() {
@@ -269,13 +272,18 @@
                 filterLogs();
             });
 
-
-
-            // Filtrado automático para fuente
-            document.getElementById('log-source').addEventListener('change', function() {
+            // Fuente: aplicar filtro sólo cuando se seleccione un item del datalist
+            const sourceInputEl = document.getElementById('log-source');
+            const handleSourceCommit = function() {
+                const committed = sourceDropdownArmed || isValueInDatalist(sourceInputEl);
+                if (!committed) return;
+                sourceDropdownArmed = false;
                 currentLogPage = 1;
                 filterLogs();
-            });
+            };
+            sourceInputEl.addEventListener('input', handleSourceCommit);
+            sourceInputEl.addEventListener('change', handleSourceCommit);
+            attachClearOnDropdownClick('log-source');
         }
 
         function loadLogs() {
@@ -360,7 +368,14 @@
         function filterLogs() {
             const search = document.getElementById('log-search').value.trim().toLowerCase();
             const ip = document.getElementById('log-ip').value.trim().toLowerCase();
-            const source = document.getElementById('log-source').value;
+            // Normalizar fuente visible -> interna (Security/Firewall/IDS)
+            const sourceVisible = document.getElementById('log-source').value.trim().toLowerCase();
+            const sourceMap = {
+                'security': 'security',
+                'firewall': 'firewall',
+                'ids': 'ids'
+            };
+            const source = sourceMap[sourceVisible] || '';
 
             filteredLogs = currentLogs.filter(log => {
                 // Filtro por búsqueda de texto
@@ -372,7 +387,7 @@
 
 
                 // Filtro por fuente
-                if (source && source !== 'all' && log.source !== source) return false;
+                if (source && log.source !== source) return false;
 
                 return true;
             });
@@ -385,10 +400,39 @@
             document.getElementById('logFilterForm').reset();
             document.getElementById('log-search').value = '';
             document.getElementById('log-ip').value = '';
+            document.getElementById('log-source').value = '';
             currentLogPage = 1;
             // Restaurar datos originales sin filtros
             filteredLogs = [...currentLogs];
             displayLogs(1);
+        }
+
+        // Utilidades: click triángulo y verificación datalist
+        function attachClearOnDropdownClick(inputId) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+            input.addEventListener('mousedown', function(e) {
+                const rect = input.getBoundingClientRect();
+                const clickFromRight = rect.right - e.clientX;
+                if (clickFromRight <= 24) {
+                    input.value = '';
+                    if (inputId === 'log-source') sourceDropdownArmed = true;
+                }
+            });
+        }
+
+        function isValueInDatalist(inputEl) {
+            const listId = inputEl.getAttribute('list');
+            if (!listId) return false;
+            const dataList = document.getElementById(listId);
+            if (!dataList) return false;
+            const val = inputEl.value.trim().toLowerCase();
+            if (!val) return false;
+            for (let i = 0; i < dataList.options.length; i++) {
+                const optVal = (dataList.options[i].value || '').trim().toLowerCase();
+                if (optVal === val) return true;
+            }
+            return false;
         }
 
         function refreshLogs() {

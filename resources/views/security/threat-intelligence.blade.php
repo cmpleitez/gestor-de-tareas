@@ -4,8 +4,8 @@
     <div class="container-fluid" data-risk-distribution="{{ trim(json_encode($risk_distribution ?? [])) }}"
         data-threats-by-country="{{ trim(json_encode($threats_by_country ?? [])) }}">
         <!-- ========================================
-                                                            HEADER DE INTELIGENCIA DE AMENAZAS
-                                                            ======================================== -->
+                                                                                                                                                    HEADER DE INTELIGENCIA DE AMENAZAS
+                                                                                                                                                    ======================================== -->
         <div class="row">
             <div class="col-12">
                 <div class="card mb-0">
@@ -21,7 +21,7 @@
                             <div class="col-md-1 text-center">
                                 <div class="d-flex justify-content-end align-items-center">
                                     <div class="security-status-indicator">
-                                        <div class="pulse-dot bg-danger"></div>
+                                        <div class="pulse-dot bg-warning"></div>
                                     </div>
                                 </div>
                             </div>
@@ -34,16 +34,17 @@
 
 
         <!-- ========================================
-                                                            ANÁLISIS VISUAL DE AMENAZAS
-                                                            ======================================== -->
+                                                                                                                                                    ANÁLISIS VISUAL DE AMENAZAS
+                                                                                                                                                    ======================================== -->
         <div class="row mt-1">
             <!-- Gráfico de Evolución Temporal -->
             <div class="col-12">
                 <div class="card" style="margin-bottom: 0rem;">
                     <div class="card-header">
-                        <span class="card-title" style="font-size: 0.875rem; font-weight: 500;">Evolución de Amenazas (Últimos 3 días)</span>
+                        <span class="card-title" style="font-size: 0.875rem; font-weight: 500;">Evolución de Amenazas
+                            (Últimos 3 días)</span>
                     </div>
-                
+
                     <div class="card-body">
                         <div class="chart-area">
                             <canvas id="threatEvolutionChart"></canvas>
@@ -54,8 +55,8 @@
         </div>
 
         <!-- ========================================
-                                                            FILTROS Y BÚSQUEDA DE AMENAZAS
-                                                            ======================================== -->
+                                                                                                                                                    FILTROS Y BÚSQUEDA DE AMENAZAS
+                                                                                                                                                    ======================================== -->
         <div class="row mt-1">
             <div class="col-12">
                 <div class="card" style="margin-bottom: 0rem;">
@@ -65,41 +66,24 @@
                     <div class="card-body">
                         <form id="threats-filter-form">
                             <div class="row">
-                                <div class="col-md-3 mb-3">
-                                    <label for="filter-threat-type" class="form-label">Tipo de Amenaza</label>
-                                    <select class="form-select" id="filter-threat-type">
-                                        <option value="">Todos</option>
-                                        @foreach ($threatTypes ?? [] as $type => $name)
-                                            <option value="{{ $type }}">{{ $name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                                <div class="col-md-3 mb-3">
+                                <div class="col-md-6 mb-3">
                                     <label for="filter-classification" class="form-label">Clasificación</label>
-                                    <select class="form-select" id="filter-classification">
-                                        <option value="">Todas</option>
-                                        <option value="critical">Crítica</option>
-                                        <option value="high">Alta</option>
-                                        <option value="medium">Media</option>
-                                    </select>
+                                    <input type="text" class="form-control" id="filter-classification"
+                                        list="classification_options" placeholder="Crítica, Alto, Medio">
+                                    <datalist id="classification_options">
+                                        <option value="Crítica"></option>
+                                        <option value="Alto"></option>
+                                        <option value="Medio"></option>
+                                    </datalist>
                                 </div>
-
-                                <div class="col-md-3 mb-3">
-                                    <label for="filter-country" class="form-label">País de Origen</label>
-                                    <select class="form-select" id="filter-country">
-                                        <option value="">Todos</option>
-                                        @foreach ($countries ?? [] as $code => $name)
-                                            <option value="{{ $code }}">{{ $name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                                <div class="col-md-3 mb-3 d-flex align-items-end">
-                                    <button type="button" class="btn btn-outline-secondary" onclick="clearThreatFilters()">
-                                        <i class="fas fa-times me-2"></i>
-                                        Limpiar
-                                    </button>
+                                <div class="col-md-6 mb-3">
+                                    <div class="d-flex justify-content-end align-items-end h-100">
+                                        <button type="button" class="btn btn-outline-secondary"
+                                            onclick="clearThreatFilters()">
+                                            <i class="fas fa-times me-2"></i>
+                                            Limpiar
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </form>
@@ -109,8 +93,8 @@
         </div>
 
         <!-- ========================================
-                                                            TABLA DE AMENAZAS
-                                                            ======================================== -->
+                                                                                                                                                    TABLA DE AMENAZAS
+                                                                                                                                                    ======================================== -->
         <div class="row mt-1">
             <div class="col-12">
                 <div class="card" style="margin-bottom: 0rem;">
@@ -167,8 +151,8 @@
     </div>
 
     <!-- ========================================
-                                                        MODALES Y COMPONENTES ADICIONALES
-                                                        ======================================== -->
+                                                                                                                                                MODALES Y COMPONENTES ADICIONALES
+                                                                                                                                                ======================================== -->
 
     <!-- Modal de Detalles de Amenaza -->
     <div class="modal fade" id="threatDetailsModal" tabindex="-1">
@@ -179,7 +163,9 @@
                         <i class="fas fa-brain text-danger me-2"></i>
                         Detalles de la Amenaza
                     </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal">
+                        ×
+                    </button>
                 </div>
                 <div class="modal-body" id="threat-details-content">
                     <!-- Contenido se cargará dinámicamente -->
@@ -211,21 +197,50 @@
             width: 20px;
             height: 20px;
             border-radius: 50%;
-            animation: pulse 2s infinite;
+            /* la animación se fuerza con un selector más específico abajo */
         }
 
-        @keyframes pulse {
+        /* Forzar halo rojo en el header de seguridad, superando CSS externo */
+        .security-status-indicator .pulse-dot {
+            animation: pulse-red 2s infinite !important;
+        }
+
+        @keyframes pulse-red {
             0% {
-                box-shadow: 0 0 0 0 rgba(246, 194, 62, 0.7);
+                box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
             }
 
             70% {
-                box-shadow: 0 0 0 10px rgba(246, 194, 62, 0);
+                box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
             }
 
             100% {
-                box-shadow: 0 0 0 0 rgba(246, 194, 62, 0);
+                box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
             }
+        }
+
+        /* Estilo para el botón de cerrar del modal */
+        .btn-close {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: #6c757d;
+            padding: 0;
+            cursor: pointer;
+            line-height: 1;
+            font-weight: bold;
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+
+        .btn-close:hover {
+            color: #dc3545;
+            background-color: rgba(220, 53, 69, 0.1);
         }
 
         .chart-area {
@@ -331,22 +346,23 @@
             setupFilterEventListeners();
         });
 
+        let classificationDropdownArmed = false;
+
         function setupFilterEventListeners() {
-            // Filtrado automático al cambiar selecciones
-            document.getElementById('filter-threat-type').addEventListener('change', function() {
+            // Clasificación: aplicar filtro sólo cuando se seleccione un item del datalist
+            const classificationInputEl = document.getElementById('filter-classification');
+            const handleClassificationCommit = function() {
+                const committed = classificationDropdownArmed || isValueInDatalist(classificationInputEl);
+                if (!committed) return;
+                classificationDropdownArmed = false; // consumir el armado
                 currentThreatPage = 1;
                 loadThreats();
-            });
+            };
+            classificationInputEl.addEventListener('input', handleClassificationCommit);
+            classificationInputEl.addEventListener('change', handleClassificationCommit);
 
-            document.getElementById('filter-classification').addEventListener('change', function() {
-                currentThreatPage = 1;
-                loadThreats();
-            });
-
-            document.getElementById('filter-country').addEventListener('change', function() {
-                currentThreatPage = 1;
-                loadThreats();
-            });
+            // Limpiar automáticamente al abrir el desplegable (clic en triángulo) para clasificación
+            attachClearOnDropdownClick('filter-classification');
         }
 
         function initializeThreatCharts() {
@@ -392,28 +408,32 @@
             currentThreatPage = page;
 
             // Obtener filtros aplicados
-            const threatTypeFilter = document.getElementById('filter-threat-type').value;
-            const classificationFilter = document.getElementById('filter-classification').value;
-            const countryFilter = document.getElementById('filter-country').value;
+            const classificationInput = document.getElementById('filter-classification').value.trim().toLowerCase();
+            const classificationMap = {
+                'crítica': 'critical',
+                'critica': 'critical',
+                'alto': 'high',
+                'alta': 'high',
+                'medio': 'medium',
+                'media': 'medium',
+                // claves directas
+                'critical': 'critical',
+                'high': 'high',
+                'medium': 'medium'
+            };
+            const classificationFilter = classificationMap[classificationInput] || '';
+
 
             // Usar los datos reales del servidor
             if (serverThreats && serverThreats.length > 0) {
                 // Aplicar filtros
                 let filteredThreats = serverThreats.filter(threat => {
-                    // Filtro por tipo de amenaza
-                    if (threatTypeFilter && threat.type !== threatTypeFilter) {
-                        return false;
-                    }
-
                     // Filtro por clasificación
                     if (classificationFilter && threat.classification !== classificationFilter) {
                         return false;
                     }
 
-                    // Filtro por país
-                    if (countryFilter && threat.country !== countryFilter) {
-                        return false;
-                    }
+
 
                     return true;
                 });
@@ -626,14 +646,48 @@
 
         function clearThreatFilters() {
             document.getElementById('threats-filter-form').reset();
+            // limpiar manualmente el input de clasificación
+            const classificationInputEl = document.getElementById('filter-classification');
+            if (classificationInputEl) classificationInputEl.value = '';
             currentThreatPage = 1;
             // Restaurar datos originales sin filtros
             renderThreatsTable(serverThreats);
             updateThreatsPagination();
         }
 
+        // Utilidades compartidas con events: detectar click en triángulo y match exacto con datalist
+        function attachClearOnDropdownClick(inputId) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+
+            input.addEventListener('mousedown', function(e) {
+                const rect = input.getBoundingClientRect();
+                const clickFromRight = rect.right - e.clientX;
+                if (clickFromRight <= 24) {
+                    input.value = '';
+                    if (inputId === 'filter-classification') {
+                        classificationDropdownArmed = true;
+                    }
+                }
+            });
+        }
+
+        function isValueInDatalist(inputEl) {
+            const listId = inputEl.getAttribute('list');
+            if (!listId) return false;
+            const dataList = document.getElementById(listId);
+            if (!dataList) return false;
+            const val = inputEl.value.trim().toLowerCase();
+            if (!val) return false;
+            for (let i = 0; i < dataList.options.length; i++) {
+                const optVal = (dataList.options[i].value || '').trim().toLowerCase();
+                if (optVal === val) return true;
+            }
+            return false;
+        }
+
         function showThreatDetails(threat) {
-            const modal = new bootstrap.Modal(document.getElementById('threatDetailsModal'));
+            const modalElement = document.getElementById('threatDetailsModal');
             const content = document.getElementById('threat-details-content');
 
             content.innerHTML = `
@@ -684,9 +738,56 @@
             </div>
         `;
 
-            modal.show();
+            // Usar jQuery si está disponible, sino Bootstrap vanilla
+            if (typeof $ !== 'undefined') {
+                $('#threatDetailsModal').modal('show');
+            } else {
+                const modal = new bootstrap.Modal(modalElement);
+                modal.show();
+            }
         }
+
+        // Event listeners para cerrar modal
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('threatDetailsModal');
+            if (modal) {
+                // Botón X de la esquina
+                const closeBtn = modal.querySelector('.btn-close');
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', function() {
+                        const modalInstance = bootstrap.Modal.getInstance(modal);
+                        if (modalInstance) {
+                            modalInstance.hide();
+                        }
+                    });
+                }
+
+                // Botón Cerrar del footer
+                const footerCloseBtn = modal.querySelector('.btn-secondary');
+                if (footerCloseBtn) {
+                    footerCloseBtn.addEventListener('click', function() {
+                        const modalInstance = bootstrap.Modal.getInstance(modal);
+                        if (modalInstance) {
+                            modalInstance.hide();
+                        }
+                    });
+                }
+
+                // Cerrar con ESC
+                modal.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') {
+                        const modalInstance = bootstrap.Modal.getInstance(modal);
+                        if (modalInstance) {
+                            modalInstance.hide();
+                        }
+                    }
+                });
+            }
+        });
     </script>
+
+    <!-- Bootstrap JS -->
+    <script src="{{ asset('app-assets/js/bootstrap-bundle-5-zay.min.js') }}"></script>
 
     <!-- BEGIN: Application JavaScript -->
     <script src="{{ asset('app-assets/js/security-dashboard.js') }}"></script>

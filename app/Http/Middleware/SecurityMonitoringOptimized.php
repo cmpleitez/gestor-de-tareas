@@ -1,8 +1,8 @@
 <?php
-
 namespace App\Http\Middleware;
 
 use App\Models\SecurityEvent;
+// Revertido: no importar ThreatIntelligence para evitar escrituras directas desde middleware
 use App\Services\GeolocationService;
 use App\Services\SimpleSecurityService;
 use Closure;
@@ -17,13 +17,13 @@ class SecurityMonitoringOptimized
     protected $config = [
         'max_requests_per_hour' => 100,
         'critical_threat_score' => 80,
-        'high_threat_score' => 60,
-        'cache_duration' => 3600, // 1 hora
+        'high_threat_score'     => 60,
+        'cache_duration'        => 3600, // 1 hora
     ];
 
     public function __construct(SimpleSecurityService $simpleSecurity, GeolocationService $geolocationService)
     {
-        $this->simpleSecurity = $simpleSecurity;
+        $this->simpleSecurity     = $simpleSecurity;
         $this->geolocationService = $geolocationService;
     }
 
@@ -33,39 +33,25 @@ class SecurityMonitoringOptimized
             // CAPA 1: Escaneo rápido sin consultas a BD
             $threatScore = $this->quickThreatScan($request);
 
-            // Instrumentación temporal: traza del score inicial
-            $probeFile = storage_path('logs/security_probe.log');
-            file_put_contents(
-                $probeFile,
-                '[' . now()->format('Y-m-d H:i:s') . '] pre-detail URI: ' . $request->getRequestUri() .
-                ' | Method: ' . $request->method() . ' | Score1: ' . number_format($threatScore, 2) . PHP_EOL,
-                FILE_APPEND | LOCK_EX
-            );
-
-            // CAPA 2: Análisis profundo solo si es necesario
+                                      // CAPA 2: Análisis profundo solo si es necesario
             if ($threatScore >= 40) { // Capturar eventos medios, altos y críticos
                 $detailedScore = $this->detailedThreatAnalysis($request);
 
-                // Instrumentación temporal: traza del score detallado
-                file_put_contents(
-                    $probeFile,
-                    '[' . now()->format('Y-m-d H:i:s') . '] detailed score: ' . number_format($detailedScore, 2) .
-                    ' | IP: ' . $request->ip() . PHP_EOL,
-                    FILE_APPEND | LOCK_EX
-                );
-
-                // Registrar evento de seguridad para todos los niveles de riesgo
-                if ($detailedScore >= 40) {
-                    $this->logSecurityEvent($request, $detailedScore);
-
-                    // Solo bloquear si es crítico
-                    if ($detailedScore >= 80) {
-                        return $this->generateBlockResponse();
-                    }
+                // Si es crítico, bloquear y registrar outcome=blocked
+                if ($detailedScore >= 80) {
+                    $this->logSecurityEvent($request, $detailedScore, 'blocked', 403);
+                    return $this->generateBlockResponse();
                 }
+
+                // No crítico: dejar pasar y registrar outcome según el código de respuesta
+                $response = $next($request);
+                $status   = method_exists($response, 'getStatusCode') ? $response->getStatusCode() : null;
+                $outcome  = ($status !== null && $status >= 500) ? 'exploited' : 'attempted';
+                $this->logSecurityEvent($request, $detailedScore, $outcome, $status);
+                return $response;
             }
 
-            // Continuar normalmente
+            // Si score < 40, continuar normalmente sin registrar evento
             return $next($request);
 
         } catch (\Exception $e) {
@@ -86,14 +72,14 @@ class SecurityMonitoringOptimized
         $allData = $request->all();
 
         // Asegurar codificación UTF-8 válida
-        if (!mb_check_encoding($content, 'UTF-8')) {
+        if (! mb_check_encoding($content, 'UTF-8')) {
             $content = mb_convert_encoding($content, 'UTF-8', 'auto');
         }
 
         // Limpiar datos antes de json_encode
         $cleanData = [];
         foreach ($allData as $key => $value) {
-            if (is_string($value) && !mb_check_encoding($value, 'UTF-8')) {
+            if (is_string($value) && ! mb_check_encoding($value, 'UTF-8')) {
                 $cleanData[$key] = mb_convert_encoding($value, 'UTF-8', 'auto');
             } else {
                 $cleanData[$key] = $value;
@@ -104,9 +90,9 @@ class SecurityMonitoringOptimized
 
         // Patrones críticos simples
         $criticalPatterns = [
-            'sql_injection' => ['/union\s+select/i', '/drop\s+table/i', '/--/'],
-            'xss_attack' => ['/<script/i', '/javascript:/i', '/onload=/i'],
-            'path_traversal' => ['/\.\.\//', '/\.\.\\\\/', '/%2e%2e%2f/'],
+            'sql_injection'     => ['/union\s+select/i', '/drop\s+table/i', '/--/'],
+            'xss_attack'        => ['/<script/i', '/javascript:/i', '/onload=/i'],
+            'path_traversal'    => ['/\.\.\//', '/\.\.\\\\/', '/%2e%2e%2f/'],
             'command_injection' => ['/;/', '/\|/', '/&&/', '/`/'],
         ];
 
@@ -130,7 +116,7 @@ class SecurityMonitoringOptimized
 
         // Usar el servicio simple de seguridad
         $threatAnalysis = $this->simpleSecurity->analyzeThreats($ip);
-        $patternScore = $this->quickThreatScan($request);
+        $patternScore   = $this->quickThreatScan($request);
 
         // Score total: máximo entre análisis de comportamiento y patrones
         $totalScore = max($threatAnalysis['total_score'], $patternScore);
@@ -141,42 +127,48 @@ class SecurityMonitoringOptimized
     /**
      * Registrar eventos de seguridad para todos los niveles de riesgo
      */
-    protected function logSecurityEvent(Request $request, float $threatScore): void
+    protected function logSecurityEvent(Request $request, float $threatScore, ?string $outcome = null, ?int $responseStatus = null): void
     {
         $action = $threatScore >= 80 ? 'block' : 'monitor';
-        $ip = $request->ip();
+        $ip     = $request->ip();
 
         // Obtener geolocalización de la IP
         $geolocation = $this->geolocationService->getGeolocation($ip);
 
         // Crear evento en base de datos
         SecurityEvent::create([
-            'ip_address' => $ip,
-            'request_uri' => $request->getRequestUri(),
-            'request_method' => $request->method(),
-            'threat_score' => $threatScore,
-            'reason' => $this->getThreatReason($threatScore),
-            'risk_level' => $this->categorizeRisk($threatScore),
-            'category' => $this->detectAttackCategory($request),
-            'source' => 'middleware',
-            'geolocation' => $geolocation,
+            'ip_address'      => $ip,
+            'request_uri'     => $request->getRequestUri(),
+            'request_method'  => $request->method(),
+            'threat_score'    => $threatScore,
+            'reason'          => $this->getThreatReason($threatScore),
+            'risk_level'      => $this->categorizeRisk($threatScore),
+            'category'        => $this->detectAttackCategory($request),
+            'source'          => 'middleware',
+            'geolocation'     => $geolocation,
+            // Unificar: status sigue outcome
+            'status'          => $outcome ?? ($action === 'block' ? 'blocked' : 'attempted'),
+            'outcome'         => $outcome,
+            'response_status' => $responseStatus,
         ]);
 
+        // Revertido: no escribir en ThreatIntelligence desde el middleware
+
         // Escribir a log de seguridad específico con utf8mb4
-        $this->writeToSecurityLog($request, $threatScore, $geolocation);
+        $this->writeToSecurityLog($request, $threatScore, $geolocation, $outcome, $responseStatus);
     }
 
     /**
      * Escribir a log de seguridad con formato utf8mb4
      */
-    protected function writeToSecurityLog(Request $request, float $threatScore, array $geolocation): void
+    protected function writeToSecurityLog(Request $request, float $threatScore, array $geolocation, ?string $outcome = null, ?int $responseStatus = null): void
     {
-        $logFile = storage_path('logs/security.log');
+        $logFile   = storage_path('logs/security.log');
         $timestamp = now()->format('Y-m-d H:i:s');
         $riskLevel = $this->categorizeRisk($threatScore);
 
         $logEntry = sprintf(
-            "[%s] %s - IP: %s | URI: %s | Method: %s | Threat Score: %.2f | Risk: %s | Category: %s | Geo: %s, %s\n",
+            "[%s] %s - IP: %s | URI: %s | Method: %s | Threat Score: %.2f | Risk: %s | Category: %s | Outcome: %s | HTTP: %s | Geo: %s, %s\n",
             $timestamp,
             strtoupper($riskLevel),
             $request->ip(),
@@ -185,6 +177,8 @@ class SecurityMonitoringOptimized
             $threatScore,
             $riskLevel,
             $this->detectAttackCategory($request),
+            $outcome ?? 'unknown',
+            $responseStatus !== null ? (string) $responseStatus : 'n/a',
             $geolocation['country'] ?? 'Unknown',
             $geolocation['city'] ?? 'Unknown'
         );
@@ -207,10 +201,10 @@ class SecurityMonitoringOptimized
     protected function generateBlockResponse()
     {
         return response()->json([
-            'error' => 'Access denied',
-            'reason' => 'Security policy violation',
+            'error'       => 'Access denied',
+            'reason'      => 'Security policy violation',
             'incident_id' => uniqid('SEC-'),
-            'contact' => config('security.contact_email', 'admin@example.com'),
+            'contact'     => config('security.contact_email', 'admin@example.com'),
         ], 403);
     }
 
@@ -220,9 +214,9 @@ class SecurityMonitoringOptimized
     protected function getThreatWeight(string $attackType): float
     {
         $weights = [
-            'sql_injection' => 25,
-            'xss_attack' => 20,
-            'path_traversal' => 15,
+            'sql_injection'     => 25,
+            'xss_attack'        => 20,
+            'path_traversal'    => 15,
             'command_injection' => 30,
         ];
 
@@ -278,14 +272,14 @@ class SecurityMonitoringOptimized
         $allData = $request->all();
 
         // Asegurar codificación UTF-8 válida
-        if (!mb_check_encoding($content, 'UTF-8')) {
+        if (! mb_check_encoding($content, 'UTF-8')) {
             $content = mb_convert_encoding($content, 'UTF-8', 'auto');
         }
 
         // Limpiar datos antes de json_encode
         $cleanData = [];
         foreach ($allData as $key => $value) {
-            if (is_string($value) && !mb_check_encoding($value, 'UTF-8')) {
+            if (is_string($value) && ! mb_check_encoding($value, 'UTF-8')) {
                 $cleanData[$key] = mb_convert_encoding($value, 'UTF-8', 'auto');
             } else {
                 $cleanData[$key] = $value;

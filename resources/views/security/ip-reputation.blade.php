@@ -19,7 +19,7 @@
                             <div class="col-md-1 text-center">
                                 <div class="d-flex justify-content-end align-items-center">
                                     <div class="security-status-indicator">
-                                        <div class="pulse-dot bg-danger"></div>
+                                        <div class="pulse-dot bg-warning"></div>
                                     </div>
                                 </div>
                             </div>
@@ -37,7 +37,8 @@
             <div class="col-md-6" style="padding-left: 1rem; padding-right: 1rem;">
                 <div class="card h-100" style="margin-bottom: 0rem;">
                     <div class="card-header">
-                        <span class="card-title" style="font-size: 0.875rem; font-weight: 500;">Distribución por Nivel de Riesgo (Últimos 3 días)</span>
+                        <span class="card-title" style="font-size: 0.875rem; font-weight: 500;">Distribución por Nivel de
+                            Riesgo (Últimos 3 días)</span>
                     </div>
                     <div class="card-body">
                         <div class="chart-area" style="height: 500px;">
@@ -91,7 +92,8 @@
             <div class="col-md-6" style="padding-left: 0rem; padding-right: 0rem;">
                 <div class="card h-100" style="margin-bottom: 0rem;">
                     <div class="card-header">
-                        <span class="card-title" style="font-size: 0.875rem; font-weight: 500;">IPs por País (Últimos 3 días)</span>
+                        <span class="card-title" style="font-size: 0.875rem; font-weight: 500;">IPs por País (Últimos 3
+                            días)</span>
                     </div>
                     <div class="card-body">
                         <div class="chart-area" style="height: 500px;">
@@ -132,22 +134,22 @@
 
                                 <div class="col-md-3 mb-3">
                                     <label for="filter-risk-level" class="form-label">Nivel de Riesgo</label>
-                                    <select class="form-select" id="filter-risk-level">
-                                        <option value="">Todos</option>
-                                        <option value="medium">Medio</option>
-                                        <option value="high">Alto</option>
-                                        <option value="critical">Crítico</option>
-                                    </select>
+                                    <input type="text" class="form-control" id="filter-risk-level" list="risk_level_options" placeholder="Crítico, Alto, Medio">
+                                    <datalist id="risk_level_options">
+                                        <option value="Crítico"></option>
+                                        <option value="Alto"></option>
+                                        <option value="Medio"></option>
+                                    </datalist>
                                 </div>
 
                                 <div class="col-md-3 mb-3">
                                     <label for="filter-country" class="form-label">País</label>
-                                    <select class="form-select" id="filter-country">
-                                        <option value="">Todos</option>
+                                    <input type="text" class="form-control" id="filter-country" list="country_options" placeholder="Selecciona un país">
+                                    <datalist id="country_options">
                                         @foreach ($availableCountries ?? [] as $country)
-                                            <option value="{{ $country }}">{{ $country }}</option>
+                                            <option value="{{ $country }}"></option>
                                         @endforeach
-                                    </select>
+                                    </datalist>
                                 </div>
 
                                 <div class="col-md-3 mb-3 d-flex align-items-end">
@@ -168,7 +170,8 @@
             <div class="col-12">
                 <div class="card" style="margin-bottom: 0rem;">
                     <div class="card-header">
-                        <span class="card-title" style="font-size: 0.875rem; font-weight: 500;">Base de Datos de Reputación (Últimos 3 días)</span>
+                        <span class="card-title" style="font-size: 0.875rem; font-weight: 500;">Base de Datos de
+                            Reputación (Últimos 3 días)</span>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -221,6 +224,25 @@
 
 @section('css')
     <style>
+        /* Indicador de estado: pulso (anillo) en rojo alrededor del punto amarillo */
+        .security-status-indicator .pulse-dot {
+            animation: pulse-red 2s infinite;
+        }
+
+        @keyframes pulse-red {
+            0% {
+                box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+            }
+        }
+
         .border-left-success {
             border-left: 0.25rem solid #1cc88a !important;
         }
@@ -353,6 +375,9 @@
             setupFilterEventListeners();
         });
 
+        let riskDropdownArmed = false;
+        let countryDropdownArmed = false;
+
         function setupFilterEventListeners() {
             // Filtrado en tiempo real para IP
             document.getElementById('filter-ip').addEventListener('input', function() {
@@ -360,9 +385,29 @@
                 applyIPFilters();
             });
 
-            // Filtrado automático al cambiar selecciones
-            document.getElementById('filter-risk-level').addEventListener('change', applyIPFilters);
-            document.getElementById('filter-country').addEventListener('change', applyIPFilters);
+            // Riesgo: aplicar filtro sólo cuando se seleccione un item del datalist
+            const riskInputEl = document.getElementById('filter-risk-level');
+            const handleRiskCommit = function() {
+                const committed = riskDropdownArmed || isValueInDatalist(riskInputEl);
+                if (!committed) return;
+                riskDropdownArmed = false;
+                applyIPFilters();
+            };
+            riskInputEl.addEventListener('input', handleRiskCommit);
+            riskInputEl.addEventListener('change', handleRiskCommit);
+            attachClearOnDropdownClick('filter-risk-level');
+
+            // País: aplicar filtro sólo cuando se seleccione un item del datalist
+            const countryInputEl = document.getElementById('filter-country');
+            const handleCountryCommit = function() {
+                const committed = countryDropdownArmed || isValueInDatalist(countryInputEl);
+                if (!committed) return;
+                countryDropdownArmed = false;
+                applyIPFilters();
+            };
+            countryInputEl.addEventListener('input', handleCountryCommit);
+            countryInputEl.addEventListener('change', handleCountryCommit);
+            attachClearOnDropdownClick('filter-country');
         }
 
         function initializeIPCharts() {
@@ -631,8 +676,18 @@
 
         function applyIPFilters() {
             const ipFilter = document.getElementById('filter-ip').value.trim().toLowerCase();
-            const riskFilter = document.getElementById('filter-risk-level').value;
-            const countryFilter = document.getElementById('filter-country').value;
+            // Normalizar nivel de riesgo (etiqueta -> clave)
+            const riskInput = document.getElementById('filter-risk-level').value.trim().toLowerCase();
+            const riskMap = {
+                'crítico': 'critical', 'critico': 'critical',
+                'alto': 'high', 'alta': 'high',
+                'medio': 'medium', 'media': 'medium',
+                'critical': 'critical', 'high': 'high', 'medium': 'medium'
+            };
+            const riskFilter = riskMap[riskInput] || '';
+
+            // País: usar valor tal cual (coincide con las opciones del datalist)
+            const countryFilter = document.getElementById('filter-country').value.trim();
 
             // Filtrar los datos existentes
             let filteredIPs = [...serverIPReputations];
@@ -666,10 +721,45 @@
 
         function clearIPFilters() {
             document.getElementById('ip-filter-form').reset();
+            // Limpiar manualmente inputs con datalist
+            document.getElementById('filter-risk-level').value = '';
+            document.getElementById('filter-country').value = '';
             // Restaurar datos originales
             renderIPsTable(serverIPReputations);
             updateIPsPagination();
             updateIPCharts(serverIPReputations);
+        }
+
+        // Utilidades: detectar clic en triángulo y verificar match con datalist
+        function attachClearOnDropdownClick(inputId) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+            input.addEventListener('mousedown', function(e) {
+                const rect = input.getBoundingClientRect();
+                const clickFromRight = rect.right - e.clientX;
+                if (clickFromRight <= 24) {
+                    input.value = '';
+                    if (inputId === 'filter-risk-level') {
+                        riskDropdownArmed = true;
+                    } else if (inputId === 'filter-country') {
+                        countryDropdownArmed = true;
+                    }
+                }
+            });
+        }
+
+        function isValueInDatalist(inputEl) {
+            const listId = inputEl.getAttribute('list');
+            if (!listId) return false;
+            const dataList = document.getElementById(listId);
+            if (!dataList) return false;
+            const val = inputEl.value.trim().toLowerCase();
+            if (!val) return false;
+            for (let i = 0; i < dataList.options.length; i++) {
+                const optVal = (dataList.options[i].value || '').trim().toLowerCase();
+                if (optVal === val) return true;
+            }
+            return false;
         }
 
         function updateIPReputation() {
