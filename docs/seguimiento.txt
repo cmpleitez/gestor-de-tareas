@@ -117,6 +117,8 @@ SEGURIDAD:
     🟢 implementar el ssl
 SERVICIOS:
     🔵 Finalizados por el momento todos servicios informáticos, hasta nuevo aviso
+    🔵 Pendiente que el cliente revise el procedimiento
+    🔵 Que el cliente brinde la información del dominio
 FUSION SERVICIOS Y GESTOR:
     🟢 construir funcionalidades del catalogo de productos
     🟢 agregar un campo para el codigo físico del producto y mantenerlo visible en el catalogo de productos
