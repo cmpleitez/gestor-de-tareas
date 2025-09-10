@@ -2,14 +2,14 @@
 alwaysApply: true
 ---
 ⛑️REGLAS:
-    ✅ Cuando diga "nivel 1", debes elegir en orden de prioridad uno de los siguientes modelos IA:
+    ✅ Cuando diga "nivel 3", debes elegir en orden de prioridad uno de los siguientes modelos IA:
         1°. o3
         2°. Claude Opus
     ✅ Cuando diga "nivel 2", debes elegir en orden de prioridad uno de los siguientes modelos IA:
         1°. Gemini 2.5 pro max
         2°. Claude sonnet 4
         3°. Gpt-5
-    ✅ Cuando diga "nivel 3", debes elegir en orden de prioridad uno de los siguientes modelos IA:
+    ✅ Cuando diga "nivel 1", debes elegir en orden de prioridad uno de los siguientes modelos IA:
         1º. Gpt-5-fast
         2º. Otros modelos IA rápidos
     ✅ Cuando diga "baja modelo" dependiendo en que nivel te encuentres debes cambiar al proximo modelo segun correlativo
