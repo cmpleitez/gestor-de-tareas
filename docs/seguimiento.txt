@@ -115,6 +115,36 @@ DigitalOcean:
 CLIENTE:
     🔵 Pendiente que el cliente revise el procedimiento
     🔵 Que el cliente brinde la información del dominio
+        Pasos básicos para enlazar IP pública con dominio:
+        1. Configurar DNS en tu proveedor de dominio
+        Ve al panel de tu proveedor de dominio (GoDaddy, Namecheap, etc.)
+        Busca la sección "DNS Management" o "Zona DNS"
+        Crea un registro A con:
+        Nombre: @ (para el dominio principal) o www
+        Valor: La IP pública de tu servidor Digital Ocean
+        TTL: 300 (5 minutos)
+        2. En Laravel Forge
+        Ve a tu servidor en Forge
+        En la pestaña "Sites"
+        Haz clic en "New Site"
+        Ingresa tu dominio completo (ej: midominio.com)
+        Forge configurará automáticamente Nginx
+        3. Verificar configuración
+        Espera 5-15 minutos para propagación DNS
+        Prueba: ping midominio.com debe mostrar tu IP
+        Visita http://midominio.com en navegador
+        4. SSL (opcional pero recomendado)
+        En Forge, en tu sitio, clic "SSL"
+        Activa "Let's Encrypt" para HTTPS gratuito
+        Ejemplo registro DNS:
+            Tipo: A
+            Nombre: @
+            Valor: 164.90.123.456
+            TTL: 300
+        Opción 3: Ambos (recomendado):
+            Registro A: @ → IP del servidor
+            Registro A: www → IP del servidor
+
 SEGURIDAD:
     🟢 mantener deshabilitadas las tareas programadas hasta que se averigue cual de ellas está originando inconsistencias en el laravel.log
     🟢 implementar el ssl
