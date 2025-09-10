@@ -112,13 +112,14 @@ DigitalOcean:
     Conclusión:
         La transferencia gratuita es PERMANENTE y real. Cada mes tienes derecho a 1366 GB sin costo adicional. Tu factura de $6.05 es por los servicios, no por la transferencia de datos.
         Tu módulo de seguridad puede usarse sin límites mensuales de transferencia.    
+CLIENTE:
+    🔵 Pendiente que el cliente revise el procedimiento
+    🔵 Que el cliente brinde la información del dominio
 SEGURIDAD:
     🟢 mantener deshabilitadas las tareas programadas hasta que se averigue cual de ellas está originando inconsistencias en el laravel.log
     🟢 implementar el ssl
 SERVICIOS:
     🔵 Finalizados por el momento todos servicios informáticos, hasta nuevo aviso
-    🔵 Pendiente que el cliente revise el procedimiento
-    🔵 Que el cliente brinde la información del dominio
 FUSION SERVICIOS Y GESTOR:
     🟢 construir funcionalidades del catalogo de productos
     🟢 agregar un campo para el codigo físico del producto y mantenerlo visible en el catalogo de productos
