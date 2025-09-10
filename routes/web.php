@@ -16,16 +16,6 @@ Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
 
-// Ruta de prueba para ataques (sin autenticación)
-Route::get('/test-attack', function (Request $request) {
-    return response()->json([
-        'message' => 'Ruta de prueba accesible',
-        'params' => $request->all(),
-        'user_agent' => $request->userAgent(),
-        'ip' => $request->ip()
-    ]);
-});
-
 // Rutas de verificación de correo
 Route::middleware(['auth'])->group(function () {
     Route::get('/email/verify', function () {
