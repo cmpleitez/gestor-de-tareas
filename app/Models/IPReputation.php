@@ -1,11 +1,10 @@
 <?php
-
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Builder;
 
 class IPReputation extends Model
 {
@@ -17,7 +16,6 @@ class IPReputation extends Model
         'reputation_score',
         'risk_level',
         'confidence',
-        'data',
         'last_updated',
         'first_seen',
         'last_seen',
@@ -25,46 +23,31 @@ class IPReputation extends Model
         'threat_requests',
         'benign_requests',
         'request_frequency',
-        'geographic_data',
-        'network_data',
-        'behavioral_patterns',
-        'threat_indicators',
         'whitelisted',
         'blacklisted',
-        'notes',
-        'metadata'
     ];
 
     /**
      * Los atributos que deben ser convertidos a tipos nativos
      */
     protected $casts = [
-        'reputation_score' => 'float',
-        'confidence' => 'float',
-        'data' => 'array',
-        'geographic_data' => 'array',
-        'network_data' => 'array',
-        'behavioral_patterns' => 'array',
-        'threat_indicators' => 'array',
-        'metadata' => 'array',
-        'last_updated' => 'datetime',
-        'first_seen' => 'datetime',
-        'last_seen' => 'datetime',
-        'whitelisted' => 'boolean',
-        'blacklisted' => 'boolean',
-        'total_requests' => 'integer',
-        'threat_requests' => 'integer',
-        'benign_requests' => 'integer',
-        'request_frequency' => 'float'
+        'reputation_score'  => 'float',
+        'confidence'        => 'float',
+        'last_updated'      => 'datetime',
+        'first_seen'        => 'datetime',
+        'last_seen'         => 'datetime',
+        'whitelisted'       => 'boolean',
+        'blacklisted'       => 'boolean',
+        'total_requests'    => 'integer',
+        'threat_requests'   => 'integer',
+        'benign_requests'   => 'integer',
+        'request_frequency' => 'float',
     ];
 
     /**
      * Los atributos que deben ser ocultos en arrays
      */
-    protected $hidden = [
-        'data',
-        'metadata'
-    ];
+    protected $hidden = [];
 
     /**
      * Los atributos que deben ser agregados al array del modelo
@@ -75,7 +58,7 @@ class IPReputation extends Model
         'age_in_days',
         'is_whitelisted',
         'is_blacklisted',
-        'status'
+        'status',
     ];
 
     /**
@@ -143,35 +126,11 @@ class IPReputation extends Model
     }
 
     /**
-     * Scope para IPs de un país específico
-     */
-    public function scopeFromCountry(Builder $query, string $countryCode): Builder
-    {
-        return $query->whereJsonContains('geographic_data->country_code', $countryCode);
-    }
-
-    /**
-     * Scope para IPs de una organización específica
-     */
-    public function scopeFromOrganization(Builder $query, string $organization): Builder
-    {
-        return $query->whereJsonContains('network_data->organization', $organization);
-    }
-
-    /**
      * Scope para IPs con alta frecuencia de requests
      */
     public function scopeHighFrequency(Builder $query): Builder
     {
         return $query->where('request_frequency', '>', 100);
-    }
-
-    /**
-     * Scope para IPs con patrones de comportamiento anómalos
-     */
-    public function scopeAnomalousBehavior(Builder $query): Builder
-    {
-        return $query->whereJsonLength('behavioral_patterns', '>', 5);
     }
 
     /**
@@ -187,7 +146,10 @@ class IPReputation extends Model
      */
     public function getThreatRatioAttribute(): float
     {
-        if ($this->total_requests === 0) return 0;
+        if ($this->total_requests === 0) {
+            return 0;
+        }
+
         return ($this->threat_requests / $this->total_requests) * 100;
     }
 
@@ -196,7 +158,10 @@ class IPReputation extends Model
      */
     public function getAgeInDaysAttribute(): int
     {
-        if (!$this->first_seen) return 0;
+        if (! $this->first_seen) {
+            return 0;
+        }
+
         return $this->first_seen->diffInDays(now());
     }
 
@@ -221,12 +186,30 @@ class IPReputation extends Model
      */
     public function getStatusAttribute(): string
     {
-        if ($this->whitelisted) return 'whitelisted';
-        if ($this->blacklisted) return 'blacklisted';
-        if ($this->reputation_score >= 80) return 'critical';
-        if ($this->reputation_score >= 60) return 'high_risk';
-        if ($this->reputation_score >= 40) return 'medium_risk';
-        if ($this->reputation_score >= 20) return 'low_risk';
+        if ($this->whitelisted) {
+            return 'whitelisted';
+        }
+
+        if ($this->blacklisted) {
+            return 'blacklisted';
+        }
+
+        if ($this->reputation_score >= 80) {
+            return 'critical';
+        }
+
+        if ($this->reputation_score >= 60) {
+            return 'high_risk';
+        }
+
+        if ($this->reputation_score >= 40) {
+            return 'medium_risk';
+        }
+
+        if ($this->reputation_score >= 20) {
+            return 'low_risk';
+        }
+
         return 'clean';
     }
 
@@ -235,7 +218,10 @@ class IPReputation extends Model
      */
     public function getAgeForHumansAttribute(): string
     {
-        if (!$this->first_seen) return 'Unknown';
+        if (! $this->first_seen) {
+            return 'Unknown';
+        }
+
         return $this->first_seen->diffForHumans();
     }
 
@@ -244,64 +230,49 @@ class IPReputation extends Model
      */
     public function getLastUpdatedForHumansAttribute(): string
     {
-        if (!$this->last_updated) return 'Never';
+        if (! $this->last_updated) {
+            return 'Never';
+        }
+
         return $this->last_updated->diffForHumans();
     }
 
     /**
      * Marcar la IP como whitelisted
      */
-    public function markAsWhitelisted(string $reason = null, int $whitelistedByUserId = null): bool
+    public function markAsWhitelisted(): bool
     {
-        $updateData = [
-            'whitelisted' => true,
-            'blacklisted' => false,
+        return $this->update([
+            'whitelisted'      => true,
+            'blacklisted'      => false,
             'reputation_score' => 0,
-            'risk_level' => 'minimal'
-        ];
-
-        if ($reason) {
-            $updateData['notes'] = $reason;
-        }
-
-        return $this->update($updateData);
+            'risk_level'       => 'minimal',
+        ]);
     }
 
     /**
      * Marcar la IP como blacklisted
      */
-    public function markAsBlacklisted(string $reason = null, int $blacklistedByUserId = null): bool
+    public function markAsBlacklisted(): bool
     {
-        $updateData = [
-            'blacklisted' => true,
-            'whitelisted' => false,
+        return $this->update([
+            'blacklisted'      => true,
+            'whitelisted'      => false,
             'reputation_score' => 100,
-            'risk_level' => 'critical'
-        ];
-
-        if ($reason) {
-            $updateData['notes'] = $reason;
-        }
-
-        return $this->update($updateData);
+            'risk_level'       => 'critical',
+        ]);
     }
 
     /**
      * Actualizar el score de reputación
      */
-    public function updateReputationScore(float $newScore, string $reason = null): bool
+    public function updateReputationScore(float $newScore): bool
     {
-        $updateData = [
+        return $this->update([
             'reputation_score' => $newScore,
-            'risk_level' => $this->calculateRiskLevel($newScore),
-            'last_updated' => now()
-        ];
-
-        if ($reason) {
-            $updateData['notes'] = $reason;
-        }
-
-        return $this->update($updateData);
+            'risk_level'       => $this->calculateRiskLevel($newScore),
+            'last_updated'     => now(),
+        ]);
     }
 
     /**
@@ -309,71 +280,16 @@ class IPReputation extends Model
      */
     public function updateRequestStats(int $totalRequests, int $threatRequests): bool
     {
-        $benignRequests = $totalRequests - $threatRequests;
+        $benignRequests   = $totalRequests - $threatRequests;
         $requestFrequency = $this->calculateRequestFrequency($totalRequests);
 
         return $this->update([
-            'total_requests' => $totalRequests,
-            'threat_requests' => $threatRequests,
-            'benign_requests' => $benignRequests,
+            'total_requests'    => $totalRequests,
+            'threat_requests'   => $threatRequests,
+            'benign_requests'   => $benignRequests,
             'request_frequency' => $requestFrequency,
-            'last_updated' => now()
+            'last_updated'      => now(),
         ]);
-    }
-
-    /**
-     * Agregar datos geográficos
-     */
-    public function addGeographicData(array $geographicData): bool
-    {
-        $currentData = $this->geographic_data ?? [];
-        $updatedData = array_merge($currentData, $geographicData);
-
-        return $this->update(['geographic_data' => $updatedData]);
-    }
-
-    /**
-     * Agregar datos de red
-     */
-    public function addNetworkData(array $networkData): bool
-    {
-        $currentData = $this->network_data ?? [];
-        $updatedData = array_merge($currentData, $networkData);
-
-        return $this->update(['network_data' => $updatedData]);
-    }
-
-    /**
-     * Agregar patrones de comportamiento
-     */
-    public function addBehavioralPatterns(array $patterns): bool
-    {
-        $currentPatterns = $this->behavioral_patterns ?? [];
-        $updatedPatterns = array_merge($currentPatterns, $patterns);
-
-        return $this->update(['behavioral_patterns' => $updatedPatterns]);
-    }
-
-    /**
-     * Agregar indicadores de amenaza
-     */
-    public function addThreatIndicators(array $indicators): bool
-    {
-        $currentIndicators = $this->threat_indicators ?? [];
-        $updatedIndicators = array_merge($currentIndicators, $indicators);
-
-        return $this->update(['threat_indicators' => $updatedIndicators]);
-    }
-
-    /**
-     * Agregar metadatos adicionales
-     */
-    public function addMetadata(array $metadata): bool
-    {
-        $currentMetadata = $this->metadata ?? [];
-        $updatedMetadata = array_merge($currentMetadata, $metadata);
-
-        return $this->update(['metadata' => $updatedMetadata]);
     }
 
     /**
@@ -403,71 +319,23 @@ class IPReputation extends Model
      */
     public function getIPStatistics(): array
     {
-        $relatedEvents = $this->getRelatedSecurityEvents(100);
+        $relatedEvents  = $this->getRelatedSecurityEvents(100);
         $relatedThreats = $this->getRelatedThreatIntelligence(10);
-        
+
         return [
-            'total_related_events' => $relatedEvents->count(),
-            'average_threat_score' => $relatedEvents->avg('threat_score'),
-            'highest_threat_score' => $relatedEvents->max('threat_score'),
-            'most_common_category' => $relatedEvents->groupBy('category')
+            'total_related_events'              => $relatedEvents->count(),
+            'average_threat_score'              => $relatedEvents->avg('threat_score'),
+            'highest_threat_score'              => $relatedEvents->max('threat_score'),
+            'most_common_category'              => $relatedEvents->groupBy('category')
                 ->map->count()
                 ->sortDesc()
                 ->keys()
                 ->first(),
-            'threat_trend' => $this->calculateThreatTrend($relatedEvents),
-            'geographic_spread' => $this->calculateGeographicSpread($relatedEvents),
-            'total_threat_intelligence' => $relatedThreats->count(),
-            'average_threat_intelligence_score' => $relatedThreats->avg('threat_score')
+            'threat_trend'                      => $this->calculateThreatTrend($relatedEvents),
+            'geographic_spread'                 => $this->calculateGeographicSpread($relatedEvents),
+            'total_threat_intelligence'         => $relatedThreats->count(),
+            'average_threat_intelligence_score' => $relatedThreats->avg('threat_score'),
         ];
-    }
-
-    /**
-     * Obtener IPs relacionadas por comportamiento
-     */
-    public function getRelatedIPsByBehavior(int $limit = 10): \Illuminate\Database\Eloquent\Collection
-    {
-        if (empty($this->behavioral_patterns)) {
-            return collect();
-        }
-
-        // Buscar IPs con patrones de comportamiento similares
-        return static::where('id', '!=', $this->id)
-            ->whereJsonLength('behavioral_patterns', '>', 0)
-            ->orderBy('reputation_score', 'desc')
-            ->limit($limit)
-            ->get();
-    }
-
-    /**
-     * Obtener IPs relacionadas por red
-     */
-    public function getRelatedIPsByNetwork(int $limit = 10): \Illuminate\Database\Eloquent\Collection
-    {
-        if (empty($this->network_data)) {
-            return collect();
-        }
-
-        $asn = $this->network_data['asn'] ?? null;
-        $organization = $this->network_data['organization'] ?? null;
-
-        if (!$asn && !$organization) {
-            return collect();
-        }
-
-        $query = static::where('id', '!=', $this->id);
-
-        if ($asn) {
-            $query->whereJsonContains('network_data->asn', $asn);
-        }
-
-        if ($organization) {
-            $query->whereJsonContains('network_data->organization', $organization);
-        }
-
-        return $query->orderBy('reputation_score', 'desc')
-            ->limit($limit)
-            ->get();
     }
 
     /**
@@ -475,10 +343,22 @@ class IPReputation extends Model
      */
     protected function calculateRiskLevel(float $score): string
     {
-        if ($score >= 80) return 'critical';
-        if ($score >= 60) return 'high';
-        if ($score >= 40) return 'medium';
-        if ($score >= 20) return 'low';
+        if ($score >= 80) {
+            return 'critical';
+        }
+
+        if ($score >= 60) {
+            return 'high';
+        }
+
+        if ($score >= 40) {
+            return 'medium';
+        }
+
+        if ($score >= 20) {
+            return 'low';
+        }
+
         return 'minimal';
     }
 
@@ -493,7 +373,7 @@ class IPReputation extends Model
                 return $totalRequests / $daysSinceFirstSeen;
             }
         }
-        
+
         return $totalRequests;
     }
 
@@ -502,13 +382,21 @@ class IPReputation extends Model
      */
     protected function calculateThreatTrend($events): string
     {
-        if ($events->count() < 2) return 'stable';
+        if ($events->count() < 2) {
+            return 'stable';
+        }
 
         $scores = $events->pluck('threat_score')->toArray();
-        $trend = $this->calculateLinearTrend($scores);
+        $trend  = $this->calculateLinearTrend($scores);
 
-        if ($trend > 0.1) return 'increasing';
-        if ($trend < -0.1) return 'decreasing';
+        if ($trend > 0.1) {
+            return 'increasing';
+        }
+
+        if ($trend < -0.1) {
+            return 'decreasing';
+        }
+
         return 'stable';
     }
 
@@ -518,19 +406,19 @@ class IPReputation extends Model
     protected function calculateGeographicSpread($events): array
     {
         $countries = $events->pluck('geolocation.country_code')->filter()->unique();
-        $regions = $events->pluck('geolocation.region')->filter()->unique();
-        $cities = $events->pluck('geolocation.city')->filter()->unique();
+        $regions   = $events->pluck('geolocation.region')->filter()->unique();
+        $cities    = $events->pluck('geolocation.city')->filter()->unique();
 
         return [
-            'countries' => $countries->count(),
-            'regions' => $regions->count(),
-            'cities' => $cities->count(),
+            'countries'           => $countries->count(),
+            'regions'             => $regions->count(),
+            'cities'              => $cities->count(),
             'most_common_country' => $events->pluck('geolocation.country_code')
                 ->filter()
                 ->countBy()
                 ->sortDesc()
                 ->keys()
-                ->first()
+                ->first(),
         ];
     }
 
@@ -540,10 +428,12 @@ class IPReputation extends Model
     protected function calculateLinearTrend(array $values): float
     {
         $n = count($values);
-        if ($n < 2) return 0;
+        if ($n < 2) {
+            return 0;
+        }
 
-        $sumX = 0;
-        $sumY = 0;
+        $sumX  = 0;
+        $sumY  = 0;
         $sumXY = 0;
         $sumX2 = 0;
 

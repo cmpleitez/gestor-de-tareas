@@ -1,11 +1,10 @@
 <?php
-
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Builder;
 
 class ThreatIntelligence extends Model
 {
@@ -34,40 +33,32 @@ class ThreatIntelligence extends Model
         'attack_vectors',
         'targeted_sectors',
         'geographic_origin',
-        'asn',
-        'isp',
-        'organization',
         'country_code',
-        'region',
-        'city',
         'latitude',
         'longitude',
-        'timezone',
         'status',
         'verified',
         'false_positive',
-        'notes',
-        'metadata'
+        'metadata',
     ];
 
     /**
      * Los atributos que deben ser convertidos a tipos nativos
      */
     protected $casts = [
-        'threat_score' => 'float',
-        'confidence' => 'float',
-        'data' => 'array',
-        'sources' => 'array',
-        'attack_vectors' => 'array',
+        'threat_score'     => 'float',
+        'confidence'       => 'float',
+        'sources'          => 'array',
+        'attack_vectors'   => 'array',
         'targeted_sectors' => 'array',
-        'metadata' => 'array',
-        'last_updated' => 'datetime',
-        'first_seen' => 'datetime',
-        'last_seen' => 'datetime',
-        'verified' => 'boolean',
-        'false_positive' => 'boolean',
-        'latitude' => 'float',
-        'longitude' => 'float'
+        'metadata'         => 'array',
+        'last_updated'     => 'datetime',
+        'first_seen'       => 'datetime',
+        'last_seen'        => 'datetime',
+        'verified'         => 'boolean',
+        'false_positive'   => 'boolean',
+        'latitude'         => 'float',
+        'longitude'        => 'float',
     ];
 
     /**
@@ -75,7 +66,7 @@ class ThreatIntelligence extends Model
      */
     protected $hidden = [
         'data',
-        'metadata'
+        'metadata',
     ];
 
     /**
@@ -86,7 +77,7 @@ class ThreatIntelligence extends Model
         'formatted_threat_type',
         'age_in_days',
         'is_active',
-        'risk_level'
+        'risk_level',
     ];
 
     /**
@@ -214,7 +205,10 @@ class ThreatIntelligence extends Model
      */
     public function getAgeInDaysAttribute(): int
     {
-        if (!$this->first_seen) return 0;
+        if (! $this->first_seen) {
+            return 0;
+        }
+
         return $this->first_seen->diffInDays(now());
     }
 
@@ -231,10 +225,22 @@ class ThreatIntelligence extends Model
      */
     public function getRiskLevelAttribute(): string
     {
-        if ($this->threat_score >= 80) return 'critical';
-        if ($this->threat_score >= 60) return 'high';
-        if ($this->threat_score >= 40) return 'medium';
-        if ($this->threat_score >= 20) return 'low';
+        if ($this->threat_score >= 80) {
+            return 'critical';
+        }
+
+        if ($this->threat_score >= 60) {
+            return 'high';
+        }
+
+        if ($this->threat_score >= 40) {
+            return 'medium';
+        }
+
+        if ($this->threat_score >= 20) {
+            return 'low';
+        }
+
         return 'minimal';
     }
 
@@ -243,7 +249,10 @@ class ThreatIntelligence extends Model
      */
     public function getAgeForHumansAttribute(): string
     {
-        if (!$this->first_seen) return 'Unknown';
+        if (! $this->first_seen) {
+            return 'Unknown';
+        }
+
         return $this->first_seen->diffForHumans();
     }
 
@@ -252,42 +261,11 @@ class ThreatIntelligence extends Model
      */
     public function getLastUpdatedForHumansAttribute(): string
     {
-        if (!$this->last_updated) return 'Never';
+        if (! $this->last_updated) {
+            return 'Never';
+        }
+
         return $this->last_updated->diffForHumans();
-    }
-
-    /**
-     * Marcar la amenaza como verificada
-     */
-    public function markAsVerified(int $verifiedByUserId, string $notes = null): bool
-    {
-        $updateData = [
-            'verified' => true,
-            'status' => 'verified'
-        ];
-
-        if ($notes) {
-            $updateData['notes'] = $notes;
-        }
-
-        return $this->update($updateData);
-    }
-
-    /**
-     * Marcar la amenaza como falsa positiva
-     */
-    public function markAsFalsePositive(int $reviewedByUserId, string $notes = null): bool
-    {
-        $updateData = [
-            'false_positive' => true,
-            'status' => 'false_positive'
-        ];
-
-        if ($notes) {
-            $updateData['notes'] = $notes;
-        }
-
-        return $this->update($updateData);
     }
 
     /**
@@ -297,7 +275,7 @@ class ThreatIntelligence extends Model
     {
         $updateData = [
             'threat_score' => $newScore,
-            'last_updated' => now()
+            'last_updated' => now(),
         ];
 
         if ($reason) {
@@ -346,7 +324,7 @@ class ThreatIntelligence extends Model
     public function getThreatStatistics(): array
     {
         $relatedEvents = $this->getRelatedSecurityEvents(100);
-        
+
         return [
             'total_related_events' => $relatedEvents->count(),
             'average_threat_score' => $relatedEvents->avg('threat_score'),
@@ -356,8 +334,8 @@ class ThreatIntelligence extends Model
                 ->sortDesc()
                 ->keys()
                 ->first(),
-            'threat_trend' => $this->calculateThreatTrend($relatedEvents),
-            'geographic_spread' => $this->calculateGeographicSpread($relatedEvents)
+            'threat_trend'         => $this->calculateThreatTrend($relatedEvents),
+            'geographic_spread'    => $this->calculateGeographicSpread($relatedEvents),
         ];
     }
 
@@ -366,7 +344,7 @@ class ThreatIntelligence extends Model
      */
     public function getRelatedThreatsByType(int $limit = 10): \Illuminate\Database\Eloquent\Collection
     {
-        if (!$this->threat_type) {
+        if (! $this->threat_type) {
             return collect();
         }
 
@@ -382,7 +360,7 @@ class ThreatIntelligence extends Model
      */
     public function getRelatedThreatsByMalwareFamily(int $limit = 10): \Illuminate\Database\Eloquent\Collection
     {
-        if (!$this->malware_family) {
+        if (! $this->malware_family) {
             return collect();
         }
 
@@ -398,13 +376,21 @@ class ThreatIntelligence extends Model
      */
     protected function calculateThreatTrend($events): string
     {
-        if ($events->count() < 2) return 'stable';
+        if ($events->count() < 2) {
+            return 'stable';
+        }
 
         $scores = $events->pluck('threat_score')->toArray();
-        $trend = $this->calculateLinearTrend($scores);
+        $trend  = $this->calculateLinearTrend($scores);
 
-        if ($trend > 0.1) return 'increasing';
-        if ($trend < -0.1) return 'decreasing';
+        if ($trend > 0.1) {
+            return 'increasing';
+        }
+
+        if ($trend < -0.1) {
+            return 'decreasing';
+        }
+
         return 'stable';
     }
 
@@ -414,19 +400,19 @@ class ThreatIntelligence extends Model
     protected function calculateGeographicSpread($events): array
     {
         $countries = $events->pluck('geolocation.country_code')->filter()->unique();
-        $regions = $events->pluck('geolocation.region')->filter()->unique();
-        $cities = $events->pluck('geolocation.city')->filter()->unique();
+        $regions   = $events->pluck('geolocation.region')->filter()->unique();
+        $cities    = $events->pluck('geolocation.city')->filter()->unique();
 
         return [
-            'countries' => $countries->count(),
-            'regions' => $regions->count(),
-            'cities' => $cities->count(),
+            'countries'           => $countries->count(),
+            'regions'             => $regions->count(),
+            'cities'              => $cities->count(),
             'most_common_country' => $events->pluck('geolocation.country_code')
                 ->filter()
                 ->countBy()
                 ->sortDesc()
                 ->keys()
-                ->first()
+                ->first(),
         ];
     }
 
@@ -436,10 +422,12 @@ class ThreatIntelligence extends Model
     protected function calculateLinearTrend(array $values): float
     {
         $n = count($values);
-        if ($n < 2) return 0;
+        if ($n < 2) {
+            return 0;
+        }
 
-        $sumX = 0;
-        $sumY = 0;
+        $sumX  = 0;
+        $sumY  = 0;
         $sumXY = 0;
         $sumX2 = 0;
 

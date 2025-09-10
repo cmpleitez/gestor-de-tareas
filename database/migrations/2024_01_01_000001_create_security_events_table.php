@@ -12,23 +12,12 @@ return new class extends Migration
             $table->id();
             $table->string('ip_address', 45)->index();
             $table->unsignedBigInteger('user_id')->nullable()->index();
-            $table->string('session_id', 255)->nullable()->index();
-            $table->text('request_uri');
-            $table->string('request_method', 10);
-            $table->text('user_agent')->nullable();
             $table->decimal('threat_score', 5, 2)->default(0);
-            $table->text('reason')->nullable();
-            $table->json('payload')->nullable();
-            $table->json('headers')->nullable();
             $table->json('geolocation')->nullable();
             $table->string('risk_level', 20)->default('minimal');
-            $table->decimal('confidence', 5, 2)->default(0);
-            $table->string('source', 50)->nullable();
             $table->string('category', 50)->nullable();
             $table->string('severity', 20)->default('info');
             $table->string('status', 20)->default('open');
-            $table->text('notes')->nullable();
-            $table->json('metadata')->nullable();
             $table->timestamps();
 
             $table->index(['ip_address', 'created_at']);

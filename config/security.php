@@ -45,9 +45,9 @@ return [
     // LIMPIEZA AUTOMÁTICA
     // ========================================
     'cleanup' => [
-        'events_retention_days' => 30, // Mantener eventos solo 30 días
-        'cache_cleanup_hours' => 6, // Limpiar cache cada 6 horas
-        'logs_retention_days' => 15, // Mantener logs solo 15 días
+        'events_retention_days' => 3, // Mantener eventos solo 30 días
+        'cache_cleanup_hours' => 24, // Limpiar cache cada 6 horas
+        'logs_retention_days' => 3, // Mantener logs solo 15 días
     ],
 
     // ========================================
