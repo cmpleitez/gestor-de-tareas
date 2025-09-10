@@ -115,7 +115,6 @@ DigitalOcean:
 SEGURIDAD:
 
     ...🟢 retirar campos de las tablas que no esten siendo utilizados por las vistas y retirarlos tambien los procesos que recopilen sus datos
-    🟢 revisar las opciones de chat de cursor
     🟢 mantener deshabilitadas las tareas programadas hasta que se averigue cual de ellas está originando inconsistencias en el laravel.log
     🟢 implementar el ssl
     🟢 verificar los servicios de config/security
