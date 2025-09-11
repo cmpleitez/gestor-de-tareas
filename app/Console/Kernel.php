@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
@@ -12,30 +11,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // ========================================
-        // TAREAS DE LIMPIEZA AUTOMÁTICA DE SEGURIDAD
-        // ========================================
-
-        // LIMPIEZA TEMPORALMENTE DESHABILITADA PARA EVITAR CORRUPCIÓN DE LOGS
-        // $schedule->command('security:cleanup --days=30 --force')
-        //     ->daily()
-        //     ->at('02:00')
-        //     ->withoutOverlapping()
-        //     ->runInBackground();
-
-        // LIMPIEZA TEMPORALMENTE DESHABILITADA PARA EVITAR CORRUPCIÓN DE LOGS
-        // $schedule->command('security:cleanup --days=1 --force')
-        //     ->everyFourHours()
-        //     ->withoutOverlapping()
-        //     ->runInBackground();
-
-        // MONITOREO TEMPORALMENTE DESHABILITADO PARA EVITAR CORRUPCIÓN DE LOGS
-        // $schedule->command('security:monitor stats')
-        //     ->hourly()
-        //     ->withoutOverlapping()
-        //     ->runInBackground();
-
-        // $schedule->command('inspire')->hourly();
+        // No hay tareas programadas configuradas
     }
 
     /**
