@@ -24,11 +24,6 @@ class UserController extends Controller
         return view('modelos.user.index', compact('users'));
     }
 
-    public function create()
-    {
-        $oficinas = Oficina::where('activo', true)->get();
-        return view('modelos.user.create', ['oficinas' => $oficinas]);
-    }
     public function edit(User $user)
     {
         $oficinas = Oficina::where('activo', true)->get();
@@ -39,9 +34,9 @@ class UserController extends Controller
     {
         //VALIDANDO
         $validated = $request->validate([
-            'name' => 'sometimes|required|string|max:255',
-            'email' => ['email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
-            'oficina_id' => 'required|numeric|exists:oficinas,id',
+            'name'               => 'sometimes|required|string|max:255',
+            'email'              => ['email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
+            'oficina_id'         => 'required|numeric|exists:oficinas,id',
             'profile_photo_path' => 'nullable|image|max:1024',
         ]);
         // Restringir cambio de name si existen recepciones asociadas como destino
@@ -55,7 +50,7 @@ class UserController extends Controller
         $correo_actualizado = false;
         if ($user->email != $validated['email']) {
             $validated['email_verified_at'] = null;
-            $correo_actualizado = true;
+            $correo_actualizado             = true;
         }
         $mensaje = ($correo_actualizado) ? 'Los datos del usuario han sido actualizados con éxito. Debido a
         que su correo ha cambiado, se le ha enviado una solicitud de verificación su nuevo correo para su respectiva
@@ -67,15 +62,15 @@ class UserController extends Controller
             ini_set('max_execution_time', 60);
             ini_set('memory_limit', '256M');
             if (isset($request['profile_photo_path']) && $request['profile_photo_path']->isValid()) {
-                $imageFile = $request['profile_photo_path'];
-                $imageName = $user->id . '.' . $imageFile->getClientOriginalExtension();
-                $path = Storage::disk('public')->putFileAs('profile-photos', $request['profile_photo_path'], $imageName);
+                $imageFile                = $request['profile_photo_path'];
+                $imageName                = $user->id . '.' . $imageFile->getClientOriginalExtension();
+                $path                     = Storage::disk('public')->putFileAs('profile-photos', $request['profile_photo_path'], $imageName);
                 $user->profile_photo_path = $path;
                 $user->save(); //Actualizar el link en base de datos
                 try {
                     $fullPath = Storage::disk('public')->path($path); //Adaptación de la imagen al perfil del usuario
-                    $manager = new ImageManager(Driver::class);
-                    $image = $manager->read($fullPath);
+                    $manager  = new ImageManager(Driver::class);
+                    $image    = $manager->read($fullPath);
                     $image->scale(width: 64, height: 96);
                     $image->save($fullPath);
                 } catch (Exception $e) {
@@ -108,12 +103,12 @@ class UserController extends Controller
     public function rolesUpdate(Request $request, User $user)
     {
         $validated = $request->validate([
-            'roles' => 'required|array',
+            'roles'   => 'required|array',
             'role_id' => 'required|numeric|exists:roles,id',
         ]);
         $submittedRoles = $validated['roles'];
         if ($user->hasRole('SuperAdmin')) {
-            if (!in_array('SuperAdmin', $submittedRoles)) {
+            if (! in_array('SuperAdmin', $submittedRoles)) {
                 $submittedRoles[] = 'SuperAdmin';
             }
         }
@@ -186,7 +181,7 @@ class UserController extends Controller
 
     public function activate(User $user)
     {
-        $user->activo = !$user->activo;
+        $user->activo = ! $user->activo;
         $user->save();
         return redirect()->route('user')->with('success', 'El usuario "' . $user->name . '" ha sido ' . ($user->activo ? 'activado' : 'desactivado') . ' correctamente');
     }

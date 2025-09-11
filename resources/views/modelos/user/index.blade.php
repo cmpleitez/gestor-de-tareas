@@ -34,15 +34,19 @@
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-
                 <div class="col-md-12 d-flex justify-content-between" style="padding: 0;">
-                    <div class="col-md-11 p-1">
+                    <div class="col-11 p-1">
                         <h4 class="card-title">USUARIOS DEL SISTEMA</h4>
-                        <p class="card-text">Las personas autorizadas para operar el sistema desempeñando roles
-                            específicos</p>
+                        <p class="card-text">Las personas autorizadas para operar el sistema desempeñando roles específicos</p>
+                    </div>
+                    <div class="col-1 d-flex justify-content-end" style="padding: 0;">
+                        <a href="{!! route('register') !!}">
+                            <div class="badge-circle badge-circle-md badge-circle-primary">
+                                <i class="bx bx-plus-medical font-small-3"></i>
+                            </div>
+                        </a>
                     </div>
                 </div>
-
             </div>
             <div class="card-content">
                 <div class="card-body card-dashboard">

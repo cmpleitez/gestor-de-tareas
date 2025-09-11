@@ -847,7 +847,7 @@
                         </ul>
                     </li>
                     <li class=" nav-item"><a href="#"><i class="bx bx-shield"></i><span class="menu-title"
-                                data-i18n="Menu Levels">Monitoreo de Seguridad</span></a>
+                                data-i18n="Menu Levels">Seguridad</span></a>
                         <ul class="menu-content" style="display: block;">
                             <li><a href="{{ Route('security.index') }}">
                                     <i class="bx bx-right-arrow-alt"></i>

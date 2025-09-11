@@ -20,9 +20,6 @@ class CreateNewUser implements CreatesNewUsers
 
     public function create(array $input): User
     {
-        // DEPURACIÓN: mostrar el input recibido
-        //dd($input); // Detiene la ejecución y muestra el contenido recibido
-
         //VALIDANDO
         $validated = Validator::make($input, [
             'name' => ['required', 'string', 'max:255', 'regex:/^(?! )[a-zA-ZáéíóúÁÉÍÓÚ]+( [a-zA-ZáéíóúÁÉÍÓÚ]+)*$/'],
@@ -36,9 +33,6 @@ class CreateNewUser implements CreatesNewUsers
             'profile_photo_path.mimes' => 'Solo se permiten imágenes en formato JPEG o PNG.',
             'profile_photo_path.image' => 'El archivo debe ser una imagen válida.',
         ])->validate();
-
-        //dd($validated); // Depuración: mostrar el array validado
-
         //GUARDANDO
         try {
             DB::beginTransaction();

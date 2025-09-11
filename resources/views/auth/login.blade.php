@@ -81,15 +81,6 @@
                                                     </div>
                                                     <div
                                                         class="form-group d-flex flex-md-row flex-column justify-content-between align-items-center">
-                                                        <div class="text-left">
-                                                            <div class="checkbox checkbox-sm">
-                                                                <input type="checkbox" class="form-check-input"
-                                                                    id="exampleCheck1" name="remember">
-                                                                <label class="checkboxsmall"
-                                                                    for="exampleCheck1"><small>Mantener sesión
-                                                                        iniciada</small></label>
-                                                            </div>
-                                                        </div>
                                                         <div class="text-right"><a
                                                                 href="{{ route('password.request') }}"
                                                                 class="card-link"><small>¿Olvidaste tu
@@ -100,11 +91,6 @@
                                                         class="btn btn-primary glow w-100 position-relative">Entrar<i
                                                             id="icon-arrow" class="bx bx-right-arrow-alt"></i></button>
                                                 </form>
-                                                <hr>
-                                                <div class="text-center"><small class="mr-25">¿No tienes una cuenta de
-                                                        usuario?</small><a
-                                                        href="{{ route('register') }}"><small>Regístrate</small></a>
-                                                </div>
                                             </div>
                                         </div>
                                     </div>

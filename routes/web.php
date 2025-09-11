@@ -9,7 +9,6 @@ use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\DB;
 
 // Rutas públicas
 Route::get('/', function () {
@@ -39,7 +38,7 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    
+
     //DASHBOARD GENERAL
     Route::get('/dashboard', function () {
         return view('dashboard');
@@ -52,8 +51,16 @@ Route::middleware([
         });
     });
 
+    // Ruta de registro protegida para SuperAdmin
+    Route::middleware(['role:SuperAdmin'])->group(function () {
+        Route::get('/register', function () {
+            return view('auth.register');
+        })->name('register');
+    });
+
     //SUPER ADMINISTRADORES
     Route::group(['middleware' => ['role:SuperAdmin']], function () {
+
         Route::group(['prefix' => 'user'], function () { //Usuarios
             Route::get('/', [userController::class, 'index'])->name('user');
             Route::get('edit/{user}', [userController::class, 'edit'])->name('user.edit');

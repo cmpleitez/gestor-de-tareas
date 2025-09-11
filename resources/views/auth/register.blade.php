@@ -10,7 +10,7 @@
     <meta name="keywords" content="gestor, gestión, tareas, actividades, proyectos">
     <meta name="author" content="">
 
-    <title>Gestor de tareas {{ config('app.version') }}</title>
+    <title>Registro de Usuarios - Gestor de tareas {{ config('app.version') }}</title>
 
     <link rel="apple-touch-icon" href="{{ asset('app-assets/images/icons/favicon-32x32.png') }}">
 
@@ -226,7 +226,7 @@
                     <div class="row">
                         <div class="col-md-12 d-flex justify-content-between" style="padding: 0rem;">
                             <div class="col-md-10 align-items-center" style="padding-left: 0.5rem;">
-                                <p>NUEVO USUARIO </p>
+                                <p>REGISTRO DE NUEVO USUARIO</p>
                             </div>
                             <div class="col-md-2 d-flex justify-content-end" style="padding: 0.1rem;">
                                 <a href="{!! route('user') !!}">
@@ -256,10 +256,10 @@
                                                 placeholder="Nombre del nuevo usuario" value="{{ old('name') }}"
                                                 required>
                                             @error('name')
-                                            <div class="col-sm-12 badge bg-danger text-wrap"
-                                                style="margin-top: 0.2rem;">
-                                                {{ $errors->first('name') }}
-                                            </div>
+                                                <div class="col-sm-12 badge bg-danger text-wrap"
+                                                    style="margin-top: 0.2rem;">
+                                                    {{ $errors->first('name') }}
+                                                </div>
                                             @enderror
                                         </div>
                                     </div>
@@ -276,10 +276,10 @@
                                                 placeholder="Ingrese los 9 dígitos del DUI sin guión"
                                                 value="{{ old('dui') }}" required>
                                             @error('dui')
-                                            <div class="col-sm-12 badge bg-danger text-wrap"
-                                                style="margin-top: 0.2rem;">
-                                                {{ $errors->first('dui') }}
-                                            </div>
+                                                <div class="col-sm-12 badge bg-danger text-wrap"
+                                                    style="margin-top: 0.2rem;">
+                                                    {{ $errors->first('dui') }}
+                                                </div>
                                             @enderror
                                         </div>
                                     </div>
@@ -295,9 +295,9 @@
                                             máximo: 512KB</small>
                                     </div>
                                     @error('profile_photo_path')
-                                    <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
-                                        {{ $errors->first('profile_photo_path') }}
-                                    </div>
+                                        <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                            {{ $errors->first('profile_photo_path') }}
+                                        </div>
                                     @enderror
                                 </div>
                                 <div class="col-sm-12"> {{-- Correo --}}
@@ -310,9 +310,9 @@
                                                 value="{{ old('email') }}" required>
                                         </div>
                                         @error('email')
-                                        <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
-                                            {{ $errors->first('email') }}
-                                        </div>
+                                            <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                                {{ $errors->first('email') }}
+                                            </div>
                                         @enderror
                                     </div>
                                 </div>
@@ -329,9 +329,9 @@
                                                 value="{{ old('password') }}" required>
                                         </div>
                                         @error('password')
-                                        <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
-                                            {{ $errors->first('password') }}
-                                        </div>
+                                            <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                                {{ $errors->first('password') }}
+                                            </div>
                                         @enderror
                                     </div>
                                 </div>
@@ -346,9 +346,9 @@
                                                 value="{{ old('password_confirmation') }}" required>
                                         </div>
                                         @error('password_confirmation')
-                                        <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
-                                            {{ $errors->first('password_confirmation') }}
-                                        </div>
+                                            <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                                {{ $errors->first('password_confirmation') }}
+                                            </div>
                                         @enderror
                                     </div>
                                 </div>
@@ -418,11 +418,12 @@
                 if (file) {
                     const fileSizeMB = file.size / (1024 * 1024);
                     if (fileSizeMB > maxSizeMB) {
-                        alert('El archivo es demasiado grande. El tamaño máximo permitido es ' + maxSizeMB + 'MB.');
+                        alert('El archivo es demasiado grande. El tamaño máximo permitido es ' + maxSizeMB +
+                            'MB.');
                         input.value = '';
                         return false;
                     }
-                    
+
                     // Validar tipo de archivo
                     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
                     if (!allowedTypes.includes(file.type)) {

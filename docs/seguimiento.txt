@@ -146,8 +146,10 @@ CLIENTE:
             Registro A: www → IP del servidor
 
 SEGURIDAD:
-    🟢 mantener deshabilitadas las tareas programadas hasta que se averigue cual de ellas está originando inconsistencias en el laravel.log
     🟢 implementar el ssl
+    ...🟢 cambiar el registro de usuarios hacia el interior del sistema
+        ...no se esta enviando el correo de validación
+        
 SERVICIOS:
     🔵 Finalizados por el momento todos servicios informáticos, hasta nuevo aviso
 FUSION SERVICIOS Y GESTOR:
