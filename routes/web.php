@@ -51,13 +51,6 @@ Route::middleware([
         });
     });
 
-    // Ruta de registro protegida para SuperAdmin
-    Route::middleware(['role:SuperAdmin'])->group(function () {
-        Route::get('/register', function () {
-            return view('auth.register');
-        })->name('register');
-    });
-
     //SUPER ADMINISTRADORES
     Route::group(['middleware' => ['role:SuperAdmin']], function () {
 
