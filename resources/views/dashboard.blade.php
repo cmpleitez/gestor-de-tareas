@@ -797,12 +797,6 @@
                                     <span class="menu-item" data-i18n="Second Level">Catálogo</span>
                                 </a></li>
                         @endrole
-                        @role('Operador')
-                            <li><a href="#">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Disponible</span>
-                                </a></li>
-                        @endrole
                         @role('Administrador')
                             <li>
                                 <a href="#">
