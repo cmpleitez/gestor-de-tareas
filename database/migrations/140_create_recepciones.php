@@ -12,6 +12,7 @@ return new class extends Migration
             $table->char('id', 12)->primary();
             $table->char('atencion_id', 12)->constrained('atenciones');
             $table->foreignId('role_id')->constrained('roles');
+            $table->string('solicitud_id')->constrained('solicitudes');
             $table->foreignId('user_id_origen')->constrained('users');
             $table->foreignId('user_id_destino')->constrained('users');
             $table->foreignId('estado_id')->constrained('estados');
