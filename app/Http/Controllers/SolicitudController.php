@@ -51,11 +51,6 @@ class SolicitudController extends Controller
         return redirect()->route('solicitud')->with('success', 'Tareas actualizadas correctamente');
     }
 
-    public function show(string $id)
-    {
-        //
-    }
-
     public function destroy(Solicitud $solicitud)
     {
         if ($solicitud->usuarios()->exists()) {

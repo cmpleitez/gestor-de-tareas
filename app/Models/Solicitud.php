@@ -33,4 +33,8 @@ class Solicitud extends Model
         return $this->belongsToMany(User::class, 'recepciones', 'solicitud_id', relatedPivotKey: 'user_id_destino');
     }
 
+    public function recepciones()
+    {
+        return $this->hasMany(Recepcion::class);
+    }
 }

@@ -149,6 +149,7 @@ SEGURIDAD:
     🟢 implementar el ssl
     ...🟢 cambiar el registro de usuarios hacia el interior del sistema
         ...no se esta enviando el correo de validación
+            ...verificar que los mensajes toast se muestren al centro o derecha
         
 SERVICIOS:
     🔵 Finalizados por el momento todos servicios informáticos, hasta nuevo aviso

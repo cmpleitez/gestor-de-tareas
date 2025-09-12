@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -9,9 +8,9 @@ use Spatie\Permission\Models\Role;
 class Recepcion extends Model
 {
     use HasFactory;
-    protected $table = 'recepciones';
+    protected $table    = 'recepciones';
     protected $fillable = ['solicitud_id', 'detalles', 'observacion'];
-    
+
     protected $casts = [
         'activo' => 'boolean',
     ];

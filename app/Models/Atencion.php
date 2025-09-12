@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -25,8 +24,4 @@ class Atencion extends Model
         return $this->belongsTo(Estado::class);
     }
 
-    public function solicitud()
-    {
-        return $this->belongsTo(Solicitud::class);
-    }
 }
