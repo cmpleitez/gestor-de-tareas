@@ -86,7 +86,7 @@ class RecepcionController extends Controller
             }
             return view('modelos.recepcion.solicitudes', $data);
         } catch (\Exception $e) {
-            return back()->with('error', 'Ocurrió un error cuando se intentaba obtener las solicitudes:' . $e->getMessage())->with('toast_position', 'top-center');
+            return back()->with('error', 'Ocurrió un error cuando se intentaba obtener las solicitudes:' . $e->getMessage());
         }
     }
 
@@ -138,7 +138,7 @@ class RecepcionController extends Controller
             });
             return response()->json($nuevas);
         } catch (\Exception $e) {
-            return back()->with('error', 'Ocurrió un error al obtener las nuevas solicitudes recibidas: ' . $e->getMessage())->with('toast_position', 'top-center');
+            return back()->with('error', 'Ocurrió un error al obtener las nuevas solicitudes recibidas: ' . $e->getMessage());
         }
     }
 
@@ -155,7 +155,7 @@ class RecepcionController extends Controller
                 'unidades' => $equipos->count(),
             ]);
         } catch (\Exception $e) {
-            return back()->with('error', 'Ocurrió un error al obtener los equipos: ' . $e->getMessage())->with('toast_position', 'top-center');
+            return back()->with('error', 'Ocurrió un error al obtener los equipos: ' . $e->getMessage());
         }
     }
 
@@ -180,7 +180,7 @@ class RecepcionController extends Controller
                 'operadores_activos' => $operadores_activos,
             ]);
         } catch (\Exception $e) {
-            return back()->with('error', 'Ocurrió un error al obtener los operadores: ' . $e->getMessage())->with('toast_position', 'top-center');
+            return back()->with('error', 'Ocurrió un error al obtener los operadores: ' . $e->getMessage());
         }
     }
 
@@ -190,7 +190,7 @@ class RecepcionController extends Controller
             $solicitudes = Solicitud::where('activo', true)->get();
             return view('modelos.recepcion.create', compact('solicitudes'));
         } catch (\Exception $e) {
-            return back()->with('error', 'Ocurrió un error al obtener las solicitudes: ' . $e->getMessage())->with('toast_position', 'top-center');
+            return back()->with('error', 'Ocurrió un error al obtener las solicitudes: ' . $e->getMessage());
         }
     }
 
@@ -230,10 +230,10 @@ class RecepcionController extends Controller
             $recepcion->activo          = false; //Por defecto invalidada, se valida al ejemplo: procesar el carrito originando una orden de compra válida, luego una tarea programada borra cada cieto tiempo todos los registros con condicion nula en este campo
             $recepcion->save();
             DB::commit();
-            return redirect()->route('recepcion.create')->with('success', 'La solicitud número "' . KeyRipper::rip($atencion_id) . '" ha sido recibida en la oficina ' . $user->oficina->oficina)->with('toast_position', 'top-center');
+            return redirect()->route('recepcion.create')->with('success', 'La solicitud número "' . KeyRipper::rip($atencion_id) . '" ha sido recibida en la oficina ' . $user->oficina->oficina);
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Ocurrió un error cuando se intentaba enviar la solicitud:' . $e->getMessage())->with('toast_position', 'top-center');
+            return back()->with('error', 'Ocurrió un error cuando se intentaba enviar la solicitud:' . $e->getMessage());
         }
     }
 
@@ -333,7 +333,7 @@ class RecepcionController extends Controller
             });
             return response()->json(['tareas' => $tareas]);
         } catch (\Exception $e) {
-            return back()->with('error', 'Ocurrió un error al obtener las tareas: ' . $e->getMessage())->with('toast_position', 'top-center');
+            return back()->with('error', 'Ocurrió un error al obtener las tareas: ' . $e->getMessage());
         }
     }
     public function reportarTarea(Request $request, $actividad_id)
@@ -393,7 +393,7 @@ class RecepcionController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Error al actualizar la tarea: ' . $e->getMessage())->with('toast_position', 'top-center');
+            return back()->with('error', 'Error al actualizar la tarea: ' . $e->getMessage());
         }
     }
 
@@ -443,7 +443,7 @@ class RecepcionController extends Controller
             });
             return response()->json($resultado);
         } catch (\Exception $e) {
-            return back()->with('error', 'Error al obtener el avance del tablero: ' . $e->getMessage())->with('toast_position', 'top-center');
+            return back()->with('error', 'Error al obtener el avance del tablero: ' . $e->getMessage());
         }
     }
 

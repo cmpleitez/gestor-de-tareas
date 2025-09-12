@@ -107,8 +107,8 @@
 @section('contenedor')
     <div class="container-fluid">
         <!-- ========================================
-                                                                                                            HEADER DE LOGS DE SEGURIDAD
-                                                                                                            ======================================== -->
+                                                                                                                HEADER DE LOGS DE SEGURIDAD
+                                                                                                                ======================================== -->
         <div class="row">
             <div class="col-12">
                 <div class="card mb-0 p-1">
@@ -135,8 +135,8 @@
         </div>
 
         <!-- ========================================
-                                                                                                            FILTROS DE LOGS
-                                                                                                    ======================================== -->
+                                                                                                                FILTROS DE LOGS
+                                                                                                        ======================================== -->
         <div class="row mt-1">
             <div class="col-12">
                 <div class="card" style="margin-bottom: 0rem;">
@@ -176,8 +176,8 @@
         </div>
 
         <!-- ========================================
-                                                                                                            VISUALIZADOR DE LOGS
-                                                                                                            ======================================== -->
+                                                                                                                VISUALIZADOR DE LOGS
+                                                                                                                ======================================== -->
         <div class="row mt-1">
             <div class="col-12">
                 <div class="card">

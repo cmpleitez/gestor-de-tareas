@@ -37,8 +37,8 @@
     <div class="container-fluid" data-risk-distribution="{{ trim(json_encode($risk_distribution ?? $defaultRiskData)) }}"
         data-threats-by-country="{{ trim(json_encode($threats_by_country ?? $defaultCountryData)) }}">
         <!-- ========================================
-                    HEADER DEL DASHBOARD DE SEGURIDAD
-                    ======================================== -->
+                        HEADER DEL DASHBOARD DE SEGURIDAD
+                        ======================================== -->
         <x-security.dashboard-header />
 
         <!-- GRÁFICOS Y ANÁLISIS VISUALES -->

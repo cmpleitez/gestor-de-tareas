@@ -134,7 +134,8 @@
 
                                 <div class="col-md-3 mb-3">
                                     <label for="filter-risk-level" class="form-label">Nivel de Riesgo</label>
-                                    <input type="text" class="form-control" id="filter-risk-level" list="risk_level_options" placeholder="Crítico, Alto, Medio">
+                                    <input type="text" class="form-control" id="filter-risk-level"
+                                        list="risk_level_options" placeholder="Crítico, Alto, Medio">
                                     <datalist id="risk_level_options">
                                         <option value="Crítico"></option>
                                         <option value="Alto"></option>
@@ -144,7 +145,8 @@
 
                                 <div class="col-md-3 mb-3">
                                     <label for="filter-country" class="form-label">País</label>
-                                    <input type="text" class="form-control" id="filter-country" list="country_options" placeholder="Selecciona un país">
+                                    <input type="text" class="form-control" id="filter-country"
+                                        list="country_options" placeholder="Selecciona un país">
                                     <datalist id="country_options">
                                         @foreach ($availableCountries ?? [] as $country)
                                             <option value="{{ $country }}"></option>
@@ -679,10 +681,15 @@
             // Normalizar nivel de riesgo (etiqueta -> clave)
             const riskInput = document.getElementById('filter-risk-level').value.trim().toLowerCase();
             const riskMap = {
-                'crítico': 'critical', 'critico': 'critical',
-                'alto': 'high', 'alta': 'high',
-                'medio': 'medium', 'media': 'medium',
-                'critical': 'critical', 'high': 'high', 'medium': 'medium'
+                'crítico': 'critical',
+                'critico': 'critical',
+                'alto': 'high',
+                'alta': 'high',
+                'medio': 'medium',
+                'media': 'medium',
+                'critical': 'critical',
+                'high': 'high',
+                'medium': 'medium'
             };
             const riskFilter = riskMap[riskInput] || '';
 

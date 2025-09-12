@@ -4,8 +4,8 @@
     <div class="container-fluid" data-risk-distribution="{{ trim(json_encode($risk_distribution ?? [])) }}"
         data-threats-by-country="{{ trim(json_encode($threats_by_country ?? [])) }}">
         <!-- ========================================
-                                                                                                                                                    HEADER DE INTELIGENCIA DE AMENAZAS
-                                                                                                                                                    ======================================== -->
+                                                                                                                                                        HEADER DE INTELIGENCIA DE AMENAZAS
+                                                                                                                                                        ======================================== -->
         <div class="row">
             <div class="col-12">
                 <div class="card mb-0">
@@ -34,8 +34,8 @@
 
 
         <!-- ========================================
-                                                                                                                                                    ANÁLISIS VISUAL DE AMENAZAS
-                                                                                                                                                    ======================================== -->
+                                                                                                                                                        ANÁLISIS VISUAL DE AMENAZAS
+                                                                                                                                                        ======================================== -->
         <div class="row mt-1">
             <!-- Gráfico de Evolución Temporal -->
             <div class="col-12">
@@ -55,8 +55,8 @@
         </div>
 
         <!-- ========================================
-                                                                                                                                                    FILTROS Y BÚSQUEDA DE AMENAZAS
-                                                                                                                                                    ======================================== -->
+                                                                                                                                                        FILTROS Y BÚSQUEDA DE AMENAZAS
+                                                                                                                                                        ======================================== -->
         <div class="row mt-1">
             <div class="col-12">
                 <div class="card" style="margin-bottom: 0rem;">
@@ -93,8 +93,8 @@
         </div>
 
         <!-- ========================================
-                                                                                                                                                    TABLA DE AMENAZAS
-                                                                                                                                                    ======================================== -->
+                                                                                                                                                        TABLA DE AMENAZAS
+                                                                                                                                                        ======================================== -->
         <div class="row mt-1">
             <div class="col-12">
                 <div class="card" style="margin-bottom: 0rem;">
@@ -151,8 +151,8 @@
     </div>
 
     <!-- ========================================
-                                                                                                                                                MODALES Y COMPONENTES ADICIONALES
-                                                                                                                                                ======================================== -->
+                                                                                                                                                    MODALES Y COMPONENTES ADICIONALES
+                                                                                                                                                    ======================================== -->
 
     <!-- Modal de Detalles de Amenaza -->
     <div class="modal fade" id="threatDetailsModal" tabindex="-1">

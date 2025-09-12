@@ -1,175 +1,177 @@
 @extends('dashboard')
 
 @section('css')
-<link href="{{ asset('app-assets/vendors/css/extensions/sweetalert2.min.css') }}" rel="stylesheet">
-<link href="{{ asset('app-assets/css/bootstrap-extended.css') }}" rel="stylesheet">
-<link href="{{ asset('app-assets/css/pages/app-kanban.css') }}" rel="stylesheet">
-<link href="{{ asset('app-assets/css/solicitudes.css') }}" rel="stylesheet">
+    <link href="{{ asset('app-assets/vendors/css/extensions/sweetalert2.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('app-assets/css/bootstrap-extended.css') }}" rel="stylesheet">
+    <link href="{{ asset('app-assets/css/pages/app-kanban.css') }}" rel="stylesheet">
+    <link href="{{ asset('app-assets/css/solicitudes.css') }}" rel="stylesheet">
 @endsection
 
 @section('contenedor')
-{{-- EQUIPOS DE TRABAJO DESTINO --}}
-<div class="row">
-    <div class="col-12">
-        @if (optional(auth()->user()->mainRole)->name != 'Operador')
-        <div class="accordion" id="accordionWrapa2">
-            <div class="card collapse-header border-0 overflow-hidden">
-                <div id="heading5" class="card-header" data-toggle="collapse" data-target="#accordion5"
-                    aria-expanded="false" aria-controls="accordion5" role="tablist"
-                    style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); border: none; margin: 0; cursor: pointer; transition: all 0.3s ease;">
-                    <div class="d-flex align-items-center justify-content-between w-100">
-                        <div class="d-flex align-items-center">
-                            <div class="d-flex align-items-center" style="padding: 0.75rem;">
-                                <i class="bx bx-target-lock text-white" style="font-size: 1.1rem;"></i>
-                            </div>
-                            <div class="d-flex flex-column align-items-start justify-content-center">
-                                <h6 class="mb-0 text-white font-weight-500"
-                                    style="font-size: 1rem; letter-spacing: 0.3px;">
-                                    @if (optional(auth()->user()->mainRole)->name == 'Receptor')
-                                    <span class="font-weight-600">{{ auth()->user()->equipos()->first()->equipo
-                                        }}</span>
-                                    @endif
-                                </h6>
-                                <small class="text-white-50" style="font-size: 0.8rem;">
-                                    Selecciona el equipo de trabajo destino para impulsar las solicitudes
-                                </small>
-                            </div>
-                        </div>
-                        <div>
-                            <i class="bx bx-chevron-down text-white accordion-arrow"
-                                style="font-size: 1rem; transition: transform 0.3s ease;"></i>
-                        </div>
-                    </div>
-                </div>
-                <div id="accordion5" role="tabpanel" data-parent="#accordionWrapa2" aria-labelledby="heading5"
-                    class="collapse">
-                    <div class="card-content">
-                        <div class="card-body" style="background: #f8f9fa; padding: 1rem;">
-                            @if (optional(auth()->user()->mainRole)->name == 'Receptor' && isset($equipos))
-                            <div class="row" style="display: flex; align-items: stretch;">
-                                @foreach ($equipos as $equipo)
-                                <div class="col-md-3">
-                                    <div class="selectable-item {{ $equipo->id == auth()->user()->equipos->first()->id ? 'selected' : '' }}"
-                                        onclick="selectItem('equipo_{{ $equipo->id }}')">
-                                        <div class="item-body">
-                                            <div class="item-info">
-                                                <div class="item-name">{{ $equipo->equipo }}</div>
-                                                <div class="item-desc">Equipo de trabajo</div>
-                                            </div>
-                                            <div class="radio-indicator"></div>
-                                        </div>
-                                        <input type="radio" id="equipo_{{ $equipo->id }}" name="equipo_destino"
-                                            value="{{ $equipo->id }}" {{ $equipo->id ==
-                                        auth()->user()->equipos->first()->id ? 'checked' : '' }}
-                                        style="display: none;">
+    {{-- EQUIPOS DE TRABAJO DESTINO --}}
+    <div class="row">
+        <div class="col-12">
+            @if (optional(auth()->user()->mainRole)->name != 'Operador')
+                <div class="accordion" id="accordionWrapa2">
+                    <div class="card collapse-header border-0 overflow-hidden">
+                        <div id="heading5" class="card-header" data-toggle="collapse" data-target="#accordion5"
+                            aria-expanded="false" aria-controls="accordion5" role="tablist"
+                            style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); border: none; margin: 0; cursor: pointer; transition: all 0.3s ease;">
+                            <div class="d-flex align-items-center justify-content-between w-100">
+                                <div class="d-flex align-items-center">
+                                    <div class="d-flex align-items-center" style="padding: 0.75rem;">
+                                        <i class="bx bx-target-lock text-white" style="font-size: 1.1rem;"></i>
+                                    </div>
+                                    <div class="d-flex flex-column align-items-start justify-content-center">
+                                        <h6 class="mb-0 text-white font-weight-500"
+                                            style="font-size: 1rem; letter-spacing: 0.3px;">
+                                            @if (optional(auth()->user()->mainRole)->name == 'Receptor')
+                                                <span
+                                                    class="font-weight-600">{{ auth()->user()->equipos()->first()->equipo }}</span>
+                                            @endif
+                                        </h6>
+                                        <small class="text-white-50" style="font-size: 0.8rem;">
+                                            Selecciona el equipo de trabajo destino para impulsar las solicitudes
+                                        </small>
                                     </div>
                                 </div>
-                                @endforeach
+                                <div>
+                                    <i class="bx bx-chevron-down text-white accordion-arrow"
+                                        style="font-size: 1rem; transition: transform 0.3s ease;"></i>
+                                </div>
                             </div>
-                            @else
-                            <div class="text-center text-muted py-4">
-                                <i class="bx bx-info-circle" style="font-size: 2rem;"></i>
-                                <p class="mt-2 mb-0">No hay elementos disponibles para tu rol.</p>
+                        </div>
+                        <div id="accordion5" role="tabpanel" data-parent="#accordionWrapa2" aria-labelledby="heading5"
+                            class="collapse">
+                            <div class="card-content">
+                                <div class="card-body" style="background: #f8f9fa; padding: 1rem;">
+                                    @if (optional(auth()->user()->mainRole)->name == 'Receptor' && isset($equipos))
+                                        <div class="row" style="display: flex; align-items: stretch;">
+                                            @foreach ($equipos as $equipo)
+                                                <div class="col-md-3">
+                                                    <div class="selectable-item {{ $equipo->id == auth()->user()->equipos->first()->id ? 'selected' : '' }}"
+                                                        onclick="selectItem('equipo_{{ $equipo->id }}')">
+                                                        <div class="item-body">
+                                                            <div class="item-info">
+                                                                <div class="item-name">{{ $equipo->equipo }}</div>
+                                                                <div class="item-desc">Equipo de trabajo</div>
+                                                            </div>
+                                                            <div class="radio-indicator"></div>
+                                                        </div>
+                                                        <input type="radio" id="equipo_{{ $equipo->id }}"
+                                                            name="equipo_destino" value="{{ $equipo->id }}"
+                                                            {{ $equipo->id == auth()->user()->equipos->first()->id ? 'checked' : '' }}
+                                                            style="display: none;">
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @else
+                                        <div class="text-center text-muted py-4">
+                                            <i class="bx bx-info-circle" style="font-size: 2rem;"></i>
+                                            <p class="mt-2 mb-0">No hay elementos disponibles para tu rol.</p>
+                                        </div>
+                                    @endif
+                                </div>
                             </div>
-                            @endif
                         </div>
                     </div>
                 </div>
-            </div>
+            @endif
         </div>
-        @endif
     </div>
-</div>
-{{-- TABLEROS KANBAN --}}
-<div class="row kanban-container" style="display: flex; align-items: stretch;">
-    <div class="col-md-4"> {{-- Recibidas --}}
-        <div class="card border-0 overflow-hidden">
-            <div class="card-header"
-                style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); border: none; margin: 0;">
-                <div class="d-flex align-items-center">
-                    <div class="mr-2">
-                        <i class="bx bx-archive text-white" style="font-size: 0.9rem;"></i>
-                    </div>
-                    <h6 class="mb-0 text-white font-weight-600" style="font-size: 0.9rem;">Recibidas</h6>
-                    <div class="ml-auto d-flex align-items-center">
+    {{-- TABLEROS KANBAN --}}
+    <div class="row kanban-container" style="display: flex; align-items: stretch;">
+        <div class="col-md-4"> {{-- Recibidas --}}
+            <div class="card border-0 overflow-hidden">
+                <div class="card-header"
+                    style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); border: none; margin: 0;">
+                    <div class="d-flex align-items-center">
+                        <div class="mr-2">
+                            <i class="bx bx-archive text-white" style="font-size: 0.9rem;"></i>
+                        </div>
+                        <h6 class="mb-0 text-white font-weight-600" style="font-size: 0.9rem;">Recibidas</h6>
+                        <div class="ml-auto d-flex align-items-center">
 
-                        <span class="badge badge-white text-dark" id="contador-recibidas">{{ count($recibidas) }}</span>
+                            <span class="badge badge-white text-dark"
+                                id="contador-recibidas">{{ count($recibidas) }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body kanban-columna" style="background: #f8f9fa; padding: 1rem;">
+                    <div id="columna-recibidas" class="sortable-column">
+                        {{-- Las tarjetas se dibujarán con JavaScript --}}
                     </div>
                 </div>
             </div>
-            <div class="card-body kanban-columna" style="background: #f8f9fa; padding: 1rem;">
-                <div id="columna-recibidas" class="sortable-column">
-                    {{-- Las tarjetas se dibujarán con JavaScript --}}
+        </div>
+        <div class="col-md-4"> {{-- En Progreso --}}
+            <div class="card border-0 overflow-hidden">
+                <div class="card-header"
+                    style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); border: none; margin: 0;">
+                    <div class="d-flex align-items-center">
+                        <div class="mr-2">
+                            <i class="bx bx-time-five text-white" style="font-size: 0.9rem;"></i>
+                        </div>
+                        <h6 class="mb-0 text-white font-weight-600" style="font-size: 0.9rem;">En Progreso</h6>
+                        <span class="badge badge-white ml-auto text-dark"
+                            id="contador-progreso">{{ count($progreso) }}</span>
+                    </div>
+                </div>
+                <div class="card-body kanban-columna" style="background: #f8f9fa; padding: 1rem;">
+                    <div id="columna-progreso" class="sortable-column">
+                        {{-- Las tarjetas se dibujarán con JavaScript --}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4"> {{-- Resueltas --}}
+            <div class="card border-0 overflow-hidden">
+                <div class="card-header"
+                    style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); border: none; margin: 0;">
+                    <div class="d-flex align-items-center">
+                        <div class="mr-2">
+                            <i class="bx bx-check-circle text-white" style="font-size: 0.9rem;"></i>
+                        </div>
+                        <h6 class="mb-0 text-white font-weight-600" style="font-size: 0.9rem;">Resueltas</h6>
+                        <span class="badge badge-white ml-auto text-dark"
+                            id="contador-resueltas">{{ count($resueltas) }}</span>
+                    </div>
+                </div>
+                <div class="card-body kanban-columna" style="background: #f8f9fa; padding: 1rem;">
+                    <div id="columna-resueltas" class="sortable-column">
+                        {{-- Las tarjetas se dibujarán con JavaScript --}}
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-md-4"> {{-- En Progreso --}}
-        <div class="card border-0 overflow-hidden">
-            <div class="card-header"
-                style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); border: none; margin: 0;">
-                <div class="d-flex align-items-center">
-                    <div class="mr-2">
-                        <i class="bx bx-time-five text-white" style="font-size: 0.9rem;"></i>
-                    </div>
-                    <h6 class="mb-0 text-white font-weight-600" style="font-size: 0.9rem;">En Progreso</h6>
-                    <span class="badge badge-white ml-auto text-dark" id="contador-progreso">{{ count($progreso)
-                        }}</span>
-                </div>
-            </div>
-            <div class="card-body kanban-columna" style="background: #f8f9fa; padding: 1rem;">
-                <div id="columna-progreso" class="sortable-column">
-                    {{-- Las tarjetas se dibujarán con JavaScript --}}
-                </div>
-            </div>
+    <div class="kanban-overlay"></div> {{-- Overlay Kanban --}}
+    <div class="kanban-sidebar">
+        <div class="d-flex justify-content-between align-items-center border-bottom px-1"
+            style="background: linear-gradient(156deg, #221627 0%, #4e2a5d 100%); border: none; margin: 0; padding: 0.75rem 1rem; min-height: 52px;">
+            <h4 id="sidebar-card-title" class="text-white mb-0">Titulo</h4>
+            <button type="button" class="close close-icon">
+                <i class="bx bx-x text-white"></i>
+            </button>
+        </div>
+        <div id="sidebar-card-body">
+            <p>Selecciona una tarjeta para ver detalles...</p>
         </div>
     </div>
-    <div class="col-md-4"> {{-- Resueltas --}}
-        <div class="card border-0 overflow-hidden">
-            <div class="card-header"
-                style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); border: none; margin: 0;">
-                <div class="d-flex align-items-center">
-                    <div class="mr-2">
-                        <i class="bx bx-check-circle text-white" style="font-size: 0.9rem;"></i>
-                    </div>
-                    <h6 class="mb-0 text-white font-weight-600" style="font-size: 0.9rem;">Resueltas</h6>
-                    <span class="badge badge-white ml-auto text-dark" id="contador-resueltas">{{ count($resueltas)
-                        }}</span>
-                </div>
-            </div>
-            <div class="card-body kanban-columna" style="background: #f8f9fa; padding: 1rem;">
-                <div id="columna-resueltas" class="sortable-column">
-                    {{-- Las tarjetas se dibujarán con JavaScript --}}
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="kanban-overlay"></div> {{-- Overlay Kanban --}}
-<div class="kanban-sidebar">
-    <div class="d-flex justify-content-between align-items-center border-bottom px-1"
-        style="background: linear-gradient(156deg, #221627 0%, #4e2a5d 100%); border: none; margin: 0; padding: 0.75rem 1rem; min-height: 52px;">
-        <h4 id="sidebar-card-title" class="text-white mb-0">Titulo</h4>
-        <button type="button" class="close close-icon">
-            <i class="bx bx-x text-white"></i>
-        </button>
-    </div>
-    <div id="sidebar-card-body">
-        <p>Selecciona una tarjeta para ver detalles...</p>
-    </div>
-</div>
 @endsection
 
 @section('js')
-<!-- BEGIN: Critical JavaScript (Emergency Load) -->
-<script src="{{ asset('app-assets/vendors/js/extensions/sweetalert2.all.min.js') }}"></script>
-<script src="{{ asset('app-assets/vendors/js/jkanban/Sortable.min.js') }}"></script>
-<script src="{{ asset('app-assets/vendors/js/jkanban/jkanban.min.js') }}"></script>
-<!-- END: Critical JavaScript (Emergency Load) -->
+    <!-- BEGIN: Critical JavaScript (Emergency Load) -->
+    <script src="{{ asset('app-assets/vendors/js/extensions/sweetalert2.all.min.js') }}"></script>
+    <script src="{{ asset('app-assets/vendors/js/jkanban/Sortable.min.js') }}"></script>
+    <script src="{{ asset('app-assets/vendors/js/jkanban/jkanban.min.js') }}"></script>
+    <!-- END: Critical JavaScript (Emergency Load) -->
 
-<script>
-    //SELECCIONANDO EL ITEM DESTINATARIO
+    <script>
+        //SELECCIONANDO EL ITEM DESTINATARIO
         let userRole = @json(optional(auth()->user()->mainRole)->name) || '';
+
         function selectItem(radioId) { // Función para seleccionar items
             document.querySelectorAll('.selectable-item').forEach(selector => { // Desmarcar todos los selectores
                 selector.classList.remove('selected');
@@ -206,10 +208,7 @@
                             if (columnaOrigen !== 'columna-recibidas' || columnaDestino !==
                                 'columna-progreso'
                             ) { // Validar movimiento único desde columna-recibidas hacia columna-progreso
-                                toastr.error('Movimiento no disponible', 'warning', {
-                                    positionClass: 'toast-top-right',
-                                    timeOut: 1000
-                                });
+                                toastr.error('Movimiento no disponible');
                                 $(evt.from).append(evt
                                     .item); // Revertir la tarjeta a su posición original
                                 return;
@@ -333,7 +332,7 @@
                 }
             });
             return ids;
-        }        
+        }
         //INICIALIZAR POPOVERS
         $('[data-toggle="popover"]').popover({
             html: true,
@@ -442,19 +441,19 @@
                             });
                         }
                         // Reordenar tablero destino por recepcion.id desc tras confirmación del backend
-                        if (nuevaColumna === 'columna-recibidas' || nuevaColumna === 'columna-progreso' || nuevaColumna === 'columna-resueltas') {
+                        if (nuevaColumna === 'columna-recibidas' || nuevaColumna === 'columna-progreso' ||
+                            nuevaColumna === 'columna-resueltas') {
                             const $col = $('#' + nuevaColumna);
                             const items = $col.children('.solicitud-card').get();
                             items.sort(function(a, b) {
-                                return parseInt(a.dataset.id || '0', 10) - parseInt(b.dataset.id || '0', 10);
+                                return parseInt(a.dataset.id || '0', 10) - parseInt(b.dataset.id || '0',
+                                    10);
                             });
-                            items.forEach(function(el) { $col.append(el); });
+                            items.forEach(function(el) {
+                                $col.append(el);
+                            });
                         }
-                        toastr.success(response.message, '', {
-                            positionClass: 'toast-top-right',
-                            closeButton: true,
-                            timeOut: 15000
-                        });
+                        toastr.success(response.message);
                     } else {
                         Swal.fire({
                             position: 'top-end',
@@ -524,7 +523,7 @@
             const titulo = $card.find('.solicitud-titulo').text().trim();
             const atencion = $card.find('.atencion-id').text().trim();
             const recepcionId = $card.data('id');
-            $('#sidebar-card-title').text(titulo); 
+            $('#sidebar-card-title').text(titulo);
             $('#sidebar-card-body').html('<p>' + atencion + '</p>');
             cargarTareas(recepcionId); // Cargar y dibujar las tareas
             $('.kanban-overlay').addClass('show'); // Mostrar overlay y sidebar
@@ -692,7 +691,7 @@
             }
         }
         //CERRAR SIDEBAR
-        $(document).on('click', '.kanban-overlay, .kanban-sidebar .close-icon', 
+        $(document).on('click', '.kanban-overlay, .kanban-sidebar .close-icon',
             function() {
                 $('.kanban-overlay').removeClass('show');
                 $('.kanban-sidebar').removeClass('show');
@@ -1017,5 +1016,5 @@
             setInterval(consultarAvancesTablero, 3600000); // 60 minutos
             setInterval(cargarNuevasRecibidas, 3600000); // 60 minutos
         });
-</script>
+    </script>
 @endsection

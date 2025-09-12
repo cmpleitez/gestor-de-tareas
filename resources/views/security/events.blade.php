@@ -108,7 +108,7 @@
         </div>
 
         <!-- ========================================
-                                                                                                                                                                                                                                                                                                ======================================== -->
+                                                                                                                                                                                                                                                                                                    ======================================== -->
         <div class="row mt-1">
             <div class="col-12">
                 <div class="card" style="margin-bottom: 0rem;">
@@ -159,8 +159,8 @@
         </div>
 
         <!-- ========================================
-                                                                                                                                                                                                                                                                                                TABLA DE EVENTOS
-                                                                                                                                                                                                                                                                                                ======================================== -->
+                                                                                                                                                                                                                                                                                                    TABLA DE EVENTOS
+                                                                                                                                                                                                                                                                                                    ======================================== -->
         <div class="row mt-1">
             <div class="col-12">
                 <div class="card" style="margin-bottom: 0rem;">
@@ -639,7 +639,6 @@
             // Recargar la página para obtener datos frescos del servidor
             window.location.reload();
         }
-
     </script>
 
     <!-- BEGIN: Application JavaScript -->

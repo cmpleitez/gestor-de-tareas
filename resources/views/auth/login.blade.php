@@ -68,9 +68,9 @@
                                                     <div class="form-group mb-50">
                                                         <label class="text-bold-600" for="exampleInputEmail1">Correo
                                                             electrónico</label>
-                                                        <input type="email" class="form-control" id="exampleInputEmail1"
-                                                            placeholder="correo@ejemplo.com" name="email" required
-                                                            autofocus autocomplete="username">
+                                                        <input type="email" class="form-control"
+                                                            id="exampleInputEmail1" placeholder="correo@ejemplo.com"
+                                                            name="email" required autofocus autocomplete="username">
                                                     </div>
                                                     <div class="form-group">
                                                         <label class="text-bold-600"
@@ -133,13 +133,13 @@
     <!-- END: Application JavaScript -->
 
     @if ($errors->has('email') || $errors->has('password'))
-    <script>
-        toastr.error("Las credenciales ingresadas son incorrectas", '', { 
-                timeOut: 0, 
-                extendedTimeOut: 0, 
-                closeButton: true 
+        <script>
+            toastr.error("Las credenciales ingresadas son incorrectas", '', {
+                timeOut: 0,
+                extendedTimeOut: 0,
+                closeButton: true
             });
-    </script>
+        </script>
     @endif
 
 </body>

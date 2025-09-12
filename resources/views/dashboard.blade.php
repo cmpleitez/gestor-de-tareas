@@ -944,6 +944,25 @@
 
     <!-- ... otros scripts ... -->
     <script>
+        // Configuración global de toastr para todo el proyecto
+        toastr.options = {
+            "closeButton": false,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": true,
+            "positionClass": "toast-bottom-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "60000",
+            "extendedTimeOut": "9000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
+
         $(document).ready(function() {
             //Captura de alertas del backend
             @if (Session::has('success'))
@@ -965,7 +984,6 @@
             @if (Session::has('danger'))
                 toastr.error("{{ Session::get('danger') }}");
             @endif
-
         });
     </script>
     <!-- ... otros scripts ... -->
