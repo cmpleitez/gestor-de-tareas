@@ -13,8 +13,8 @@ class RegisterController extends Controller
      */
     public function create()
     {
-        // Verificar que el usuario esté autenticado y tenga rol SuperAdmin
-        if (! auth()->check() || ! auth()->user()->hasRole('SuperAdmin')) {
+        // Verificar que el usuario esté autenticado y tenga rol Admin
+        if (! auth()->check() || ! auth()->user()->hasRole('Admin')) {
             abort(403, 'No tienes permisos para acceder a esta página.');
         }
 
@@ -23,17 +23,38 @@ class RegisterController extends Controller
 
     public function store(Request $request, CreateNewUser $createNewUser)
     {
-        // Verificar que el usuario esté autenticado y tenga rol SuperAdmin
-        if (! auth()->check() || ! auth()->user()->hasRole('SuperAdmin')) {
+        // Debug: Verificar si llega al controlador
+        file_put_contents(storage_path('debug_register.txt'),
+            "=== REGISTRO DEBUG ===\n" .
+            "Datos recibidos: " . json_encode($request->all()) . "\n" .
+            "Timestamp: " . now() . "\n\n",
+            FILE_APPEND
+        );
+
+        // Verificar que el usuario esté autenticado y tenga rol Admin
+        if (! auth()->check() || ! auth()->user()->hasRole('Admin')) {
+            file_put_contents(storage_path('debug_register.txt'),
+                "ERROR: Usuario no autenticado o sin rol Admin\n",
+                FILE_APPEND
+            );
             abort(403, 'No tienes permisos para realizar esta acción.');
         }
 
         try {
             $user = $createNewUser->create($request->all());
 
+            file_put_contents(storage_path('debug_register.txt'),
+                "Usuario creado exitosamente: ID=" . $user->id . ", Email=" . $user->email . "\n",
+                FILE_APPEND
+            );
+
             return redirect('/dashboard')->with('success', 'Nuevo usuario registrado con éxito y una solicitud de verificación de correo electrónico ha sido enviada al nuevo usuario.');
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => $e->getMessage()])->withInput();
+            file_put_contents(storage_path('debug_register.txt'),
+                "ERROR: " . $e->getMessage() . "\n\n",
+                FILE_APPEND
+            );
+            return back()->withErrors(['email' => $e->getMessage()])->withInput();
         }
     }
 }

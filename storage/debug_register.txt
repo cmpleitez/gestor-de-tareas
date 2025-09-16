@@ -1,0 +1,23 @@
+=== REGISTRO DEBUG ===
+Datos recibidos: {"_token":"5sgyDHALA6uSg0mpmC6zPZhdy957pJkacSct6SJB","name":"Hari Seldom","dui":"123456784","email":"hari.seldom.sv@gmail.com","password":"p@5t15al5abana","password_confirmation":"p@5t15al5abana","profile_photo_path":{}}
+Timestamp: 2025-09-16 14:30:33
+
+ERROR: El campo email ya ha sido registrado.
+
+=== REGISTRO DEBUG ===
+Datos recibidos: {"_token":"5sgyDHALA6uSg0mpmC6zPZhdy957pJkacSct6SJB","name":"Hari Seldom","dui":"123456784","email":"hari.seldom.sv@gmail.com","password":"p@5t15al5abana","password_confirmation":"p@5t15al5abana"}
+Timestamp: 2025-09-16 14:31:05
+
+ERROR: El campo email ya ha sido registrado.
+
+=== REGISTRO DEBUG ===
+Datos recibidos: {"_token":"5sgyDHALA6uSg0mpmC6zPZhdy957pJkacSct6SJB","name":"Hari Seldom","dui":"123456784","email":"hari.seldom.sv@gmail.com","password":"p@5t15al5abana","password_confirmation":"p@5t15al5abana"}
+Timestamp: 2025-09-16 14:33:07
+
+ERROR: El campo email ya ha sido registrado.
+
+=== REGISTRO DEBUG ===
+Datos recibidos: {"_token":"5sgyDHALA6uSg0mpmC6zPZhdy957pJkacSct6SJB","name":"Miguel Arag\u00f3n","dui":"234567890","email":"miguel.aragon.sv@gmail.com","password":"p@5t15al5abana","password_confirmation":"p@5t15al5abana","profile_photo_path":{}}
+Timestamp: 2025-09-16 14:33:55
+
+Usuario creado exitosamente: ID=3, Email=miguel.aragon.sv@gmail.com

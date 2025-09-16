@@ -40,7 +40,7 @@
                             <p class="card-text">Las personas autorizadas para operar el sistema desempeñando roles
                                 específicos</p>
                         </div>
-                        @if (auth()->user()->mainRole->name == 'SuperAdmin')
+                        @if (auth()->user()->mainRole->name == 'Admin')
                             <div class="col-1 d-flex justify-content-end" style="padding: 0;">
                                 <a href="{!! route('register') !!}">
                                     <div class="badge-circle badge-circle-md badge-circle-primary">
@@ -150,13 +150,23 @@
                                                         @endcan
                                                         {{-- Eliminar --}}
                                                         @can('eliminar')
-                                                            <a href="{{ route('user.destroy', $user->id) }}" role="button"
-                                                                data-toggle="tooltip" data-popup="tooltip-custom"
-                                                                data-html="true" data-placement="bottom"
-                                                                title="<i class='bx bxs-eraser'></i> Eliminar {{ $user->name }}"
-                                                                class="button_delete align-center">
-                                                                <i class="bx bxs-eraser"></i>
-                                                            </a>
+                                                            @if ($user->id !== auth()->id())
+                                                                <a href="{{ route('user.destroy', $user->id) }}" role="button"
+                                                                    data-toggle="tooltip" data-popup="tooltip-custom"
+                                                                    data-html="true" data-placement="bottom"
+                                                                    title="<i class='bx bxs-eraser'></i> Eliminar {{ $user->name }}"
+                                                                    class="button_delete align-center">
+                                                                    <i class="bx bxs-eraser"></i>
+                                                                </a>
+                                                            @else
+                                                                <span class="button_delete align-center"
+                                                                    style="opacity: 0.5; cursor: not-allowed;"
+                                                                    data-toggle="tooltip" data-popup="tooltip-custom"
+                                                                    data-html="true" data-placement="bottom"
+                                                                    title="<i class='bx bxs-trash'></i> No puedes eliminarte a ti mismo">
+                                                                    <i class="bx bxs-trash"></i>
+                                                                </span>
+                                                            @endif
                                                         @endcan
                                                     </div>
                                                 </td>

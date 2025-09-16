@@ -784,10 +784,63 @@
         <div class="main-menu-content">
             <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation"
                 data-icon-style="">
+
+                @role('SuperAdmin')
+                <li class=" nav-item"><a href="#"><i class="bx bx-shield"></i><span class="menu-title"
+                            data-i18n="Menu Levels">Seguridad</span></a>
+                    <ul class="menu-content" style="display: block;">
+                        <li><a href="{{ Route('security.index') }}">
+                                <i class="bx bx-right-arrow-alt"></i>
+                                <span class="menu-item" data-i18n="Second Level">Dashboard</span>
+                            </a></li>
+                        <li><a href="{{ Route('security.events') }}">
+                                <i class="bx bx-right-arrow-alt"></i>
+                                <span class="menu-item" data-i18n="Second Level">Eventos</span>
+                            </a></li>
+                        <li><a href="{{ Route('security.threat-intelligence') }}">
+                                <i class="bx bx-right-arrow-alt"></i>
+                                <span class="menu-item" data-i18n="Second Level">Inteligencia de Amenazas</span>
+                            </a></li>
+                        <li><a href="{{ Route('security.ip-reputation') }}">
+                                <i class="bx bx-right-arrow-alt"></i>
+                                <span class="menu-item" data-i18n="Second Level">Reputación de IPs</span>
+                            </a></li>
+                        <li><a href="{{ Route('security.logs') }}">
+                                <i class="bx bx-right-arrow-alt"></i>
+                                <span class="menu-item" data-i18n="Second Level">Logs</span>
+                            </a></li>
+                    </ul>
+                </li>
+                @endrole
+
+                @role('Admin')
+                <li class=" nav-item"><a href="#"><i class="bx bx-cog"></i><span class="menu-title"
+                            data-i18n="Menu Levels">Administración</span></a>
+                    <ul class="menu-content" style="display: block;">
+                        <li><a href="{{ Route('user') }}">
+                                <i class="bx bx-right-arrow-alt"></i>
+                                <span class="menu-item" data-i18n="Second Level">Usuarios</span>
+                            </a></li>
+                        <li><a href="{{ Route('equipo') }}">
+                                <i class="bx bx-right-arrow-alt"></i>
+                                <span class="menu-item" data-i18n="Second Level">Equipos</span>
+                            </a></li>
+                        <li><a href="{{ Route('tarea') }}">
+                                <i class="bx bx-right-arrow-alt"></i>
+                                <span class="menu-item" data-i18n="Second Level">Tareas</span>
+                            </a></li>
+                        <li><a href="{{ Route('solicitud') }}">
+                                <i class="bx bx-right-arrow-alt"></i>
+                                <span class="menu-item" data-i18n="Second Level">Solicitudes</span>
+                            </a></li>
+                    </ul>
+                </li>
+                @endrole
+
+                @role('Cliente')
                 <li class=" nav-item"><a href="#"><i class="bx bx-menu"></i><span class="menu-title"
                             data-i18n="Menu Levels">Servicios</span></a>
                     <ul class="menu-content" style="display: block;">
-                        @role('Cliente')
                             <li><a href="{{ Route('recepcion.create') }}">
                                     <i class="bx bx-right-arrow-alt"></i>
                                     <span class="menu-item" data-i18n="Second Level">Recepciones</span>
@@ -796,78 +849,10 @@
                                     <i class="bx bx-package"></i>
                                     <span class="menu-item" data-i18n="Second Level">Catálogo</span>
                                 </a></li>
-                        @endrole
-                        @role('Administrador')
-                            <li>
-                                <a href="#">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Administración</span>
-                                </a>
-                                <ul class="menu-content" style="display: block;">
-                                    <li><a href="{{ Route('equipo') }}">
-                                            <i class="bx bx-right-arrow-alt"></i>
-                                            <span class="menu-item" data-i18n="Third Level">Equipos</span></a>
-                                    </li>
-                                    <li><a href="#">
-                                            <i class="bx bx-right-arrow-alt"></i>
-                                            <span class="menu-item" data-i18n="Third Level">Disponible</span>
-                                        </a></li>
-                                </ul>
-                            </li>
-                        @endrole
-
                     </ul>
                 </li>
-                @role('SuperAdmin')
-                    <li class=" nav-item"><a href="#"><i class="bx bx-cog"></i><span class="menu-title"
-                                data-i18n="Menu Levels">Administración</span></a>
-                        <ul class="menu-content" style="display: block;">
-                            <li><a href="{{ Route('user') }}">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Usuarios</span>
-                                </a></li>
-                            <li><a href="{{ Route('equipo') }}">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Equipos</span>
-                                </a></li>
-                            <li><a href="{{ Route('tarea') }}">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Tareas</span>
-                                </a></li>
-                            <li><a href="{{ Route('solicitud') }}">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Solicitudes</span>
-                                </a></li>
-                        </ul>
-                    </li>
-                    <li class=" nav-item"><a href="#"><i class="bx bx-shield"></i><span class="menu-title"
-                                data-i18n="Menu Levels">Seguridad</span></a>
-                        <ul class="menu-content" style="display: block;">
-                            <li><a href="{{ Route('security.index') }}">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Dashboard</span>
-                                </a></li>
-                            <li><a href="{{ Route('security.events') }}">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Eventos</span>
-                                </a></li>
-                            <li><a href="{{ Route('security.threat-intelligence') }}">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Inteligencia de Amenazas</span>
-                                </a></li>
-                            <li><a href="{{ Route('security.ip-reputation') }}">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Reputación de IPs</span>
-                                </a></li>
-
-                            <li><a href="{{ Route('security.logs') }}">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Logs</span>
-                                </a></li>
-
-                        </ul>
-                    </li>
                 @endrole
+
                 <li class=" navigation-header"><span>Soporte</span>
                 </li>
             </ul>

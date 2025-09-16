@@ -112,6 +112,11 @@ class UserController extends Controller
                 $submittedRoles[] = 'SuperAdmin';
             }
         }
+        if ($user->hasRole('Admin')) {
+            if (! in_array('Admin', $submittedRoles)) {
+                $submittedRoles[] = 'Admin';
+            }
+        }
         try {
             DB::beginTransaction();
             $user->syncRoles($submittedRoles);
@@ -156,6 +161,10 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
+        if ($user->id === auth()->id()) {
+            return back()->with('error', 'No puedes eliminarte a ti mismo por seguridad.');
+        }
+
         if ($user->equipos()->exists()) {
             return back()->with('error', 'El usuario no puede ser eliminado porque tiene equipos asignados.');
         }

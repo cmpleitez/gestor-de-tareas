@@ -9,6 +9,7 @@
 
 @section('contenedor')
     {{-- EQUIPOS DE TRABAJO DESTINO --}}
+    @can('asignar')
     <div class="row">
         <div class="col-12">
             @if (optional(auth()->user()->mainRole)->name != 'Operador')
@@ -80,6 +81,7 @@
             @endif
         </div>
     </div>
+    @endcan
     {{-- TABLEROS KANBAN --}}
     <div class="row kanban-container" style="display: flex; align-items: stretch;">
         <div class="col-md-4"> {{-- Recibidas --}}
@@ -199,25 +201,27 @@
                     ghostClass: 'sortable-ghost',
                     chosenClass: 'sortable-chosen',
                     dragClass: 'sortable-drag',
-                    onEnd: function(evt) {
-                        const solicitudId = evt.item.dataset.id;
-                        const columnaOrigen = evt.from.id;
-                        const columnaDestino = evt.to.id;
-                        if (columnaOrigen !==
-                            columnaDestino) { // Verificar si realmente cambió de columna
-                            if (columnaOrigen !== 'columna-recibidas' || columnaDestino !==
-                                'columna-progreso'
-                            ) { // Validar movimiento único desde columna-recibidas hacia columna-progreso
-                                toastr.error('Movimiento no disponible');
-                                $(evt.from).append(evt
-                                    .item); // Revertir la tarjeta a su posición original
-                                return;
+                    onEnd: function(evt) { // Movimiento único disponible desde columna-recibidas hacia columna-progreso
+                        @can('asignar')
+                            const solicitudId = evt.item.dataset.id;
+                            const columnaOrigen = evt.from.id;
+                            const columnaDestino = evt.to.id;
+                            if (columnaOrigen !== columnaDestino) { 
+                                    if (columnaOrigen !== 'columna-recibidas' || columnaDestino !=='columna-progreso') 
+                                    { 
+                                        toastr.error('Movimiento no disponible');
+                                        $(evt.from).append(evt
+                                            .item); // Revertir la tarjeta a su posición original
+                                        return;
+                                    }
+                                    updatePosition(solicitudId, columnaDestino,evt
+                                ); 
                             }
-                            updatePosition(solicitudId, columnaDestino,
-                                evt
-                            ); //Actualizar el drag and drop tanto en el backend como en el frontend
-                        }
-                        actualizarMensajeColumnaVacia();
+                            actualizarMensajeColumnaVacia();
+                        @else
+                            toastr.error('No tienes permiso para realizar esta acción');
+                            $(evt.from).append(evt.item); // Revertir la tarjeta a su posición original
+                        @endcan
                     }
                 });
             });

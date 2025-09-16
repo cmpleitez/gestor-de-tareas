@@ -26,12 +26,5 @@ class AppServiceProvider extends ServiceProvider
             'mail.mailers.sendgrid.client.timeout' => 60,
         ]);
 
-        // Configurar charset UTF-8 para evitar caracteres chinos en logs
-        mb_internal_encoding('UTF-8');
-        mb_http_output('UTF-8');
-        mb_regex_encoding('UTF-8');
-
-        // Configurar locale para español
-        setlocale(LC_ALL, 'es_ES.UTF-8', 'es_ES', 'es');
     }
 }

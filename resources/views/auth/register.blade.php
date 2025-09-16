@@ -121,6 +121,20 @@
             margin-right: 0.1rem;
         }
 
+        /* Fix para mantener el footer estático */
+        .footer {
+            position: fixed !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            z-index: 1000 !important;
+            margin: 0 !important;
+        }
+
+        body {
+            padding-bottom: 60px !important;
+        }
+
         div.dataTables_wrapper div.dataTables_filter,
         div.dataTables_wrapper div.dataTables_length {
             margin: 0rem 0;
@@ -239,7 +253,7 @@
                     </div>
                 </div>
                 <form class="form-horizontal" action="{{ route('register') }}" method="POST"
-                    enctype="multipart/form-data" novalidate> {{-- Contenido --}}
+                    enctype="multipart/form-data"> {{-- Contenido --}}
                     @csrf
                     <div class="card-content">
                         <div class="card-body">
@@ -399,13 +413,12 @@
 
             // Inicializar validación del formulario
             $("input,select,textarea").not("[type=submit]").jqBootstrapValidation({
-                preventSubmit: true,
+                preventSubmit: false,
                 submitError: function($form, event, errors) {
                     // Manejar errores de envío aquí
                 },
                 submitSuccess: function($form, event) {
-                    // No usar event.preventDefault() aquí para permitir el envío normal
-                    // El formulario se enviará automáticamente si pasa la validación
+                    // Permitir el envío normal del formulario
                 },
                 filter: function() {
                     return $(this).is(":visible");
