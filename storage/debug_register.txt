@@ -21,3 +21,13 @@ Datos recibidos: {"_token":"5sgyDHALA6uSg0mpmC6zPZhdy957pJkacSct6SJB","name":"Mi
 Timestamp: 2025-09-16 14:33:55
 
 Usuario creado exitosamente: ID=3, Email=miguel.aragon.sv@gmail.com
+=== REGISTRO DEBUG ===
+Datos recibidos: {"_token":"M5TujiQu9qCukdnaQ0lrdCBZsGb6BrF2HdiPQH5U","name":"Miguel Arag\u00f3n","dui":"234567890","email":"miguel.aragon.sv@gmail.com","password":"p@5t15al5abana","password_confirmation":"p@5t15al5abana","profile_photo_path":{}}
+Timestamp: 2025-09-16 15:28:46
+
+Usuario creado exitosamente: ID=3, Email=miguel.aragon.sv@gmail.com
+=== REGISTRO DEBUG ===
+Datos recibidos: {"_token":"M5TujiQu9qCukdnaQ0lrdCBZsGb6BrF2HdiPQH5U","name":"Carlos Ascient","dui":"123456784","email":"cmpleitez.sv@gmail.com","password":"p@5t15al5abana","password_confirmation":"p@5t15al5abana","profile_photo_path":{}}
+Timestamp: 2025-09-16 15:33:59
+
+Usuario creado exitosamente: ID=4, Email=cmpleitez.sv@gmail.com
