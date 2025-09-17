@@ -147,8 +147,6 @@ CLIENTE:
 
 SEGURIDAD:
     🟢 implementar el ssl
-    🟢 implementar lectura de kanvan para clientes
-    🟢 restringir permisos para impulsar ordenes de compra
 SERVICIOS:
     🔵 Finalizados por el momento todos servicios informáticos, hasta nuevo aviso
     🟢 cambiar "area" por otro dato en las tarjetas del kanvan
@@ -156,6 +154,11 @@ SERVICIOS:
     🟢 la persiana selectora de equipos de trabajo no debe estar disponible si no se tiene el permiso de "asignar"
     🟢 el drag and drop en general no debe permitirse sino al rol "Receptor"
     🟢 como cliente no debe verse la persiana de los destinatarios en solicitudes
+    🟢 implementar lectura de kanvan para clientes
+        restringir permisos para impulsar ordenes de compra
+        dar permiso a clientes para solo lectura del kanvan
+        cuando no hayan tarjetas en el tablero desactivar el drag and drop
+        agregar el cliente entre los participantes de la tarjeta
 FUSION SERVICIOS Y GESTOR:
     🟢 construir funcionalidades del catalogo de productos
     🟢 agregar un campo para el codigo físico del producto y mantenerlo visible en el catalogo de productos

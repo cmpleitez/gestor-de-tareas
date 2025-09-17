@@ -20,15 +20,32 @@ class RecepcionController extends Controller
     public function solicitudes()
     {
         try {
+            //VALIDACIÓN
+            $equipos = Equipo::where('oficina_id', auth()->user()->oficina_id)->get();
+            if ($equipos->isEmpty()) {
+                return back()->with('error', 'No hay equipos de trabajo disponibles para asignar las solicitudes');
+            }
+            $operadores = User::whereHas('roles', function ($query) {
+                $query->where('name', 'Operador');
+            })->whereHas('oficina', function ($query) {
+                $query->where('id', auth()->user()->oficina_id);
+            })->where('activo', true)->get();
+            if ($operadores->isEmpty()) {
+                return back()->with('error', 'No hay operadores disponibles para asignar las solicitudes');
+            }
+            //PROCESO
             $user        = auth()->user();
-            $recepciones = Recepcion::where('user_id_destino', $user->id)
-                ->with(['solicitud.tareas', 'usuarioDestino', 'atencion.oficina', 'atencion.estado', 'role'])
-                ->whereHas('atencion.oficina', function ($query) use ($user) {
-                    $query->where('id', $user->oficina_id);
-                })
-                ->orderBy('created_at', 'desc')
-                ->limit(5)
-                ->get();
+            $recepciones = Recepcion::where(function ($query) use ($user) {
+                $query->where('user_id_destino', $user->id)
+                    ->orWhere('user_id_origen', $user->id);
+            })
+            ->with(['solicitud.tareas', 'usuarioDestino', 'usuarioOrigen', 'atencion.oficina', 'atencion.estado', 'role'])
+            ->whereHas('atencion.oficina', function ($query) use ($user) {
+                $query->where('id', $user->oficina_id);
+            })
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
             $atencionIds                = $recepciones->pluck('atencion_id')->unique();
             $usuariosDestinoPorAtencion = Recepcion::with(['usuarioDestino', 'role'])
                 ->whereIn('atencion_id', $atencionIds)
@@ -62,6 +79,7 @@ class RecepcionController extends Controller
                     'titulo'              => $tarjeta->solicitud->solicitud,
                     'users'               => $usuariosDestino,
                     'user_name'           => $tarjeta->usuarioDestino->name,
+                    'user_origen_name'    => $tarjeta->usuarioOrigen->name,
                     'oficina'             => $tarjeta->atencion->oficina->oficina,
                 ];
             });
@@ -72,12 +90,8 @@ class RecepcionController extends Controller
                 'recibidas'  => $recibidas,
                 'progreso'   => $progreso,
                 'resueltas'  => $resueltas,
-                'equipos'    => Equipo::where('oficina_id', $user->oficina_id)->get(),
-                'operadores' => User::whereHas('roles', function ($query) {
-                    $query->where('name', 'Operador');
-                })->whereHas('oficina', function ($query) use ($user) {
-                    $query->where('id', $user->oficina_id);
-                })->where('activo', true)->get(),
+                'equipos'    => $equipos,
+                'operadores' => $operadores,
             ];
             if (auth()->user()->main_role == 'Receptor') {
                 if ($data['equipos']->isEmpty()) {
@@ -243,12 +257,9 @@ class RecepcionController extends Controller
             //VALIDACIÓN
             $operadores = User::whereHas('equipos', function ($q1) use ($equipo) {
                 $q1->where('equipo_id', $equipo->id);
-            })
-                ->whereHas('mainRole', function ($q1) {
-                    $q1->where('name', 'Operador');
-                })
-                ->where('activo', true)
-                ->get();
+            })->whereHas('mainRole', function ($q1) {
+                $q1->where('name', 'Operador');
+            })->where('activo', true)->get();
             if ($operadores->isEmpty()) {
                 return response()->json(['warning' => true, 'message' => 'No hay operadores disponibles para asignar la solicitud'], 422);
             }

@@ -68,7 +68,7 @@ class UserSeeder extends Seeder
         $role->givePermissionTo(['ver']);
 
         $role = Role::create(['name' => 'Operador']);
-        $role->givePermissionTo(['ver', 'crear', 'editar']);
+        $role->givePermissionTo(['ver', 'crear', 'editar', 'asignar']);
 
         $role = Role::create(['name' => 'Cliente']);
         $role->givePermissionTo(['ver', 'crear', 'editar']);
@@ -101,17 +101,15 @@ class UserSeeder extends Seeder
         try {
             $user = User::findOrFail(1);
             $user->assignRole('SuperAdmin');
-            echo "Rol SuperAdmin asignado al usuario 1\n";
         } catch (\Exception $e) {
-            echo "Error asignando rol SuperAdmin: " . $e->getMessage() . "\n";
+            echo "Error asignando rol SuperAdmin: " . $e->getMessage();
         }
 
         try {
             $user = User::findOrFail(2);
             $user->assignRole('Admin');
-            echo "Rol Admin asignado al usuario 2\n";
         } catch (\Exception $e) {
-            echo "Error asignando rol Admin: " . $e->getMessage() . "\n";
+            echo "Error asignando rol Admin: " . $e->getMessage();
         }
 
         //CREACION DE TAREAS

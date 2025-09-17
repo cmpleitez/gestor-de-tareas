@@ -102,22 +102,27 @@ class UserController extends Controller
 
     public function rolesUpdate(Request $request, User $user)
     {
-        $validated = $request->validate([
-            'roles'   => 'required|array',
-            'role_id' => 'required|numeric|exists:roles,id',
-        ]);
-        $submittedRoles = $validated['roles'];
-        if ($user->hasRole('SuperAdmin')) {
-            if (! in_array('SuperAdmin', $submittedRoles)) {
-                $submittedRoles[] = 'SuperAdmin';
-            }
-        }
-        if ($user->hasRole('Admin')) {
-            if (! in_array('Admin', $submittedRoles)) {
-                $submittedRoles[] = 'Admin';
-            }
-        }
         try {
+            //VALIDACIÓN
+            $validated = $request->validate([
+                'roles'   => 'required|array',
+                'role_id' => 'required|numeric|exists:roles,id',
+            ]);
+            $submittedRoles = $validated['roles'];
+            if ($user->hasRole('SuperAdmin')) {
+                if (! in_array('SuperAdmin', $submittedRoles)) {
+                    $submittedRoles[] = 'SuperAdmin';
+                }
+            }
+            if ($user->hasRole('Admin')) {
+                if (! in_array('Admin', $submittedRoles)) {
+                    $submittedRoles[] = 'Admin';
+                }
+            }
+            if (in_array($user->mainRole->name, ['SuperAdmin', 'Admin']) && $validated['role_id'] != $user->role_id) {
+                throw new Exception('No se puede cambiar el rol principal de un usuario ' . $user->mainRole->name);
+            }
+            //PROCESO
             DB::beginTransaction();
             $user->syncRoles($submittedRoles);
             $roleId = $validated['role_id'];
