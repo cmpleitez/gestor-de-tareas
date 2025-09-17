@@ -39,32 +39,64 @@ class RecepcionController extends Controller
                 $query->where('user_id_destino', $user->id)
                     ->orWhere('user_id_origen', $user->id);
             })
-            ->with(['solicitud.tareas', 'usuarioDestino', 'usuarioOrigen', 'atencion.oficina', 'atencion.estado', 'role'])
-            ->whereHas('atencion.oficina', function ($query) use ($user) {
-                $query->where('id', $user->oficina_id);
-            })
-            ->orderBy('created_at', 'desc')
-            ->limit(5)
-            ->get();
-            $atencionIds                = $recepciones->pluck('atencion_id')->unique();
-            $usuariosDestinoPorAtencion = Recepcion::with(['usuarioDestino', 'role'])
+                ->with(['solicitud.tareas', 'usuarioDestino', 'usuarioOrigen', 'atencion.oficina', 'atencion.estado', 'role'])
+                ->whereHas('atencion.oficina', function ($query) use ($user) {
+                    $query->where('id', $user->oficina_id);
+                })
+                ->orderBy('created_at', 'desc')
+                ->limit(5)
+                ->get();
+            $atencionIds = $recepciones->pluck('atencion_id')->unique();
+
+            // Consulta separada para usuarios destino
+            $usuariosDestino = Recepcion::with(['usuarioDestino', 'role'])
                 ->whereIn('atencion_id', $atencionIds)
                 ->get()
+                ->map(function ($recepcion) {
+                    return [
+                        'recepcion_id'        => $recepcion->id,
+                        'atencion_id'         => $recepcion->atencion_id,
+                        'name'                => $recepcion->usuarioDestino->name,
+                        'profile_photo_url'   => $recepcion->usuarioDestino->profile_photo_url
+                            ? $recepcion->usuarioDestino->profile_photo_url
+                            : asset('app-assets/images/pages/operador.png'),
+                        'recepcion_role_name' => $recepcion->role->name,
+                        'oficina_name'        => $recepcion->atencion->oficina->oficina,
+                        'tipo'                => 'destino',
+                    ];
+                });
+
+            // Consulta separada para usuarios origen
+            $usuariosOrigen = Recepcion::with(['usuarioOrigen', 'role'])
+                ->whereIn('atencion_id', $atencionIds)
+                ->get()
+                ->map(function ($recepcion) {
+                    return [
+                        'recepcion_id'        => $recepcion->id,
+                        'atencion_id'         => $recepcion->atencion_id,
+                        'name'                => $recepcion->usuarioOrigen->name,
+                        'profile_photo_url'   => $recepcion->usuarioOrigen->profile_photo_url
+                            ? $recepcion->usuarioOrigen->profile_photo_url
+                            : asset('app-assets/images/pages/operador.png'),
+                        'recepcion_role_name' => $recepcion->role->name,
+                        'oficina_name'        => $recepcion->atencion->oficina->oficina,
+                        'tipo'                => 'origen',
+                    ];
+                });
+
+            // Combinar y agrupar por atencion_id
+            $usuariosParticipantes = $usuariosDestino->merge($usuariosOrigen)
                 ->groupBy('atencion_id')
                 ->map(function ($grupo) {
-                    return $grupo->map(function ($recepcion) {
-                        return [
-                            'name'                => $recepcion->usuarioDestino->name,
-                            'profile_photo_url'   => $recepcion->usuarioDestino->profile_photo_url
-                                ? $recepcion->usuarioDestino->profile_photo_url
-                                : asset('app-assets/images/pages/operador.png'),
-                            'recepcion_role_name' => $recepcion->role->name,
-                            'oficina_name'        => $recepcion->atencion->oficina->oficina,
-                        ];
+                    return $grupo->unique(function ($usuario) {
+                        return $usuario['recepcion_id'] . '_' . $usuario['tipo'];
                     })->values();
                 });
-            $tarjetas = $recepciones->map(function ($tarjeta) use ($usuariosDestinoPorAtencion) {
-                $usuariosDestino = $usuariosDestinoPorAtencion->get($tarjeta->atencion_id, collect());
+
+            return $usuariosParticipantes;
+
+            $tarjetas = $recepciones->map(function ($tarjeta) use ($usuariosParticipantes) {
+                $usuariosParticipantesAtencion = $usuariosParticipantes->get($tarjeta->atencion_id, collect());
                 return [
                     'atencion_id'         => $tarjeta->atencion_id,
                     'created_at'          => $tarjeta->created_at->toISOString(),
@@ -77,7 +109,7 @@ class RecepcionController extends Controller
                     'role_name'           => $tarjeta->role->name,
                     'atencion_id_ripped'  => KeyRipper::rip($tarjeta->atencion_id),
                     'titulo'              => $tarjeta->solicitud->solicitud,
-                    'users'               => $usuariosDestino,
+                    'users'               => $usuariosParticipantesAtencion,
                     'user_name'           => $tarjeta->usuarioDestino->name,
                     'user_origen_name'    => $tarjeta->usuarioOrigen->name,
                     'oficina'             => $tarjeta->atencion->oficina->oficina,
@@ -93,11 +125,6 @@ class RecepcionController extends Controller
                 'equipos'    => $equipos,
                 'operadores' => $operadores,
             ];
-            if (auth()->user()->main_role == 'Receptor') {
-                if ($data['equipos']->isEmpty()) {
-                    return back()->with('error', 'No hay equipos de trabajo disponibles para asignar las solicitudes');
-                }
-            }
             return view('modelos.recepcion.solicitudes', $data);
         } catch (\Exception $e) {
             return back()->with('error', 'Ocurrió un error cuando se intentaba obtener las solicitudes:' . $e->getMessage());

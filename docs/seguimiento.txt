@@ -155,10 +155,13 @@ SERVICIOS:
     🟢 el drag and drop en general no debe permitirse sino al rol "Receptor"
     🟢 como cliente no debe verse la persiana de los destinatarios en solicitudes
     🟢 implementar lectura de kanvan para clientes
-        restringir permisos para impulsar ordenes de compra
-        dar permiso a clientes para solo lectura del kanvan
-        cuando no hayan tarjetas en el tablero desactivar el drag and drop
+        ✨dar permiso a clientes para solo lectura del kanvan
+        ✨cuando no hayan tarjetas en el tablero desactivar el drag and drop
         agregar el cliente entre los participantes de la tarjeta
+            agregarlos tambien en nuevasrecibidas
+        ✨cuando una tarjeta esta resuelta, sus tareas, se deben setear solo lectura
+    🟢 holomogar next capital con commit de gestor-de-tareas del 16.sep 4:07
+
 FUSION SERVICIOS Y GESTOR:
     🟢 construir funcionalidades del catalogo de productos
     🟢 agregar un campo para el codigo físico del producto y mantenerlo visible en el catalogo de productos

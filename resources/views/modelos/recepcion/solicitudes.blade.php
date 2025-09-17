@@ -10,77 +10,77 @@
 @section('contenedor')
     {{-- EQUIPOS DE TRABAJO DESTINO --}}
     @can('asignar')
-    <div class="row">
-        <div class="col-12">
-            @if (optional(auth()->user()->mainRole)->name != 'Operador')
-                <div class="accordion" id="accordionWrapa2">
-                    <div class="card collapse-header border-0 overflow-hidden">
-                        <div id="heading5" class="card-header" data-toggle="collapse" data-target="#accordion5"
-                            aria-expanded="false" aria-controls="accordion5" role="tablist"
-                            style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); border: none; margin: 0; cursor: pointer; transition: all 0.3s ease;">
-                            <div class="d-flex align-items-center justify-content-between w-100">
-                                <div class="d-flex align-items-center">
-                                    <div class="d-flex align-items-center" style="padding: 0.75rem;">
-                                        <i class="bx bx-target-lock text-white" style="font-size: 1.1rem;"></i>
+        <div class="row">
+            <div class="col-12">
+                @if (optional(auth()->user()->mainRole)->name != 'Operador')
+                    <div class="accordion" id="accordionWrapa2">
+                        <div class="card collapse-header border-0 overflow-hidden">
+                            <div id="heading5" class="card-header" data-toggle="collapse" data-target="#accordion5"
+                                aria-expanded="false" aria-controls="accordion5" role="tablist"
+                                style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); border: none; margin: 0; cursor: pointer; transition: all 0.3s ease;">
+                                <div class="d-flex align-items-center justify-content-between w-100">
+                                    <div class="d-flex align-items-center">
+                                        <div class="d-flex align-items-center" style="padding: 0.75rem;">
+                                            <i class="bx bx-target-lock text-white" style="font-size: 1.1rem;"></i>
+                                        </div>
+                                        <div class="d-flex flex-column align-items-start justify-content-center">
+                                            <h6 class="mb-0 text-white font-weight-500"
+                                                style="font-size: 1rem; letter-spacing: 0.3px;">
+                                                @if (optional(auth()->user()->mainRole)->name == 'Receptor')
+                                                    <span
+                                                        class="font-weight-600">{{ auth()->user()->equipos()->first()->equipo }}</span>
+                                                @endif
+                                            </h6>
+                                            <small class="text-white-50" style="font-size: 0.8rem;">
+                                                Selecciona el equipo de trabajo destino para impulsar las solicitudes
+                                            </small>
+                                        </div>
                                     </div>
-                                    <div class="d-flex flex-column align-items-start justify-content-center">
-                                        <h6 class="mb-0 text-white font-weight-500"
-                                            style="font-size: 1rem; letter-spacing: 0.3px;">
-                                            @if (optional(auth()->user()->mainRole)->name == 'Receptor')
-                                                <span
-                                                    class="font-weight-600">{{ auth()->user()->equipos()->first()->equipo }}</span>
-                                            @endif
-                                        </h6>
-                                        <small class="text-white-50" style="font-size: 0.8rem;">
-                                            Selecciona el equipo de trabajo destino para impulsar las solicitudes
-                                        </small>
+                                    <div>
+                                        <i class="bx bx-chevron-down text-white accordion-arrow"
+                                            style="font-size: 1rem; transition: transform 0.3s ease;"></i>
                                     </div>
-                                </div>
-                                <div>
-                                    <i class="bx bx-chevron-down text-white accordion-arrow"
-                                        style="font-size: 1rem; transition: transform 0.3s ease;"></i>
                                 </div>
                             </div>
-                        </div>
-                        <div id="accordion5" role="tabpanel" data-parent="#accordionWrapa2" aria-labelledby="heading5"
-                            class="collapse">
-                            <div class="card-content">
-                                <div class="card-body" style="background: #f8f9fa; padding: 1rem;">
-                                    @if (optional(auth()->user()->mainRole)->name == 'Receptor' && isset($equipos))
-                                        <div class="row" style="display: flex; align-items: stretch;">
-                                            @foreach ($equipos as $equipo)
-                                                <div class="col-md-3">
-                                                    <div class="selectable-item {{ $equipo->id == auth()->user()->equipos->first()->id ? 'selected' : '' }}"
-                                                        onclick="selectItem('equipo_{{ $equipo->id }}')">
-                                                        <div class="item-body">
-                                                            <div class="item-info">
-                                                                <div class="item-name">{{ $equipo->equipo }}</div>
-                                                                <div class="item-desc">Equipo de trabajo</div>
+                            <div id="accordion5" role="tabpanel" data-parent="#accordionWrapa2" aria-labelledby="heading5"
+                                class="collapse">
+                                <div class="card-content">
+                                    <div class="card-body" style="background: #f8f9fa; padding: 1rem;">
+                                        @if (optional(auth()->user()->mainRole)->name == 'Receptor' && isset($equipos))
+                                            <div class="row" style="display: flex; align-items: stretch;">
+                                                @foreach ($equipos as $equipo)
+                                                    <div class="col-md-3">
+                                                        <div class="selectable-item {{ $equipo->id == auth()->user()->equipos->first()->id ? 'selected' : '' }}"
+                                                            onclick="selectItem('equipo_{{ $equipo->id }}')">
+                                                            <div class="item-body">
+                                                                <div class="item-info">
+                                                                    <div class="item-name">{{ $equipo->equipo }}</div>
+                                                                    <div class="item-desc">Equipo de trabajo</div>
+                                                                </div>
+                                                                <div class="radio-indicator"></div>
                                                             </div>
-                                                            <div class="radio-indicator"></div>
+                                                            <input type="radio" id="equipo_{{ $equipo->id }}"
+                                                                name="equipo_destino" value="{{ $equipo->id }}"
+                                                                {{ $equipo->id == auth()->user()->equipos->first()->id ? 'checked' : '' }}
+                                                                style="display: none;">
                                                         </div>
-                                                        <input type="radio" id="equipo_{{ $equipo->id }}"
-                                                            name="equipo_destino" value="{{ $equipo->id }}"
-                                                            {{ $equipo->id == auth()->user()->equipos->first()->id ? 'checked' : '' }}
-                                                            style="display: none;">
                                                     </div>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    @else
-                                        <div class="text-center text-muted py-4">
-                                            <i class="bx bx-info-circle" style="font-size: 2rem;"></i>
-                                            <p class="mt-2 mb-0">No hay elementos disponibles para tu rol.</p>
-                                        </div>
-                                    @endif
+                                                @endforeach
+                                            </div>
+                                        @else
+                                            <div class="text-center text-muted py-4">
+                                                <i class="bx bx-info-circle" style="font-size: 2rem;"></i>
+                                                <p class="mt-2 mb-0">No hay elementos disponibles para tu rol.</p>
+                                            </div>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            @endif
+                @endif
+            </div>
         </div>
-    </div>
     @endcan
     {{-- TABLEROS KANBAN --}}
     <div class="row kanban-container" style="display: flex; align-items: stretch;">
@@ -170,6 +170,7 @@
     <script>
         //SELECCIONANDO EL ITEM DESTINATARIO
         let userRole = @json(optional(auth()->user()->mainRole)->name) || '';
+
         function selectItem(radioId) { // Función para seleccionar items
             document.querySelectorAll('.selectable-item').forEach(selector => { // Desmarcar todos los selectores
                 selector.classList.remove('selected');
@@ -187,42 +188,44 @@
         }
         //INICIALIZAR KANBAN
         @can('asignar')
-        function initKanban() { // Inicializar el kanban
-            const columnas = ['columna-recibidas', 'columna-progreso', 'columna-resueltas'];
-            columnas.forEach(function(columnaId) {
-                const elemento = document.getElementById(columnaId);
-                if (!elemento) return;
-                new Sortable(elemento, {
-                    group: 'kanban',
-                    animation: 150,
-                    ghostClass: 'sortable-ghost',
-                    chosenClass: 'sortable-chosen',
-                    dragClass: 'sortable-drag',
-                    onEnd: function(evt) { // Movimiento único disponible desde columna-recibidas hacia columna-progreso
-                        @can('asignar')
-                            const solicitudId = evt.item.dataset.id;
-                            const columnaOrigen = evt.from.id;
-                            const columnaDestino = evt.to.id;
-                            if (columnaOrigen !== columnaDestino) { 
-                                    if (columnaOrigen !== 'columna-recibidas' || columnaDestino !=='columna-progreso') 
-                                    { 
+            function initKanban() { // Inicializar el kanban
+                const columnas = ['columna-recibidas', 'columna-progreso', 'columna-resueltas'];
+                columnas.forEach(function(columnaId) {
+                    const elemento = document.getElementById(columnaId);
+                    if (!elemento) return;
+                    new Sortable(elemento, {
+                        group: 'kanban',
+                        animation: 150,
+                        ghostClass: 'sortable-ghost',
+                        chosenClass: 'sortable-chosen',
+                        dragClass: 'sortable-drag',
+                        onEnd: function(
+                            evt
+                        ) { // Movimiento único disponible desde columna-recibidas hacia columna-progreso
+                            @can('asignar')
+                                const solicitudId = evt.item.dataset.id;
+                                const columnaOrigen = evt.from.id;
+                                const columnaDestino = evt.to.id;
+                                if (columnaOrigen !== columnaDestino) {
+                                    if (columnaOrigen !== 'columna-recibidas' || columnaDestino !==
+                                        'columna-progreso') {
                                         toastr.error('Movimiento no disponible');
                                         $(evt.from).append(evt
                                             .item); // Revertir la tarjeta a su posición original
                                         return;
                                     }
-                                    updatePosition(solicitudId, columnaDestino,evt
-                                ); 
-                            }
-                            actualizarMensajeColumnaVacia();
-                        @else
-                            toastr.error('No tienes permiso para realizar esta acción');
-                            $(evt.from).append(evt.item); // Revertir la tarjeta a su posición original
-                        @endcan
-                    }
+                                    updatePosition(solicitudId, columnaDestino, evt);
+                                }
+                                actualizarMensajeColumnaVacia();
+                            @else
+                                toastr.error('No tienes permiso para realizar esta acción');
+                                $(evt.from).append(evt
+                                    .item); // Revertir la tarjeta a su posición original
+                            @endcan
+                        }
+                    });
                 });
-            });
-        }
+            }
         @endcan
         //FUNCIONES PARA LA CARGA INICIAL DE LAS TARJETAS
         function cargarTarjetasIniciales(tarjetas) {
@@ -284,6 +287,9 @@
                     badgeColor = 'badge-secondary';
             }
             let usersHtml = ''; // Generar HTML de usuarios
+
+            console.log(tarjeta.users);
+
             if (tarjeta.users && tarjeta.users.length > 0) {
                 tarjeta.users.forEach(function(user) {
                     const avatar = user.profile_photo_url ?
@@ -499,15 +505,15 @@
         function actualizarMensajeColumnaVacia() { //Mostrar u ocultar mensaje de columna vacía
             const columnas = [{
                     id: 'columna-recibidas',
-                    mensaje: '<div class="text-center text-muted py-4"><i class="bx bx-archive text-muted" style="font-size: 1.5rem;"></i><div class="mt-2">Sin solicitudes recibidas</div></div>'
+                    mensaje: '<div class="text-center text-muted py-4" style="pointer-events: none; user-select: none;"><i class="bx bx-archive text-muted" style="font-size: 1.5rem;"></i><div class="mt-2">Sin solicitudes recibidas</div></div>'
                 },
                 {
                     id: 'columna-progreso',
-                    mensaje: '<div class="text-center text-muted py-4"><i class="bx bx-time-five text-muted" style="font-size: 1.5rem;"></i><div class="mt-2">Sin tareas en progreso</div></div>'
+                    mensaje: '<div class="text-center text-muted py-4" style="pointer-events: none; user-select: none;"><i class="bx bx-time-five text-muted" style="font-size: 1.5rem;"></i><div class="mt-2">Sin tareas en progreso</div></div>'
                 },
                 {
                     id: 'columna-resueltas',
-                    mensaje: '<div class="text-center text-muted py-4"><i class="bx bx-check-circle text-muted" style="font-size: 1.5rem;"></i><div class="mt-2">Sin tareas completadas</div></div>'
+                    mensaje: '<div class="text-center text-muted py-4" style="pointer-events: none; user-select: none;"><i class="bx bx-check-circle text-muted" style="font-size: 1.5rem;"></i><div class="mt-2">Sin tareas completadas</div></div>'
                 }
             ];
             columnas.forEach(function(col) {
@@ -570,18 +576,19 @@
                     estadoIcon = 'bx-check-circle';
                 }
                 tareasHtml += `
-            <div class="selectable-item ${tarea.estado_id == 3 ? 'selected' : ''}" onclick="selectTask('task_${tarea.actividad_id}')">
-                <div class="checkbox-indicator ${tarea.estado_id == 3 ? 'checked' : ''}" id="checkbox_${tarea.actividad_id}"></div>
-                <div class="item-body">
-                    <div class="item-info">
-                        <div class="item-name">${tarea.tarea}</div>
-                        <div class="item-desc">T-${tarea.actividad_id_ripped}</div>
+                <div class="selectable-item ${tarea.estado_id == 3 ? 'selected' : ''}" ${tarea.estado_id == 3 ? 'style="pointer-events: none;"' : 'onclick="selectTask(\'task_${tarea.actividad_id}\')"'}">
+                    <div class="checkbox-indicator" id="checkbox_${tarea.actividad_id}" ${tarea.estado_id == 3 ? 'style="background: none; border: none;"' : ''}>
+                        ${tarea.estado_id == 3 ? '<i class="bx bx-check" style="color: #28a745; font-size: 2rem;"></i>' : ''}
                     </div>
+                    <div class="item-body">
+                        <div class="item-info">
+                            <div class="item-name">${tarea.tarea}</div>
+                            <div class="item-desc">T-${tarea.actividad_id_ripped}</div>
+                        </div>
+                    </div>
+                    ${tarea.estado_id != 3 ? `<input type="checkbox" id="task_${tarea.actividad_id}" name="tarea_completada" value="${tarea.actividad_id}" ${tarea.estado_id == 3 ? 'checked' : ''} style="display: none;">` : ''}
                 </div>
-                <input type="checkbox" id="task_${tarea.actividad_id}" name="tarea_completada" 
-                    value="${tarea.actividad_id}" ${tarea.estado_id == 3 ? 'checked' : ''} style="display: none;">
-            </div>
-        `;
+                `;
             });
             tareasHtml += '</div>';
             $('#sidebar-card-body').append(tareasHtml);
@@ -643,7 +650,7 @@
                                     Swal.fire({
                                         position: 'top-end',
                                         type: 'success',
-                                        title: '¡Todas las tareas completadas! Solicitud movida a Resueltas',
+                                        title: '¡Se completaron todas las tareas! Solicitud movida a Resueltas',
                                         showConfirmButton: false,
                                         timer: 3000,
                                         confirmButtonClass: 'btn btn-primary',
