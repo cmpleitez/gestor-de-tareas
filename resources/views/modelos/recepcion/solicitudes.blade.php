@@ -164,16 +164,12 @@
 @endsection
 
 @section('js')
-    <!-- BEGIN: Critical JavaScript (Emergency Load) -->
     <script src="{{ asset('app-assets/vendors/js/extensions/sweetalert2.all.min.js') }}"></script>
     <script src="{{ asset('app-assets/vendors/js/jkanban/Sortable.min.js') }}"></script>
     <script src="{{ asset('app-assets/vendors/js/jkanban/jkanban.min.js') }}"></script>
-    <!-- END: Critical JavaScript (Emergency Load) -->
-
     <script>
         //SELECCIONANDO EL ITEM DESTINATARIO
         let userRole = @json(optional(auth()->user()->mainRole)->name) || '';
-
         function selectItem(radioId) { // Función para seleccionar items
             document.querySelectorAll('.selectable-item').forEach(selector => { // Desmarcar todos los selectores
                 selector.classList.remove('selected');
@@ -190,6 +186,7 @@
             }
         }
         //INICIALIZAR KANBAN
+        @can('asignar')
         function initKanban() { // Inicializar el kanban
             const columnas = ['columna-recibidas', 'columna-progreso', 'columna-resueltas'];
             columnas.forEach(function(columnaId) {
@@ -226,6 +223,7 @@
                 });
             });
         }
+        @endcan
         //FUNCIONES PARA LA CARGA INICIAL DE LAS TARJETAS
         function cargarTarjetasIniciales(tarjetas) {
             if (tarjetas.recibidas && tarjetas.recibidas.length > 0) { // Cargar tarjetas recibidas
