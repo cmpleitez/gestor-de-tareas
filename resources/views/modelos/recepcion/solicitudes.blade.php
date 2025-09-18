@@ -187,8 +187,8 @@
             }
         }
         //INICIALIZAR KANBAN
-        @can('asignar')
-            function initKanban() { // Inicializar el kanban
+        function initKanban() { // Inicializar el kanban
+            @can('asignar')
                 const columnas = ['columna-recibidas', 'columna-progreso', 'columna-resueltas'];
                 columnas.forEach(function(columnaId) {
                     const elemento = document.getElementById(columnaId);
@@ -225,8 +225,16 @@
                         }
                     });
                 });
-            }
-        @endcan
+            @else
+                // Para usuarios sin permisos de asignar, solo inicializar las columnas sin drag & drop
+                const columnas = ['columna-recibidas', 'columna-progreso', 'columna-resueltas'];
+                columnas.forEach(function(columnaId) {
+                    const elemento = document.getElementById(columnaId);
+                    if (!elemento) return;
+                    // Solo crear columnas vacías sin funcionalidad de drag & drop
+                });
+            @endcan
+        }
         //FUNCIONES PARA LA CARGA INICIAL DE LAS TARJETAS
         function cargarTarjetasIniciales(tarjetas) {
             if (tarjetas.recibidas && tarjetas.recibidas.length > 0) { // Cargar tarjetas recibidas
@@ -249,15 +257,7 @@
             }
             actualizarContadores(); // Actualizar contadores y mensajes
             actualizarMensajeColumnaVacia();
-            $('[data-toggle="popover"]').popover({ // Inicializar popovers para las tarjetas cargadas
-                html: true,
-                container: 'body',
-                trigger: 'hover',
-                delay: {
-                    show: 100,
-                    hide: 100
-                }
-            });
+            inicializarPopovers(); // Inicializar popovers para las tarjetas cargadas
         }
 
         function generarTarjetaSolicitud(tarjeta, animar = false, tipo = 'recibidas') {
@@ -286,57 +286,8 @@
                     estadoColor = '#2c3e50';
                     badgeColor = 'badge-secondary';
             }
-            let usersHtml = ''; // Generar HTML de usuarios
-
-            console.log(tarjeta.users);
-
-            if (tarjeta.users && tarjeta.users.length > 0) {
-                // Separar cliente (origen) de otros participantes (destino)
-                const cliente = tarjeta.users.find(user => user.tipo === 'origen');
-                const participantes = tarjeta.users.filter(user => user.tipo === 'destino');
-
-                // Función para generar avatar
-                function generarAvatar(user) {
-                    return user.profile_photo_url ?
-                        `<img src="${user.profile_photo_url}" alt="Usuario" class="avatar" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;">` :
-                        `<div class="avatar" style="width: 32px; height: 32px; border-radius: 50%; background: #e9ecef; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #6c757d;">${user.name ? user.name[0] : '?'}</div>`;
-                }
-
-                // Mostrar cliente primero
-                if (cliente) {
-                    usersHtml += `
-                        <div style="margin: 0;" data-toggle="popover" 
-                            data-title="${cliente.name || 'Cliente'}" 
-                            data-content="<span class='badge badge-pill badge-primary'>Cliente</span>"
-                            data-trigger="hover"
-                            data-placement="top">
-                            ${generarAvatar(cliente)}
-                        </div>
-                    `;
-
-                    // Agregar flecha si hay participantes
-                    if (participantes.length > 0) {
-                        usersHtml += `
-                            <div style="margin: 0 8px; display: flex; align-items: center; justify-content: center; width: 20px; height: 32px;">
-                                <i class="fas fa-arrow-right" style="color: ${estadoColor}; font-size: 14px;"></i>
-                            </div>
-                        `;
-                    }
-                }
-
-                // Mostrar participantes
-                participantes.forEach(function(user) {
-                    usersHtml += `
-                        <div style="margin: 0;" data-toggle="popover" 
-                            data-title="${user.name || 'Sin asignar'}" 
-                            data-content="<span class='badge badge-pill ${badgeColor}'>${user.recepcion_role_name || 'Sin rol'}</span>"
-                            data-trigger="hover"
-                            data-placement="top">
-                            ${generarAvatar(user)}
-                        </div>
-                    `;
-                });
-            }
+            // Generar HTML de usuarios usando la función auxiliar estándar
+            let usersHtml = generarHtmlUsuarios(tarjeta.users, tarjeta.estado_id, tipo);
             return `
                 <div class="solicitud-card ${animar ? 'animar-llegada' : ''} border-${borderColor}" 
                 data-id="${tarjeta.recepcion_id}"
@@ -371,15 +322,43 @@
             });
             return ids;
         }
-        //INICIALIZAR POPOVERS
-        $('[data-toggle="popover"]').popover({
-            html: true,
-            container: 'body',
-            trigger: 'hover',
-            delay: {
-                show: 100,
-                hide: 100
+        //INICIALIZAR POPOVERS GLOBALMENTE
+        function inicializarPopovers(selector = '[data-toggle="popover"]') {
+            // Solo inicializar popovers que no estén ya inicializados
+            $(selector).not('[data-popover-initialized]').popover({
+                html: true,
+                container: 'body',
+                trigger: 'hover',
+                placement: 'top',
+                boundary: 'viewport',
+                zIndex: 9999,
+                offset: '0, 8px',
+                fallbackPlacements: ['bottom', 'left', 'right'],
+                delay: {
+                    show: 300,
+                    hide: 100
+                }
+            }).attr('data-popover-initialized', 'true');
+        }
+
+        // Esperar a que el DOM esté completamente cargado
+        $(document).ready(function() {
+            // Verificar que Bootstrap esté cargado
+            if (typeof $.fn.popover === 'undefined') {
+                console.error(
+                    'Bootstrap popover no está disponible. Verificar que Bootstrap JS esté cargado correctamente.'
+                );
+            } else {
+                // Inicializar popovers existentes
+                inicializarPopovers();
             }
+        });
+
+        // Mejorar el comportamiento de los popovers
+        $(document).on('show.bs.popover', function(e) {
+            const $popover = $(e.target);
+            // En Bootstrap 4, el popover se crea automáticamente
+            // No necesitamos acceder al tip() directamente
         });
         //ACTUALIZAR EL MOVIMIENTO DE LA TARJETA, TANTO EN EL BACKEND Y COMO EN EL FRONTEND
         function updatePosition(solicitudId, nuevaColumna, evt) {
@@ -477,7 +456,6 @@
                                     $popover.attr('data-content', newContent);
                                 }
                             });
-
                             // Actualizar color de la flecha según el nuevo estado
                             tarjeta.find('.fas.fa-arrow-right').css('color', estadoColor);
                         }
@@ -599,19 +577,14 @@
             }
             let tareasHtml = '<div><h6 class="font-weight-600 mb-2"></h6>';
             tareas.forEach(function(tarea) {
-                let estadoColor = '#6c757d'; // Gris por defecto
-                let estadoIcon = 'bx-circle';
-                if (tarea.estado_id === 2) { // En progreso
-                    estadoColor = '#17a2b8';
-                    estadoIcon = 'bx-time-five';
-                } else if (tarea.estado_id == 3) { // Completada (ID 3 = Resuelta) - usando == por si es string
-                    estadoColor = '#28a745';
-                    estadoIcon = 'bx-check-circle';
-                }
-                tareasHtml += `
-                <div class="selectable-item ${tarea.estado_id == 3 ? 'selected' : ''}" ${tarea.estado_id == 3 ? 'style="pointer-events: none;"' : 'onclick="selectTask(\'task_${tarea.actividad_id}\')"'}">
-                    <div class="checkbox-indicator" id="checkbox_${tarea.actividad_id}" ${tarea.estado_id == 3 ? 'style="background: none; border: none;"' : ''}>
-                        ${tarea.estado_id == 3 ? '<i class="bx bx-check" style="color: #28a745; font-size: 2rem;"></i>' : ''}
+                // Solo las tareas con estado_id = 3 están completadas, todas las demás son clickeables
+                let esCompletada = tarea.estado_id == 3;
+
+                let taskId = 'task_' + tarea.actividad_id;
+                let htmlGenerado = `
+                <div class="selectable-item ${esCompletada ? 'selected' : ''}" ${esCompletada ? 'style="pointer-events: none;"' : 'onclick="selectTask(\'' + taskId + '\')"'}">
+                    <div class="checkbox-indicator" id="checkbox_${tarea.actividad_id}" ${esCompletada ? 'style="background: none; border: none;"' : ''}>
+                        ${esCompletada ? '<i class="bx bx-check" style="color: #28a745; font-size: 2rem;"></i>' : ''}
                     </div>
                     <div class="item-body">
                         <div class="item-info">
@@ -619,9 +592,10 @@
                             <div class="item-desc">T-${tarea.actividad_id_ripped}</div>
                         </div>
                     </div>
-                    ${tarea.estado_id != 3 ? `<input type="checkbox" id="task_${tarea.actividad_id}" name="tarea_completada" value="${tarea.actividad_id}" ${tarea.estado_id == 3 ? 'checked' : ''} style="display: none;">` : ''}
+                    ${!esCompletada ? `<input type="checkbox" id="${taskId}" name="tarea_completada" value="${tarea.actividad_id}" style="display: none;">` : ''}
                 </div>
                 `;
+                tareasHtml += htmlGenerado;
             });
             tareasHtml += '</div>';
             $('#sidebar-card-body').append(tareasHtml);
@@ -817,18 +791,91 @@
 
         function obtenerAtencionIdsTableros() {
             let ids = [];
+            console.log('Buscando tarjetas de solicitud...');
             $('.solicitud-card').each(function() {
                 let atencionId = $(this).attr('data-atencion-id');
+                console.log('Tarjeta encontrada con atencionId:', atencionId);
                 if (atencionId) {
                     ids.push(atencionId);
                 }
             });
+            console.log('Total de atencionIds encontrados:', ids.length);
             return [...new Set(ids)]; // Eliminar repetidos usando Set
         }
 
+        // Función auxiliar para generar HTML de usuarios (estándar)
+        function generarHtmlUsuarios(users, estadoId, tipo = 'recibidas') {
+            let usersHtml = '';
+            if (users && users.length > 0) {
+                // Separar cliente (origen) de otros participantes (destino)
+                const cliente = users.find(user => user.tipo === 'origen');
+                const participantes = users.filter(user => user.tipo === 'destino');
+
+                // Función para generar avatar
+                function generarAvatar(user) {
+                    return user.profile_photo_url ?
+                        `<img src="${user.profile_photo_url}" alt="Usuario" class="avatar" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;">` :
+                        `<div class="avatar" style="width: 32px; height: 32px; border-radius: 50%; background: #e9ecef; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #6c757d;">${user.name ? user.name[0] : '?'}</div>`;
+                }
+
+                // Determinar colores basados en el estado
+                let badgeColor = 'badge-secondary';
+                let estadoColor = '#2c3e50';
+                if (estadoId == 3) { // Resuelta
+                    badgeColor = 'badge-success';
+                    estadoColor = '#28a745';
+                } else if (estadoId == 2) { // En progreso
+                    badgeColor = 'badge-primary';
+                    estadoColor = '#17a2b8';
+                } else if (estadoId == 1) { // Recibida
+                    badgeColor = 'badge-secondary';
+                    estadoColor = '#2c3e50';
+                }
+
+                // Mostrar cliente primero
+                if (cliente) {
+                    usersHtml += `
+                        <div style="margin: 0;" data-toggle="popover" 
+                            data-title="${cliente.name || 'Cliente'}" 
+                            data-content="<span class='badge badge-pill badge-primary'>Cliente</span>"
+                            data-trigger="hover"
+                            data-placement="top">
+                            ${generarAvatar(cliente)}
+                        </div>
+                    `;
+
+                    // Agregar flecha si hay participantes
+                    if (participantes.length > 0) {
+                        usersHtml += `
+                            <div style="margin: 0 8px; display: flex; align-items: center; justify-content: center; width: 20px; height: 32px;">
+                                <i class="fas fa-arrow-right" style="color: ${estadoColor}; font-size: 14px;"></i>
+                            </div>
+                        `;
+                    }
+                }
+
+                // Mostrar participantes
+                participantes.forEach(function(user) {
+                    usersHtml += `
+                        <div style="margin: 0;" data-toggle="popover" 
+                            data-title="${user.name || 'Sin asignar'}" 
+                            data-content="<span class='badge badge-pill ${badgeColor}'>${user.recepcion_role_name || 'Sin rol'}</span>"
+                            data-trigger="hover"
+                            data-placement="top">
+                            ${generarAvatar(user)}
+                        </div>
+                    `;
+                });
+            }
+            return usersHtml;
+        }
+
         function consultarAvancesTablero() {
+            console.log('consultarAvancesTablero ejecutándose...');
             let atencionIds = obtenerAtencionIdsTableros();
+            console.log('AtencionIds encontrados:', atencionIds);
             if (atencionIds.length === 0) {
+                console.log('No hay tarjetas en los tableros, saliendo...');
                 return; // No hay tarjetas en los tableros
             }
             $.post({
@@ -838,6 +885,7 @@
                     _token: $('meta[name="csrf-token"]').attr('content')
                 },
                 success: function(data) {
+                    console.log('📊 Datos recibidos:', data.length, 'items');
                     data.forEach(function(
                         item) { // Comparar avances y estado_id del backend con los del frontend
                         let $divider = $('.progress-divider[data-atencion-id="' + item.atencion_id +
@@ -848,12 +896,15 @@
                                 '0'); // Avance
                             let avanceBackend = parseFloat(item.avance || '0');
                             if (avanceFrontend !== avanceBackend) {
+                                console.log('🔄 Actualizando avance para', item.atencion_id);
                                 $divider.attr('data-avance', avanceBackend);
                                 updateProgressByPercentage(item.atencion_id, avanceBackend);
                             }
                             let estadoFrontend = parseInt($card.attr('data-estado-id'), 10); // Estado
                             let estadoBackend = parseInt(item.estado_id, 10);
                             if (estadoFrontend !== estadoBackend) {
+                                console.log('🔄 Actualizando estado para', item.atencion_id, 'de',
+                                    estadoFrontend, 'a', estadoBackend);
                                 $card.attr('data-estado-id', estadoBackend);
                                 if (estadoBackend === 3) {
                                     let debeTrasladar =
@@ -914,70 +965,23 @@
                             if (item.recepciones && item.recepciones.length > 0) {
                                 let $usersContainer = $card.find('.users-container');
                                 if ($usersContainer.length > 0) {
-                                    let usersHtml = '';
-                                    item.recepciones.forEach(function(recepcion) {
-                                        if (recepcion.usuarioDestino) {
-                                            let estadoColor =
-                                                'rgb(170, 95, 34)'; // Color por defecto // Determinar colores basados en el estado de la tarjeta
-                                            let badgeColor =
-                                                'badge-secondary'; // Badge por defecto
-                                            if (item.estado_id == 3) { // Resuelta
-                                                badgeColor = 'badge-success';
-                                            } else if (item.estado_id == 2) { // En progreso
-                                                badgeColor = 'badge-primary';
-                                            } else if (item.estado_id == 1) { // Recibida
-                                                badgeColor = 'badge-secondary';
-                                            }
-                                            let userHtml =
-                                                '<div style="margin: 0;" data-toggle="popover" ' +
-                                                'data-title="' + (recepcion.usuarioDestino
-                                                    .name || 'Sin asignar') + '" ' +
-                                                'data-content="<span class=\'badge badge-pill ' +
-                                                badgeColor + '\'>' + (recepcion.role ? recepcion
-                                                    .role.name : 'Sin rol') + '</span> ' +
-                                                '<span class=\'badge badge-pill ' + badgeColor +
-                                                '\'>' + (recepcion.area ? recepcion.area.area :
-                                                    'Sin área') + '</span>" ' +
-                                                'data-trigger="hover" data-placement="top">';
-                                            if (recepcion.usuarioDestino.profile_photo_url) {
-                                                userHtml += '<img src="' +
-                                                    (recepcion.usuarioDestino
-                                                        .profile_photo_url ?
-                                                        '{{ Storage::url('') }}' + recepcion
-                                                        .usuarioDestino.profile_photo_url : ''
-                                                    ) +
-                                                    '" alt="Usuario" class="avatar" ' +
-                                                    'style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;">';
-                                            } else {
-                                                userHtml += '<div class="avatar" ' +
-                                                    'style="width: 32px; height: 32px; border-radius: 50%; background: #e9ecef; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #6c757d;">' +
-                                                    (recepcion.usuarioDestino.name ? recepcion
-                                                        .usuarioDestino.name[0] : '?') +
-                                                    '</div>';
-                                            }
-                                            userHtml += '</div>';
-                                            usersHtml += userHtml;
-                                        }
-                                    });
+                                    // Usar la función auxiliar estándar para generar HTML de usuarios
+                                    let usersHtml = generarHtmlUsuarios(item.recepciones, item
+                                        .estado_id);
+
                                     $usersContainer.find('[data-toggle="popover"]').popover(
                                         'dispose'); // Destruir popovers existentes antes de actualizar
                                     $usersContainer.html(usersHtml);
-                                    $usersContainer.find('[data-toggle="popover"]')
-                                        .popover({ // Reinicializar popovers para los nuevos elementos
-                                            html: true,
-                                            container: 'body',
-                                            trigger: 'hover',
-                                            delay: {
-                                                show: 100,
-                                                hide: 100
-                                            }
-                                        });
+                                    inicializarPopovers($usersContainer.find(
+                                        '[data-toggle="popover"]'
+                                    )); // Reinicializar popovers para los nuevos elementos
                                 }
                             }
                         }
                     });
                 },
                 error: function(xhr, status, error) {
+                    console.error('Error al consultar avances:', status, error, xhr.responseText);
                     // Evitar spam de errores en consola
                     if (xhr.status !== 0) { // Solo log si no es error de red
                         console.error('Error al consultar avances:', status);
@@ -1023,16 +1027,7 @@
                         if (tarjetasAgregadas > 0) { // Solo actualizar contadores si se agregaron tarjetas
                             actualizarContadores();
 
-                            // Inicializar popovers para las nuevas tarjetas
-                            $('[data-toggle="popover"]').popover({
-                                html: true,
-                                container: 'body',
-                                trigger: 'hover',
-                                delay: {
-                                    show: 100,
-                                    hide: 100
-                                }
-                            });
+                            inicializarPopovers(); // Inicializar popovers para las nuevas tarjetas
                         }
                     }
                 },
@@ -1062,8 +1057,9 @@
                 });
             }, 100);
             initKanban();
-            setInterval(consultarAvancesTablero, 3600000); // 60 minutos
-            setInterval(cargarNuevasRecibidas, 3600000); // 60 minutos
+            console.log('Configurando setInterval para consultarAvancesTablero...');
+            setInterval(consultarAvancesTablero, 20000);
+            setInterval(cargarNuevasRecibidas, 20000);
         });
     </script>
 @endsection

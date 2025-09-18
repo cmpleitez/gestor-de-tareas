@@ -496,3 +496,82 @@ body.sidebar-open {
     border-top-color: #1a1a1a !important;
 }
 
+/* ===== MEJORAS PARA POPOVERS EN VENTANAS NO MAXIMIZADAS ===== */
+
+/* Mejorar comportamiento de popovers */
+.popover {
+    z-index: 9999 !important;
+    max-width: 300px;
+}
+
+.popover.show {
+    opacity: 1;
+    transform: none;
+}
+
+.popover.bs-popover-top {
+    margin-bottom: 8px;
+}
+
+.popover.bs-popover-bottom {
+    margin-top: 8px;
+}
+
+/* Mejorar transiciones de popovers */
+.popover.fade {
+    transition: opacity 0.15s linear;
+}
+
+.popover.fade.show {
+    opacity: 1;
+}
+
+/* Mejorar posicionamiento en ventanas pequeñas */
+.popover {
+    position: absolute !important;
+    will-change: transform !important;
+}
+
+/* Evitar que los popovers aparezcan detrás del navbar */
+.popover.show {
+    z-index: 9999 !important;
+}
+
+/* Mejorar el cálculo de posición */
+.popover[data-popper-placement] {
+    transform: none !important;
+}
+
+/* Asegurar que los popovers se muestren correctamente */
+.popover.show {
+    display: block !important;
+    visibility: visible !important;
+}
+
+/* Mejorar el comportamiento de posicionamiento de popovers */
+.popover {
+    position: absolute !important;
+    will-change: transform !important;
+    transform: none !important;
+}
+
+/* Evitar que los popovers aparezcan en posición incorrecta */
+.popover.fade {
+    opacity: 0;
+    transition: opacity 0.15s linear;
+}
+
+.popover.fade.show {
+    opacity: 1;
+}
+
+/* Mejorar el cálculo de posición inicial */
+.popover[data-popper-placement] {
+    transform: none !important;
+}
+
+/* Asegurar que los popovers se posicionen correctamente desde el inicio */
+.popover.show {
+    position: absolute !important;
+    transform: none !important;
+}

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -7,7 +6,6 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Storage;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
@@ -42,22 +40,6 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $appends = [
         'profile_photo_url',
     ];
-
-    public function getProfilePhotoUrlAttribute()
-    {
-        // Si el usuario no está verificado, usar la foto por defecto de Jetstream
-        if (!$this->hasVerifiedEmail()) {
-            return $this->defaultProfilePhotoUrl();
-        }
-
-        // Si el usuario está verificado y tiene una foto de perfil
-        if ($this->profile_photo_path && Storage::exists('public/' . $this->profile_photo_path)) {
-            return asset('storage/' . $this->profile_photo_path);
-        }
-
-        // Si no tiene foto de perfil o no existe el archivo
-        return $this->defaultProfilePhotoUrl();
-    }
 
     protected function defaultProfilePhotoUrl()
     {
