@@ -291,20 +291,50 @@
             console.log(tarjeta.users);
 
             if (tarjeta.users && tarjeta.users.length > 0) {
-                tarjeta.users.forEach(function(user) {
-                    const avatar = user.profile_photo_url ?
+                // Separar cliente (origen) de otros participantes (destino)
+                const cliente = tarjeta.users.find(user => user.tipo === 'origen');
+                const participantes = tarjeta.users.filter(user => user.tipo === 'destino');
+
+                // Función para generar avatar
+                function generarAvatar(user) {
+                    return user.profile_photo_url ?
                         `<img src="${user.profile_photo_url}" alt="Usuario" class="avatar" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;">` :
                         `<div class="avatar" style="width: 32px; height: 32px; border-radius: 50%; background: #e9ecef; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #6c757d;">${user.name ? user.name[0] : '?'}</div>`;
+                }
+
+                // Mostrar cliente primero
+                if (cliente) {
                     usersHtml += `
-                <div style="margin: 0;" data-toggle="popover" 
-                    data-title="${user.name || 'Sin asignar'}" 
-                    data-content="<span class='badge badge-pill ${badgeColor}'>${user.recepcion_role_name || 'Sin rol'}</span> 
-                    <span class='badge badge-pill ${badgeColor}'>${user.area_name || 'Sin área'}</span>"
-                    data-trigger="hover"
-                    data-placement="top">
-                    ${avatar}
-                </div>
-            `;
+                        <div style="margin: 0;" data-toggle="popover" 
+                            data-title="${cliente.name || 'Cliente'}" 
+                            data-content="<span class='badge badge-pill badge-primary'>Cliente</span>"
+                            data-trigger="hover"
+                            data-placement="top">
+                            ${generarAvatar(cliente)}
+                        </div>
+                    `;
+
+                    // Agregar flecha si hay participantes
+                    if (participantes.length > 0) {
+                        usersHtml += `
+                            <div style="margin: 0 8px; display: flex; align-items: center; justify-content: center; width: 20px; height: 32px;">
+                                <i class="fas fa-arrow-right" style="color: ${estadoColor}; font-size: 14px;"></i>
+                            </div>
+                        `;
+                    }
+                }
+
+                // Mostrar participantes
+                participantes.forEach(function(user) {
+                    usersHtml += `
+                        <div style="margin: 0;" data-toggle="popover" 
+                            data-title="${user.name || 'Sin asignar'}" 
+                            data-content="<span class='badge badge-pill ${badgeColor}'>${user.recepcion_role_name || 'Sin rol'}</span>"
+                            data-trigger="hover"
+                            data-placement="top">
+                            ${generarAvatar(user)}
+                        </div>
+                    `;
                 });
             }
             return `
@@ -447,6 +477,9 @@
                                     $popover.attr('data-content', newContent);
                                 }
                             });
+
+                            // Actualizar color de la flecha según el nuevo estado
+                            tarjeta.find('.fas.fa-arrow-right').css('color', estadoColor);
                         }
                         // Reordenar tablero destino por recepcion.id desc tras confirmación del backend
                         if (nuevaColumna === 'columna-recibidas' || nuevaColumna === 'columna-progreso' ||
@@ -644,6 +677,8 @@
                                         'font-size': '11px',
                                         'margin-top': '5px'
                                     });
+                                    // Actualizar color de la flecha
+                                    tarjeta.find('.fas.fa-arrow-right').css('color', '#28a745');
                                     tarjeta.attr('data-estado-id', 3);
                                     $('#columna-resueltas').append(tarjeta);
                                     actualizarContadores();
@@ -856,6 +891,9 @@
                                                 'font-size': '11px',
                                                 'margin-top': '5px'
                                             });
+                                            // Actualizar color de la flecha
+                                            $card.find('.fas.fa-arrow-right').css('color',
+                                                '#28a745');
                                             actualizarContadores();
                                         }, 500);
                                     } else {
@@ -868,6 +906,8 @@
                                             'font-size': '11px',
                                             'margin-top': '5px'
                                         });
+                                        // Actualizar color de la flecha
+                                        $card.find('.fas.fa-arrow-right').css('color', '#28a745');
                                     }
                                 }
                             }

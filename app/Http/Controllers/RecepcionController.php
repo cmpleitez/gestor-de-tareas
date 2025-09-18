@@ -61,14 +61,16 @@ class RecepcionController extends Controller
                             ? $recepcion->usuarioDestino->profile_photo_url
                             : asset('app-assets/images/pages/operador.png'),
                         'recepcion_role_name' => $recepcion->role->name,
-                        'oficina_name'        => $recepcion->atencion->oficina->oficina,
                         'tipo'                => 'destino',
                     ];
                 });
 
-            // Consulta separada para usuarios origen
+            // Consulta separada para usuarios origen (solo estado "Recibida" donde el cliente es usuario origen)
             $usuariosOrigen = Recepcion::with(['usuarioOrigen', 'role'])
                 ->whereIn('atencion_id', $atencionIds)
+                ->whereHas('role', function ($query) {
+                    $query->where('name', 'Receptor');
+                })
                 ->get()
                 ->map(function ($recepcion) {
                     return [
@@ -78,8 +80,7 @@ class RecepcionController extends Controller
                         'profile_photo_url'   => $recepcion->usuarioOrigen->profile_photo_url
                             ? $recepcion->usuarioOrigen->profile_photo_url
                             : asset('app-assets/images/pages/operador.png'),
-                        'recepcion_role_name' => $recepcion->role->name,
-                        'oficina_name'        => $recepcion->atencion->oficina->oficina,
+                        'recepcion_role_name' => $recepcion->usuarioOrigen->mainRole->name,
                         'tipo'                => 'origen',
                     ];
                 });
@@ -92,8 +93,6 @@ class RecepcionController extends Controller
                         return $usuario['recepcion_id'] . '_' . $usuario['tipo'];
                     })->values();
                 });
-
-            return $usuariosParticipantes;
 
             $tarjetas = $recepciones->map(function ($tarjeta) use ($usuariosParticipantes) {
                 $usuariosParticipantesAtencion = $usuariosParticipantes->get($tarjeta->atencion_id, collect());
