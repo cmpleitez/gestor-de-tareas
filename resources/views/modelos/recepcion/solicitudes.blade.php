@@ -292,7 +292,7 @@
                 <div class="solicitud-card ${animar ? 'animar-llegada' : ''} border-${borderColor}" 
                 data-id="${tarjeta.recepcion_id}"
                 data-atencion-id="${tarjeta.atencion_id}"
-                data-estado-id="${tarjeta.estado_id}"
+                data-recepcion-estado-id="${tarjeta.estado_id}"
                 data-fecha="${tarjeta.created_at}">
                 <div class="d-flex justify-content-between align-items-start">
                     <div class="solicitud-titulo flex-grow-1">${titulo}</div>
@@ -437,7 +437,7 @@
                                 'font-size': '11px',
                                 'margin-top': '5px'
                             });
-                            tarjeta.attr('data-estado-id', nuevoEstadoId);
+                            tarjeta.attr('data-recepcion-estado-id', nuevoEstadoId);
                             // Determinar clase de badge según el nuevo estado
                             let badgeColor = 'badge-secondary'; // Por defecto
                             if (nuevoEstadoId == 3) { // Resuelta
@@ -643,17 +643,9 @@
                                     `.solicitud-card[data-id="${response.recepcion_id}"]`
                                 ); // Mover la tarjeta al tablero de resueltas
                                 if (tarjeta.length > 0) {
-                                    tarjeta.css('border-left-color',
-                                        '#28a745');
-                                    tarjeta.find('.solicitud-estado').text('Estado: Resuelta');
-                                    tarjeta.find('.solicitud-estado').css({
-                                        'color': '#28a745',
-                                        'font-size': '11px',
-                                        'margin-top': '5px'
-                                    });
-                                    // Actualizar color de la flecha
-                                    tarjeta.find('.fas.fa-arrow-right').css('color', '#28a745');
-                                    tarjeta.attr('data-estado-id', 3);
+                                    // Actualizar estilos usando la función auxiliar
+                                    actualizarEstilosTarjeta(tarjeta, 3);
+                                    tarjeta.attr('data-recepcion-estado-id', 3);
                                     $('#columna-resueltas').append(tarjeta);
                                     actualizarContadores();
                                     Swal.fire({
@@ -791,15 +783,12 @@
 
         function obtenerAtencionIdsTableros() {
             let ids = [];
-            console.log('Buscando tarjetas de solicitud...');
             $('.solicitud-card').each(function() {
                 let atencionId = $(this).attr('data-atencion-id');
-                console.log('Tarjeta encontrada con atencionId:', atencionId);
                 if (atencionId) {
                     ids.push(atencionId);
                 }
             });
-            console.log('Total de atencionIds encontrados:', ids.length);
             return [...new Set(ids)]; // Eliminar repetidos usando Set
         }
 
@@ -870,111 +859,120 @@
             return usersHtml;
         }
 
-        function consultarAvancesTablero() {
-            console.log('consultarAvancesTablero ejecutándose...');
+        //FUNCIÓN AUXILIAR PARA ACTUALIZAR ESTILOS DE TARJETA
+        function actualizarEstilosTarjeta($card, estadoId) {
+            let color, borderClass, nombreEstado;
+
+            switch (estadoId) {
+                case 1: // Recibida
+                    color = '#2c3e50';
+                    borderClass = 'border-badge-secondary';
+                    nombreEstado = 'Recibida';
+                    break;
+                case 2: // En progreso
+                    color = '#17a2b8';
+                    borderClass = 'border-badge-primary';
+                    nombreEstado = 'En progreso';
+                    break;
+                case 3: // Resuelta
+                    color = '#28a745';
+                    borderClass = 'border-badge-success';
+                    nombreEstado = 'Resuelta';
+                    break;
+                default:
+                    color = '#2c3e50';
+                    borderClass = 'border-badge-secondary';
+                    nombreEstado = 'Recibida';
+            }
+
+            // Actualizar estilos visuales
+            $card.css('border-left-color', color);
+
+            // Actualizar clases CSS de borde
+            $card.removeClass(
+                'border-badge-secondary border-badge-primary border-badge-success border-badge-danger border-badge-warning'
+            );
+            $card.addClass(borderClass);
+
+            // Actualizar texto y colores del estado
+            $card.find('.solicitud-estado').text('Estado: ' + nombreEstado);
+            $card.find('.solicitud-estado').css({
+                'color': color,
+                'font-size': '11px',
+                'margin-top': '5px'
+            });
+            $card.find('.fas.fa-arrow-right').css('color', color);
+        }
+
+        //ACTUALIZAR AVANCE
+        function actualizarAvance() {
             let atencionIds = obtenerAtencionIdsTableros();
-            console.log('AtencionIds encontrados:', atencionIds);
-            if (atencionIds.length === 0) {
-                console.log('No hay tarjetas en los tableros, saliendo...');
-                return; // No hay tarjetas en los tableros
+            if (atencionIds.length === 0) { // No hay tarjetas en los tableros
+                return;
             }
             $.post({
-                url: '{{ route('recepcion.avance-tablero') }}',
+                url: '{{ route('recepcion.consultar-avance') }}',
                 data: {
                     atencion_ids: atencionIds,
                     _token: $('meta[name="csrf-token"]').attr('content')
                 },
-                success: function(data) {
-                    console.log('📊 Datos recibidos:', data.length, 'items');
-                    data.forEach(function(
-                        item) { // Comparar avances y estado_id del backend con los del frontend
+                success: function(items) {
+                    items.forEach(function(item) {
                         let $divider = $('.progress-divider[data-atencion-id="' + item.atencion_id +
                             '"]');
                         let $card = $('.solicitud-card[data-atencion-id="' + item.atencion_id + '"]');
                         if ($divider.length > 0 && $card.length > 0) {
-                            let avanceFrontend = parseFloat($divider.attr('data-avance') ||
-                                '0'); // Avance
+                            let avanceFrontend = parseFloat($divider.attr('data-avance') || '0');
                             let avanceBackend = parseFloat(item.avance || '0');
                             if (avanceFrontend !== avanceBackend) {
-                                console.log('🔄 Actualizando avance para', item.atencion_id);
                                 $divider.attr('data-avance', avanceBackend);
                                 updateProgressByPercentage(item.atencion_id, avanceBackend);
                             }
-                            let estadoFrontend = parseInt($card.attr('data-estado-id'), 10); // Estado
+                            let estadoFrontend = parseInt($card.attr('data-recepcion-estado-id'), 10);
                             let estadoBackend = parseInt(item.estado_id, 10);
                             if (estadoFrontend !== estadoBackend) {
-                                console.log('🔄 Actualizando estado para', item.atencion_id, 'de',
-                                    estadoFrontend, 'a', estadoBackend);
-                                $card.attr('data-estado-id', estadoBackend);
-                                if (estadoBackend === 3) {
-                                    let debeTrasladar =
-                                        true; // Verificar si el rol del usuario destino NO es Gestor
-                                    // Solo verificar el rol del usuario que está trabajando actualmente en la tarjeta
-                                    if (item.recepciones && item.recepciones.length > 0) {
-                                        // Buscar la recepción que corresponde al usuario actual
-                                        let recepcionActual = item.recepciones.find(function(
-                                            recepcion) {
-                                            return recepcion.usuarioDestino && recepcion
-                                                .usuarioDestino.id === item.usuario_actual_id;
-                                        });
+                                $card.attr('data-recepcion-estado-id', estadoBackend);
 
-                                        if (recepcionActual && recepcionActual.role && recepcionActual
-                                            .role.name === 'Gestor') {
-                                            debeTrasladar = false;
-                                        }
-                                    }
-                                    if (debeTrasladar) {
-                                        $card.addClass(
-                                            'animar-traslado'
-                                        ); // Solo trasladar si el rol del usuario destino NO es Gestor
-                                        setTimeout(function() {
-                                            $card.removeClass('animar-traslado');
-                                            $('#columna-resueltas').append($card);
-                                            $card.addClass('animar-llegada');
-                                            setTimeout(function() {
-                                                $card.removeClass('animar-llegada');
-                                            }, 500);
-                                            $card.css('border-left-color', '#28a745');
-                                            $card.find('.solicitud-estado').text(
-                                                'Estado: Resuelta');
-                                            $card.find('.solicitud-estado').css({
-                                                'color': '#28a745',
-                                                'font-size': '11px',
-                                                'margin-top': '5px'
-                                            });
-                                            // Actualizar color de la flecha
-                                            $card.find('.fas.fa-arrow-right').css('color',
-                                                '#28a745');
-                                            actualizarContadores();
-                                        }, 500);
-                                    } else {
-                                        $card.css('border-left-color',
-                                            '#28a745'
-                                        ); // Para rol Gestor, solo actualizar el estado visual sin mover la tarjeta
-                                        $card.find('.solicitud-estado').text('Estado: Resuelta');
-                                        $card.find('.solicitud-estado').css({
-                                            'color': '#28a745',
-                                            'font-size': '11px',
-                                            'margin-top': '5px'
-                                        });
-                                        // Actualizar color de la flecha
-                                        $card.find('.fas.fa-arrow-right').css('color', '#28a745');
-                                    }
+                                // Determinar columna destino según el estado
+                                let columnaDestino;
+                                switch (estadoBackend) {
+                                    case 1: // Recibida
+                                        columnaDestino = '#columna-recibidas';
+                                        break;
+                                    case 2: // En progreso
+                                        columnaDestino = '#columna-progreso';
+                                        break;
+                                    case 3: // Resuelta
+                                        columnaDestino = '#columna-resueltas';
+                                        break;
+                                    default:
+                                        columnaDestino = '#columna-recibidas';
                                 }
+
+                                // Trasladar tarjeta al tablero correspondiente
+                                $card.addClass('animar-traslado');
+                                setTimeout(function() {
+                                    $card.removeClass('animar-traslado');
+                                    $(columnaDestino).append($card);
+                                    $card.addClass('animar-llegada');
+                                    setTimeout(function() {
+                                        $card.removeClass('animar-llegada');
+                                    }, 500);
+
+                                    // Actualizar estilos usando la función auxiliar
+                                    actualizarEstilosTarjeta($card, estadoBackend);
+                                    actualizarContadores();
+                                }, 500);
                             }
                             if (item.recepciones && item.recepciones.length > 0) {
                                 let $usersContainer = $card.find('.users-container');
                                 if ($usersContainer.length > 0) {
-                                    // Usar la función auxiliar estándar para generar HTML de usuarios
                                     let usersHtml = generarHtmlUsuarios(item.recepciones, item
                                         .estado_id);
-
-                                    $usersContainer.find('[data-toggle="popover"]').popover(
-                                        'dispose'); // Destruir popovers existentes antes de actualizar
+                                    $usersContainer.find('[data-toggle="popover"]').popover('dispose');
                                     $usersContainer.html(usersHtml);
                                     inicializarPopovers($usersContainer.find(
-                                        '[data-toggle="popover"]'
-                                    )); // Reinicializar popovers para los nuevos elementos
+                                        '[data-toggle="popover"]'));
                                 }
                             }
                         }
@@ -982,14 +980,14 @@
                 },
                 error: function(xhr, status, error) {
                     console.error('Error al consultar avances:', status, error, xhr.responseText);
-                    // Evitar spam de errores en consola
-                    if (xhr.status !== 0) { // Solo log si no es error de red
+                    if (xhr.status !== 0) {
                         console.error('Error al consultar avances:', status);
                     }
                 }
             });
         }
 
+        //CARGAR NUEVAS RECIBIDAS
         function cargarNuevasRecibidas() {
             let cantidadTarjetas = $('#columna-recibidas .solicitud-card')
                 .length; // Evitar consulta si hay 3 o más tarjetas (parametrizable posteriormente)
@@ -1026,7 +1024,6 @@
                         });
                         if (tarjetasAgregadas > 0) { // Solo actualizar contadores si se agregaron tarjetas
                             actualizarContadores();
-
                             inicializarPopovers(); // Inicializar popovers para las nuevas tarjetas
                         }
                     }
@@ -1039,7 +1036,7 @@
                 }
             });
         }
-        //CONTROL PRINCIPAL PARA LA CARGA DE DATOS
+        //CONTROL PRINCIPAL
         $(document).ready(function() {
             const tarjetasIniciales = { // Datos iniciales de las tarjetas
                 recibidas: @json($recibidas),
@@ -1057,9 +1054,8 @@
                 });
             }, 100);
             initKanban();
-            console.log('Configurando setInterval para consultarAvancesTablero...');
-            setInterval(consultarAvancesTablero, 20000);
-            setInterval(cargarNuevasRecibidas, 20000);
+            setInterval(actualizarAvance, 15000);
+            setInterval(cargarNuevasRecibidas, 10000);
         });
     </script>
 @endsection

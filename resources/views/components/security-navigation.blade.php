@@ -149,11 +149,7 @@
 
 
 
-    function showWhitelistIPModal() {
-        console.log('Mostrar modal de whitelist de IP');
-    }
+    function showWhitelistIPModal() {}
 
-    function showMaintenanceModal() {
-        console.log('Mostrar modal de mantenimiento');
-    }
+    function showMaintenanceModal() {}
 </script>
