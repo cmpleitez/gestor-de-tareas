@@ -1055,7 +1055,7 @@
             }, 100);
             initKanban();
             setInterval(actualizarAvance, 15000);
-            setInterval(cargarNuevasRecibidas, 10000);
+            setInterval(cargarNuevasRecibidas, 15000);
         });
     </script>
 @endsection
