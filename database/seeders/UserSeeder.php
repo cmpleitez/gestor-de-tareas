@@ -14,7 +14,6 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-
         //OFICINAS
         DB::table('oficinas')->insert([
             'oficina'    => 'Oficina Sede',
@@ -53,7 +52,7 @@ class UserSeeder extends Seeder
         //ROLES Y ASIGNACIÓN DE PERMISOS
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
         $role = Role::create(['name' => 'SuperAdmin']);
-        $role->givePermissionTo(['ver', 'autorizar']);
+        $role->givePermissionTo(['ver', 'crear', 'editar', 'activar', 'eliminar', 'autorizar']);
 
         $role = Role::create(['name' => 'Admin']);
         $role->givePermissionTo(['ver', 'crear', 'editar', 'activar', 'eliminar', 'autorizar']);
@@ -78,7 +77,7 @@ class UserSeeder extends Seeder
             'role_id'           => 1,
             'name'              => 'Superadmin',
             'dui'               => '012345678',
-            'email'             => 'cpleitez.2024@gmail.com',
+            'email'             => 'superadmin@servidor.com',
             'email_verified_at' => Carbon::now(),
             'password'          => bcrypt('p@5t15al5abana'),
             'remember_token'    => Str::random(10),
@@ -89,7 +88,7 @@ class UserSeeder extends Seeder
             'role_id'           => 2,
             'name'              => 'Admin',
             'dui'               => '023456783',
-            'email'             => 'hari.seldom.sv@gmail.com',
+            'email'             => 'admin@servidor.com',
             'email_verified_at' => Carbon::now(),
             'password'          => bcrypt('p@5t15al5abana'),
             'remember_token'    => Str::random(10),

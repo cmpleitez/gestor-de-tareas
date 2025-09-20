@@ -53,6 +53,21 @@ Route::middleware([
 
     //SUPER-ADMINISTRADORES
     Route::group(['middleware' => ['role:SuperAdmin']], function () {
+
+        Route::group(['prefix' => 'user'], function () { //Usuarios
+            Route::get('/', [userController::class, 'index'])->name('user');
+            Route::get('edit/{user}', [userController::class, 'edit'])->name('user.edit');
+            Route::put('update/{user}', [userController::class, 'update'])->name('user.update');
+            Route::get('roles-edit/{user}', [userController::class, 'rolesEdit'])->name('user.roles-edit');
+            Route::post('roles-update/{user}', [userController::class, 'rolesUpdate'])->name('user.roles-update');
+            Route::get('equipos-edit/{user}', [userController::class, 'equiposEdit'])->name('user.equipos-edit');
+            Route::post('equipos-update/{user}', [userController::class, 'equiposUpdate'])->name('user.equipos-update');
+            Route::get('solicitudes-edit/{user}', [userController::class, 'solicitudesEdit'])->name('user.solicitudes-edit');
+            Route::post('solicitudes-update/{user}', [userController::class, 'solicitudesUpdate'])->name('user.solicitudes-update');
+            Route::get('destroy/{user}', [userController::class, 'destroy'])->name('user.destroy');
+            Route::post('activate/{user}', [userController::class, 'activate'])->name('user.activate');
+        });
+
         Route::group(['prefix' => 'security'], function () {
             Route::get('/', [SecurityController::class, 'index'])->name('security.index');
             Route::get('events', [SecurityController::class, 'events'])->name('security.events');
@@ -68,19 +83,7 @@ Route::middleware([
     
     //ADMINISTRADORES
     Route::group(['middleware' => ['role:Admin']], function () {
-        Route::group(['prefix' => 'user'], function () { //Usuarios
-            Route::get('/', [userController::class, 'index'])->name('user');
-            Route::get('edit/{user}', [userController::class, 'edit'])->name('user.edit');
-            Route::put('update/{user}', [userController::class, 'update'])->name('user.update');
-            Route::get('roles-edit/{user}', [userController::class, 'rolesEdit'])->name('user.roles-edit');
-            Route::post('roles-update/{user}', [userController::class, 'rolesUpdate'])->name('user.roles-update');
-            Route::get('equipos-edit/{user}', [userController::class, 'equiposEdit'])->name('user.equipos-edit');
-            Route::post('equipos-update/{user}', [userController::class, 'equiposUpdate'])->name('user.equipos-update');
-            Route::get('solicitudes-edit/{user}', [userController::class, 'solicitudesEdit'])->name('user.solicitudes-edit');
-            Route::post('solicitudes-update/{user}', [userController::class, 'solicitudesUpdate'])->name('user.solicitudes-update');
-            Route::get('destroy/{user}', [userController::class, 'destroy'])->name('user.destroy');
-            Route::post('activate/{user}', [userController::class, 'activate'])->name('user.activate');
-        });
+
 
         Route::group(['prefix' => 'equipo'], function () { //Equipos
             Route::get('/', [equipoController::class, 'index'])->name('equipo');

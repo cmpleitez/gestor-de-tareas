@@ -792,6 +792,13 @@
                     <li class=" nav-item"><a href="#"><i class="bx bx-shield"></i><span class="menu-title"
                                 data-i18n="Menu Levels">Seguridad</span></a>
                         <ul class="menu-content" style="display: block;">
+
+                            <li><a href="{{ Route('user') }}">
+                                <i class="bx bx-right-arrow-alt"></i>
+                                <span class="menu-item" data-i18n="Second Level">Usuarios</span>
+                            </a></li>
+
+
                             <li><a href="{{ Route('security.index') }}">
                                     <i class="bx bx-right-arrow-alt"></i>
                                     <span class="menu-item" data-i18n="Second Level">Dashboard</span>
@@ -820,10 +827,6 @@
                     <li class=" nav-item"><a href="#"><i class="bx bx-cog"></i><span class="menu-title"
                                 data-i18n="Menu Levels">Administración</span></a>
                         <ul class="menu-content" style="display: block;">
-                            <li><a href="{{ Route('user') }}">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Usuarios</span>
-                                </a></li>
                             <li><a href="{{ Route('equipo') }}">
                                     <i class="bx bx-right-arrow-alt"></i>
                                     <span class="menu-item" data-i18n="Second Level">Equipos</span>

@@ -164,6 +164,7 @@ SERVICIOS:
         el kanban del cliente no se refresca cuando hay impulsos en las tarjetas habria que ver si refresca el avance en la barra de progreso
         limpiar codigo y etiquetas colocadas por la IA
         agregar numero de tarjeta en el sidebar
+        evitar el envio automatico de correo cuando sea admin y superadmin porque estos usuarios ya van validados
     🟢 holomogar next capital con commit de gestor-de-tareas del 16.sep 4:07
 
 FUSION SERVICIOS Y GESTOR:
