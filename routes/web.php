@@ -80,11 +80,9 @@ Route::middleware([
             Route::get('events/data', [SecurityController::class, 'getEventsData'])->name('security.events-data');
         });
     });
-    
+
     //ADMINISTRADORES
     Route::group(['middleware' => ['role:Admin']], function () {
-
-
         Route::group(['prefix' => 'equipo'], function () { //Equipos
             Route::get('/', [equipoController::class, 'index'])->name('equipo');
             Route::get('create', [equipoController::class, 'create'])->name('equipo.create');

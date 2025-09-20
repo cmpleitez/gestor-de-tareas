@@ -343,23 +343,9 @@
 
         // Esperar a que el DOM esté completamente cargado
         $(document).ready(function() {
-            // Verificar que Bootstrap esté cargado
-            if (typeof $.fn.popover === 'undefined') {
-                console.error(
-                    'Bootstrap popover no está disponible. Verificar que Bootstrap JS esté cargado correctamente.'
-                );
-            } else {
-                // Inicializar popovers existentes
-                inicializarPopovers();
-            }
+            inicializarPopovers();
         });
 
-        // Mejorar el comportamiento de los popovers
-        $(document).on('show.bs.popover', function(e) {
-            const $popover = $(e.target);
-            // En Bootstrap 4, el popover se crea automáticamente
-            // No necesitamos acceder al tip() directamente
-        });
         //ACTUALIZAR EL MOVIMIENTO DE LA TARJETA, TANTO EN EL BACKEND Y COMO EN EL FRONTEND
         function updatePosition(solicitudId, nuevaColumna, evt) {
             let nuevoEstadoId = 1; //Iniciando parametros
@@ -971,8 +957,11 @@
                                         .estado_id);
                                     $usersContainer.find('[data-toggle="popover"]').popover('dispose');
                                     $usersContainer.html(usersHtml);
-                                    inicializarPopovers($usersContainer.find(
-                                        '[data-toggle="popover"]'));
+                                    // Esperar un momento antes de reinicializar
+                                    setTimeout(() => {
+                                        inicializarPopovers($usersContainer.find(
+                                            '[data-toggle="popover"]'));
+                                    }, 50);
                                 }
                             }
                         }

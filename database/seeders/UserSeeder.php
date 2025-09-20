@@ -75,7 +75,7 @@ class UserSeeder extends Seeder
         //USUARIOS
         DB::table('users')->insert([
             'role_id'           => 1,
-            'name'              => 'Superadmin',
+            'name'              => 'SuperAdmin',
             'dui'               => '012345678',
             'email'             => 'superadmin@servidor.com',
             'email_verified_at' => Carbon::now(),

@@ -20,7 +20,7 @@ class RegisterController extends Controller
     public function create()
     {
         // Verificar que el usuario esté autenticado y tenga rol Admin
-        if (!auth()->check() || !auth()->user()->hasRole('Admin')) {
+        if (!auth()->check() || !auth()->user()->hasRole('SuperAdmin')) {
             return back()->with('error', 'No tienes permisos para acceder a esta página.');
         }
         return view('auth.register');
@@ -28,7 +28,7 @@ class RegisterController extends Controller
 
     public function store(Request $request)
     {
-        if (!auth()->check() || !auth()->user()->hasRole('Admin')) { // Verificar que el usuario esté autenticado y tenga rol Admin
+        if (!auth()->check() || !auth()->user()->hasRole('SuperAdmin')) { // Verificar que el usuario esté autenticado y tenga rol Admin
             return back()->with('error', 'No tienes permisos para realizar esta acción.');
         }
         $validated = Validator::make($request->all(), [ // Validación

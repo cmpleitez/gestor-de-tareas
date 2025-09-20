@@ -25,8 +25,6 @@
             color: #eeff03 !important;
         }
     </style>
-
-
 @stop
 
 @section('contenedor')
@@ -40,7 +38,7 @@
                             <p class="card-text">Las personas autorizadas para operar el sistema desempeñando roles
                                 específicos</p>
                         </div>
-                        @if (auth()->user()->mainRole->name == 'Admin')
+                        @if (auth()->user()->mainRole->name == 'SuperAdmin')
                             <div class="col-1 d-flex justify-content-end" style="padding: 0;">
                                 <a href="{!! route('register') !!}">
                                     <div class="badge-circle badge-circle-md badge-circle-primary">

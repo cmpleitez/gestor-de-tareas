@@ -416,22 +416,7 @@ body.sidebar-open {
     transition: all 0.2s ease !important;
 }
 
-/* Animación de entrada para popovers */
-.popover.show {
-    animation: popoverFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-}
-
-@keyframes popoverFadeIn {
-    0% {
-        opacity: 0;
-        transform: scale(0.95) translateY(-10px);
-    }
-
-    100% {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
-}
+/* Permitir que Bootstrap maneje las animaciones nativamente */
 
 /* Estilos para popovers sin header (solo body) */
 .popover:not(.popover-header) .popover-body {
@@ -506,7 +491,7 @@ body.sidebar-open {
 
 .popover.show {
     opacity: 1;
-    transform: none;
+    /* Permitir que Popper.js maneje las transformaciones */
 }
 
 .popover.bs-popover-top {
@@ -528,8 +513,7 @@ body.sidebar-open {
 
 /* Mejorar posicionamiento en ventanas pequeñas */
 .popover {
-    position: absolute !important;
-    will-change: transform !important;
+    /* Permitir que Bootstrap maneje el posicionamiento */
 }
 
 /* Evitar que los popovers aparezcan detrás del navbar */
@@ -539,7 +523,7 @@ body.sidebar-open {
 
 /* Mejorar el cálculo de posición */
 .popover[data-popper-placement] {
-    transform: none !important;
+    /* Permitir que Popper.js maneje las transformaciones */
 }
 
 /* Asegurar que los popovers se muestren correctamente */
@@ -550,9 +534,7 @@ body.sidebar-open {
 
 /* Mejorar el comportamiento de posicionamiento de popovers */
 .popover {
-    position: absolute !important;
-    will-change: transform !important;
-    transform: none !important;
+    /* Permitir que Bootstrap maneje el posicionamiento */
 }
 
 /* Evitar que los popovers aparezcan en posición incorrecta */
@@ -567,11 +549,63 @@ body.sidebar-open {
 
 /* Mejorar el cálculo de posición inicial */
 .popover[data-popper-placement] {
-    transform: none !important;
+    /* Permitir que Popper.js maneje las transformaciones */
 }
 
 /* Asegurar que los popovers se posicionen correctamente desde el inicio */
 .popover.show {
     position: absolute !important;
-    transform: none !important;
+    /* Permitir que Popper.js maneje las transformaciones */
+}
+
+/* ===== FIX PARA POSICIONAMIENTO DE POPOVERS ===== */
+
+/* Asegurar que las tarjetas de solicitud tengan posicionamiento relativo */
+.solicitud-card {
+    position: relative !important;
+    overflow: visible !important;
+}
+
+/* Mejorar el contenedor de usuarios para popovers */
+.users-container {
+    position: relative !important;
+    overflow: visible !important;
+}
+
+/* Asegurar que los elementos con popover tengan posicionamiento correcto */
+[data-toggle="popover"] {
+    position: relative !important;
+    display: inline-block !important;
+}
+
+/* Mejorar el cálculo de posición de popovers */
+.popover {
+    /* Permitir que Bootstrap maneje el posicionamiento */
+}
+
+/* Asegurar que los popovers se muestren correctamente */
+.popover.show {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Estilos estándar para popovers */
+.popover {
+    transition: opacity 0.15s ease-in-out !important;
+}
+
+/* Asegurar que los popovers personalizados se vean correctamente */
+.popover.bs-popover-top .arrow {
+    bottom: -5px;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px 5px 0;
+    border-top-color: #000;
+}
+
+.popover.bs-popover-top .arrow::before {
+    bottom: 1px;
+    border-width: 5px 5px 0;
+    border-top-color: #000;
 }

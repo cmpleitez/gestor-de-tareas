@@ -42,7 +42,7 @@
 123456784
 234567890
 456789012
-
+p@5t15al5abana
 🟠 Soporte IA Digital Ocean:
     https://docs.digitalocean.com/support/
     https://www.digitalocean.com/company/contact/sales?referrer=pricing/managed-databases
@@ -155,17 +155,10 @@ SERVICIOS:
     🟢 el drag and drop en general no debe permitirse sino al rol "Receptor"
     🟢 como cliente no debe verse la persiana de los destinatarios en solicitudes
     🟢 implementar lectura de kanvan para clientes
-        ✨dar permiso a clientes para solo lectura del kanvan
-        ✨cuando no hayan tarjetas en el tablero desactivar el drag and drop
-        ✨agregar el cliente entre los participantes de la tarjeta en solicitudes()
-        ✨agregarlos tambien en nuevasrecibidas()
-        ✨cuando una tarjeta esta resuelta, sus tareas, se deben setear solo lectura
         desactivar el clic sobre la tarjeta cuando el rol es "Cliente"
-        el kanban del cliente no se refresca cuando hay impulsos en las tarjetas habria que ver si refresca el avance en la barra de progreso
         limpiar codigo y etiquetas colocadas por la IA
         agregar numero de tarjeta en el sidebar
-        evitar el envio automatico de correo cuando sea admin y superadmin porque estos usuarios ya van validados
-    🟢 holomogar next capital con commit de gestor-de-tareas del 16.sep 4:07
+    🟢 holomogar next capital recreando el proyecto de cero y copiando el contenido exacto y completo del gestor-de-tareas
 
 FUSION SERVICIOS Y GESTOR:
     🟢 construir funcionalidades del catalogo de productos
