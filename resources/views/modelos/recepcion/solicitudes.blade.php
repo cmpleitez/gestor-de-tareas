@@ -290,7 +290,7 @@
             let usersHtml = generarHtmlUsuarios(tarjeta.users, tarjeta.estado_id, tipo);
             return `
                 <div class="solicitud-card ${animar ? 'animar-llegada' : ''} border-${borderColor}" 
-                data-id="${tarjeta.recepcion_id}"
+                data-recepcion-id="${tarjeta.recepcion_id}"
                 data-atencion-id="${tarjeta.atencion_id}"
                 data-recepcion-estado-id="${tarjeta.estado_id}"
                 data-fecha="${tarjeta.created_at}">
@@ -315,7 +315,7 @@
         function obtenerRecepcionIdsExistentes() {
             let ids = [];
             $('.solicitud-card').each(function() {
-                let recepcionId = $(this).data('id');
+                let recepcionId = $(this).data('recepcion-id');
                 if (recepcionId && recepcionId !== 'null' && recepcionId !== 'undefined') {
                     ids.push(recepcionId);
                 }
@@ -523,21 +523,21 @@
             });
         }
         //MOSTRAR TAREAS EN SIDEBAR
+        @can('asignar')
         $(document).on('click', '.solicitud-card', function() {
             const $card = $(this);
             const titulo = $card.find('.solicitud-titulo').text().trim();
-            const atencion = $card.find('.atencion-id').text().trim();
-            const recepcionId = $card.data('id');
+            const atencionId = $card.find('.atencion-id').text().trim();
+            const recepcionId = $card.data('recepcion-id');
             $('#sidebar-card-title').text(titulo);
-            $('#sidebar-card-body').html('<p>' + atencion + '</p>');
-            cargarTareas(recepcionId); // Cargar y dibujar las tareas
-            $('.kanban-overlay').addClass('show'); // Mostrar overlay y sidebar
+            $('#sidebar-card-body').html('<p>' + atencionId + '</p>');
+            cargarTareas(recepcionId);
+            $('.kanban-overlay').addClass('show');
             $('.kanban-sidebar').addClass('show');
-            $('body').addClass('sidebar-open'); // Bloquear scroll de la página principal
-            limpiarClasesDrag(); // Limpiar clases de drag and drop al abrir el overlay
-        });
-
-        function cargarTareas(recepcionId) { // Función para cargar tareas
+                $('body').addClass('sidebar-open');
+                limpiarClasesDrag();
+            });
+        function cargarTareas(recepcionId) { 
             $.ajax({
                 url: '{{ route('recepcion.tareas', ['recepcion_id' => ':id']) }}'.replace(':id', recepcionId),
                 type: 'GET',
@@ -553,8 +553,7 @@
                 }
             });
         }
-
-        function dibujarTareas(tareas) { // Función para dibujar las tareas
+        function dibujarTareas(tareas) { 
             if (tareas.length === 0) {
                 $('#sidebar-card-body').append(
                     '<div class="text-center text-muted py-3"><i class="bx bx-task text-muted"></i><div class="mt-2">Sin tareas asignadas</div></div>'
@@ -563,9 +562,7 @@
             }
             let tareasHtml = '<div><h6 class="font-weight-600 mb-2"></h6>';
             tareas.forEach(function(tarea) {
-                // Solo las tareas con estado_id = 3 están completadas, todas las demás son clickeables
                 let esCompletada = tarea.estado_id == 3;
-
                 let taskId = 'task_' + tarea.actividad_id;
                 let htmlGenerado = `
                 <div class="selectable-item ${esCompletada ? 'selected' : ''}" ${esCompletada ? 'style="pointer-events: none;"' : 'onclick="selectTask(\'' + taskId + '\')"'}">
@@ -586,8 +583,7 @@
             tareasHtml += '</div>';
             $('#sidebar-card-body').append(tareasHtml);
         }
-
-        function limpiarClasesDrag() { //Limpiar clases de drag and drop
+        function limpiarClasesDrag() {
             $('.solicitud-card').removeClass('dragging sortable-drag sortable-chosen sortable-ghost');
             $('.sortable-fallback').remove();
         }
@@ -596,7 +592,7 @@
                 limpiarClasesDrag();
             }
         });
-
+        @endcan
         //ACTUALIZAR EL ESTADO DE LA TAREA
         function selectTask(taskId) { // Función para seleccionar tareas
             const checkbox = document.getElementById(taskId); // Marcar/desmarcar el checkbox
@@ -626,7 +622,7 @@
                             if (response.todas_resueltas && response
                                 .solicitud_actualizada) { // Verificar si todas las tareas están resueltas
                                 const tarjeta = $(
-                                    `.solicitud-card[data-id="${response.recepcion_id}"]`
+                                    `.solicitud-card[data-recepcion-id="${response.recepcion_id}"]`
                                 ); // Mover la tarjeta al tablero de resueltas
                                 if (tarjeta.length > 0) {
                                     // Actualizar estilos usando la función auxiliar
@@ -812,7 +808,7 @@
                     usersHtml += `
                         <div style="margin: 0;" data-toggle="popover" 
                             data-title="${cliente.name || 'Cliente'}" 
-                            data-content="<span class='badge badge-pill badge-primary'>Cliente</span>"
+                            data-content="<span class='badge badge-pill ${badgeColor}'>Cliente</span>"
                             data-trigger="hover"
                             data-placement="top">
                             ${generarAvatar(cliente)}
@@ -996,7 +992,7 @@
                         let tarjetasAgregadas = 0;
                         nuevas.forEach(function(tarjeta) {
                             let tarjetaExistente = $(
-                                `#columna-recibidas .solicitud-card[data-id="${tarjeta.recepcion_id}"]`
+                                `#columna-recibidas .solicitud-card[data-recepcion-id="${tarjeta.recepcion_id}"]`
                             ); // Verificar si la tarjeta ya existe
                             if (tarjetaExistente.length === 0) {
                                 let html = generarTarjetaSolicitud(tarjeta, true,

@@ -1,11 +1,6 @@
 @extends('dashboard')
 
 @section('css')
-    <!-- BEGIN: Security Dashboard CSS -->
-    <!-- Archivo CSS externo comentado temporalmente para evitar conflictos -->
-    <!-- <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/security-dashboard.css') }}"> -->
-    <!-- END: Security Dashboard CSS -->
-
     <style>
         .log-viewer {
             max-height: none !important;
@@ -439,9 +434,7 @@
             loadLogs();
         }
 
-        function downloadLogs() {
-            alert('Función de descarga temporalmente deshabilitada');
-        }
+
 
 
 
@@ -522,9 +515,4 @@
             return filters;
         }
     </script>
-
-    <!-- BEGIN: Application JavaScript -->
-    <!-- Archivo JavaScript externo comentado temporalmente para evitar conflictos -->
-    <!-- <script src="{{ asset('app-assets/js/security-dashboard.js') }}"></script> -->
-    <!-- END: Application JavaScript -->
 @stop

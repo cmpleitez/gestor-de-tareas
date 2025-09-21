@@ -155,9 +155,10 @@ SERVICIOS:
     🟢 el drag and drop en general no debe permitirse sino al rol "Receptor"
     🟢 como cliente no debe verse la persiana de los destinatarios en solicitudes
     🟢 implementar lectura de kanvan para clientes
-        desactivar el clic sobre la tarjeta cuando el rol es "Cliente"
-        limpiar codigo y etiquetas colocadas por la IA
         agregar numero de tarjeta en el sidebar
+    🟢 en la tarjeta: cuando todas sus tareas estan realizadas escribir "Resuelta" y retirar la palabra Estado
+    🟢 en la tarjeta: si aun está en progreso escribir el nombre de la última tarea realizada
+    🟢 cuando avance la barra de progreso actualizar tambien el nombre de la ultima tarea realizada
     🟢 holomogar next capital recreando el proyecto de cero y copiando el contenido exacto y completo del gestor-de-tareas
 
 FUSION SERVICIOS Y GESTOR:
