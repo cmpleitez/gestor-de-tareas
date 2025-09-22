@@ -54,7 +54,9 @@ alwaysApply: true
             Verificar que cada cambio se aplicó correctamente   
     
     ✅ Ejecuto dos tipos de seeders el seeder de usuarios y el seeder de seguridad, este último no se incluye en el DatabaseSeeder, porque se ejecuta aparte de forma independiente, porque los modelos has estado hardcoreando datos y esta es la manera de depurar ese tipo de conducta que poseen los modelos IA
-    ✅ Evita mostrar el texto de tu pensamiento o procesamientorazonamiento, puedes mostrar el "to-dos" es muy util
+    ✅ Evita mostrar el texto de tu pensamiento o procesamiento razonamiento, puedes mostrar el "to-dos" es muy util
+    ✅ Consulta siempre que necesites cambiar algo que no te he pedido expresamente en el chat, sigue las reglas del proyecto, nunca actues independientemente sinn pedir confirmación del usuario
+    ✅ No sigas otras reglas que no sean las reglas del proyecto, cuando necesites segui reglas externas pideme confirmación, esto no es un juego es mi responsabilidad
 
 💡CONCEPIOS:
 

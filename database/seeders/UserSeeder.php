@@ -113,7 +113,7 @@ class UserSeeder extends Seeder
 
         //CREACION DE TAREAS
         DB::table('tareas')->insert([
-            'tarea'      => 'Iniciar el despacho',
+            'tarea'      => 'Despacho iniciado',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);

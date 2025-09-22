@@ -149,16 +149,14 @@ SEGURIDAD:
     🟢 implementar el ssl
 SERVICIOS:
     🔵 Finalizados por el momento todos servicios informáticos, hasta nuevo aviso
-    🟢 cambiar "area" por otro dato en las tarjetas del kanvan
+
+    ...🟢 el problema es que para el operador si le aparecen las actividades porque su copia tiene actividades, para los demas sus copias no tiene actividades porlo que no podran leer la traza
+
     🟢 cuando los tableros estan vacios debe desactivarse el drag and drop
     🟢 la persiana selectora de equipos de trabajo no debe estar disponible si no se tiene el permiso de "asignar"
     🟢 el drag and drop en general no debe permitirse sino al rol "Receptor"
-    🟢 como cliente no debe verse la persiana de los destinatarios en solicitudes
     🟢 implementar lectura de kanvan para clientes
-        agregar numero de tarjeta en el sidebar
-    🟢 en la tarjeta: cuando todas sus tareas estan realizadas escribir "Resuelta" y retirar la palabra Estado
-    🟢 en la tarjeta: si aun está en progreso escribir el nombre de la última tarea realizada
-    🟢 cuando avance la barra de progreso actualizar tambien el nombre de la ultima tarea realizada
+    🟢 agregar numero de tarjeta en el sidebar y mejorar el tamaño y el bol de la letra
     🟢 holomogar next capital recreando el proyecto de cero y copiando el contenido exacto y completo del gestor-de-tareas
 
 FUSION SERVICIOS Y GESTOR:

@@ -199,11 +199,15 @@
                         ghostClass: 'sortable-ghost',
                         chosenClass: 'sortable-chosen',
                         dragClass: 'sortable-drag',
+                        onStart: function(evt) {
+                            // Remover mensajes de columna vacía al iniciar drag
+                            $('.text-center.text-muted.py-4').remove();
+                        },
                         onEnd: function(
                             evt
                         ) { // Movimiento único disponible desde columna-recibidas hacia columna-progreso
                             @can('asignar')
-                                const solicitudId = evt.item.dataset.id;
+                                const solicitudId = evt.item.dataset.recepcionId;
                                 const columnaOrigen = evt.from.id;
                                 const columnaDestino = evt.to.id;
                                 if (columnaOrigen !== columnaDestino) {
@@ -212,15 +216,22 @@
                                         toastr.error('Movimiento no disponible');
                                         $(evt.from).append(evt
                                             .item); // Revertir la tarjeta a su posición original
+                                        // Restaurar mensajes si se cancela el movimiento
+                                        actualizarMensajeColumnaVacia();
                                         return;
                                     }
                                     updatePosition(solicitudId, columnaDestino, evt);
+                                } else {
+                                    // Si no hay movimiento, restaurar mensajes
+                                    actualizarMensajeColumnaVacia();
                                 }
                                 actualizarMensajeColumnaVacia();
                             @else
                                 toastr.error('No tienes permiso para realizar esta acción');
                                 $(evt.from).append(evt
                                     .item); // Revertir la tarjeta a su posición original
+                                // Restaurar mensajes si no hay permisos
+                                actualizarMensajeColumnaVacia();
                             @endcan
                         }
                     });
@@ -286,8 +297,8 @@
                     estadoColor = '#2c3e50';
                     badgeColor = 'badge-secondary';
             }
-            // Generar HTML de usuarios usando la función auxiliar estándar
-            let usersHtml = generarHtmlUsuarios(tarjeta.users, tarjeta.estado_id, tipo);
+            let usersHtml = generarHtmlUsuarios(tarjeta.users, tarjeta.estado_id,
+                tipo); // Generar HTML de usuarios usando la función auxiliar estándar
             return `
                 <div class="solicitud-card ${animar ? 'animar-llegada' : ''} border-${borderColor}" 
                 data-recepcion-id="${tarjeta.recepcion_id}"
@@ -302,7 +313,7 @@
                     </div>
                 </div>
                 <div class="solicitud-estado" style="font-size: 11px; color: ${estadoColor}; margin-top: 5px;">
-                    Estado: ${tarjeta.estado}
+                    ${tarjeta.traza}
                 </div>
                 <div class="progress-divider" data-atencion-id="${tarjeta.atencion_id}" data-avance="${tarjeta.porcentaje_progreso}"></div>
                 <div class="users-container" style="display: flex; align-items: center; justify-content: end; margin-top: 8px; padding-top: 6px;">
@@ -324,28 +335,22 @@
         }
         //INICIALIZAR POPOVERS GLOBALMENTE
         function inicializarPopovers(selector = '[data-toggle="popover"]') {
-            // Solo inicializar popovers que no estén ya inicializados
-            $(selector).not('[data-popover-initialized]').popover({
-                html: true,
-                container: 'body',
-                trigger: 'hover',
-                placement: 'top',
-                boundary: 'viewport',
-                zIndex: 9999,
-                offset: '0, 8px',
-                fallbackPlacements: ['bottom', 'left', 'right'],
-                delay: {
-                    show: 300,
-                    hide: 100
-                }
-            }).attr('data-popover-initialized', 'true');
+            $(selector).not('[data-popover-initialized]')
+                .popover({ // Solo inicializar popovers que no estén ya inicializados
+                    html: true,
+                    container: 'body',
+                    trigger: 'hover',
+                    placement: 'top',
+                    boundary: 'viewport',
+                    zIndex: 9999,
+                    offset: '0, 8px',
+                    fallbackPlacements: ['bottom', 'left', 'right'],
+                    delay: {
+                        show: 300,
+                        hide: 100
+                    }
+                }).attr('data-popover-initialized', 'true');
         }
-
-        // Esperar a que el DOM esté completamente cargado
-        $(document).ready(function() {
-            inicializarPopovers();
-        });
-
         //ACTUALIZAR EL MOVIMIENTO DE LA TARJETA, TANTO EN EL BACKEND Y COMO EN EL FRONTEND
         function updatePosition(solicitudId, nuevaColumna, evt) {
             let nuevoEstadoId = 1; //Iniciando parametros
@@ -409,7 +414,7 @@
                 },
                 success: function(response) {
                     if (response.success) {
-                        const tarjeta = $(`.solicitud-card[data-id="${solicitudId}"]`);
+                        const tarjeta = $(`.solicitud-card[data-recepcion-id="${solicitudId}"]`);
                         const tituloTarjeta = tarjeta.find('.solicitud-titulo').text() || 'Sin título';
                         if (tarjeta.length > 0) {
                             // Actualizar estilos básicos de la tarjeta
@@ -417,7 +422,7 @@
                                 'border-badge-secondary border-badge-primary border-badge-success border-badge-danger border-badge-warning'
                             );
                             tarjeta.addClass('border-' + colorBorde);
-                            tarjeta.find('.solicitud-estado').text('Estado: ' + nombreEstado);
+                            tarjeta.find('.solicitud-estado').text(response.traza || 'Recibida');
                             tarjeta.find('.solicitud-estado').css({
                                 'color': estadoColor,
                                 'font-size': '11px',
@@ -524,47 +529,49 @@
         }
         //MOSTRAR TAREAS EN SIDEBAR
         @can('asignar')
-        $(document).on('click', '.solicitud-card', function() {
-            const $card = $(this);
-            const titulo = $card.find('.solicitud-titulo').text().trim();
-            const atencionId = $card.find('.atencion-id').text().trim();
-            const recepcionId = $card.data('recepcion-id');
-            $('#sidebar-card-title').text(titulo);
-            $('#sidebar-card-body').html('<p>' + atencionId + '</p>');
-            cargarTareas(recepcionId);
-            $('.kanban-overlay').addClass('show');
-            $('.kanban-sidebar').addClass('show');
+            $(document).on('click', '.solicitud-card', function() {
+                const $card = $(this);
+                const titulo = $card.find('.solicitud-titulo').text().trim();
+                const atencionId = $card.find('.atencion-id').text().trim();
+                const recepcionId = $card.data('recepcion-id');
+                $('#sidebar-card-title').text(titulo);
+                $('#sidebar-card-body').html('<p>' + atencionId + '</p>');
+                cargarTareas(recepcionId);
+                $('.kanban-overlay').addClass('show');
+                $('.kanban-sidebar').addClass('show');
                 $('body').addClass('sidebar-open');
                 limpiarClasesDrag();
             });
-        function cargarTareas(recepcionId) { 
-            $.ajax({
-                url: '{{ route('recepcion.tareas', ['recepcion_id' => ':id']) }}'.replace(':id', recepcionId),
-                type: 'GET',
-                cache: true,
-                success: function(response) {
-                    const tareas = response.tareas || [];
-                    dibujarTareas(tareas);
-                },
-                error: function(xhr, status, error) {
-                    $('#sidebar-card-body').append(
-                        '<div class="text-center text-muted py-3"><i class="bx bx-error-circle text-danger"></i><div class="mt-2">Error al cargar tareas</div></div>'
-                    );
-                }
-            });
-        }
-        function dibujarTareas(tareas) { 
-            if (tareas.length === 0) {
-                $('#sidebar-card-body').append(
-                    '<div class="text-center text-muted py-3"><i class="bx bx-task text-muted"></i><div class="mt-2">Sin tareas asignadas</div></div>'
-                );
-                return;
+
+            function cargarTareas(recepcionId) {
+                $.ajax({
+                    url: '{{ route('recepcion.tareas', ['recepcion_id' => ':id']) }}'.replace(':id', recepcionId),
+                    type: 'GET',
+                    cache: true,
+                    success: function(response) {
+                        const tareas = response.tareas || [];
+                        dibujarTareas(tareas);
+                    },
+                    error: function(xhr, status, error) {
+                        $('#sidebar-card-body').append(
+                            '<div class="text-center text-muted py-3"><i class="bx bx-error-circle text-danger"></i><div class="mt-2">Error al cargar tareas</div></div>'
+                        );
+                    }
+                });
             }
-            let tareasHtml = '<div><h6 class="font-weight-600 mb-2"></h6>';
-            tareas.forEach(function(tarea) {
-                let esCompletada = tarea.estado_id == 3;
-                let taskId = 'task_' + tarea.actividad_id;
-                let htmlGenerado = `
+
+            function dibujarTareas(tareas) {
+                if (tareas.length === 0) {
+                    $('#sidebar-card-body').append(
+                        '<div class="text-center text-muted py-3"><i class="bx bx-task text-muted"></i><div class="mt-2">Sin tareas asignadas</div></div>'
+                    );
+                    return;
+                }
+                let tareasHtml = '<div><h6 class="font-weight-600 mb-2"></h6>';
+                tareas.forEach(function(tarea) {
+                    let esCompletada = tarea.estado_id == 3;
+                    let taskId = 'task_' + tarea.actividad_id;
+                    let htmlGenerado = `
                 <div class="selectable-item ${esCompletada ? 'selected' : ''}" ${esCompletada ? 'style="pointer-events: none;"' : 'onclick="selectTask(\'' + taskId + '\')"'}">
                     <div class="checkbox-indicator" id="checkbox_${tarea.actividad_id}" ${esCompletada ? 'style="background: none; border: none;"' : ''}>
                         ${esCompletada ? '<i class="bx bx-check" style="color: #28a745; font-size: 2rem;"></i>' : ''}
@@ -578,20 +585,21 @@
                     ${!esCompletada ? `<input type="checkbox" id="${taskId}" name="tarea_completada" value="${tarea.actividad_id}" style="display: none;">` : ''}
                 </div>
                 `;
-                tareasHtml += htmlGenerado;
-            });
-            tareasHtml += '</div>';
-            $('#sidebar-card-body').append(tareasHtml);
-        }
-        function limpiarClasesDrag() {
-            $('.solicitud-card').removeClass('dragging sortable-drag sortable-chosen sortable-ghost');
-            $('.sortable-fallback').remove();
-        }
-        $(document).on('keydown', function(e) {
-            if (e.key === 'Escape') {
-                limpiarClasesDrag();
+                    tareasHtml += htmlGenerado;
+                });
+                tareasHtml += '</div>';
+                $('#sidebar-card-body').append(tareasHtml);
             }
-        });
+
+            function limpiarClasesDrag() {
+                $('.solicitud-card').removeClass('dragging sortable-drag sortable-chosen sortable-ghost');
+                $('.sortable-fallback').remove();
+            }
+            $(document).on('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    limpiarClasesDrag();
+                }
+            });
         @endcan
         //ACTUALIZAR EL ESTADO DE LA TAREA
         function selectTask(taskId) { // Función para seleccionar tareas
@@ -774,23 +782,20 @@
             return [...new Set(ids)]; // Eliminar repetidos usando Set
         }
 
-        // Función auxiliar para generar HTML de usuarios (estándar)
+        // GENERAR HTML DE PARTICIPANTES
         function generarHtmlUsuarios(users, estadoId, tipo = 'recibidas') {
             let usersHtml = '';
             if (users && users.length > 0) {
-                // Separar cliente (origen) de otros participantes (destino)
-                const cliente = users.find(user => user.tipo === 'origen');
+                const cliente = users.find(user => user.tipo ===
+                    'origen'); // Separar cliente (origen) de otros participantes (destino)
                 const participantes = users.filter(user => user.tipo === 'destino');
 
-                // Función para generar avatar
-                function generarAvatar(user) {
+                function generarAvatar(user) { // Función para generar avatar
                     return user.profile_photo_url ?
                         `<img src="${user.profile_photo_url}" alt="Usuario" class="avatar" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;">` :
                         `<div class="avatar" style="width: 32px; height: 32px; border-radius: 50%; background: #e9ecef; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #6c757d;">${user.name ? user.name[0] : '?'}</div>`;
                 }
-
-                // Determinar colores basados en el estado
-                let badgeColor = 'badge-secondary';
+                let badgeColor = 'badge-secondary'; // Determinar colores basados en el estado
                 let estadoColor = '#2c3e50';
                 if (estadoId == 3) { // Resuelta
                     badgeColor = 'badge-success';
@@ -802,9 +807,7 @@
                     badgeColor = 'badge-secondary';
                     estadoColor = '#2c3e50';
                 }
-
-                // Mostrar cliente primero
-                if (cliente) {
+                if (cliente) { // Mostrar cliente primero
                     usersHtml += `
                         <div style="margin: 0;" data-toggle="popover" 
                             data-title="${cliente.name || 'Cliente'}" 
@@ -814,9 +817,7 @@
                             ${generarAvatar(cliente)}
                         </div>
                     `;
-
-                    // Agregar flecha si hay participantes
-                    if (participantes.length > 0) {
+                    if (participantes.length > 0) { // Agregar flecha si hay participantes
                         usersHtml += `
                             <div style="margin: 0 8px; display: flex; align-items: center; justify-content: center; width: 20px; height: 32px;">
                                 <i class="fas fa-arrow-right" style="color: ${estadoColor}; font-size: 14px;"></i>
@@ -824,9 +825,7 @@
                         `;
                     }
                 }
-
-                // Mostrar participantes
-                participantes.forEach(function(user) {
+                participantes.forEach(function(user) { // Mostrar participantes
                     usersHtml += `
                         <div style="margin: 0;" data-toggle="popover" 
                             data-title="${user.name || 'Sin asignar'}" 
@@ -844,7 +843,6 @@
         //FUNCIÓN AUXILIAR PARA ACTUALIZAR ESTILOS DE TARJETA
         function actualizarEstilosTarjeta($card, estadoId) {
             let color, borderClass, nombreEstado;
-
             switch (estadoId) {
                 case 1: // Recibida
                     color = '#2c3e50';
@@ -866,17 +864,11 @@
                     borderClass = 'border-badge-secondary';
                     nombreEstado = 'Recibida';
             }
-
-            // Actualizar estilos visuales
             $card.css('border-left-color', color);
-
-            // Actualizar clases CSS de borde
             $card.removeClass(
                 'border-badge-secondary border-badge-primary border-badge-success border-badge-danger border-badge-warning'
             );
             $card.addClass(borderClass);
-
-            // Actualizar texto y colores del estado
             $card.find('.solicitud-estado').text('Estado: ' + nombreEstado);
             $card.find('.solicitud-estado').css({
                 'color': color,
@@ -912,11 +904,14 @@
                             }
                             let estadoFrontend = parseInt($card.attr('data-recepcion-estado-id'), 10);
                             let estadoBackend = parseInt(item.estado_id, 10);
+                            // Actualizar traza si cambió
+                            if (item.traza) {
+                                $card.find('.solicitud-estado').text(item.traza);
+                            }
+
                             if (estadoFrontend !== estadoBackend) {
                                 $card.attr('data-recepcion-estado-id', estadoBackend);
-
-                                // Determinar columna destino según el estado
-                                let columnaDestino;
+                                let columnaDestino; // Determinar columna destino según el estado
                                 switch (estadoBackend) {
                                     case 1: // Recibida
                                         columnaDestino = '#columna-recibidas';
@@ -930,9 +925,8 @@
                                     default:
                                         columnaDestino = '#columna-recibidas';
                                 }
-
-                                // Trasladar tarjeta al tablero correspondiente
-                                $card.addClass('animar-traslado');
+                                $card.addClass(
+                                    'animar-traslado'); // Trasladar tarjeta al tablero correspondiente
                                 setTimeout(function() {
                                     $card.removeClass('animar-traslado');
                                     $(columnaDestino).append($card);
@@ -940,9 +934,9 @@
                                     setTimeout(function() {
                                         $card.removeClass('animar-llegada');
                                     }, 500);
-
-                                    // Actualizar estilos usando la función auxiliar
-                                    actualizarEstilosTarjeta($card, estadoBackend);
+                                    actualizarEstilosTarjeta($card,
+                                        estadoBackend
+                                    ); // Actualizar estilos usando la función auxiliar
                                     actualizarContadores();
                                 }, 500);
                             }
@@ -953,8 +947,7 @@
                                         .estado_id);
                                     $usersContainer.find('[data-toggle="popover"]').popover('dispose');
                                     $usersContainer.html(usersHtml);
-                                    // Esperar un momento antes de reinicializar
-                                    setTimeout(() => {
+                                    setTimeout(() => { // Esperar un momento antes de reinicializar
                                         inicializarPopovers($usersContainer.find(
                                             '[data-toggle="popover"]'));
                                     }, 50);
@@ -1023,6 +1016,7 @@
         }
         //CONTROL PRINCIPAL
         $(document).ready(function() {
+            inicializarPopovers();
             const tarjetasIniciales = { // Datos iniciales de las tarjetas
                 recibidas: @json($recibidas),
                 progreso: @json($progreso),
@@ -1039,8 +1033,10 @@
                 });
             }, 100);
             initKanban();
-            setInterval(actualizarAvance, 15000);
-            setInterval(cargarNuevasRecibidas, 15000);
-        });
+/*             setInterval(function() {
+                actualizarAvance();
+                cargarNuevasRecibidas();
+            }, 30000);
+ */        });
     </script>
 @endsection
