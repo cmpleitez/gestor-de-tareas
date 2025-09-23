@@ -158,7 +158,6 @@
             </button>
         </div>
         <div id="sidebar-card-body">
-            <p>Selecciona una tarjeta para ver detalles...</p>
         </div>
     </div>
 @endsection
@@ -220,6 +219,16 @@
                                         actualizarMensajeColumnaVacia();
                                         return;
                                     }
+                                    // Ordenar inmediatamente la columna destino después del movimiento visual
+                                    const $colDestino = $('#' + columnaDestino);
+                                    const itemsDestino = $colDestino.children('.solicitud-card').get();
+                                    itemsDestino.sort(function(a, b) {
+                                        return parseInt(a.dataset.atencionId || '0', 10) -
+                                            parseInt(b.dataset.atencionId || '0', 10);
+                                    });
+                                    itemsDestino.forEach(function(el) {
+                                        $colDestino.append(el);
+                                    });
                                     updatePosition(solicitudId, columnaDestino, evt);
                                 } else {
                                     // Si no hay movimiento, restaurar mensajes
@@ -246,6 +255,29 @@
                 });
             @endcan
         }
+
+        // Función estandarizada para ordenar una columna específica por atencion_id
+        function ordenarColumna(columnaId) {
+            const $col = $('#' + columnaId);
+            const items = $col.children('.solicitud-card').get();
+            if (items.length > 0) {
+                items.sort(function(a, b) {
+                    return parseInt(a.dataset.atencionId || '0', 10) - parseInt(b.dataset.atencionId || '0', 10);
+                });
+                items.forEach(function(el) {
+                    $col.append(el);
+                });
+            }
+        }
+
+        // Función para ordenar todas las columnas
+        function ordenarColumnas() {
+            const columnas = ['columna-recibidas', 'columna-progreso', 'columna-resueltas'];
+            columnas.forEach(function(columnaId) {
+                ordenarColumna(columnaId);
+            });
+        }
+
         //FUNCIONES PARA LA CARGA INICIAL DE LAS TARJETAS
         function cargarTarjetasIniciales(tarjetas) {
             if (tarjetas.recibidas && tarjetas.recibidas.length > 0) { // Cargar tarjetas recibidas
@@ -266,6 +298,7 @@
                     $('#columna-resueltas').append(html);
                 });
             }
+            ordenarColumnas(); // Ordenar todas las columnas después de la carga inicial
             actualizarContadores(); // Actualizar contadores y mensajes
             actualizarMensajeColumnaVacia();
             inicializarPopovers(); // Inicializar popovers para las tarjetas cargadas
@@ -450,19 +483,6 @@
                             // Actualizar color de la flecha según el nuevo estado
                             tarjeta.find('.fas.fa-arrow-right').css('color', estadoColor);
                         }
-                        // Reordenar tablero destino por recepcion.id desc tras confirmación del backend
-                        if (nuevaColumna === 'columna-recibidas' || nuevaColumna === 'columna-progreso' ||
-                            nuevaColumna === 'columna-resueltas') {
-                            const $col = $('#' + nuevaColumna);
-                            const items = $col.children('.solicitud-card').get();
-                            items.sort(function(a, b) {
-                                return parseInt(a.dataset.id || '0', 10) - parseInt(b.dataset.id || '0',
-                                    10);
-                            });
-                            items.forEach(function(el) {
-                                $col.append(el);
-                            });
-                        }
                         toastr.success(response.message);
                     } else {
                         Swal.fire({
@@ -532,10 +552,11 @@
             $(document).on('click', '.solicitud-card', function() {
                 const $card = $(this);
                 const titulo = $card.find('.solicitud-titulo').text().trim();
-                const atencionId = $card.find('.atencion-id').text().trim();
+                const atencionId = $card.data('atencion-id');
                 const recepcionId = $card.data('recepcion-id');
-                $('#sidebar-card-title').text(titulo);
-                $('#sidebar-card-body').html('<p>' + atencionId + '</p>');
+                const atencionIdRipped = $card.find('.text-right div[style*="font-weight: 600"]').text().trim();
+                $('#sidebar-card-title').text(atencionIdRipped + ' - ' + titulo).css('font-size', '1rem');
+                $('#sidebar-card-body').empty();
                 cargarTareas(recepcionId);
                 $('.kanban-overlay').addClass('show');
                 $('.kanban-sidebar').addClass('show');
@@ -1007,6 +1028,8 @@
                             }
                         });
                         if (tarjetasAgregadas > 0) { // Solo actualizar contadores si se agregaron tarjetas
+                            ordenarColumna(
+                                'columna-recibidas'); // Ordenar tablero después de agregar nuevas tarjetas
                             actualizarContadores();
                             inicializarPopovers(); // Inicializar popovers para las nuevas tarjetas
                         }
@@ -1039,10 +1062,10 @@
                 });
             }, 100);
             initKanban();
-            setInterval(function() {
-                actualizarAvance();
+/*               setInterval(function() {
+                //actualizarAvance();
                 cargarNuevasRecibidas();
-            }, 15000);
+            }, 15000); */
         });
     </script>
 @endsection

@@ -157,10 +157,24 @@ SEGURIDAD:
 SERVICIOS:
     🔵 Finalizados por el momento todos servicios informáticos, hasta nuevo aviso
 
-    🟢 agregar numero de tarjeta en el sidebar y mejorar el tamaño y el bol de la letra
-    🟢 holomogar next capital recreando el proyecto de cero y copiando el contenido exacto y completo del gestor-de-tareas
+    🟢 verificando si se guarda el estado de resuelta cuando se reporta todas las tareas de una tarjeta
+    🟢 verificando si se actualiza el estado de "en progreso" cuando el receptor impulsa una tarjeta a ese tablero o si el operador impulsa una tarjeta a ese tablero
+    🟢 a parte de tomar 5 tarjetas en la carga
+        ...carga inicial: primera 5 exceptuando las resueltas
+        impulso por recepcion (nuevasRecibidas): primeras 5 incluyendo solo las recibidas
+    🟢 revisar si nuevasRecibidas esta ordenando el tablero
+    🟢 revisar si asignar esta ordenando el tablero
+    🟢 revisar si actualizarAvance esta ordenando el tablero
+    🟢 revisar si solicitudes() primera carga esta ordenando el tablero
+    🟢 verificar problema carga cada 15 segundos: 502 Bad Gateway nginx/1.19.10 
+    🟢 en carga inicial si hay 5 en tableros no descarga nada
+    🟢 los estados no se estan actualizando correctamente hay 3 escalas: atencion, recepcion y actividad
+    🟢 overlay para espera cuando se esta enviando el corrreo de verificacion
+    🟢 registro del usuario: en algun momento no se guarda la foto
+    🟢 mejorar el mensaje al usuario respecto a lectura de errores y a que desaparezca el mensaje cuando ya no se necesite
 
 FUSION SERVICIOS Y GESTOR:
+    🟡 holomogar next capital recreando el proyecto de cero y copiando el contenido exacto y completo del gestor-de-tareas
     🟢 construir funcionalidades del catalogo de productos
     🟢 agregar un campo para el codigo físico del producto y mantenerlo visible en el catalogo de productos
     🟢 crear funcionalidad de combos personalizables

@@ -112,7 +112,8 @@ class RecepcionController extends Controller
                 ->whereHas('atencion.oficina', function ($query) use ($user) {
                     $query->where('id', $user->oficina_id);
                 })
-                ->orderBy('created_at', 'desc')
+                ->where('estado_id', '<>', Estado::where('estado', 'Resuelta')->first()->id)
+                ->orderBy('atencion_id', 'asc')
                 ->take(5)
                 ->get();
             $atencionIds           = $recepciones->pluck('atencion_id')->unique();
@@ -168,14 +169,17 @@ class RecepcionController extends Controller
                     $query->where('user_id_destino', $user->id);
                 }
             })
-                ->where('estado_id', 1)
                 ->with(['solicitud.tareas', 'usuarioDestino', 'usuarioOrigen', 'atencion.oficina', 'atencion.estado', 'role', 'actividades.tarea'])
                 ->whereHas('atencion.oficina', function ($query) use ($user) {
                     $query->where('id', $user->oficina_id);
                 })
-                ->orderBy('created_at', 'desc')
+                ->where('estado_id', '<>', Estado::where('estado', 'Recibida')->first()->id)
+                ->orderBy('atencion_id')
                 ->take(5);
             $recepcionesBase       = $queryBase->get();
+
+dd($recepcionesBase);
+
             $atencionIds           = $recepcionesBase->pluck('atencion_id')->unique();
             $usuariosParticipantes = $this->obtenerUsuariosParticipantes($atencionIds); //Obtener usuarios participantes
             $recepciones           = $recepcionesBase;                                  //Filtrar las recepciones que ya fueron mostradas
@@ -477,9 +481,11 @@ class RecepcionController extends Controller
             $procentaje_progreso = $total_actividades > 0
                 ? round(($actividades_resueltas / $total_actividades) * 100, 2)
                 : 0;
+            $estado_resuelta_id = Estado::where('estado', 'Resuelta')->first()->id;
             $atencion = $actividad->recepcion->atencion; //Actualizar avance
             if ($atencion) {
                 $atencion->avance = $procentaje_progreso;
+                $atencion->estado_id = $estado_resuelta_id;
                 $atencion->save();
             }
             $todas_resueltas       = ($actividades_resueltas === $total_actividades); // Verificar si todas las tareas están resueltas
@@ -487,7 +493,7 @@ class RecepcionController extends Controller
             if ($todas_resueltas && $nuevoEstado === 'Resuelta') { // Actualizar el estado de la solicitud a "Resuelta"
                 $recepciones = Recepcion::with('role')->where('atencion_id', $atencion_id)->get();
                 foreach ($recepciones as $recepcion) { // Actualizar todas las copias a resuelta
-                    $recepcion->estado_id = Estado::where('estado', 'Resuelta')->first()->id;
+                    $recepcion->estado_id = $estado_resuelta_id;
                     $recepcion->save();
                 }
                 $solicitud_actualizada = true;
