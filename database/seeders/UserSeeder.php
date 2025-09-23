@@ -118,17 +118,17 @@ class UserSeeder extends Seeder
             'updated_at' => Carbon::now(),
         ]);
         DB::table('tareas')->insert([
-            'tarea'      => 'Crear factura digital',
+            'tarea'      => 'Creación de factura digital',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
         DB::table('tareas')->insert([
-            'tarea'      => 'Enviar factura digital',
+            'tarea'      => 'Envío de factura digital',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
         DB::table('tareas')->insert([
-            'tarea'      => 'Descargar Stock',
+            'tarea'      => 'Descarga de stock',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);

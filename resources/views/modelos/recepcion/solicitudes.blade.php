@@ -626,6 +626,12 @@
                     },
                     success: function(response) {
                         if (response.success) {
+                            // Actualizar la traza en la tarjeta
+                            const tarjeta = $(`.solicitud-card[data-recepcion-id="${response.recepcion_id}"]`);
+                            if (tarjeta.length > 0 && response.traza) {
+                                tarjeta.find('.solicitud-estado').text(response.traza);
+                            }
+
                             updateProgressByPercentage(response.atencion_id, response.progreso.porcentaje);
                             if (response.todas_resueltas && response
                                 .solicitud_actualizada) { // Verificar si todas las tareas están resueltas
@@ -869,7 +875,7 @@
                 'border-badge-secondary border-badge-primary border-badge-success border-badge-danger border-badge-warning'
             );
             $card.addClass(borderClass);
-            $card.find('.solicitud-estado').text('Estado: ' + nombreEstado);
+            $card.find('.solicitud-estado').text(nombreEstado);
             $card.find('.solicitud-estado').css({
                 'color': color,
                 'font-size': '11px',
@@ -1033,10 +1039,10 @@
                 });
             }, 100);
             initKanban();
-/*             setInterval(function() {
+            setInterval(function() {
                 actualizarAvance();
                 cargarNuevasRecibidas();
-            }, 30000);
- */        });
+            }, 15000);
+        });
     </script>
 @endsection

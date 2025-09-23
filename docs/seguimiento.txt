@@ -36,6 +36,13 @@
     09. El operador avanza la solicitud desde su tablero de recibidas a su tablero en progreso y automáticamente se originan las tareas a cumplir segun su skill
     10. El operador va cumpliendo sus tareas una a una y reportandolas como realizadas
 
+🟠 Consumo estimado por la actualizacion automatica del gestor de tareas
+Consumo ejecución cada 15 segundos por día (8 horas):
+Mínimo: ~4.2 MB/día
+Máximo: ~9.2 MB/día
+Promedio: ~6.7 MB/día
+Mes: 200 MB
+
 🟠 duis validos:
 012345678
 023456783
@@ -150,12 +157,6 @@ SEGURIDAD:
 SERVICIOS:
     🔵 Finalizados por el momento todos servicios informáticos, hasta nuevo aviso
 
-    ...🟢 el problema es que para el operador si le aparecen las actividades porque su copia tiene actividades, para los demas sus copias no tiene actividades porlo que no podran leer la traza
-
-    🟢 cuando los tableros estan vacios debe desactivarse el drag and drop
-    🟢 la persiana selectora de equipos de trabajo no debe estar disponible si no se tiene el permiso de "asignar"
-    🟢 el drag and drop en general no debe permitirse sino al rol "Receptor"
-    🟢 implementar lectura de kanvan para clientes
     🟢 agregar numero de tarjeta en el sidebar y mejorar el tamaño y el bol de la letra
     🟢 holomogar next capital recreando el proyecto de cero y copiando el contenido exacto y completo del gestor-de-tareas
 

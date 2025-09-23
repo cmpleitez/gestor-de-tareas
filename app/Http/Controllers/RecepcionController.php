@@ -32,7 +32,6 @@ class RecepcionController extends Controller
                     'tipo'                => 'destino',
                 ];
             });
-
         $usuariosOrigen = Recepcion::with(['usuarioOrigen', 'role']) // Consulta separada para usuarios origen
             ->whereIn('atencion_id', $atencionIds)
             ->whereHas('role', function ($query) {
@@ -56,6 +55,32 @@ class RecepcionController extends Controller
                     return $usuario['recepcion_id'] . '_' . $usuario['tipo'];
                 })->values();
             });
+    }
+
+    private function obtenerTraza($tarjeta)
+    {
+        $actividades = Actividad::whereHas('recepcion', function ($query) use ($tarjeta) {
+            $query->where('atencion_id', $tarjeta->atencion_id)
+                ->where('role_id', Role::where('name', 'Operador')->first()->id);
+        })
+            ->with(['tarea', 'estado'])
+            ->get()
+            ->sortByDesc('updated_at');
+        if ($actividades->isEmpty()) {
+            $traza = 'Recibida';
+        } else {
+            $todasResueltas = $actividades->every(function ($actividad) {
+                return $actividad->estado_id == 3;
+            });
+
+            if ($todasResueltas) {
+                $traza = 'Resuelta';
+            } else {
+                $ultimaActividad = $actividades->first();
+                $traza           = $ultimaActividad->tarea->tarea;
+            }
+        }
+        return $traza;
     }
 
     public function solicitudes()
@@ -90,30 +115,11 @@ class RecepcionController extends Controller
                 ->orderBy('created_at', 'desc')
                 ->take(5)
                 ->get();
-
-            //dd($recepciones);
-
             $atencionIds           = $recepciones->pluck('atencion_id')->unique();
             $usuariosParticipantes = $this->obtenerUsuariosParticipantes($atencionIds); //Obtener usuarios participantes
             $tarjetas              = $recepciones->map(function ($tarjeta) use ($usuariosParticipantes) {
                 $usuariosParticipantesAtencion = $usuariosParticipantes->get($tarjeta->atencion_id, collect());
-                $actividades                   = $tarjeta->actividades->sortByDesc('created_at');
-
-                //inicio de la funcion para obtener la traza: debe convertirse en una funcion
-                if ($actividades->isEmpty()) {
-                    $traza = 'Recibida';
-                } else {
-                    $todasResueltas = $actividades->every(function ($actividad) {
-                        return $actividad->estado_id == 3;
-                    });
-
-                    if ($todasResueltas) {
-                        $traza = 'Resuelta';
-                    } else {
-                        $ultimaActividad = $actividades->first();
-                        $traza           = $ultimaActividad->tarea->tarea;
-                    }
-                }
+                $traza                         = $this->obtenerTraza($tarjeta);
                 return [
                     'atencion_id'         => $tarjeta->atencion_id,
                     'created_at'          => $tarjeta->created_at->toISOString(),
@@ -145,7 +151,7 @@ class RecepcionController extends Controller
             ];
             return view('modelos.recepcion.solicitudes', $data);
         } catch (\Exception $e) {
-            return back()->with('error', 'Ocurrió un error cuando se intentaba obtener las solicitudes:' . $e->getMessage());
+            return back()->with('error', 'Ocurrió un error cuando se intentaba obtener las tarjetas:' . $e->getMessage());
         }
     }
 
@@ -178,16 +184,12 @@ class RecepcionController extends Controller
             }
             $nuevas = $recepciones->map(function ($tarjeta) use ($usuariosParticipantes) {
                 $usuariosParticipantesAtencion = $usuariosParticipantes->get($tarjeta->atencion_id, collect());
-                $actividad                     = $tarjeta->actividades// Obtener la última actividad realizada
-                    ->sortByDesc('created_at')
-                    ->first();
-                $traza = $actividad ? $actividad->tarea->tarea : 'En revisión';
                 return [
                     'recepcion_id'        => $tarjeta->id,
                     'atencion_id'         => $tarjeta->atencion_id,
                     'titulo'              => $tarjeta->solicitud->solicitud ?? '',
                     'detalle'             => $tarjeta->detalle,
-                    'traza'               => $traza,
+                    'traza'               => "Recibida",
                     'estado_id'           => $tarjeta->estado->id,
                     'users'               => $usuariosParticipantesAtencion,
                     'role_name'           => $tarjeta->role->name,
@@ -201,6 +203,50 @@ class RecepcionController extends Controller
             return response()->json($nuevas);
         } catch (\Exception $e) {
             return back()->with('error', 'Ocurrió un error al obtener las nuevas solicitudes recibidas: ' . $e->getMessage());
+        }
+    }
+
+    public function asignar(Recepcion $recepcion, Equipo $equipo)
+    {
+        try {
+            //VALIDACIÓN
+            $operadores = User::whereHas('equipos', function ($q1) use ($equipo) {
+                $q1->where('equipo_id', $equipo->id);
+            })->whereHas('mainRole', function ($q1) {
+                $q1->where('name', 'Operador');
+            })->where('activo', true)->get();
+            if ($operadores->isEmpty()) {
+                return response()->json(['warning' => true, 'message' => 'No hay operadores disponibles para asignar la solicitud'], 422);
+            }
+            $operador = $operadores->random();
+            //PROCESO
+            DB::beginTransaction();
+            $new_recepcion                  = new Recepcion();
+            $new_recepcion->id              = (new KeyMaker())->generate('Recepcion', $recepcion->solicitud_id);
+            $new_recepcion->atencion_id     = $recepcion->atencion_id;
+            $new_recepcion->solicitud_id    = $recepcion->solicitud_id;
+            $new_recepcion->role_id         = Role::where('name', 'Operador')->first()->id;
+            $new_recepcion->user_id_origen  = auth()->user()->id;
+            $new_recepcion->user_id_destino = $operador->id;
+            $new_recepcion->estado_id       = Estado::where('estado', 'Recibida')->first()->id;
+            $new_recepcion->detalle         = $recepcion->detalle;
+            $new_recepcion->activo          = false;
+            $new_recepcion->save();
+            $recepcion->activo    = true; //Validar solicitud y actualizar estado - Copia Operador
+            $recepcion->estado_id = Estado::where('estado', 'En progreso')->first()->id;
+            $atencion_id          = $recepcion->atencion_id;
+            $recepcion->save();
+            //RESULTADO
+            DB::commit();
+            $traza = $this->obtenerTraza($recepcion); // Obtener la traza actualizada
+            return response()->json([
+                'success' => true,
+                'message' => 'La solicitud "' . (new KeyRipper())->rip($atencion_id) . '" ha sido asignada al operador ' . $operador->name,
+                'traza'   => $traza,
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => 'Ocurrió un error al asignar la solicitud:' . $e->getMessage()]);
         }
     }
 
@@ -225,12 +271,7 @@ class RecepcionController extends Controller
                 ->get();
             $usuariosParticipantes = $this->obtenerUsuariosParticipantes($tarjetas->pluck('atencion_id')->unique()); //Obtener usuarios participantes
             $resultado             = $tarjetas->map(function ($tarjeta) use ($usuariosParticipantes) {
-                // Obtener la última actividad realizada
-                $actividad = $tarjeta->actividades
-                    ->sortByDesc('created_at')
-                    ->first();
-                $traza = $actividad ? $actividad->tarea->tarea : 'Recibida';
-
+                $traza = $this->obtenerTraza($tarjeta);
                 return [
                     'atencion_id' => $tarjeta->atencion_id,
                     'avance'      => optional($tarjeta->atencion)->avance ?? 0, // Acceder al avance de la atención relacionada
@@ -339,52 +380,6 @@ class RecepcionController extends Controller
         }
     }
 
-    public function asignar(Recepcion $recepcion, Equipo $equipo)
-    {
-        try {
-            //VALIDACIÓN
-            $operadores = User::whereHas('equipos', function ($q1) use ($equipo) {
-                $q1->where('equipo_id', $equipo->id);
-            })->whereHas('mainRole', function ($q1) {
-                $q1->where('name', 'Operador');
-            })->where('activo', true)->get();
-            if ($operadores->isEmpty()) {
-                return response()->json(['warning' => true, 'message' => 'No hay operadores disponibles para asignar la solicitud'], 422);
-            }
-            $operador = $operadores->random();
-            //PROCESO
-            DB::beginTransaction();
-            $new_recepcion                  = new Recepcion();
-            $new_recepcion->id              = (new KeyMaker())->generate('Recepcion', $recepcion->solicitud_id);
-            $new_recepcion->atencion_id     = $recepcion->atencion_id;
-            $new_recepcion->solicitud_id    = $recepcion->solicitud_id;
-            $new_recepcion->role_id         = Role::where('name', 'Operador')->first()->id;
-            $new_recepcion->user_id_origen  = auth()->user()->id;
-            $new_recepcion->user_id_destino = $operador->id;
-            $new_recepcion->estado_id       = Estado::where('estado', 'Recibida')->first()->id;
-            $new_recepcion->detalle         = $recepcion->detalle;
-            $new_recepcion->activo          = false;
-            $new_recepcion->save();
-            $recepcion->activo    = true; //Validar solicitud y actualizar estado - Copia Operador
-            $recepcion->estado_id = Estado::where('estado', 'En progreso')->first()->id;
-            $atencion_id          = $recepcion->atencion_id;
-            $recepcion->save();
-            //RESULTADO
-            DB::commit();
-            $recepcion->load('actividades.tarea'); // Obtener la traza actualizada
-            $actividad = $recepcion->actividades->sortByDesc('created_at')->first();
-            $traza     = $actividad ? $actividad->tarea->tarea : 'En revisión';
-            return response()->json([
-                'success' => true,
-                'message' => 'La solicitud "' . (new KeyRipper())->rip($atencion_id) . '" ha sido asignada al operador ' . $operador->name,
-                'traza'   => $traza,
-            ], 200);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json(['success' => false, 'message' => 'Ocurrió un error al asignar la solicitud:' . $e->getMessage()]);
-        }
-    }
-
     public function iniciarTareas(string $recepcion_id)
     {
                                                      //VALIDANDO
@@ -419,7 +414,15 @@ class RecepcionController extends Controller
             $atencion_id          = $recepcion->atencion_id;
             $recepcion->save();
             DB::commit();
-            return response()->json(['success' => true, 'message' => 'El despacho de la solicitud "' . (new KeyRipper())->rip($atencion_id) . '" ha sido iniciado']);
+
+            // Obtener la traza actualizada
+            $traza = $this->obtenerTraza($recepcion);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'El despacho de la solicitud "' . (new KeyRipper())->rip($atencion_id) . '" ha sido iniciado',
+                'traza'   => $traza,
+            ]);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['success' => false, 'message' => 'Ocurrió un error al iniciar el despacho:' . $e->getMessage()]);
@@ -489,12 +492,15 @@ class RecepcionController extends Controller
                 }
                 $solicitud_actualizada = true;
             }
+            $recepcion = Recepcion::find($recepcion_id);
+            $traza     = $this->obtenerTraza($recepcion);
             DB::commit();
             return response()->json([
                 'success'               => true,
                 'message'               => 'Estado de la tarea actualizado correctamente',
                 'recepcion_id'          => $recepcion_id,
                 'atencion_id'           => $atencion_id,
+                'traza'                 => $traza,
                 'progreso'              => [
                     'total_actividades'     => $total_actividades,
                     'actividades_resueltas' => $actividades_resueltas,
