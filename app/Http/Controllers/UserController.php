@@ -109,6 +109,16 @@ class UserController extends Controller
                 'role_id' => 'required|numeric|exists:roles,id',
             ]);
             $submittedRoles = $validated['roles'];
+                                             // Validación para rol de cliente
+            if ($user->hasRole('Cliente')) { // Usuario que ya es cliente
+                if (in_array('Cliente', $submittedRoles) && count($submittedRoles) > 1) {
+                    throw new Exception('No esta disponible la funcionalidad de ser cliente y otro rol a la vez');
+                }
+            } elseif (in_array('Cliente', $submittedRoles)) { // Usuario que se está convirtiendo en cliente
+                if (count($submittedRoles) > 1) {
+                    throw new Exception('No esta disponible la funcionalidad de ser cliente y otro rol a la vez');
+                }
+            }
             if ($user->hasRole('SuperAdmin')) {
                 if (! in_array('SuperAdmin', $submittedRoles)) {
                     $submittedRoles[] = 'SuperAdmin';

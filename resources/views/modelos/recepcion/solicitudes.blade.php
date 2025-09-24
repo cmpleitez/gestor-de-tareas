@@ -199,13 +199,13 @@
                         chosenClass: 'sortable-chosen',
                         dragClass: 'sortable-drag',
                         onStart: function(evt) {
-                            // Remover mensajes de columna vacía al iniciar drag
-                            $('.text-center.text-muted.py-4').remove();
+                            $('.text-center.text-muted.py-4')
+                                .remove(); // Remover mensajes de columna vacía al iniciar drag
                         },
                         onEnd: function(
                             evt
-                        ) { // Movimiento único disponible desde columna-recibidas hacia columna-progreso
-                            @can('asignar')
+                        ) {
+                            @can('asignar') // Impulso manual hacia "En progreso"
                                 const solicitudId = evt.item.dataset.recepcionId;
                                 const columnaOrigen = evt.from.id;
                                 const columnaDestino = evt.to.id;
@@ -215,12 +215,13 @@
                                         toastr.error('Movimiento no disponible');
                                         $(evt.from).append(evt
                                             .item); // Revertir la tarjeta a su posición original
-                                        // Restaurar mensajes si se cancela el movimiento
-                                        actualizarMensajeColumnaVacia();
+                                        actualizarMensajeColumnaVacia
+                                            (); // Restaurar mensajes si se cancela el movimiento
                                         return;
                                     }
-                                    // Ordenar inmediatamente la columna destino después del movimiento visual
-                                    const $colDestino = $('#' + columnaDestino);
+                                    const $colDestino = $('#' +
+                                        columnaDestino
+                                    ); // Ordenar inmediatamente la columna destino después del movimiento visual
                                     const itemsDestino = $colDestino.children('.solicitud-card').get();
                                     itemsDestino.sort(function(a, b) {
                                         return parseInt(a.dataset.atencionId || '0', 10) -
@@ -231,8 +232,8 @@
                                     });
                                     updatePosition(solicitudId, columnaDestino, evt);
                                 } else {
-                                    // Si no hay movimiento, restaurar mensajes
-                                    actualizarMensajeColumnaVacia();
+                                    actualizarMensajeColumnaVacia
+                                        (); // Si no hay movimiento, restaurar mensajes
                                 }
                                 actualizarMensajeColumnaVacia();
                             @else
@@ -356,12 +357,12 @@
         `;
         }
 
-        function obtenerRecepcionIdsExistentes() {
+        function obtenerAtencionIdsExistentes() {
             let ids = [];
-            $('.solicitud-card').each(function() {
-                let recepcionId = $(this).data('recepcion-id');
-                if (recepcionId && recepcionId !== 'null' && recepcionId !== 'undefined') {
-                    ids.push(recepcionId);
+            $('#columna-recibidas .solicitud-card').each(function() { // Solo obtener atencion_ids de la columna recibidas
+                let atencionId = $(this).data('atencion-id');
+                if (atencionId && atencionId !== 'null' && atencionId !== 'undefined') {
+                    ids.push(atencionId);
                 }
             });
             return ids;
@@ -931,11 +932,9 @@
                             }
                             let estadoFrontend = parseInt($card.attr('data-recepcion-estado-id'), 10);
                             let estadoBackend = parseInt(item.estado_id, 10);
-                            // Actualizar traza si cambió
                             if (item.traza) {
                                 $card.find('.solicitud-estado').text(item.traza);
                             }
-
                             if (estadoFrontend !== estadoBackend) {
                                 $card.attr('data-recepcion-estado-id', estadoBackend);
                                 let columnaDestino; // Determinar columna destino según el estado
@@ -965,6 +964,8 @@
                                         estadoBackend
                                     ); // Actualizar estilos usando la función auxiliar
                                     actualizarContadores();
+                                    ordenarColumna(columnaDestino.replace('#',
+                                        '')); // Ordenar la columna después del traslado
                                 }, 500);
                             }
                             if (item.recepciones && item.recepciones.length > 0) {
@@ -982,9 +983,16 @@
                             }
                         }
                     });
+                    // Ordenar todas las columnas después de las actualizaciones
+                    ordenarColumnas();
                 },
                 error: function(xhr, status, error) {
-                    console.error('Error al consultar avances:', status, error, xhr.responseText);
+                    console.error('Error al consultar avances:', {
+                        status: xhr.status,
+                        statusText: xhr.statusText,
+                        responseText: xhr.responseText,
+                        error: error
+                    });
                     if (xhr.status !== 0) {
                         console.error('Error al consultar avances:', status);
                     }
@@ -994,38 +1002,30 @@
 
         //CARGAR NUEVAS RECIBIDAS
         function cargarNuevasRecibidas() {
-            let cantidadTarjetas = $('#columna-recibidas .solicitud-card')
-                .length; // Evitar consulta si hay 3 o más tarjetas (parametrizable posteriormente)
-            if (cantidadTarjetas >= 3) {
-                return; // Salir de la función sin hacer consulta
-            }
-            let recepcionIdsExistentes = obtenerRecepcionIdsExistentes();
+            let atencionIdsExistentes = obtenerAtencionIdsExistentes();
             let data = {
                 _token: $('meta[name="csrf-token"]').attr('content'),
-                recepcion_ids: recepcionIdsExistentes
+                atencion_ids: atencionIdsExistentes
             };
             $.post({
                 url: '{{ route('recepcion.nuevas-recibidas') }}',
                 data: data,
                 success: function(nuevas) {
-                    if (nuevas.length > 0) {
+                    if (!Array.isArray(nuevas)) {
+                        nuevas = Object.values(nuevas);
+                    }
+                    if (nuevas && nuevas.length > 0) {
                         let tarjetasAgregadas = 0;
                         nuevas.forEach(function(tarjeta) {
-                            let tarjetaExistente = $(
-                                `#columna-recibidas .solicitud-card[data-recepcion-id="${tarjeta.recepcion_id}"]`
-                            ); // Verificar si la tarjeta ya existe
-                            if (tarjetaExistente.length === 0) {
-                                let html = generarTarjetaSolicitud(tarjeta, true,
-                                    'recibidas'); // Solo agregar si no existe
-                                let $nueva = $(html);
-                                $('#columna-recibidas').prepend($nueva);
-                                updateProgressByPercentage(tarjeta.atencion_id, tarjeta
-                                    .porcentaje_progreso);
-                                setTimeout(function() {
-                                    $nueva.removeClass('animar-llegada');
-                                }, 500);
-                                tarjetasAgregadas++;
-                            }
+                            let html = generarTarjetaSolicitud(tarjeta, true, 'recibidas');
+                            let $nueva = $(html);
+                            $('#columna-recibidas').prepend($nueva);
+                            updateProgressByPercentage(tarjeta.atencion_id, tarjeta
+                                .porcentaje_progreso);
+                            setTimeout(function() {
+                                $nueva.removeClass('animar-llegada');
+                            }, 500);
+                            tarjetasAgregadas++;
                         });
                         if (tarjetasAgregadas > 0) { // Solo actualizar contadores si se agregaron tarjetas
                             ordenarColumna(
@@ -1036,8 +1036,7 @@
                     }
                 },
                 error: function(xhr, status, error) {
-                    if (xhr.status !==
-                        0) { // Solo log si no es error de red // Evitar spam de errores en consola
+                    if (xhr.status !== 0) { // Solo log si no es error de red
                         console.error('Error cargando nuevas recibidas:', status);
                     }
                 }
@@ -1052,7 +1051,9 @@
                 resueltas: @json($resueltas)
             };
             cargarTarjetasIniciales(tarjetasIniciales); // Cargar tarjetas iniciales
-            setTimeout(function() {
+
+            // Sistema inteligente unificado de polling para evitar saturación
+            function initializeProgressBars() {
                 $('.progress-divider').each(function() {
                     let atencionId = $(this).data('atencion-id');
                     let avance = $(this).data('avance');
@@ -1060,12 +1061,32 @@
                         updateProgressByPercentage(atencionId, avance);
                     }
                 });
-            }, 100);
+            }
+            setTimeout(initializeProgressBars, 100); // Inicializar barras de progreso inmediatamente no es timer
             initKanban();
-/*               setInterval(function() {
-                //actualizarAvance();
-                cargarNuevasRecibidas();
-            }, 15000); */
+            // Sistema inteligente de polling para evitar saturación
+            let isUpdating = false;
+            let updateInterval = 15000;
+            function safeUpdate() {
+                if (isUpdating) {
+                    console.log('Actualización en progreso, saltando ciclo');
+                    return;
+                }
+                isUpdating = true;
+                console.log('Iniciando actualización segura');
+                // Actualizar avances primero
+                actualizarAvance();
+                // Luego cargar nuevas recibidas con delay
+                setTimeout(function() {
+                    cargarNuevasRecibidas();
+                    isUpdating = false;
+                    console.log('Actualización completada');
+                }, 10000); // 15 segundos de delay entre operaciones
+            }
+            // Ejecutar inmediatamente al cargar
+            safeUpdate();
+            // Luego ejecutar cada 30 segundos
+            setInterval(safeUpdate, updateInterval);
         });
     </script>
 @endsection

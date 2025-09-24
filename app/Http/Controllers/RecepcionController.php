@@ -160,9 +160,9 @@ class RecepcionController extends Controller
     {
         try {
             //PROCESO
-            $user                   = auth()->user();
-            $recepcionIdsExistentes = $request->input('recepcion_ids', []);
-            $queryBase              = Recepcion::where(function ($query) use ($user) {
+            $user                  = auth()->user();
+            $atencionIdsExistentes = $request->input('atencion_ids', []);
+            $queryBase             = Recepcion::where(function ($query) use ($user) {
                 if ($user->mainRole->name == 'Cliente') {
                     $query->where('user_id_origen', $user->id);
                 } else {
@@ -173,18 +173,15 @@ class RecepcionController extends Controller
                 ->whereHas('atencion.oficina', function ($query) use ($user) {
                     $query->where('id', $user->oficina_id);
                 })
-                ->where('estado_id', '<>', Estado::where('estado', 'Recibida')->first()->id)
+                ->where('estado_id', Estado::where('estado', 'Recibida')->first()->id)
                 ->orderBy('atencion_id')
                 ->take(5);
             $recepcionesBase       = $queryBase->get();
-
-dd($recepcionesBase);
-
             $atencionIds           = $recepcionesBase->pluck('atencion_id')->unique();
             $usuariosParticipantes = $this->obtenerUsuariosParticipantes($atencionIds); //Obtener usuarios participantes
             $recepciones           = $recepcionesBase;                                  //Filtrar las recepciones que ya fueron mostradas
-            if (! empty($recepcionIdsExistentes)) {
-                $recepciones = $recepciones->whereNotIn('id', $recepcionIdsExistentes);
+            if (! empty($atencionIdsExistentes)) {
+                $recepciones = $recepciones->whereNotIn('atencion_id', $atencionIdsExistentes);
             }
             $nuevas = $recepciones->map(function ($tarjeta) use ($usuariosParticipantes) {
                 $usuariosParticipantesAtencion = $usuariosParticipantes->get($tarjeta->atencion_id, collect());
@@ -224,6 +221,7 @@ dd($recepcionesBase);
             }
             $operador = $operadores->random();
             //PROCESO
+            $estado_en_progreso_id = Estado::where('estado', 'En progreso')->first()->id;
             DB::beginTransaction();
             $new_recepcion                  = new Recepcion();
             $new_recepcion->id              = (new KeyMaker())->generate('Recepcion', $recepcion->solicitud_id);
@@ -237,7 +235,7 @@ dd($recepcionesBase);
             $new_recepcion->activo          = false;
             $new_recepcion->save();
             $recepcion->activo    = true; //Validar solicitud y actualizar estado - Copia Operador
-            $recepcion->estado_id = Estado::where('estado', 'En progreso')->first()->id;
+            $recepcion->estado_id = $estado_en_progreso_id;
             $atencion_id          = $recepcion->atencion_id;
             $recepcion->save();
             //RESULTADO
@@ -397,6 +395,7 @@ dd($recepcionesBase);
         //PROCESO
         DB::beginTransaction();
         try {
+            $estado_en_progreso_id = Estado::where('estado', 'En progreso')->first()->id;
             foreach ($recepcion->solicitud->tareas as $tarea) {
                 $actividad                  = new Actividad();
                 $actividad->id              = (new KeyMaker())->generate('Actividad', $recepcion->solicitud_id);
@@ -409,23 +408,21 @@ dd($recepcionesBase);
                 if ($tarea->id == 1) { //La primer tarea se resuelve en automático
                     $actividad->estado_id = Estado::where('estado', 'Resuelta')->first()->id;
                 } else {
-                    $actividad->estado_id = Estado::where('estado', 'En progreso')->first()->id;
+                    $actividad->estado_id = $estado_en_progreso_id;
                 }
                 $actividad->save();
             }
-            $recepcion->activo    = true; //Validar solicitud y actualizar estado - Copia Operador
-            $recepcion->estado_id = Estado::where('estado', 'En progreso')->first()->id;
-            $atencion_id          = $recepcion->atencion_id;
+            $recepcion->activo    = true; //Actualizar estado de la recepción y establecer la recepción como orden compra válida
+            $recepcion->estado_id = $estado_en_progreso_id;
             $recepcion->save();
+            $atencion            = $recepcion->atencion; //Actualizar estado de la atención
+            $atencion->estado_id = $estado_en_progreso_id;
+            $atencion->save();
             DB::commit();
-
-            // Obtener la traza actualizada
-            $traza = $this->obtenerTraza($recepcion);
-
             return response()->json([
                 'success' => true,
-                'message' => 'El despacho de la solicitud "' . (new KeyRipper())->rip($atencion_id) . '" ha sido iniciado',
-                'traza'   => $traza,
+                'message' => 'El despacho de la solicitud "' . (new KeyRipper())->rip($atencion->id) . '" ha sido iniciado',
+                'traza'   => $this->obtenerTraza($recepcion), // Obtener la traza actualizada
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -482,9 +479,9 @@ dd($recepcionesBase);
                 ? round(($actividades_resueltas / $total_actividades) * 100, 2)
                 : 0;
             $estado_resuelta_id = Estado::where('estado', 'Resuelta')->first()->id;
-            $atencion = $actividad->recepcion->atencion; //Actualizar avance
+            $atencion           = $actividad->recepcion->atencion; //Actualizar avance
             if ($atencion) {
-                $atencion->avance = $procentaje_progreso;
+                $atencion->avance    = $procentaje_progreso;
                 $atencion->estado_id = $estado_resuelta_id;
                 $atencion->save();
             }
