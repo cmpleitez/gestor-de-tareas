@@ -156,23 +156,11 @@ CLIENTE:
 SEGURIDAD:
     🟢 implementar el ssl
 SERVICIOS:
-    🔵 Finalizados por el momento todos servicios informáticos, hasta nuevo aviso
-
-    ✨ verificar problema carga cada 15 segundos: 502 Bad Gateway nginx/1.19.10
-
-    🟢 verificando si se actualiza el estado de "en progreso" cuando el receptor impulsa una tarjeta a ese tablero o si el operador impulsa una tarjeta a ese tablero
-        los estados difieren entre en progreso y recibida en los tableros dependiendo de que proceso las dibuje 
-    ✨ a parte de tomar 5 tarjetas en la carga
-        ✨carga inicial: primera 5 exceptuando las resueltas
-        ✨impulso por recepcion (nuevasRecibidas): primeras 5 incluyendo solo las recibidas
-    ✨ los estados no se estan actualizando correctamente hay 3 escalas: atencion, recepcion y actividad
-        ✨solo hay impulso manual en donde se deben actualizar las 2 escalas: recepcion y atencion
-        ✨reporte de tareas donde se deben actualizar las 3 escalas: recepcion, atencion y actividad
+    🟢 los estados difieren entre en progreso y recibida en los tableros dependiendo de que proceso las dibuje
     🟢 overlay para espera cuando se esta enviando el corrreo de verificacion
     🟢 registro del usuario: en algun momento no se guarda la foto
     🟢 mejorar el mensaje al usuario respecto a lectura de errores y a que desaparezca el mensaje cuando ya no se necesite
     🟢 en los tableros y cuando doy clic en una tarjeta y no soy el operador: no debe decir error al cargar las tareas
-    🟢 para el cliente la opcion no es mis ventas es "Mis ordenes de compra"
     🟢 la validacion del formulario de envio de solicitudes u ordenes de compra falla en el frontend cuando se deja vacion el campo solicitud
 
 FUSION SERVICIOS Y GESTOR:
