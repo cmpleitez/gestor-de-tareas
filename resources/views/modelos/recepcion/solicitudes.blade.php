@@ -1066,7 +1066,7 @@
             initKanban();
             // Sistema inteligente de polling para evitar saturación
             let isUpdating = false;
-            let updateInterval = 15000;
+            let updateInterval = 900000;
             function safeUpdate() {
                 if (isUpdating) {
                     console.log('Actualización en progreso, saltando ciclo');
@@ -1081,7 +1081,7 @@
                     cargarNuevasRecibidas();
                     isUpdating = false;
                     console.log('Actualización completada');
-                }, 10000); // 15 segundos de delay entre operaciones
+                }, 450000); // delay entre operaciones
             }
             // Ejecutar inmediatamente al cargar
             safeUpdate();
