@@ -647,12 +647,10 @@
                     },
                     success: function(response) {
                         if (response.success) {
-                            // Actualizar la traza en la tarjeta
-                            const tarjeta = $(`.solicitud-card[data-recepcion-id="${response.recepcion_id}"]`);
+                            const tarjeta = $(`.solicitud-card[data-recepcion-id="${response.recepcion_id}"]`); // Actualizar la traza en la tarjeta
                             if (tarjeta.length > 0 && response.traza) {
                                 tarjeta.find('.solicitud-estado').text(response.traza);
                             }
-
                             updateProgressByPercentage(response.atencion_id, response.progreso.porcentaje);
                             if (response.todas_resueltas && response
                                 .solicitud_actualizada) { // Verificar si todas las tareas están resueltas

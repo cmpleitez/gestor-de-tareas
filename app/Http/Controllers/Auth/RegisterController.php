@@ -70,7 +70,7 @@ class RegisterController extends Controller
                 $user->role_id = $clienteRole->id;
                 $user->save();
             }
-            $user->sendEmailVerificationNotification();
+            $user->sendEmailVerificationNotification(); // Enviar correo de verificación
             DB::commit();
             return redirect('/dashboard')->with('success', 'Nuevo usuario registrado con éxito.');
         } catch (\Exception $e) {

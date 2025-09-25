@@ -37,8 +37,6 @@
     <link href="{{ asset('app-assets/css/pages/dashboard-analytics.css') }}" rel="stylesheet">
     <link href="{{ asset('app-assets/css/plugins/forms/validation/form-validation.css') }}" rel="stylesheet">
     <link href="{{ asset('app-assets/css/plugins/extensions/toastr.css') }}" rel="stylesheet">
-
-
     <!-- END: All CSS-->
 
     <style>
@@ -931,7 +929,7 @@
     <script>
         // Configuración global de toastr para todo el proyecto
         toastr.options = {
-            "closeButton": false,
+            "closeButton": true,
             "debug": false,
             "newestOnTop": false,
             "progressBar": true,
@@ -940,8 +938,8 @@
             "onclick": null,
             "showDuration": "300",
             "hideDuration": "1000",
-            "timeOut": "60000",
-            "extendedTimeOut": "9000",
+            "timeOut": "5000",
+            "extendedTimeOut": "30000",
             "showEasing": "swing",
             "hideEasing": "linear",
             "showMethod": "fadeIn",

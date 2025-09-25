@@ -370,7 +370,12 @@
                         </div>
                     </div>
                     <div class="card-footer d-flex justify-content-end"> {{-- Guardar --}}
-                        <button type="submit" class="btn btn-primary">Guardar</button>
+                        <button type="submit" id="submit-btn" class="btn btn-primary">
+                            <span id="btn-text">Guardar</span>
+                            <span id="btn-spinner" style="display: none;">
+                                <i class="fas fa-spinner fa-spin"></i> Procesando...
+                            </span>
+                        </button>
                     </div>
                 </form>
             </div>
@@ -408,25 +413,8 @@
     <!-- BEGIN: Page JS-->
     <script>
         $(document).ready(function() {
-            // Inicializar Select2
             $('.select2').select2();
-
-            // Inicializar validación del formulario
-            $("input,select,textarea").not("[type=submit]").jqBootstrapValidation({
-                preventSubmit: false,
-                submitError: function($form, event, errors) {
-                    // Manejar errores de envío aquí
-                },
-                submitSuccess: function($form, event) {
-                    // Permitir el envío normal del formulario
-                },
-                filter: function() {
-                    return $(this).is(":visible");
-                }
-            });
-
-            // Función para validar tamaño de archivo
-            window.validateFileSize = function(input, maxSizeMB) {
+            window.validateFileSize = function(input, maxSizeMB) { // Función para validar tamaño de archivo
                 const file = input.files[0];
                 if (file) {
                     const fileSizeMB = file.size / (1024 * 1024);
@@ -436,9 +424,7 @@
                         input.value = '';
                         return false;
                     }
-
-                    // Validar tipo de archivo
-                    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+                    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png']; // Validar tipo de archivo
                     if (!allowedTypes.includes(file.type)) {
                         alert('Solo se permiten archivos JPEG, JPG o PNG.');
                         input.value = '';
@@ -447,6 +433,43 @@
                 }
                 return true;
             };
+            $('form').on('submit', function() { // Loading spinner en el botón de envío
+                $('#submit-btn').prop('disabled', true);
+                $('#btn-text').hide();
+                $('#btn-spinner').show();
+                $('body').append(` 
+                    <div id="loading-overlay" style="
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background: rgba(0, 0, 0, 0.5);
+                        z-index: 9999;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                    ">
+                        <div style="
+                            background: white;
+                            padding: 30px;
+                            border-radius: 10px;
+                            text-align: center;
+                            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+                        ">
+                            <div style="
+                                font-size: 24px;
+                                color: #007bff;
+                                margin-bottom: 15px;
+                            ">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </div>
+                            <h4 style="margin: 0; color: #333;">Enviando correo de confirmación...</h4>
+                            <p style="margin: 10px 0 0 0; color: #666;">Por favor espere mientras finaliza el proceso</p>
+                        </div>
+                    </div>
+                `);
+            });
         });
     </script>
     <!-- END: Page JS-->

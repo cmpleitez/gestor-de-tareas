@@ -155,13 +155,10 @@ CLIENTE:
 
 SEGURIDAD:
     🟢 implementar el ssl
+PLATAFORMA:
+    🔵 Prototipo finalizado
+    ...🟢 register: asegurar el id del usuario con un aumento no automático sino programatico, revisar qué otras tablas necesitan este manejo controlado de llaves
 SERVICIOS:
-    🟢 overlay para espera cuando se esta enviando el corrreo de verificacion
-    🟢 registro del usuario: en algun momento no se guarda la foto
-    🟢 mejorar el mensaje al usuario respecto a lectura de errores y a que desaparezca el mensaje cuando ya no se necesite
-
-FUSION SERVICIOS Y GESTOR:
-    🟡 holomogar next capital recreando el proyecto de cero y copiando el contenido exacto y completo del gestor-de-tareas
     🟢 construir funcionalidades del catalogo de productos
     🟢 agregar un campo para el codigo físico del producto y mantenerlo visible en el catalogo de productos
     🟢 crear funcionalidad de combos personalizables
@@ -171,7 +168,7 @@ FUSION SERVICIOS Y GESTOR:
     🟢 auditoria de actividades sobre una orden de compra
     🟢 aun no hay priorizaciòn de tarjetas eso es un servicio a construir
     🟢 revisar si se mantendrá el dui o se retira
-    🟢 register: asegurar el id del usuario con un aumento no automático sino programatico, revisar qué otras tablas necesitan este manejo controlado de llaves
+    
 
 🟠 rage agains the machine & limp bizkit & korn & alice in chains
     ...limp bizkit: im broke

@@ -14,10 +14,16 @@ class KeyRipper
         } elseif (strlen($id) < 8) {
             $id = str_pad($id, 8, '0', STR_PAD_LEFT); // Si tiene menos de 8 dígitos, rellenar con ceros
         }
-        $last2 = substr($id, -2); // Tomar los últimos 2 dígitos
-        if ($last2 === '00') { // Si es "00", devolver "100"
-            return '100';
+        // Dividir en categoría (primeros 3) y correlativo (últimos 5)
+        $categoria   = substr($id, 0, 3); // Primeros 3 dígitos
+        $correlativo = substr($id, 3, 5); // Últimos 5 dígitos
+        $categoriaLast2   = substr($categoria, -2);   // Últimos 2 de categoría
+        $correlativoLast2 = substr($correlativo, -2); // Últimos 2 de correlativo
+        // Si correlativo es "00", usar "100"
+        if ($correlativoLast2 === '00') {
+            $correlativoLast2 = '100';
         }
-        return $last2; // Retornar los últimos 2 dígitos
+        // Concatenar: 2 de categoría + 2 de correlativo = 4 dígitos
+        return $categoriaLast2 . $correlativoLast2;
     }
 }
