@@ -160,9 +160,9 @@ class RecepcionController extends Controller
     {
         try {
             //PROCESO
-            $user                  = auth()->user();
-            $atencionIdsExistentes = $request->input('atencion_ids', []);
-            $queryBase             = Recepcion::where(function ($query) use ($user) {
+            $user                    = auth()->user();
+            $atencionesIdsEnFrontend = $request->input('atencion_ids', []);
+            $recepciones             = Recepcion::where(function ($query) use ($user) {
                 if ($user->mainRole->name == 'Cliente') {
                     $query->where('user_id_origen', $user->id);
                 } else {
@@ -175,13 +175,12 @@ class RecepcionController extends Controller
                 })
                 ->where('estado_id', Estado::where('estado', 'Recibida')->first()->id)
                 ->orderBy('atencion_id')
-                ->take(5);
-            $recepcionesBase       = $queryBase->get();
-            $atencionIds           = $recepcionesBase->pluck('atencion_id')->unique();
+                ->take(5)
+                ->get();
+            $atencionIds           = $recepciones->pluck('atencion_id')->unique();
             $usuariosParticipantes = $this->obtenerUsuariosParticipantes($atencionIds); //Obtener usuarios participantes
-            $recepciones           = $recepcionesBase;                                  //Filtrar las recepciones que ya fueron mostradas
-            if (! empty($atencionIdsExistentes)) {
-                $recepciones = $recepciones->whereNotIn('atencion_id', $atencionIdsExistentes);
+            if (! empty($atencionesIdsEnFrontend)) {
+                $recepciones = $recepciones->whereNotIn('atencion_id', $atencionesIdsEnFrontend);
             }
             $nuevas = $recepciones->map(function ($tarjeta) use ($usuariosParticipantes) {
                 $usuariosParticipantesAtencion = $usuariosParticipantes->get($tarjeta->atencion_id, collect());
@@ -256,8 +255,8 @@ class RecepcionController extends Controller
     {
         try {
             $user        = auth()->user();
-            $tarjetasIds = $request->input('atencion_ids', []);   //Recopilación de tarjetas del frontend
-            if (! is_array($tarjetasIds) || empty($tarjetasIds)) { //Validación: si no hay tarjetas ya no se ejecuta el proceso
+            $tarjetasIds = $request->input('atencion_ids', []);   //Tarjetas en el frontend
+            if (! is_array($tarjetasIds) || empty($tarjetasIds)) { //Validación: si no hay tarjetas en el frontendya no se ejecuta el proceso
                 return response()->json([]);
             }
             $tarjetas = Recepcion::with(['usuarioOrigen', 'usuarioDestino', 'atencion', 'actividades.tarea']) //Consulta de las tarjetas recopiladas
@@ -341,6 +340,11 @@ class RecepcionController extends Controller
 
     public function store(Request $request)
     {
+        //VALIDACIÓN
+        $request->validate([
+            'solicitud_id' => 'required',
+            'detalle'      => 'required|min:9|max:255',
+        ]);
         try {
             DB::beginTransaction();
             //SELECCIONANDO UN RECEPTOR
@@ -456,14 +460,16 @@ class RecepcionController extends Controller
     {
         try {
             DB::beginTransaction();
-            $actividad    = Actividad::find($actividad_id); //Validando
-            $atencion_id  = $actividad->recepcion->atencion_id;
-            $recepcion_id = $actividad->recepcion_id;
-            if (! $actividad) {
-                return response()->json(['success' => false, 'message' => 'No se encontró la tarea'], 404);
-            }
-            $nuevoEstado = $request->input('estado');
-            if ($nuevoEstado === 'Resuelta') {
+            //LECTURA
+            $actividad             = Actividad::find($actividad_id);
+            $atencion              = $actividad->recepcion->atencion;
+            $recepcion             = $actividad->recepcion->load('role');
+            $recepciones           = Recepcion::with('role')->where('atencion_id', $atencion->id)->get();
+            $nuevoEstado           = $request->input('estado');
+            $estado_resuelta_id    = Estado::where('estado', 'Resuelta')->first()->id;
+            $estado_en_progreso_id = Estado::where('estado', 'En progreso')->first()->id;
+                                               //PROCESO
+            if ($nuevoEstado === 'Resuelta') { //Actualizar actividad
                 $actividad->estado_id = Estado::where('estado', 'Resuelta')->first()->id;
             } elseif ($nuevoEstado === 'En progreso') {
                 $actividad->estado_id = Estado::where('estado', 'En progreso')->first()->id;
@@ -471,38 +477,42 @@ class RecepcionController extends Controller
                 return response()->json(['success' => false, 'message' => 'Estado no válido'], 422);
             }
             $actividad->save();
-            $total_actividades     = Actividad::where('recepcion_id', $recepcion_id)->count();
-            $actividades_resueltas = Actividad::where('recepcion_id', $recepcion_id)
+            $total_actividades     = Actividad::where('recepcion_id', $recepcion->id)->count();
+            $actividades_resueltas = Actividad::where('recepcion_id', $recepcion->id)
                 ->where('estado_id', Estado::where('estado', 'Resuelta')->first()->id)
                 ->count();
             $procentaje_progreso = $total_actividades > 0
                 ? round(($actividades_resueltas / $total_actividades) * 100, 2)
                 : 0;
-            $estado_resuelta_id = Estado::where('estado', 'Resuelta')->first()->id;
-            $atencion           = $actividad->recepcion->atencion; //Actualizar avance
+            $recepcion->estado_id = $estado_en_progreso_id; //Actualizar recepción
+            $recepcion->save();
+            $atencion = $actividad->recepcion->atencion; //Actualizar atención
             if ($atencion) {
                 $atencion->avance    = $procentaje_progreso;
-                $atencion->estado_id = $estado_resuelta_id;
+                $atencion->estado_id = $estado_en_progreso_id;
                 $atencion->save();
             }
             $todas_resueltas       = ($actividades_resueltas === $total_actividades); // Verificar si todas las tareas están resueltas
             $solicitud_actualizada = false;
-            if ($todas_resueltas && $nuevoEstado === 'Resuelta') { // Actualizar el estado de la solicitud a "Resuelta"
-                $recepciones = Recepcion::with('role')->where('atencion_id', $atencion_id)->get();
-                foreach ($recepciones as $recepcion) { // Actualizar todas las copias a resuelta
+            if ($todas_resueltas && $nuevoEstado === 'Resuelta') {
+                foreach ($recepciones as $recepcion) { // Actualizar recepciones
                     $recepcion->estado_id = $estado_resuelta_id;
                     $recepcion->save();
                 }
                 $solicitud_actualizada = true;
+                if ($atencion) { //Actualizar atención
+                    $atencion->estado_id = $estado_resuelta_id;
+                    $atencion->save();
+                }
             }
-            $recepcion = Recepcion::find($recepcion_id);
-            $traza     = $this->obtenerTraza($recepcion);
+            $traza = $this->obtenerTraza($recepcion);
             DB::commit();
+            //RESULTADO
             return response()->json([
                 'success'               => true,
                 'message'               => 'Estado de la tarea actualizado correctamente',
-                'recepcion_id'          => $recepcion_id,
-                'atencion_id'           => $atencion_id,
+                'recepcion_id'          => $recepcion->id,
+                'atencion_id'           => $atencion->id,
                 'traza'                 => $traza,
                 'progreso'              => [
                     'total_actividades'     => $total_actividades,
@@ -514,7 +524,10 @@ class RecepcionController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Error al actualizar la tarea: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al actualizar la tarea: ' . $e->getMessage(),
+            ], 500);
         }
     }
 

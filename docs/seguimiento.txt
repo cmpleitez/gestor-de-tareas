@@ -156,12 +156,9 @@ CLIENTE:
 SEGURIDAD:
     🟢 implementar el ssl
 SERVICIOS:
-    🟢 los estados difieren entre en progreso y recibida en los tableros dependiendo de que proceso las dibuje
     🟢 overlay para espera cuando se esta enviando el corrreo de verificacion
     🟢 registro del usuario: en algun momento no se guarda la foto
     🟢 mejorar el mensaje al usuario respecto a lectura de errores y a que desaparezca el mensaje cuando ya no se necesite
-    🟢 en los tableros y cuando doy clic en una tarjeta y no soy el operador: no debe decir error al cargar las tareas
-    🟢 la validacion del formulario de envio de solicitudes u ordenes de compra falla en el frontend cuando se deja vacion el campo solicitud
 
 FUSION SERVICIOS Y GESTOR:
     🟡 holomogar next capital recreando el proyecto de cero y copiando el contenido exacto y completo del gestor-de-tareas
@@ -175,7 +172,6 @@ FUSION SERVICIOS Y GESTOR:
     🟢 aun no hay priorizaciòn de tarjetas eso es un servicio a construir
     🟢 revisar si se mantendrá el dui o se retira
     🟢 register: asegurar el id del usuario con un aumento no automático sino programatico, revisar qué otras tablas necesitan este manejo controlado de llaves
-    🟢 verificar si es bueno agregar el cliente a la tarjeta
 
 🟠 rage agains the machine & limp bizkit & korn & alice in chains
     ...limp bizkit: im broke

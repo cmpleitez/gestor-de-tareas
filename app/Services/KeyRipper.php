@@ -1,43 +1,23 @@
 <?php
-
 namespace App\Services;
 
 class KeyRipper
 {
     public static function rip($id): string
     {
-        // Validación de entrada
-        if (empty($id)) {
-            return '0000';
+        if (empty($id)) { // Validación de entrada
+            return '000';
         }
-        
-        $id = (string)$id;
-        
-        // Asegurar que tenga al menos 8 dígitos
-        if (strlen($id) < 8) {
-            $id = str_pad($id, 8, '0', STR_PAD_LEFT);
+        $id = (string) $id;
+        if (strlen($id) >= 12) { // Si tiene 12 dígitos o más, ignorar los primeros 4 (año) y tomar los siguientes 8
+            $id = substr($id, 4, 8); // Ignorar año, tomar 8 dígitos siguientes
+        } elseif (strlen($id) < 8) {
+            $id = str_pad($id, 8, '0', STR_PAD_LEFT); // Si tiene menos de 8 dígitos, rellenar con ceros
         }
-        
-        // Extraer los últimos 8 dígitos
-        $last8 = substr($id, -8);
-        
-        // Dividir en dos partes: primeros 3 dígitos y últimos 5 dígitos
-        $solicitudPart = substr($last8, 0, 3);  // Primeros 3 dígitos
-        $correlativoPart = substr($last8, 3, 5); // Últimos 5 dígitos
-        
-        // Extraer los últimos 2 dígitos de cada parte
-        $tipoSolicitud = substr($solicitudPart, -2);
-        $correlativo = substr($correlativoPart, -2);
-        
-        // Concatenar como texto
-        $result = $tipoSolicitud . $correlativo;
-        
-        // Excepción: si el resultado es "0000", devolver "10000"
-        if ($result === '0000') {
-            return '10000';
+        $last2 = substr($id, -2); // Tomar los últimos 2 dígitos
+        if ($last2 === '00') { // Si es "00", devolver "100"
+            return '100';
         }
-        
-        // Retornar el resultado de 4 dígitos
-        return $result;
+        return $last2; // Retornar los últimos 2 dígitos
     }
-} 
+}

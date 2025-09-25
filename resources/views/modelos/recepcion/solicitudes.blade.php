@@ -256,8 +256,7 @@
                 });
             @endcan
         }
-
-        // Función estandarizada para ordenar una columna específica por atencion_id
+        //FUNCIONES PARA ORDENAMIENTO DE LAS TARJETAS
         function ordenarColumna(columnaId) {
             const $col = $('#' + columnaId);
             const items = $col.children('.solicitud-card').get();
@@ -271,14 +270,12 @@
             }
         }
 
-        // Función para ordenar todas las columnas
         function ordenarColumnas() {
             const columnas = ['columna-recibidas', 'columna-progreso', 'columna-resueltas'];
             columnas.forEach(function(columnaId) {
                 ordenarColumna(columnaId);
             });
         }
-
         //FUNCIONES PARA LA CARGA INICIAL DE LAS TARJETAS
         function cargarTarjetasIniciales(tarjetas) {
             if (tarjetas.recibidas && tarjetas.recibidas.length > 0) { // Cargar tarjetas recibidas
@@ -550,20 +547,22 @@
         }
         //MOSTRAR TAREAS EN SIDEBAR
         @can('asignar')
-            $(document).on('click', '.solicitud-card', function() {
-                const $card = $(this);
-                const titulo = $card.find('.solicitud-titulo').text().trim();
-                const atencionId = $card.data('atencion-id');
-                const recepcionId = $card.data('recepcion-id');
-                const atencionIdRipped = $card.find('.text-right div[style*="font-weight: 600"]').text().trim();
-                $('#sidebar-card-title').text(atencionIdRipped + ' - ' + titulo).css('font-size', '1rem');
-                $('#sidebar-card-body').empty();
-                cargarTareas(recepcionId);
-                $('.kanban-overlay').addClass('show');
-                $('.kanban-sidebar').addClass('show');
-                $('body').addClass('sidebar-open');
-                limpiarClasesDrag();
-            });
+            @if (auth()->user()->mainRole->name === 'Operador')
+                $(document).on('click', '.solicitud-card', function() {
+                    const $card = $(this);
+                    const titulo = $card.find('.solicitud-titulo').text().trim();
+                    const atencionId = $card.data('atencion-id');
+                    const recepcionId = $card.data('recepcion-id');
+                    const atencionIdRipped = $card.find('.text-right div[style*="font-weight: 600"]').text().trim();
+                    $('#sidebar-card-title').text(atencionIdRipped + ' - ' + titulo).css('font-size', '1rem');
+                    $('#sidebar-card-body').empty();
+                    cargarTareas(recepcionId);
+                    $('.kanban-overlay').addClass('show');
+                    $('.kanban-sidebar').addClass('show');
+                    $('body').addClass('sidebar-open');
+                    limpiarClasesDrag();
+                });
+            @endif
 
             function cargarTareas(recepcionId) {
                 $.ajax({
@@ -809,7 +808,6 @@
             });
             return [...new Set(ids)]; // Eliminar repetidos usando Set
         }
-
         // GENERAR HTML DE PARTICIPANTES
         function generarHtmlUsuarios(users, estadoId, tipo = 'recibidas') {
             let usersHtml = '';
@@ -867,7 +865,6 @@
             }
             return usersHtml;
         }
-
         //FUNCIÓN AUXILIAR PARA ACTUALIZAR ESTILOS DE TARJETA
         function actualizarEstilosTarjeta($card, estadoId) {
             let color, borderClass, nombreEstado;
@@ -905,7 +902,6 @@
             });
             $card.find('.fas.fa-arrow-right').css('color', color);
         }
-
         //ACTUALIZAR AVANCE
         function actualizarAvance() {
             let atencionIds = obtenerAtencionIdsTableros();
@@ -983,8 +979,7 @@
                             }
                         }
                     });
-                    // Ordenar todas las columnas después de las actualizaciones
-                    ordenarColumnas();
+                    ordenarColumnas(); // Ordenar todas las columnas después de las actualizaciones
                 },
                 error: function(xhr, status, error) {
                     console.error('Error al consultar avances:', {
@@ -999,7 +994,6 @@
                 }
             });
         }
-
         //CARGAR NUEVAS RECIBIDAS
         function cargarNuevasRecibidas() {
             let atencionIdsExistentes = obtenerAtencionIdsExistentes();
@@ -1050,9 +1044,8 @@
                 progreso: @json($progreso),
                 resueltas: @json($resueltas)
             };
-            cargarTarjetasIniciales(tarjetasIniciales); // Cargar tarjetas iniciales
+            cargarTarjetasIniciales(tarjetasIniciales);
 
-            // Sistema inteligente unificado de polling para evitar saturación
             function initializeProgressBars() {
                 $('.progress-divider').each(function() {
                     let atencionId = $(this).data('atencion-id');
@@ -1064,29 +1057,22 @@
             }
             setTimeout(initializeProgressBars, 100); // Inicializar barras de progreso inmediatamente no es timer
             initKanban();
-            // Sistema inteligente de polling para evitar saturación
-            let isUpdating = false;
-            let updateInterval = 900000;
+            let isUpdating = false; // Sistema inteligente de polling para evitar saturación
+            let updateInterval = 15000;
+
             function safeUpdate() {
                 if (isUpdating) {
-                    console.log('Actualización en progreso, saltando ciclo');
                     return;
                 }
                 isUpdating = true;
-                console.log('Iniciando actualización segura');
-                // Actualizar avances primero
-                actualizarAvance();
-                // Luego cargar nuevas recibidas con delay
-                setTimeout(function() {
+                actualizarAvance(); // Actualizar avances primero
+                setTimeout(function() { // Luego cargar nuevas recibidas con delay
                     cargarNuevasRecibidas();
                     isUpdating = false;
-                    console.log('Actualización completada');
-                }, 450000); // delay entre operaciones
+                }, 5000);
             }
-            // Ejecutar inmediatamente al cargar
-            safeUpdate();
-            // Luego ejecutar cada 30 segundos
-            setInterval(safeUpdate, updateInterval);
+            safeUpdate(); // Ejecutar inmediatamente al cargar
+            setInterval(safeUpdate, updateInterval); // Luego ejecutar cada 30 segundos
         });
     </script>
 @endsection
