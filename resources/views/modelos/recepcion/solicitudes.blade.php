@@ -49,7 +49,7 @@
                                         @if (optional(auth()->user()->mainRole)->name == 'Receptor' && isset($equipos))
                                             <div class="row" style="display: flex; align-items: stretch;">
                                                 @foreach ($equipos as $equipo)
-                                                    <div class="col-md-3">
+                                                    <div class="col-md-3 mt-1">
                                                         <div class="selectable-item {{ $equipo->id == auth()->user()->equipos->first()->id ? 'selected' : '' }}"
                                                             onclick="selectItem('equipo_{{ $equipo->id }}')">
                                                             <div class="item-body">
@@ -647,7 +647,8 @@
                     },
                     success: function(response) {
                         if (response.success) {
-                            const tarjeta = $(`.solicitud-card[data-recepcion-id="${response.recepcion_id}"]`); // Actualizar la traza en la tarjeta
+                            const tarjeta = $(
+                            `.solicitud-card[data-recepcion-id="${response.recepcion_id}"]`); // Actualizar la traza en la tarjeta
                             if (tarjeta.length > 0 && response.traza) {
                                 tarjeta.find('.solicitud-estado').text(response.traza);
                             }
