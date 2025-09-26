@@ -155,6 +155,7 @@ CLIENTE:
 
 SEGURIDAD:
     🟢 implementar el ssl
+    🟢 retirar tarjeta de debito de azure
 PLATAFORMA:
     🔵 Prototipo finalizado
 SERVICIOS:
