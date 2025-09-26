@@ -1,125 +1,104 @@
-🟠 solo el cliente debe tener permiso para enviar ordene de compra, sino el sistema no va mostrar el seguimiento de esa orden de compra al cliente porque no ha sido él quien la ha solicitado
-🟠 queda la pauta en usercontroller.update para que cuando se implemente la opcion cambio de nombres se aplique la regla de las dependencias
-🟠 se detectan dos categorias: tipo de producto y marca
-🟠 fortalecer la seguridad del servidor y del sitio
+PAUTAS:
+🟠 Habrá un receptor, y si el mismo receptor necesita ser operador, entonces debe crear dos cuentas una para cada rol.
+🟠 Si se necesita cambiarle el nombre a los catalogos, se deberá construir la funcionalidad y aplicar la regla de las dependencias
+🟠 Se detectan dos categorias: tipo de producto y marca
+🟠 Fortalecer la seguridad del servidor y del sitio
     ❌ LO QUE FORGE NO TIENE POR DEFECTO:
     1. WAF (Web Application Firewall)
-    ModSecurity: No está instalado por defecto
-    Reglas OWASP: No implementadas
+        ModSecurity: No está instalado por defecto
+        Reglas OWASP: No implementadas
     2. Rate Limiting Avanzado
-    Bloqueo de IPs: No hay sistema automático de bloqueo
-    Fail2ban: No configurado por defecto
+        Bloqueo de IPs: No hay sistema automático de bloqueo
+        Fail2ban: No configurado por defecto
     3. Monitoreo de Seguridad
-    Alertas: No hay sistema de notificaciones de ataques
-    Logs de seguridad: Solo logs básicos de nginx
+        Alertas: No hay sistema de notificaciones de ataques
+        Logs de seguridad: Solo logs básicos de nginx
     CONCLUSIÓN:
     Forge te da seguridad básica sólida (firewall, nginx seguro, SSL), pero para seguridad empresarial necesitas implementar las capas adicionales que mencioné.
-    ¿Quieres que empecemos implementando lo que falta, o prefieres revisar primero tu configuración actual de Forge?
-🟠 solicitudes: que desaparezca de recibidas cuando pasa a en progreso, no cuando el origen y destino es el mismo.
-🟠 Error 500 esta dando por falta de optimize
-🟠 se reviso que areas y oficinas estan al revez en el diagrama de datos, en realidad las areas dependen de las oficinas, pues cada oficina puede tener una copia total o parcial del organigrama de areas de la sede central
-🟠 ante un traslado de equipo a equipo, o de area a area, las solicitudes permaneceran pegadas al operador propietario, mientras no sean transferidas a otro operador
-🟠 control de movimientos: 
-    Re = Recepciones; Ep = En progreso; Rt = Resueltas;
-    Re -> Ep: Distribuir en base a rol
-    Re -> Rt: Revertir movimiento
-    Ep -> Re: Revertir movimiento
-    Ep -> Re: Revertir movimiento
-    Rt -> Ep: Revertir movimiento
-    Rt -> Re: Revertir movimiento
-✨ inteligencia artificial ayuda segun el texto libre escrito por el beneficiario, a elegir a éste último, la solicitud de catalogo más adecuada, incluye confirmación del beneficiario
-    
-    --------------------------- fin de zona de distribucion de solicitudes -----------------------
-
-    06. La solicitud entra en el rango de maniobra: equipo
-    07. El gestor delega la solicitud a los miembros de su equipo, ya sea por unidad u origina un proceso de delegacion auntomática a todos los miembros del equi de una vez.
-    08. La solicitud esta en mínimo rango de maniobra que es el operador.
-    09. El operador avanza la solicitud desde su tablero de recibidas a su tablero en progreso y automáticamente se originan las tareas a cumplir segun su skill
-    10. El operador va cumpliendo sus tareas una a una y reportandolas como realizadas
-
+    Fuente IA.
+🟠 Solo hay un movimiento manual disponible: el impulso desde recibidas hacia En progreso, lo demás es automatico
+🟠 Para cada producto elegido la IA podría ayudar a seleccionar el item mas adecuado de entre los disponibles en el catalogo de solicitudes
 🟠 Consumo estimado por la actualizacion automatica del gestor de tareas
-Consumo ejecución cada 15 segundos por día (8 horas):
-Mínimo: ~4.2 MB/día
-Máximo: ~9.2 MB/día
-Promedio: ~6.7 MB/día
-Mes: 200 MB
-
-🟠 duis validos:
-012345678
-023456783
-123456784
-234567890
-456789012
-p@5t15al5abana
-🟠 Soporte IA Digital Ocean:
+    Cada 15 segundos por día (8 horas):
+    Mínimo: ~4.2 MB/día
+    Máximo: ~9.2 MB/día
+    Promedio: ~6.7 MB/día
+    Mes: 200 MB
+🟠 Duis validos:
+    012345678
+    023456783
+    123456784
+    234567890
+    456789012
+🟠 p@5t15al5abana
+🟠 Soporte IA - Digital Ocean:
     https://docs.digitalocean.com/support/
     https://www.digitalocean.com/company/contact/sales?referrer=pricing/managed-databases
     https://www.digitalocean.com/community/tools/bandwidth?active=%5B%7B%22slug%22%3A%22s-1vcpu-2gb%22%2C%22type%22%3A%22droplet%22%2C%22hours%22%3A722%2C%22consumption%22%3A1500%2C%22nodes%22%3A1%7D%5D&additional=0
-
-🟠 El modelo Role maneja el rol principal del usuario, spatie permissions maneja los roles multiples
-
 🟠 El uso de combos debería resolver el problema de las equivocaciones entre los codigos de un producto y otro producto
-
-🟠 la orden de compra se define por "atencion.id" y el combo solicitado se define como "recepcion.id"
-🟠 Procedimiento:
-        . Cliente: visualmente agrega el combo al carrito, puede repetir ésta acción indefinidamente, por el momento no tiene un limite definido.
-        . Sistema: registra en base de datos el combo agregado, el registro queda en condicion "inactivo = no validado por el usuario"
-        . Cliente: visualmente entra al carrito y personaliza el combo recien agregado luego presiona el boton "Enviar"
-        . Sistema: crea así una "Orden de Compra" válida. (tipo_documento_id="orden de compra"; "activo = validado" )
-        . Sistema establece la orden de compra el estado de "Recibida"
-        . Receptor: Tendrá la vista el kanvan y lo refrescará con cierta frecuencia vigilando si hay ordenes nuevas
-        . Receptor: Al detectar una orden nueva la asignará al operador designado
-        . Operador: 
-            .consulta las ordenes de compra que ha recibido (recepcion.usuarioDestino), dando clic en perfil del usuario / mis ventas
-            .toma la orden por prioridad o la toma por orden de llegada
-                .procesa las tareas respectivas (tabla de recibidas / clic a la tarjeta )
-                    .iniciar el despacho
-                        .clic en la tarea o arrastra la tarjeta al tablero "En progreso"
-                        .sistema traslada la orden de compra para el tablero de "En progreso"
-                    .creación de una factura digital:
-                        .da clic en la tarjeta de la tabla de recibidas y luego en la tarea respectiva
-                        .sistema: habre la orden de compra para que pueda revisarla
-                        .revisa la existencia en stock y que la cantidad sea un dato común o usual, dando clic en el boton <Stock>
-                        .da clic en guadar (validando los cambios)
-                        .sistema: torna el tipo de documento en una factura (tipo_documento_id="factura"), y queda habierta la posibilidad para que si en algun momento implementamos una pasarela de pagos el documento pueda convertirse una vez pagado en un recibo "tipo_doucmento_id=recibo"
-                        .sistema: publica el avance del proceso
-                    .envío de la factura digital
-                        .da clic en la tarea
-                        .sistema: envia el correo con la factura digital adjunta y confirma el envío.
-                        .sistema: publica avance del proceso
-        . Cliente: efectua el pago y se lo hace saber al Receptor con un mensaje de whatsapp adjuntandole el número de orden (de compra)
-        . Operador:
-            .verifica pago de factura en coordinación con el Receptor
-            .retira fisicamente los productos del almacen y preparar el paquete para su entrega
-            .realiza el envío o entrega de los productos
-            .ubicar en el sistema (perfil del usuario / mis ventas / tabla de recibidas), dicho número de orden
-            .aplicar en el sistema despachar y descargar stock
-            .sistema: actualiza el inventario y finaliza la orden de compra trasladandola al tablero de "Resueltas"
-        . Sistema: corre una tarea programada para eliminar todos combos no validados por el usuario que pasaron en esa condicion por varios dias (la cantidad de dias no se define aún)
-
+🟠 Procedimiento: https://miro.com/app/board/uXjVLl8VYdo=/
+    . Cliente: visualmente agrega el combo al carrito, puede repetir ésta acción indefinidamente, por el momento no tiene un limite definido.
+    . Sistema: registra en base de datos el combo agregado, el registro queda en condicion "inactivo = no validado por el usuario"
+    . Cliente: visualmente entra al carrito y personaliza el combo recien agregado luego presiona el boton "Enviar"
+    . Sistema: crea así una "Orden de Compra" válida. (tipo_documento_id="orden de compra"; "activo = validado" )
+    . Sistema establece la orden de compra el estado de "Recibida"
+    . Receptor: Tendrá la vista el kanvan y lo refrescará con cierta frecuencia vigilando si hay ordenes nuevas
+    . Receptor: Al detectar una orden nueva la asignará al operador designado
+    . Operador: 
+        .consulta las ordenes de compra que ha recibido (recepcion.usuarioDestino), dando clic en perfil del usuario / mis ventas
+        .toma la orden por prioridad o la toma por orden de llegada
+            .procesa las tareas respectivas (tabla de recibidas / clic a la tarjeta )
+                .iniciar el despacho
+                    .clic en la tarea o arrastra la tarjeta al tablero "En progreso"
+                    .sistema traslada la orden de compra para el tablero de "En progreso"
+                .creación de una factura digital:
+                    .da clic en la tarjeta de la tabla de recibidas y luego en la tarea respectiva
+                    .sistema: habre la orden de compra para que pueda revisarla
+                    .revisa la existencia en stock y que la cantidad sea un dato común o usual, dando clic en el boton <Stock>
+                    .da clic en guadar (validando los cambios)
+                    .sistema: torna el tipo de documento en una factura (tipo_documento_id="factura"), y queda habierta la posibilidad para que si en algun momento implementamos una pasarela de pagos el documento pueda convertirse una vez pagado en un recibo "tipo_doucmento_id=recibo"
+                    .sistema: publica el avance del proceso
+                .envío de la factura digital
+                    .da clic en la tarea
+                    .sistema: envia el correo con la factura digital adjunta y confirma el envío.
+                    .sistema: publica avance del proceso
+    . Cliente: efectua el pago y se lo hace saber al Receptor con un mensaje de whatsapp adjuntandole el número de orden (de compra)
+    . Operador:
+        .verifica pago de factura en coordinación con el Receptor
+        .retira fisicamente los productos del almacen y preparar el paquete para su entrega
+        .realiza el envío o entrega de los productos
+        .ubicar en el sistema (perfil del usuario / mis ventas / tabla de recibidas), dicho número de orden
+        .aplicar en el sistema despachar y descargar stock
+        .sistema: actualiza el inventario y finaliza la orden de compra trasladandola al tablero de "Resueltas"
+    . Sistema: corre una tarea programada para eliminar todos combos no validados por el usuario que pasaron en esa condicion por varios dias (la cantidad de dias no se define aún)
 🟠 analisis de la factura digital ocean:
-DigitalOcean:
-    ¿Cómo funciona la transferencia gratuita?
-    ✅ NO es solo para el mes de gratuidad:
-    La transferencia gratuita es PERMANENTE en tu plan
-    Cada mes tienes derecho a 1366 GB de transferencia gratuita
-    No se acaba después del mes de prueba
-    ✅ Es parte de tu plan pagado:
-    Tu factura de $6.05 incluye la transferencia gratuita
-    No pagas extra por usar hasta 1366 GB mensuales
-    Solo pagas si excedes ese límite
-    ¿Qué incluye tu factura de $6.05?
-    Servicios que pagas:
-    Droplet (servidor): ~$15-30/mes
-    Base de datos MySQL: ~$15-30/mes
-    Otros servicios que tengas activos
-    Transferencia de datos:
-    0.29 GB usado: GRATIS (está dentro del límite)
-    Hasta 1366 GB: GRATIS cada mes
-    Solo pagas si excedes 1366 GB
-    Conclusión:
-        La transferencia gratuita es PERMANENTE y real. Cada mes tienes derecho a 1366 GB sin costo adicional. Tu factura de $6.05 es por los servicios, no por la transferencia de datos.
-        Tu módulo de seguridad puede usarse sin límites mensuales de transferencia.    
+    DigitalOcean:
+        ¿Cómo funciona la transferencia gratuita?
+        ✅ NO es solo para el mes de gratuidad:
+        La transferencia gratuita es PERMANENTE en tu plan
+        Cada mes tienes derecho a 1366 GB de transferencia gratuita
+        No se acaba después del mes de prueba
+        ✅ Es parte de tu plan pagado:
+        Tu factura de $6.05 incluye la transferencia gratuita
+        No pagas extra por usar hasta 1366 GB mensuales
+        Solo pagas si excedes ese límite
+        ¿Qué incluye tu factura de $6.05?
+        Servicios que pagas:
+        Droplet (servidor): ~$15-30/mes
+        Base de datos MySQL: ~$15-30/mes
+        Otros servicios que tengas activos
+        Transferencia de datos:
+        0.29 GB usado: GRATIS (está dentro del límite)
+        Hasta 1366 GB: GRATIS cada mes
+        Solo pagas si excedes 1366 GB
+        Conclusión:
+            La transferencia gratuita es PERMANENTE y real. Cada mes tienes derecho a 1366 GB sin costo adicional. Tu factura de $6.05 es por los servicios, no por la transferencia de datos.
+            Tu módulo de seguridad puede usarse sin límites mensuales de transferencia.    
+
+🟠 rage agains the machine & limp bizkit & korn & alice in chains
+    ...limp bizkit: im broke
+    ...rage agains the machine: Mic Check
+
 CLIENTE:
     🔵 Pendiente que el cliente revise el procedimiento
     🔵 Que el cliente brinde la información del dominio
@@ -152,7 +131,6 @@ CLIENTE:
         Opción 3: Ambos (recomendado):
             Registro A: @ → IP del servidor
             Registro A: www → IP del servidor
-
 SEGURIDAD:
     🟢 implementar el ssl
     🟢 retirar tarjeta de debito de azure
@@ -172,76 +150,3 @@ SERVICIOS:
         agregar en la transaccional el equipo que trabajó cada registro
         agregar en el equipo.editar un selector de oficina
 
-🟠 rage agains the machine & limp bizkit & korn & alice in chains
-    ...limp bizkit: im broke
-    ...rage agains the machine: Mic Check
-
-Creando el flujo de trabajo:
-https://miro.com/app/board/uXjVLl8VYdo=/
-
-Presentación del estudio:
-
-Relaciones complejas:
-
-▫️solicitud->tareas_asociadas()->procesos()->incidencias()->count();
-
-✅🧿 1. Título
-- Debe ser claro, conciso y descriptivo del contenido
-- Evitar términos ambiguos o genéricos
-- Reflejar la contribución principal del trabajo
-
-🧿 2. Introducción
-- Contexto y antecedentes del problema
-- Relevancia y motivación del estudio
-
-- Objetivos e hipótesis del trabajo
-- Breve descripción de la estructura del documento
-
-🧿 3. Resumen (Abstract)
-- Extensión: 150-250 palabras
-- Incluir: problema abordado, metodología, resultados principales y conclusiones
-- Debe ser comprensible independientemente del resto del documento
-- Sirve como resumen ejecutivo del trabajo completo
-
-🧿 4. Conceptos Clave
-- 3-5 términos relevantes
-- Facilitan la indexación y búsqueda del artículo
-- Deben representar los conceptos principales del trabajo
-
-🧿 5. Ejemplos
-
-🧿 6. Discusión
-- Interpretación de los resultados
-- Comparación con estudios previos
-- Análisis de implicaciones
-- Reconocimiento de limitaciones
-- Validación de hipótesis
-
-🧿 7. Conclusiones y Trabajo Futuro
-- Resumen de contribuciones principales
-- Implicaciones prácticas y teóricas
-- Direcciones futuras de investigación
-- Recomendaciones
-
-🧿 8. Referencias
-- Lista completa de fuentes citadas
-- Formato consistente (IEEE, APA, ACM, etc.)
-- Ordenadas según aparición en el texto
-
-vision: 
-ser un municipio modelo
-lider entransparencia
-brindar servicios de calidad
-impulsar proyectos que permitan la formacion de una sociedad moderna, competitiva y sostenible
-para lograr un nivel de vida en armonia con el entorno natural y prevencion de riesgos
-
-mision: 
-promover el desarrollo sostenible
-bienestar de sus habitantes habitantes 
-fortalecimiento de proyectos de infraestructura 
-promoviendo un entorno cultural sostenible, seguro y limpio
-
-🟢 Investigacion: 
-    cual es la tabla que almacena el indice de cedula
-    cual es la forma de exportacion hacia excel
-    que herramientas se necesitan usar para alcanzar los objetivos
