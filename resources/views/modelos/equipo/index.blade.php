@@ -38,7 +38,7 @@
                         <p class="card-text">Grupos de operadores con diferentes roles y de diferentes areas formados para resolver casos prederminados</p>
                     </div>
                     <div class="col-1 d-flex justify-content-end" style="padding: 0;">
-                        @can('superadmin')
+                        @can('crear')
                             <a href="{!! route('equipo.create') !!}">
                                 <div class="badge-circle badge-circle-md badge-circle-primary">
                                     <i class="bx bx-plus-medical font-small-3"></i>

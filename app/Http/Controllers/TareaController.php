@@ -1,11 +1,10 @@
 <?php
-
 namespace App\Http\Controllers;
 
-use App\Models\Tarea;
-use Illuminate\Http\Request;
 use App\Http\Requests\TareaStoreRequest;
 use App\Http\Requests\TareaUpdateRequest;
+use App\Models\Tarea;
+use App\Services\CorrelativeIdGenerator;
 
 class TareaController extends Controller
 {
@@ -22,7 +21,12 @@ class TareaController extends Controller
 
     public function store(TareaStoreRequest $request)
     {
-        Tarea::create($request->validated());
+        $generator = new CorrelativeIdGenerator();
+        $id        = $generator->generate('Tarea');
+        $tarea     = new Tarea();
+        $tarea->fill($request->validated());
+        $tarea->id = $id;
+        $tarea->save();
         return redirect()->route('tarea')->with('success', 'Tarea creada correctamente');
     }
 
@@ -52,7 +56,7 @@ class TareaController extends Controller
     }
     public function activate(Tarea $tarea)
     {
-        $tarea->activo = !$tarea->activo;
+        $tarea->activo = ! $tarea->activo;
         $tarea->save();
         return redirect()->route('tarea')->with('success', 'La tarea "' . $tarea->tarea . '" ha sido ' . ($tarea->activo ? 'activada' : 'desactivada') . ' correctamente');
     }

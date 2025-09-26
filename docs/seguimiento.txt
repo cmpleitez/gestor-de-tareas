@@ -157,7 +157,6 @@ SEGURIDAD:
     🟢 implementar el ssl
 PLATAFORMA:
     🔵 Prototipo finalizado
-    ...🟢 register: asegurar el id del usuario con un aumento no automático sino programatico, revisar qué otras tablas necesitan este manejo controlado de llaves
 SERVICIOS:
     🟢 construir funcionalidades del catalogo de productos
     🟢 agregar un campo para el codigo físico del producto y mantenerlo visible en el catalogo de productos
@@ -168,7 +167,9 @@ SERVICIOS:
     🟢 auditoria de actividades sobre una orden de compra
     🟢 aun no hay priorizaciòn de tarjetas eso es un servicio a construir
     🟢 revisar si se mantendrá el dui o se retira
-    
+    🟢 para trasladar todo un equipo de trabajadores de una oficina a otra
+        agregar en la transaccional el equipo que trabajó cada registro
+        agregar en el equipo.editar un selector de oficina
 
 🟠 rage agains the machine & limp bizkit & korn & alice in chains
     ...limp bizkit: im broke

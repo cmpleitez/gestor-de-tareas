@@ -74,6 +74,7 @@ class UserSeeder extends Seeder
 
         //USUARIOS
         DB::table('users')->insert([
+            'id'                => 1,
             'role_id'           => 1,
             'name'              => 'SuperAdmin',
             'dui'               => '012345678',
@@ -85,6 +86,7 @@ class UserSeeder extends Seeder
             'updated_at'        => Carbon::now(),
         ]);
         DB::table('users')->insert([
+            'id'                => 2,
             'role_id'           => 2,
             'name'              => 'Admin',
             'dui'               => '023456783',

@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Estado extends Model
 {
     use HasFactory;
+
+    public $incrementing = false;
+    protected $keyType   = 'int';
     public function recepciones()
     {
         return $this->hasMany(Recepcion::class);

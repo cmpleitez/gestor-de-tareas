@@ -19,6 +19,10 @@ class User extends Authenticatable implements MustVerifyEmail
     use Notifiable;
     use TwoFactorAuthenticatable;
     use HasRoles;
+
+    public $incrementing = false;
+    protected $keyType   = 'int';
+
     protected $fillable = [
         'name',
         'dui',

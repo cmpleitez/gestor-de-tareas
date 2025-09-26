@@ -1,18 +1,19 @@
 <?php
 namespace App\Http\Controllers;
-use Illuminate\Http\Request;
 
-use App\Models\Solicitud;
 use App\Http\Requests\SolicitudStoreRequest;
 use App\Http\Requests\SolicitudUpdateRequest;
+use App\Models\Solicitud;
 use App\Models\Tarea;
 use App\Models\User;
+use App\Services\CorrelativeIdGenerator;
+use Illuminate\Http\Request;
 
 class SolicitudController extends Controller
 {
     public function index()
     {
-        $solicitudes = Solicitud::orderBy('id', 'desc')->paginate(15);
+        $solicitudes          = Solicitud::orderBy('id', 'desc')->paginate(15);
         $operador_por_defecto = User::where('activo', true)->inRandomOrder()->first();
         return view('modelos.solicitud.index', compact('solicitudes', 'operador_por_defecto'));
     }
@@ -24,7 +25,12 @@ class SolicitudController extends Controller
 
     public function store(SolicitudStoreRequest $request)
     {
-        Solicitud::create($request->validated());
+        $generator = new CorrelativeIdGenerator();
+        $id        = $generator->generate('Solicitud');
+        $solicitud = new Solicitud();
+        $solicitud->fill($request->validated());
+        $solicitud->id = $id;
+        $solicitud->save();
         return redirect()->route('solicitud')->with('success', 'Solicitud creada correctamente');
     }
 
@@ -36,7 +42,7 @@ class SolicitudController extends Controller
     public function update(SolicitudUpdateRequest $request, Solicitud $solicitud)
     {
         $solicitud->update($request->validated());
-        return redirect()->route('solicitud')->with('success', 'Solicitud actualizada correctamente');  
+        return redirect()->route('solicitud')->with('success', 'Solicitud actualizada correctamente');
     }
 
     public function asignarTareas(Solicitud $solicitud)
@@ -56,11 +62,11 @@ class SolicitudController extends Controller
         if ($solicitud->usuarios()->exists()) {
             return back()->with('error', 'La solicitud "' . $solicitud->solicitud . '" no puede ser eliminada porque tiene usuarios asociados');
         }
-        
-        if($solicitud->tareas()->exists()) {
+
+        if ($solicitud->tareas()->exists()) {
             return back()->with('error', 'La solicitud "' . $solicitud->solicitud . '" no puede ser eliminada porque tiene tareas asociadas');
         }
-        if($solicitud->usuariosOrigenes()->exists() || $solicitud->usuariosDestinos()->exists()) {
+        if ($solicitud->usuariosOrigenes()->exists() || $solicitud->usuariosDestinos()->exists()) {
             return back()->with('error', 'La solicitud "' . $solicitud->solicitud . '" no puede ser eliminada porque tiene transacciones asociadas');
         }
         try {
@@ -72,7 +78,7 @@ class SolicitudController extends Controller
     }
     public function activate(Solicitud $solicitud)
     {
-        $solicitud->activo = !$solicitud->activo;
+        $solicitud->activo = ! $solicitud->activo;
         $solicitud->save();
         return redirect()->route('solicitud')->with('success', 'La solicitud "' . $solicitud->solicitud . '" ha sido ' . ($solicitud->activo ? 'activada' : 'desactivada') . ' correctamente');
     }

@@ -1,11 +1,11 @@
 <?php
-
 namespace App\Http\Controllers;
 
-use App\Models\Equipo;
-use Illuminate\Http\Request;
 use App\Http\Requests\EquipoStoreRequest;
 use App\Http\Requests\EquipoUpdateRequest;
+use App\Models\Equipo;
+use App\Models\Oficina;
+use App\Services\CorrelativeIdGenerator;
 
 class EquipoController extends Controller
 {
@@ -17,12 +17,18 @@ class EquipoController extends Controller
 
     public function create()
     {
-        return view('modelos.equipo.create');
+        $oficinas = Oficina::where('activo', true)->orderBy('oficina')->get();
+        return view('modelos.equipo.create', compact('oficinas'));
     }
 
     public function store(EquipoStoreRequest $request)
     {
-        $equipo = Equipo::create($request->validated());
+        $generator = new CorrelativeIdGenerator();
+        $id        = $generator->generate('Equipo');
+        $equipo    = new Equipo();
+        $equipo->fill($request->validated());
+        $equipo->id = $id;
+        $equipo->save();
         return redirect()->route('equipo')->with('success', 'Equipo ' . $equipo->equipo . ' creado correctamente');
     }
 
@@ -52,7 +58,7 @@ class EquipoController extends Controller
 
     public function activate(Equipo $equipo)
     {
-        $equipo->activo = !$equipo->activo;
+        $equipo->activo = ! $equipo->activo;
         $equipo->save();
         return redirect()->route('equipo')->with('success', 'El equipo "' . $equipo->equipo . '" ha sido ' . ($equipo->activo ? 'activado' : 'desactivado') . ' correctamente');
     }

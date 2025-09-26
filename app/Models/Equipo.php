@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -9,7 +8,10 @@ class Equipo extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['equipo'];
+    public $incrementing = false;
+    protected $keyType   = 'int';
+
+    protected $fillable = ['equipo', 'oficina_id'];
 
     public function users()
     {

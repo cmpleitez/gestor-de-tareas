@@ -9,6 +9,9 @@ class Tarea extends Model
 {
     use HasFactory;
 
+    public $incrementing = false;
+    protected $keyType   = 'int';
+
     protected $fillable = ['tarea'];
 
     public function solicitudes()
