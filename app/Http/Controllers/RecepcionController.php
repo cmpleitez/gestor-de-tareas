@@ -14,6 +14,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
+use App\Models\Parametro;
 
 class RecepcionController extends Controller
 {
@@ -143,12 +144,14 @@ class RecepcionController extends Controller
             $recibidas = $tarjetas->where('estado_id', 1)->sortBy('created_at')->values()->toArray();
             $progreso  = $tarjetas->where('estado_id', 2)->sortBy('created_at')->values()->toArray();
             $resueltas = $tarjetas->where('estado_id', 3)->sortBy('created_at')->values()->toArray();
+            $frecuencia_actualizacion = Parametro::where('parametro', 'Frecuencia de actualización para la trazabilidad de las tareas')->first()->valor;
             $data      = [
                 'recibidas'  => $recibidas,
                 'progreso'   => $progreso,
                 'resueltas'  => $resueltas,
                 'equipos'    => $equipos,
                 'operadores' => $operadores,
+                'frecuencia_actualizacion' => $frecuencia_actualizacion,
             ];
             return view('modelos.recepcion.solicitudes', $data);
         } catch (\Exception $e) {

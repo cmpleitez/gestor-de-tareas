@@ -786,16 +786,14 @@
             <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation"
                 data-icon-style="">
 
-                @role('SuperAdmin')
+                @role('superadmin')
                     <li class=" nav-item"><a href="#"><i class="bx bx-shield"></i><span class="menu-title"
                                 data-i18n="Menu Levels">Seguridad</span></a>
                         <ul class="menu-content" style="display: block;">
-
-                            <li><a href="{{ Route('user') }}">
+                            <li><a href="{{ Route('security.parametros') }}">
                                 <i class="bx bx-right-arrow-alt"></i>
-                                <span class="menu-item" data-i18n="Second Level">Usuarios</span>
+                                <span class="menu-item" data-i18n="Second Level">Configuración</span>
                             </a></li>
-
 
                             <li><a href="{{ Route('security.index') }}">
                                     <i class="bx bx-right-arrow-alt"></i>
@@ -821,10 +819,14 @@
                     </li>
                 @endrole
 
-                @role('Admin')
+                @role('admin')
                     <li class=" nav-item"><a href="#"><i class="bx bx-cog"></i><span class="menu-title"
                                 data-i18n="Menu Levels">Administración</span></a>
                         <ul class="menu-content" style="display: block;">
+                            <li><a href="{{ Route('user') }}">
+                                <i class="bx bx-right-arrow-alt"></i>
+                                <span class="menu-item" data-i18n="Second Level">Usuarios</span>
+                            </a></li>
                             <li><a href="{{ Route('equipo') }}">
                                     <i class="bx bx-right-arrow-alt"></i>
                                     <span class="menu-item" data-i18n="Second Level">Equipos</span>
@@ -841,7 +843,7 @@
                     </li>
                 @endrole
 
-                @role('Cliente')
+                @role('cliente')
                     <li class=" nav-item"><a href="#"><i class="bx bx-menu"></i><span class="menu-title"
                                 data-i18n="Menu Levels">Servicios</span></a>
                         <ul class="menu-content" style="display: block;">

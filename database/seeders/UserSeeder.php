@@ -16,6 +16,7 @@ class UserSeeder extends Seeder
     {
         //OFICINAS
         DB::table('oficinas')->insert([
+            'id'         => 1,
             'oficina'    => 'Oficina Sede',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
@@ -23,12 +24,14 @@ class UserSeeder extends Seeder
 
         //EQUIPOS
         DB::table('equipos')->insert([
+            'id'         => 1,
             'oficina_id' => 1,
             'equipo'     => 'Técnicos en suspensión',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
         DB::table('equipos')->insert([
+            'id'         => 2,
             'oficina_id' => 1,
             'equipo'     => 'Técnicos en luces adaptativas',
             'created_at' => Carbon::now(),
@@ -51,32 +54,32 @@ class UserSeeder extends Seeder
 
         //ROLES Y ASIGNACIÓN DE PERMISOS
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
-        $role = Role::create(['name' => 'SuperAdmin']);
+        $role = Role::create(['name' => 'superadmin']);
         $role->givePermissionTo(['ver', 'crear', 'editar', 'activar', 'eliminar', 'autorizar']);
 
-        $role = Role::create(['name' => 'Admin']);
+        $role = Role::create(['name' => 'admin']);
         $role->givePermissionTo(['ver', 'crear', 'editar', 'activar', 'eliminar', 'autorizar']);
 
-        $role = Role::create(['name' => 'Receptor']);
+        $role = Role::create(['name' => 'receptor']);
         $role->givePermissionTo(['ver', 'crear', 'editar', 'activar', 'asignar']);
 
-        $role = Role::create(['name' => 'Supervisor']);
+        $role = Role::create(['name' => 'supervisor']);
         $role->givePermissionTo(['ver', 'asignar']);
 
-        $role = Role::create(['name' => 'Gestor']);
+        $role = Role::create(['name' => 'gestor']);
         $role->givePermissionTo(['ver']);
 
-        $role = Role::create(['name' => 'Operador']);
+        $role = Role::create(['name' => 'operador']);
         $role->givePermissionTo(['ver', 'crear', 'editar', 'asignar']);
 
-        $role = Role::create(['name' => 'Cliente']);
+        $role = Role::create(['name' => 'cliente']);
         $role->givePermissionTo(['ver', 'crear', 'editar']);
 
         //USUARIOS
         DB::table('users')->insert([
             'id'                => 1,
             'role_id'           => 1,
-            'name'              => 'SuperAdmin',
+            'name'              => 'superadmin',
             'dui'               => '012345678',
             'email'             => 'superadmin@servidor.com',
             'email_verified_at' => Carbon::now(),
@@ -88,7 +91,7 @@ class UserSeeder extends Seeder
         DB::table('users')->insert([
             'id'                => 2,
             'role_id'           => 2,
-            'name'              => 'Admin',
+            'name'              => 'admin',
             'dui'               => '023456783',
             'email'             => 'admin@servidor.com',
             'email_verified_at' => Carbon::now(),
@@ -101,35 +104,39 @@ class UserSeeder extends Seeder
         //ENROLANDO AL ADMINISTRADOR
         try {
             $user = User::findOrFail(1);
-            $user->assignRole('SuperAdmin');
+            $user->assignRole('superadmin');
         } catch (\Exception $e) {
-            echo "Error asignando rol SuperAdmin: " . $e->getMessage();
+            echo "Error asignando rol superadmin: " . $e->getMessage();
         }
 
         try {
             $user = User::findOrFail(2);
-            $user->assignRole('Admin');
+            $user->assignRole('admin');
         } catch (\Exception $e) {
-            echo "Error asignando rol Admin: " . $e->getMessage();
+            echo "Error asignando rol admin: " . $e->getMessage();
         }
 
         //CREACION DE TAREAS
         DB::table('tareas')->insert([
+            'id'         => 1,
             'tarea'      => 'Despacho iniciado',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
         DB::table('tareas')->insert([
+            'id'         => 2,
             'tarea'      => 'Creación de factura digital',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
         DB::table('tareas')->insert([
+            'id'         => 3,
             'tarea'      => 'Envío de factura digital',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
         DB::table('tareas')->insert([
+            'id'         => 4,
             'tarea'      => 'Descarga de stock',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
@@ -137,11 +144,13 @@ class UserSeeder extends Seeder
 
         //CREACION DE SOLICITUDES
         DB::table('solicitudes')->insert([
+            'id'         => 1,
             'solicitud'  => 'Accesorios para suspensión',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
         DB::table('solicitudes')->insert([
+            'id'         => 2,
             'solicitud'  => 'Luces adaptativas',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
@@ -149,32 +158,48 @@ class UserSeeder extends Seeder
 
         //CREACION DE ESTADOS
         DB::table('estados')->insert([
+            'id'         => 1,
             'estado'     => 'Recibida',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
         DB::table('estados')->insert([
+            'id'         => 2,
             'estado'     => 'En progreso',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
         DB::table('estados')->insert([
+            'id'         => 3,
             'estado'     => 'Resuelta',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
         DB::table('estados')->insert([
+            'id'         => 4,
             'estado'     => 'Rechazada',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
         DB::table('estados')->insert([
+            'id'         => 5,
             'estado'     => 'Retrasada',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
         DB::table('estados')->insert([
+            'id'         => 6,
             'estado'     => 'Priorizada',
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+
+        //CREACION DE PARAMETROS
+        DB::table('parametros')->insert([
+            'id'           => 1,
+            'parametro'  => 'Frecuencia de actualización para la trazabilidad de las tareas',
+            'valor'      => '60',
+            'unidad_medida' => 'segundos',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);

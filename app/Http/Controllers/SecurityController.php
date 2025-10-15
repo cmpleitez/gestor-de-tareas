@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\Parametro;
 use App\Models\SecurityEvent;
 use App\Models\ThreatIntelligence;
 use App\Services\SecurityDashboardService;
@@ -16,6 +17,35 @@ class SecurityController extends Controller
     {
         $this->simpleSecurity   = $simpleSecurity;
         $this->dashboardService = $dashboardService;
+    }
+
+    public function parametros()
+    {
+        $parametros = Parametro::All();
+        return view('modelos.parametro.index', compact('parametros'));
+    }
+
+    public function parametrosEdit(Parametro $parametro)
+    {
+        return view('modelos.parametro.edit', compact('parametro'));
+    }
+
+    public function parametrosUpdate(Request $request, Parametro $parametro)
+    {
+        $validatedData = $request->validate([
+            'parametro'     => 'required|string|min:3|max:255',
+            'valor'         => 'required|string|min:1|max:255',
+            'unidad_medida' => 'required|string|min:3|max:255',
+        ]);
+        $parametro->update($validatedData);
+        return redirect()->route('security.parametros')->with('success', 'Parámetro actualizado correctamente');
+    }
+
+    public function parametrosActivate(Parametro $parametro)
+    {
+        $parametro->activo = !$parametro->activo; // Guardado por unidad, no masivo
+        $parametro->save();
+        return redirect()->route('security.parametros')->with('success', 'Parámetro actualizado correctamente');
     }
 
     /**

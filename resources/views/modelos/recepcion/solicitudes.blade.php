@@ -1044,7 +1044,6 @@
                 resueltas: @json($resueltas)
             };
             cargarTarjetasIniciales(tarjetasIniciales);
-
             function initializeProgressBars() {
                 $('.progress-divider').each(function() {
                     let atencionId = $(this).data('atencion-id');
@@ -1057,8 +1056,7 @@
             setTimeout(initializeProgressBars, 100); // Inicializar barras de progreso inmediatamente no es timer
             initKanban();
             let isUpdating = false; // Sistema inteligente de polling para evitar saturación
-            let updateInterval = 30000;
-
+            let updateInterval = {{ $frecuencia_actualizacion }} * 1000;
             function safeUpdate() {
                 if (isUpdating) {
                     return;
