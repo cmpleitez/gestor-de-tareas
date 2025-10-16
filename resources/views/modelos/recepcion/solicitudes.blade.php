@@ -1029,7 +1029,6 @@
                 resueltas: @json($resueltas)
             };
             cargarTarjetasIniciales(tarjetasIniciales);
-
             function initializeProgressBars() {
                 $('.progress-divider').each(function() {
                     let atencionId = $(this).data('atencion-id');
@@ -1042,7 +1041,7 @@
             setTimeout(initializeProgressBars, 100); // Inicializar barras de progreso inmediatamente no es timer
             initKanban();
             let isUpdating = false; // Sistema inteligente de polling para evitar saturación
-            let updateInterval = {{ $frecuencia_actualizacion }} * 1000;
+            let updateInterval = ({{ $frecuencia_actualizacion }} * 1000) * 60;
             function safeUpdate() {
                 if (isUpdating) {
                     return;
@@ -1055,7 +1054,7 @@
                 }, 10000);
             }
             safeUpdate(); // Ejecutar inmediatamente al cargar
-            setInterval(safeUpdate, updateInterval); // Luego ejecutar cada 30 segundos
+            setInterval(safeUpdate, updateInterval);
         });
     </script>
 @endsection
