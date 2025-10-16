@@ -135,10 +135,7 @@ SEGURIDAD:
     🟢 retirar tarjeta de debito de azure
 PLATAFORMA:
     🟢 hay unas clases en los index de los catalogos que debería estar heredada desde el dashboard
-    🟢 Parametrizar tiempo de refresco para el kanban
-        .creando el crud del parametro: 
-            .evitar que se cambie el nombre del parametro por seguridad
-            .hacer unico el nombre del parametro
+    🟢 cuando el receptor asigna solicitudes a un equipo en especifico la solicitud va a caer a un operador que no forma parte de ese equipo
 SERVICIOS:
     🟢 construir funcionalidades del catalogo de productos
     🟢 agregar un campo para el codigo físico del producto y mantenerlo visible en el catalogo de productos

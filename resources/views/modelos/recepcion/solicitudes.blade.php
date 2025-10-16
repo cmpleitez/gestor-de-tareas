@@ -12,7 +12,7 @@
     @can('asignar')
         <div class="row">
             <div class="col-12">
-                @if (optional(auth()->user()->mainRole)->name != 'Operador')
+                @if (optional(auth()->user()->mainRole)->name != 'operador')
                     <div class="accordion" id="accordionWrapa2">
                         <div class="card collapse-header border-0 overflow-hidden">
                             <div id="heading5" class="card-header" data-toggle="collapse" data-target="#accordion5"
@@ -26,10 +26,7 @@
                                         <div class="d-flex flex-column align-items-start justify-content-center">
                                             <h6 class="mb-0 text-white font-weight-500"
                                                 style="font-size: 1rem; letter-spacing: 0.3px;">
-                                                @if (optional(auth()->user()->mainRole)->name == 'Receptor')
-                                                    <span
-                                                        class="font-weight-600">{{ auth()->user()->equipos()->first()->equipo }}</span>
-                                                @endif
+                                                <span class="font-weight-600"></span>
                                             </h6>
                                             <small class="text-white-50" style="font-size: 0.8rem;">
                                                 Selecciona el equipo de trabajo destino para impulsar las solicitudes
@@ -46,11 +43,11 @@
                                 class="collapse">
                                 <div class="card-content">
                                     <div class="card-body" style="background: #f8f9fa; padding: 1rem;">
-                                        @if (optional(auth()->user()->mainRole)->name == 'Receptor' && isset($equipos))
+                                        @if (optional(auth()->user()->mainRole)->name == 'receptor' && isset($equipos))
                                             <div class="row" style="display: flex; align-items: stretch;">
                                                 @foreach ($equipos as $equipo)
                                                     <div class="col-md-3 mt-1">
-                                                        <div class="selectable-item {{ $equipo->id == auth()->user()->equipos->first()->id ? 'selected' : '' }}"
+                                                        <div class="selectable-item"
                                                             onclick="selectItem('equipo_{{ $equipo->id }}')">
                                                             <div class="item-body">
                                                                 <div class="item-info">
@@ -60,9 +57,7 @@
                                                                 <div class="radio-indicator"></div>
                                                             </div>
                                                             <input type="radio" id="equipo_{{ $equipo->id }}"
-                                                                name="equipo_destino" value="{{ $equipo->id }}"
-                                                                {{ $equipo->id == auth()->user()->equipos->first()->id ? 'checked' : '' }}
-                                                                style="display: none;">
+                                                                name="equipo_destino" value="{{ $equipo->id }}">
                                                         </div>
                                                     </div>
                                                 @endforeach
@@ -95,8 +90,7 @@
                         <h6 class="mb-0 text-white font-weight-600" style="font-size: 0.9rem;">Recibidas</h6>
                         <div class="ml-auto d-flex align-items-center">
 
-                            <span class="badge badge-white text-dark"
-                                id="contador-recibidas">{{ count($recibidas) }}</span>
+                            <span class="badge badge-white text-dark" id="contador-recibidas">{{ count($recibidas) }}</span>
                         </div>
                     </div>
                 </div>
@@ -202,57 +196,48 @@
                             $('.text-center.text-muted.py-4')
                                 .remove(); // Remover mensajes de columna vacía al iniciar drag
                         },
-                        onEnd: function(
-                            evt
-                        ) {
-                            @can('asignar') // Impulso manual hacia "En progreso"
-                                const solicitudId = evt.item.dataset.recepcionId;
-                                const columnaOrigen = evt.from.id;
-                                const columnaDestino = evt.to.id;
-                                if (columnaOrigen !== columnaDestino) {
-                                    if (columnaOrigen !== 'columna-recibidas' || columnaDestino !==
-                                        'columna-progreso') {
-                                        toastr.error('Movimiento no disponible');
-                                        $(evt.from).append(evt
-                                            .item); // Revertir la tarjeta a su posición original
-                                        actualizarMensajeColumnaVacia
-                                            (); // Restaurar mensajes si se cancela el movimiento
-                                        return;
-                                    }
-                                    const $colDestino = $('#' +
-                                        columnaDestino
-                                    ); // Ordenar inmediatamente la columna destino después del movimiento visual
-                                    const itemsDestino = $colDestino.children('.solicitud-card').get();
-                                    itemsDestino.sort(function(a, b) {
-                                        return parseInt(a.dataset.atencionId || '0', 10) -
-                                            parseInt(b.dataset.atencionId || '0', 10);
-                                    });
-                                    itemsDestino.forEach(function(el) {
-                                        $colDestino.append(el);
-                                    });
-                                    updatePosition(solicitudId, columnaDestino, evt);
-                                } else {
+                        onEnd: function(evt) {
+                            const solicitudId = evt.item.dataset.recepcionId;
+                            const columnaOrigen = evt.from.id;
+                            const columnaDestino = evt.to.id;
+                            if (columnaOrigen !== columnaDestino) {
+                                if (columnaOrigen !== 'columna-recibidas' || columnaDestino !==
+                                    'columna-progreso') {
+                                    toastr.error('Movimiento no disponible');
+                                    $(evt.from).append(evt
+                                        .item); // Revertir la tarjeta a su posición original
                                     actualizarMensajeColumnaVacia
-                                        (); // Si no hay movimiento, restaurar mensajes
+                                        (); // Restaurar mensajes si se cancela el movimiento
+                                    return;
                                 }
-                                actualizarMensajeColumnaVacia();
-                            @else
-                                toastr.error('No tienes permiso para realizar esta acción');
-                                $(evt.from).append(evt
-                                    .item); // Revertir la tarjeta a su posición original
-                                // Restaurar mensajes si no hay permisos
-                                actualizarMensajeColumnaVacia();
-                            @endcan
+                                const $colDestino = $('#' +
+                                    columnaDestino
+                                ); // Ordenar inmediatamente la columna destino después del movimiento visual
+                                const itemsDestino = $colDestino.children('.solicitud-card').get();
+                                itemsDestino.sort(function(a, b) {
+                                    return parseInt(a.dataset.atencionId || '0', 10) -
+                                        parseInt(b.dataset.atencionId || '0', 10);
+                                });
+                                itemsDestino.forEach(function(el) {
+                                    $colDestino.append(el);
+                                });
+                                updatePosition(solicitudId, columnaDestino, evt);
+                            } else {
+                                actualizarMensajeColumnaVacia
+                                    (); // Si no hay movimiento, restaurar mensajes
+                            }
+                            actualizarMensajeColumnaVacia();
                         }
                     });
                 });
             @else
-                // Para usuarios sin permisos de asignar, solo inicializar las columnas sin drag & drop
-                const columnas = ['columna-recibidas', 'columna-progreso', 'columna-resueltas'];
+                const columnas = ['columna-recibidas', 'columna-progreso',
+                    'columna-resueltas'
+                ]; // Para usuarios sin permisos de asignar, solo inicializar las columnas sin drag & drop
                 columnas.forEach(function(columnaId) {
-                    const elemento = document.getElementById(columnaId);
+                    const elemento = document.getElementById(
+                        columnaId); // Solo crear columnas vacías sin funcionalidad de drag & drop
                     if (!elemento) return;
-                    // Solo crear columnas vacías sin funcionalidad de drag & drop
                 });
             @endcan
         }
@@ -410,7 +395,7 @@
             }
             let url = null; //Seleccionando la ruta a la que se va a enviar la solicitud
             let selectedValue = null;
-            if (userRole === 'Receptor') { //Asignar
+            if (userRole === 'receptor') { //Asignar
                 selectedValue = $('input[name="equipo_destino"]:checked').val();
                 if (!selectedValue) {
                     Swal.fire({
@@ -428,7 +413,7 @@
                 url = '{{ route('recepcion.asignar', ['recepcion' => ':recepcion_id', 'equipo' => ':equipo_id']) }}'
                     .replace(':recepcion_id', solicitudId)
                     .replace(':equipo_id', selectedValue);
-            } else if (userRole === 'Operador') { //Iniciar tareas
+            } else if (userRole === 'operador') { //Iniciar tareas
                 url = '{{ route('recepcion.iniciar-tareas', ['recepcion_id' => ':id']) }}'
                     .replace(':id', solicitudId);
             }
@@ -547,7 +532,7 @@
         }
         //MOSTRAR TAREAS EN SIDEBAR
         @can('asignar')
-            @if (auth()->user()->mainRole->name === 'Operador')
+            @if (auth()->user()->mainRole->name === 'operador')
                 $(document).on('click', '.solicitud-card', function() {
                     const $card = $(this);
                     const titulo = $card.find('.solicitud-titulo').text().trim();
@@ -563,7 +548,6 @@
                     limpiarClasesDrag();
                 });
             @endif
-
             function cargarTareas(recepcionId) {
                 $.ajax({
                     url: '{{ route('recepcion.tareas', ['recepcion_id' => ':id']) }}'.replace(':id', recepcionId),
@@ -648,7 +632,8 @@
                     success: function(response) {
                         if (response.success) {
                             const tarjeta = $(
-                            `.solicitud-card[data-recepcion-id="${response.recepcion_id}"]`); // Actualizar la traza en la tarjeta
+                                `.solicitud-card[data-recepcion-id="${response.recepcion_id}"]`
+                            ); // Actualizar la traza en la tarjeta
                             if (tarjeta.length > 0 && response.traza) {
                                 tarjeta.find('.solicitud-estado').text(response.traza);
                             }
@@ -735,6 +720,7 @@
             const equipoId = $(this).val();
             const equipoNombre = $(this).closest('div').find('.item-name').text().trim();
             $('#heading5 h6 span.font-weight-600').text(equipoNombre);
+            $('#heading5 small.text-white-50').hide();
             $('#accordion5').collapse('hide');
         });
         //FUNCIONES PARA ACTUALIZAR BARRAS DE PROGRESO
@@ -1044,6 +1030,7 @@
                 resueltas: @json($resueltas)
             };
             cargarTarjetasIniciales(tarjetasIniciales);
+
             function initializeProgressBars() {
                 $('.progress-divider').each(function() {
                     let atencionId = $(this).data('atencion-id');
@@ -1057,6 +1044,7 @@
             initKanban();
             let isUpdating = false; // Sistema inteligente de polling para evitar saturación
             let updateInterval = {{ $frecuencia_actualizacion }} * 1000;
+
             function safeUpdate() {
                 if (isUpdating) {
                     return;

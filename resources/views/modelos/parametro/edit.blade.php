@@ -25,7 +25,8 @@
                     </div>
                 </div>
                 <!-- FORMULARIO -->
-                <form class="form-horizontal" action="{{ route('security.parametros-update', $parametro->id) }}" method="POST" novalidate>
+                <form class="form-horizontal" action="{{ route('security.parametros-update', $parametro->id) }}"
+                    method="POST" novalidate>
                     @csrf
                     @method('PUT')
 
@@ -52,6 +53,64 @@
                                         </div>
                                     </div>
                                 </div>
+                                {{-- VALOR --}}
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <label>Valor</label>
+                                        <div class="controls">
+                                            <input type="text" name="valor" class="form-control"
+                                                value="{{ old('valor', $parametro->valor) }}" required>
+                                            @error('valor')
+                                                <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                                    {{ $errors->first('valor') }}
+                                                </div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                                {{-- UNIDAD DE MEDIDA --}}
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <label>Unidad de medida</label>
+                                        <div class="controls">
+                                            <select name="unidad_medida" id="unidad_medida" class="form-control" required>
+                                                <option value="">Seleccione o agregue una unidad</option>
+                                                <option value="minutos"
+                                                    {{ old('unidad_medida', $parametro->unidad_medida) == 'minutos' ? 'selected' : '' }}>
+                                                    minutos</option>
+                                                <option value="horas"
+                                                    {{ old('unidad_medida', $parametro->unidad_medida) == 'horas' ? 'selected' : '' }}>
+                                                    horas</option>
+                                                <option value="días"
+                                                    {{ old('unidad_medida', $parametro->unidad_medida) == 'días' ? 'selected' : '' }}>
+                                                    días</option>
+                                                <option value="semanas"
+                                                    {{ old('unidad_medida', $parametro->unidad_medida) == 'semanas' ? 'selected' : '' }}>
+                                                    semanas</option>
+                                                <option value="meses"
+                                                    {{ old('unidad_medida', $parametro->unidad_medida) == 'meses' ? 'selected' : '' }}>
+                                                    meses</option>
+                                                <option value="años"
+                                                    {{ old('unidad_medida', $parametro->unidad_medida) == 'años' ? 'selected' : '' }}>
+                                                    años</option>
+                                                <option value="unidades"
+                                                    {{ old('unidad_medida', $parametro->unidad_medida) == 'unidades' ? 'selected' : '' }}>
+                                                    unidades</option>
+                                                <option value="unidades em"
+                                                    {{ old('unidad_medida', $parametro->unidad_medida) == 'unidades em' ? 'selected' : '' }}>
+                                                    unidades em</option>
+                                                <option value="unidades rem"
+                                                    {{ old('unidad_medida', $parametro->unidad_medida) == 'unidades rem' ? 'selected' : '' }}>
+                                                    unidades rem</option>
+                                            </select>
+                                            @error('unidad_medida')
+                                                <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                                    {{ $errors->first('unidad_medida') }}
+                                                </div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -66,4 +125,15 @@
 @stop
 
 @section('js')
+    <script>
+        $(document).ready(function() {
+            // Inicializar Select2 con opción de agregar nuevas opciones
+            $('#unidad_medida').select2({
+                tags: true, // Permite agregar nuevas opciones
+                placeholder: "Seleccione o agregue una unidad",
+                allowClear: true, // Permite limpiar la selección
+                width: '100%'
+            });
+        });
+    </script>
 @stop

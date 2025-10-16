@@ -21,7 +21,7 @@ class RegisterController extends Controller
     public function create()
     {
         // Verificar que el usuario esté autenticado y tenga rol Admin
-        if (! auth()->check() || ! auth()->user()->hasRole('SuperAdmin')) {
+        if (! auth()->check() || ! auth()->user()->hasRole('admin')) {
             return back()->with('error', 'No tienes permisos para acceder a esta página.');
         }
         return view('auth.register');
@@ -29,7 +29,7 @@ class RegisterController extends Controller
 
     public function store(Request $request)
     {
-        if (! auth()->check() || ! auth()->user()->hasRole('SuperAdmin')) { // Verificar que el usuario esté autenticado y tenga rol Admin
+        if (! auth()->check() || ! auth()->user()->hasRole('admin')) { // Verificar que el usuario esté autenticado y tenga rol Admin
             return back()->with('error', 'No tienes permisos para realizar esta acción.');
         }
         $validated = Validator::make($request->all(), [ // Validación
@@ -70,8 +70,8 @@ class RegisterController extends Controller
                     throw new Exception('Error al procesar la imagen: ' . $e->getMessage());
                 }
             }
-            $user->assignRole('Cliente'); // Asignar rol de Cliente
-            $clienteRole = \Spatie\Permission\Models\Role::where('name', 'Cliente')->first();
+            $user->assignRole('cliente'); // Asignar rol de Cliente
+            $clienteRole = \Spatie\Permission\Models\Role::where('name', 'cliente')->first();
             if ($clienteRole) {
                 $user->role_id = $clienteRole->id;
                 $user->save();

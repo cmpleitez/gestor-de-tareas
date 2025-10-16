@@ -144,7 +144,7 @@ class RecepcionController extends Controller
             $recibidas = $tarjetas->where('estado_id', 1)->sortBy('created_at')->values()->toArray();
             $progreso  = $tarjetas->where('estado_id', 2)->sortBy('created_at')->values()->toArray();
             $resueltas = $tarjetas->where('estado_id', 3)->sortBy('created_at')->values()->toArray();
-            $frecuencia_actualizacion = Parametro::where('parametro', 'Frecuencia de actualización para la trazabilidad de las tareas')->first()->valor;
+            $frecuencia_actualizacion = Parametro::where('parametro', 'Frecuencia de refresco')->first()->valor;
             $data      = [
                 'recibidas'  => $recibidas,
                 'progreso'   => $progreso,

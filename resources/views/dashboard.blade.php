@@ -448,6 +448,12 @@
             border-radius: 50%;
         }
 
+        /* Ocultar inputs nativos solo cuando hay indicadores personalizados */
+        .selectable-item:has(.radio-indicator) input[type="radio"],
+        .selectable-item:has(.checkbox-indicator) input[type="checkbox"] {
+            display: none;
+        }
+
         /* Estilos específicos para formularios de edición */
         .card-body .selectable-item {
             width: 220px;
@@ -791,9 +797,9 @@
                                 data-i18n="Menu Levels">Seguridad</span></a>
                         <ul class="menu-content" style="display: block;">
                             <li><a href="{{ Route('security.parametros') }}">
-                                <i class="bx bx-right-arrow-alt"></i>
-                                <span class="menu-item" data-i18n="Second Level">Configuración</span>
-                            </a></li>
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Configuración</span>
+                                </a></li>
 
                             <li><a href="{{ Route('security.index') }}">
                                     <i class="bx bx-right-arrow-alt"></i>
@@ -824,9 +830,9 @@
                                 data-i18n="Menu Levels">Administración</span></a>
                         <ul class="menu-content" style="display: block;">
                             <li><a href="{{ Route('user') }}">
-                                <i class="bx bx-right-arrow-alt"></i>
-                                <span class="menu-item" data-i18n="Second Level">Usuarios</span>
-                            </a></li>
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Usuarios</span>
+                                </a></li>
                             <li><a href="{{ Route('equipo') }}">
                                     <i class="bx bx-right-arrow-alt"></i>
                                     <span class="menu-item" data-i18n="Second Level">Equipos</span>

@@ -10,8 +10,8 @@ ESTILOS PARA COMPONENTES DE SOLICITUDES
     background: white;
     border: 1px solid #e3e6f0;
     border-radius: 6px;
-    padding: 12px;
-    margin-bottom: 10px;
+    padding: 10px;
+    margin-bottom: 8px;
     cursor: move;
     transition: all 0.2s;
     border-left: 4px solid #007bff;
@@ -24,8 +24,8 @@ ESTILOS PARA COMPONENTES DE SOLICITUDES
 
 .solicitud-titulo {
     font-weight: 600;
-    margin-bottom: 5px;
-    font-size: 14px;
+    margin-bottom: 4px;
+    font-size: 13px;
 }
 
 .solicitud-id {
@@ -156,7 +156,7 @@ ESTILOS PARA COMPONENTES DE SOLICITUDES
     position: fixed;
     top: 0;
     right: -100%;
-    width: clamp(200px, 32vw, 432px);
+    width: clamp(350px, 40vw, 500px);
     height: 100%;
     background: #fff;
     z-index: 1000;
@@ -177,6 +177,7 @@ ESTILOS PARA COMPONENTES DE SOLICITUDES
     max-height: calc(100vh - 60px) !important;
     display: flex !important;
     flex-direction: column !important;
+    align-items: center !important;
 }
 
 #sidebar-card-body::-webkit-scrollbar {
@@ -284,10 +285,6 @@ body.sidebar-open {
     filter: none !important;
 }
 
-.kanban-sidebar,
-.kanban-sidebar * {
-    max-width: 24rem !important;
-}
 
 .solicitud-card {
     user-select: none;

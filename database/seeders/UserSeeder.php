@@ -75,7 +75,7 @@ class UserSeeder extends Seeder
         $role = Role::create(['name' => 'cliente']);
         $role->givePermissionTo(['ver', 'crear', 'editar']);
 
-        //USUARIOS
+        //SUPERADMINISTRADOR
         DB::table('users')->insert([
             'id'                => 1,
             'role_id'           => 1,
@@ -88,6 +88,14 @@ class UserSeeder extends Seeder
             'created_at'        => Carbon::now(),
             'updated_at'        => Carbon::now(),
         ]);
+        try {
+            $user = User::findOrFail(1);
+            $user->assignRole('superadmin');
+        } catch (\Exception $e) {
+            echo "Error asignando rol superadmin: " . $e->getMessage();
+        }
+
+        //ADMINISTRADOR
         DB::table('users')->insert([
             'id'                => 2,
             'role_id'           => 2,
@@ -100,15 +108,6 @@ class UserSeeder extends Seeder
             'created_at'        => Carbon::now(),
             'updated_at'        => Carbon::now(),
         ]);
-
-        //ENROLANDO AL ADMINISTRADOR
-        try {
-            $user = User::findOrFail(1);
-            $user->assignRole('superadmin');
-        } catch (\Exception $e) {
-            echo "Error asignando rol superadmin: " . $e->getMessage();
-        }
-
         try {
             $user = User::findOrFail(2);
             $user->assignRole('admin');
