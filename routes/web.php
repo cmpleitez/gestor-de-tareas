@@ -59,7 +59,6 @@ Route::middleware([
             Route::get('parametros/edit/{parametro}', [SecurityController::class, 'parametrosEdit'])->name('security.parametros-edit');
             Route::put('parametros/update/{parametro}', [SecurityController::class, 'parametrosUpdate'])->name('security.parametros-update');
             Route::post('parametros/activate/{parametro}', [SecurityController::class, 'parametrosActivate'])->name('security.parametros-activate');
-
             Route::get('events', [SecurityController::class, 'events'])->name('security.events');
             Route::get('threat-intelligence', [SecurityController::class, 'threatIntelligence'])->name('security.threat-intelligence');
             Route::get('ip-reputation', [SecurityController::class, 'ipReputation'])->name('security.ip-reputation');
@@ -71,7 +70,7 @@ Route::middleware([
         });
     });
 
-    //ADMINISTRADORES
+    //ADMINISTRADORES y SUPER-ADMINISTRADORES
     Route::group(['middleware' => ['role:admin|superadmin']], function () {
         Route::group(['prefix' => 'user'], function () { //Usuarios
             Route::get('/', [userController::class, 'index'])->name('user');

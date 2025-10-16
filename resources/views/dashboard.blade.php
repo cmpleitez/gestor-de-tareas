@@ -557,12 +557,10 @@
             -webkit-box-orient: vertical;
         }
 
-
-
-        /* ===== ESTILOS PARA TOOLTIPS ===== */
-
-        /* Tooltip base con fondo oscuro elegante */
         .tooltip-inner {
+            display: flex !important;
+            align-items: center !important;
+            gap: 5px !important;
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%) !important;
             color: #ffffff !important;
             font-family: 'IBM Plex Sans', sans-serif !important;
@@ -571,10 +569,16 @@
             border-radius: 8px !important;
             padding: 8px 12px !important;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
-            max-width: 250px !important;
+            max-width: 300px !important;
         }
 
-        /* Flecha del tooltip */
+        .tooltip-inner i {
+            margin: 0 !important;
+            font-size: 14px !important;
+            line-height: 1 !important;
+            color: #eeff03 !important;
+        }
+
         .tooltip.bs-tooltip-top .arrow::before {
             border-top-color: #1a1a2e !important;
         }
@@ -590,8 +594,6 @@
         .tooltip.bs-tooltip-right .arrow::before {
             border-right-color: #1a1a2e !important;
         }
-
-        /* ===== RESPONSIVE ===== */
 
         @media (max-width: 768px) {
             .tareas-grid {
@@ -825,7 +827,7 @@
                     </li>
                 @endrole
 
-                @role('admin')
+                @role('admin|superadmin')
                     <li class=" nav-item"><a href="#"><i class="bx bx-cog"></i><span class="menu-title"
                                 data-i18n="Menu Levels">Administración</span></a>
                         <ul class="menu-content" style="display: block;">

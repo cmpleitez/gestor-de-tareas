@@ -1,30 +1,7 @@
 @extends('dashboard')
 
 @section('css')
-    <!-- BEGIN: Vendor CSS-->
     <link href="{{ asset('app-assets/vendors/css/tables/datatable/datatables.min.css') }}" rel="stylesheet">
-    <!-- END: Vendor CSS-->
-
-    <style>
-        /* CSS personalizado para tooltips con borde y sombra */
-        .tooltip .tooltip-inner {
-            display: flex !important;
-            align-items: center !important;
-            gap: 5px !important;
-            color: #ffffff !important;
-            border-radius: 8px !important;
-            padding: 8px 12px !important;
-            font-weight: 500 !important;
-            max-width: 300px !important;
-        }
-
-        .tooltip-inner i {
-            margin: 0 !important;
-            font-size: 14px !important;
-            line-height: 1 !important;
-            color: #eeff03 !important;
-        }
-    </style>
 @stop
 
 @section('contenedor')
@@ -161,7 +138,7 @@
                                                                     style="opacity: 0.5; cursor: not-allowed;"
                                                                     data-toggle="tooltip" data-popup="tooltip-custom"
                                                                     data-html="true" data-placement="bottom"
-                                                                    title="<i class='bx bxs-trash'></i> No puedes eliminarte a ti mismo">
+                                                                    title="<i class='bx bxs-lock'></i> No puedes eliminarte a ti mismo">
                                                                     <i class="bx bxs-trash"></i>
                                                                 </span>
                                                             @endif

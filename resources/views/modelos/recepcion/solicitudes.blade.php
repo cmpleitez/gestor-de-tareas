@@ -89,7 +89,6 @@
                         </div>
                         <h6 class="mb-0 text-white font-weight-600" style="font-size: 0.9rem;">Recibidas</h6>
                         <div class="ml-auto d-flex align-items-center">
-
                             <span class="badge badge-white text-dark" id="contador-recibidas">{{ count($recibidas) }}</span>
                         </div>
                     </div>
@@ -1044,7 +1043,6 @@
             initKanban();
             let isUpdating = false; // Sistema inteligente de polling para evitar saturación
             let updateInterval = {{ $frecuencia_actualizacion }} * 1000;
-
             function safeUpdate() {
                 if (isUpdating) {
                     return;

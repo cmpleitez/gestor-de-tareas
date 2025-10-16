@@ -1,30 +1,7 @@
 @extends('dashboard')
 
 @section('css')
-<!-- BEGIN: Vendor CSS-->
 <link href="{{ asset('app-assets/vendors/css/tables/datatable/datatables.min.css') }}" rel="stylesheet">
-<!-- END: Vendor CSS-->
-
-<style>
-    /* CSS personalizado para tooltips con borde y sombra */
-    .tooltip .tooltip-inner {
-        display: flex !important;
-        align-items: center !important;
-        gap: 5px !important;
-        color: #ffffff !important;
-        border-radius: 8px !important;
-        padding: 8px 12px !important;
-        font-weight: 500 !important;
-        max-width: 300px !important;
-    }
-
-    .tooltip-inner i {
-        margin: 0 !important;
-        font-size: 14px !important;
-        line-height: 1 !important;
-        color: #eeff03 !important;
-    }
-</style>
 @stop
 
 @section('contenedor')
@@ -140,7 +117,6 @@
 @stop
 
 @section('js')
-<!-- BEGIN: Page Vendor JS-->
 <script src="{{ asset('app-assets/vendors/js/tables/datatable/datatables.min.js') }}"></script>
 <script src="{{ asset('app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}"></script>
 <script src="{{ asset('app-assets/vendors/js/tables/datatable/dataTables.buttons.min.js') }}"></script>
@@ -149,7 +125,6 @@
 <script src="{{ asset('app-assets/vendors/js/tables/datatable/buttons.bootstrap.min.js') }}"></script>
 <script src="{{ asset('app-assets/vendors/js/tables/datatable/pdfmake.min.js') }}"></script>
 <script src="{{ asset('app-assets/vendors/js/tables/datatable/vfs_fonts.js') }}"></script>
-<!-- END: Page Vendor JS-->
 
 {{-- Componente de orientación para tablas --}}
 @include('components.orientation-manager')

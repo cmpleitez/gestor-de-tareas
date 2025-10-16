@@ -134,8 +134,7 @@ SEGURIDAD:
     🟢 implementar el ssl
     🟢 retirar tarjeta de debito de azure
 PLATAFORMA:
-    🟢 hay unas clases en los index de los catalogos que debería estar heredada desde el dashboard
-    🟢 cuando el receptor asigna solicitudes a un equipo en especifico la solicitud va a caer a un operador que no forma parte de ese equipo
+    🔵 Sin pendientes
 SERVICIOS:
     🟢 construir funcionalidades del catalogo de productos
     🟢 agregar un campo para el codigo físico del producto y mantenerlo visible en el catalogo de productos

@@ -211,16 +211,16 @@ class RecepcionController extends Controller
 
     public function asignar(Recepcion $recepcion, Equipo $equipo)
     {
+        $operadores = User::whereHas('equipos', function ($q1) use ($equipo) {
+            $q1->where('equipo_id', $equipo->id);
+        })->whereHas('mainRole', function ($q1) {
+            $q1->where('name', 'Operador');
+        })->with('equipos')->where('activo', true)->get();
+        if ($operadores->isEmpty()) {
+            return response()->json(['warning' => true, 'message' => 'No hay operadores disponibles para asignar la solicitud'], 422);
+        }
         try {
             //VALIDACIÓN
-            $operadores = User::whereHas('equipos', function ($q1) use ($equipo) {
-                $q1->where('equipo_id', $equipo->id);
-            })->whereHas('mainRole', function ($q1) {
-                $q1->where('name', 'Operador');
-            })->where('activo', true)->get();
-            if ($operadores->isEmpty()) {
-                return response()->json(['warning' => true, 'message' => 'No hay operadores disponibles para asignar la solicitud'], 422);
-            }
             $operador = $operadores->random();
             //PROCESO
             $estado_en_progreso_id = Estado::where('estado', 'En progreso')->first()->id;
