@@ -134,7 +134,7 @@ SEGURIDAD:
     🟢 implementar el ssl
     🟢 retirar tarjeta de debito de azure
 PLATAFORMA:
-    🔵 Sin pendientes
+    🟢 user.index: agregar ambos roles superadmin y admin en el permiso para registrar nuevos usuarios
 SERVICIOS:
     🟢 construir funcionalidades del catalogo de productos
     🟢 agregar un campo para el codigo físico del producto y mantenerlo visible en el catalogo de productos

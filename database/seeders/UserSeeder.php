@@ -197,8 +197,8 @@ class UserSeeder extends Seeder
         DB::table('parametros')->insert([
             'id'           => 1,
             'parametro'  => 'Frecuencia de refresco',
-            'valor'      => '60',
-            'unidad_medida' => 'segundos',
+            'valor'      => '1',
+            'unidad_medida' => 'minutos',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
