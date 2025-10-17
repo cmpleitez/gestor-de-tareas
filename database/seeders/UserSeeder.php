@@ -196,7 +196,7 @@ class UserSeeder extends Seeder
         //CREACION DE PARAMETROS
         DB::table('parametros')->insert([
             'id'           => 1,
-            'parametro'  => 'Frecuencia de actualización para la trazabilidad de las tareas',
+            'parametro'  => 'Frecuencia de refresco',
             'valor'      => '60',
             'unidad_medida' => 'segundos',
             'created_at' => Carbon::now(),

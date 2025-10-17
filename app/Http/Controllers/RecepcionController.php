@@ -5,6 +5,7 @@ use App\Models\Actividad;
 use App\Models\Atencion;
 use App\Models\Equipo;
 use App\Models\Estado;
+use App\Models\Parametro;
 use App\Models\Recepcion;
 use App\Models\Solicitud;
 use App\Models\User;
@@ -14,7 +15,6 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
-use App\Models\Parametro;
 
 class RecepcionController extends Controller
 {
@@ -141,16 +141,17 @@ class RecepcionController extends Controller
                     'oficina'             => $tarjeta->atencion->oficina->oficina,
                 ];
             });
-            $recibidas = $tarjetas->where('estado_id', 1)->sortBy('created_at')->values()->toArray();
-            $progreso  = $tarjetas->where('estado_id', 2)->sortBy('created_at')->values()->toArray();
-            $resueltas = $tarjetas->where('estado_id', 3)->sortBy('created_at')->values()->toArray();
-            $frecuencia_actualizacion = Parametro::where('parametro', 'Frecuencia de refresco')->first()->valor;
-            $data      = [
-                'recibidas'  => $recibidas,
-                'progreso'   => $progreso,
-                'resueltas'  => $resueltas,
-                'equipos'    => $equipos,
-                'operadores' => $operadores,
+            $recibidas                = $tarjetas->where('estado_id', 1)->sortBy('created_at')->values()->toArray();
+            $progreso                 = $tarjetas->where('estado_id', 2)->sortBy('created_at')->values()->toArray();
+            $resueltas                = $tarjetas->where('estado_id', 3)->sortBy('created_at')->values()->toArray();
+            $parametro                = Parametro::where('parametro', 'Frecuencia de refresco')->first();
+            $frecuencia_actualizacion = $parametro ? $parametro->valor : 30; // Valor por defecto: 30 segundos
+            $data                     = [
+                'recibidas'                => $recibidas,
+                'progreso'                 => $progreso,
+                'resueltas'                => $resueltas,
+                'equipos'                  => $equipos,
+                'operadores'               => $operadores,
                 'frecuencia_actualizacion' => $frecuencia_actualizacion,
             ];
             return view('modelos.recepcion.solicitudes', $data);
