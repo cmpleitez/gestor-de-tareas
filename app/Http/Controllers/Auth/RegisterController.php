@@ -21,7 +21,7 @@ class RegisterController extends Controller
     public function create()
     {
         // Verificar que el usuario esté autenticado y tenga rol Admin
-        if (! auth()->check() || ! auth()->user()->hasRole('admin')) {
+        if (! auth()->check() || ! auth()->user()->hasRole('admin|superadmin')) {
             return back()->with('error', 'No tienes permisos para acceder a esta página.');
         }
         return view('auth.register');
@@ -29,7 +29,7 @@ class RegisterController extends Controller
 
     public function store(Request $request)
     {
-        if (! auth()->check() || ! auth()->user()->hasRole('admin')) { // Verificar que el usuario esté autenticado y tenga rol Admin
+        if (! auth()->check() || ! auth()->user()->hasRole('admin|superadmin')) { // Verificar que el usuario esté autenticado y tenga rol Admin
             return back()->with('error', 'No tienes permisos para realizar esta acción.');
         }
         $validated = Validator::make($request->all(), [ // Validación
@@ -47,9 +47,9 @@ class RegisterController extends Controller
         try {
             DB::beginTransaction();
             $validated['password'] = Hash::make($validated['password']); // Crear usuario
-            $generator = new CorrelativeIdGenerator();
-            $id        = $generator->generate('User');
-            $user      = new User();
+            $generator             = new CorrelativeIdGenerator();
+            $id                    = $generator->generate('User');
+            $user                  = new User();
             $user->fill($validated);
             $user->id = $id;
             $user->save();
