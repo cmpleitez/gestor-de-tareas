@@ -414,6 +414,8 @@
     <script>
         $(document).ready(function() {
             $('.select2').select2();
+
+/*
             window.validateFileSize = function(input, maxSizeMB) { // Función para validar tamaño de archivo
                 const file = input.files[0];
                 if (file) {
@@ -433,6 +435,8 @@
                 }
                 return true;
             };
+*/
+            
             $('form').on('submit', function() { // Loading spinner en el botón de envío
                 $('#submit-btn').prop('disabled', true);
                 $('#btn-text').hide();
