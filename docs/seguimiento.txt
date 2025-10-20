@@ -96,7 +96,7 @@ PAUTAS:
             Tu módulo de seguridad puede usarse sin límites mensuales de transferencia.    
 
 🟠 rage agains the machine & limp bizkit & korn & alice in chains
-    ...rage agains the machine: Born of a broken man
+    ...rage agains the machine -> videos musicales -> ....
 
 CLIENTE:
     🔵 Pendiente que el cliente revise el procedimiento
@@ -134,7 +134,7 @@ SEGURIDAD:
     🟢 implementar el ssl
     🟢 retirar tarjeta de debito de azure
 PLATAFORMA:
-    🟢 user.index: agregar ambos roles superadmin y admin en el permiso para registrar nuevos usuarios
+    🟢 tamaño de la imagen: autoregular a un tamaño y/o peso específico
 SERVICIOS:
     🟢 construir funcionalidades del catalogo de productos
     🟢 agregar un campo para el codigo físico del producto y mantenerlo visible en el catalogo de productos
