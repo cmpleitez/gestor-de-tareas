@@ -42,6 +42,22 @@ class RegisterController extends Controller
             'profile_photo_path.mimes' => 'Solo se permiten imágenes en formato JPG, JPEG o PNG.',
             'profile_photo_path.max'   => 'El archivo no debe exceder de 1 MB.',
             'profile_photo_path.image' => 'El archivo debe ser una imagen válida.',
+            'name.regex' => 'El nombre no debe contener espacios en blanco al inicio o al final.',
+            'name.required' => 'El nombre es requerido.',
+            'name.string' => 'El nombre debe ser una cadena de texto.',
+            'name.max' => 'El nombre no debe exceder de 255 caracteres.',
+            'email.required' => 'El email es requerido.',
+            'email.string' => 'El email debe ser una cadena de texto.',
+            'email.email' => 'El email debe ser una dirección de email válida.',
+            'email.max' => 'El email no debe exceder de 255 caracteres.',
+            'email.unique' => 'El email ya está registrado.',
+            'dui.required' => 'El DUI es requerido.',
+            'dui.string' => 'El DUI debe ser una cadena de texto.',
+            'dui.unique' => 'El DUI ya está registrado.',
+            'password.required' => 'La contraseña es requerida.',
+            'password.string' => 'La contraseña debe ser una cadena de texto.',
+            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
+            'password.confirmed' => 'La contraseña no coincide.',
         ])->validate();
         try {
             DB::beginTransaction();
