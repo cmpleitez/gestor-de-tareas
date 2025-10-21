@@ -131,8 +131,7 @@ CLIENTE:
             Registro A: @ → IP del servidor
             Registro A: www → IP del servidor
 SEGURIDAD:
-    🟢 implementar el ssl
-    🟢 retirar tarjeta de debito de azure
+    🔵 Sin pendientes
 PLATAFORMA:
     🟢 tamaño de la imagen: autoregular a un tamaño y/o peso específico
     🟢 verificar si se borra la imagen al borarr el registro del usuario
