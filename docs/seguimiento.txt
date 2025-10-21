@@ -135,6 +135,7 @@ SEGURIDAD:
     🟢 retirar tarjeta de debito de azure
 PLATAFORMA:
     🟢 tamaño de la imagen: autoregular a un tamaño y/o peso específico
+    🟢 verificar si se borra la imagen al borarr el registro del usuario
 SERVICIOS:
     🟢 construir funcionalidades del catalogo de productos
     🟢 agregar un campo para el codigo físico del producto y mantenerlo visible en el catalogo de productos

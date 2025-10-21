@@ -37,12 +37,11 @@ class RegisterController extends Controller
             'dui'                => ['required', 'string', Rule::unique('users', 'dui'), new ValidDui],
             'password'           => ['required', 'string', 'min:8', 'confirmed'],
             'terms'              => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
-            'profile_photo_path' => ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:1024'], // máximo 1 MB
+            'profile_photo_path' => ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:1024'],
         ], [
             'profile_photo_path.mimes' => 'Solo se permiten imágenes en formato JPG, JPEG o PNG.',
             'profile_photo_path.max'   => 'El archivo no debe exceder de 1 MB.',
             'profile_photo_path.image' => 'El archivo debe ser una imagen válida.',
-            'profile_photo_path.max'   => 'La imagen no debe ser mayor a 5MB.',
         ])->validate();
         try {
             DB::beginTransaction();
@@ -53,9 +52,6 @@ class RegisterController extends Controller
             $user->fill($validated);
             $user->id = $id;
             $user->save();
-
-            //Aqui debe agregarse una instrucción parar borrar la imagen del usuario si existe...
-            
             if (isset($request->profile_photo_path) && $request->profile_photo_path->isValid()) { // Procesar imagen de perfil si existe
                 try {
                     $imageFile = $request->profile_photo_path;
