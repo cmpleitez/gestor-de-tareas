@@ -2,22 +2,7 @@ PAUTAS:
 🟠 Habrá un receptor, y si el mismo receptor necesita ser operador, entonces debe crear dos cuentas una para cada rol.
 🟠 Si se necesita cambiarle el nombre a los catalogos, se deberá construir la funcionalidad y aplicar la regla de las dependencias
 🟠 Se detectan dos categorias: tipo de producto y marca
-🟠 Fortalecer la seguridad del servidor y del sitio
-    ❌ LO QUE FORGE NO TIENE POR DEFECTO:
-    1. WAF (Web Application Firewall)
-        ModSecurity: No está instalado por defecto
-        Reglas OWASP: No implementadas
-    2. Rate Limiting Avanzado
-        Bloqueo de IPs: No hay sistema automático de bloqueo
-        Fail2ban: No configurado por defecto
-    3. Monitoreo de Seguridad
-        Alertas: No hay sistema de notificaciones de ataques
-        Logs de seguridad: Solo logs básicos de nginx
-    CONCLUSIÓN:
-    Forge te da seguridad básica sólida (firewall, nginx seguro, SSL), pero para seguridad empresarial necesitas implementar las capas adicionales que mencioné.
-    Fuente IA.
-🟠 Solo hay un movimiento manual disponible: el impulso desde recibidas hacia En progreso, lo demás es automatico
-🟠 Para cada producto elegido la IA podría ayudar a seleccionar el item mas adecuado de entre los disponibles en el catalogo de solicitudes
+🟠 Solo hay un movimiento manual disponible: el impulso desde Recibidas hacia En progreso, lo demás es automatico
 🟠 Consumo estimado por la actualizacion automatica del gestor de tareas
     Cada 15 segundos por día (8 horas):
     Mínimo: ~4.2 MB/día
@@ -30,8 +15,7 @@ PAUTAS:
     123456784
     234567890
     456789012
-🟠 p@5t15al5abana
-🟠 Soporte IA - Digital Ocean:
+🟠 Soporte Digital Ocean:
     https://docs.digitalocean.com/support/
     https://www.digitalocean.com/company/contact/sales?referrer=pricing/managed-databases
     https://www.digitalocean.com/community/tools/bandwidth?active=%5B%7B%22slug%22%3A%22s-1vcpu-2gb%22%2C%22type%22%3A%22droplet%22%2C%22hours%22%3A722%2C%22consumption%22%3A1500%2C%22nodes%22%3A1%7D%5D&additional=0
@@ -45,31 +29,33 @@ PAUTAS:
     . Receptor: Tendrá la vista el kanvan y lo refrescará con cierta frecuencia vigilando si hay ordenes nuevas
     . Receptor: Al detectar una orden nueva la asignará al operador designado
     . Operador: 
-        .consulta las ordenes de compra que ha recibido (recepcion.usuarioDestino), dando clic en perfil del usuario / mis ventas
+        .consulta las ordenes de compra que ha recibido (recepcion.usuarioDestino), dando clic en la opción perfil / mis ordenes de compra
         .toma la orden por prioridad o la toma por orden de llegada
             .procesa las tareas respectivas (tabla de recibidas / clic a la tarjeta )
                 .iniciar el despacho
-                    .clic en la tarea o arrastra la tarjeta al tablero "En progreso"
-                    .sistema traslada la orden de compra para el tablero de "En progreso"
+                    . tarea automática del sistema
                 .creación de una factura digital:
                     .da clic en la tarjeta de la tabla de recibidas y luego en la tarea respectiva
                     .sistema: habre la orden de compra para que pueda revisarla
                     .revisa la existencia en stock y que la cantidad sea un dato común o usual, dando clic en el boton <Stock>
-                    .da clic en guadar (validando los cambios)
-                    .sistema: torna el tipo de documento en una factura (tipo_documento_id="factura"), y queda habierta la posibilidad para que si en algun momento implementamos una pasarela de pagos el documento pueda convertirse una vez pagado en un recibo "tipo_doucmento_id=recibo"
+                    .da clic en guardar (validando los cambios)
+                    .sistema: torna el tipo de documento en una factura (tipo_documento_id="factura"), 
+                    y queda habierta la posibilidad para que si en algun momento implementamos una pasarela de pagos el documento pueda convertirse 
+                    una vez pagado en un recibo "tipo_doucmento_id=recibo"
                     .sistema: publica el avance del proceso
+                    .el operador puede entrar nuevamente via la tarea de orden de compra y corregir algún error que hibiere en la factura antes de enviarla, y vuelve a guardar los cambios en la factura
                 .envío de la factura digital
                     .da clic en la tarea
                     .sistema: envia el correo con la factura digital adjunta y confirma el envío.
-                    .sistema: publica avance del proceso
+                    .sistema: publica avance del proceso en las tarjetas visibles en frontend
     . Cliente: efectua el pago y se lo hace saber al Receptor con un mensaje de whatsapp adjuntandole el número de orden (de compra)
     . Operador:
         .verifica pago de factura en coordinación con el Receptor
         .retira fisicamente los productos del almacen y preparar el paquete para su entrega
         .realiza el envío o entrega de los productos
-        .ubicar en el sistema (perfil del usuario / mis ventas / tabla de recibidas), dicho número de orden
+        .ubicar en el sistema (perfil del usuario / mis ordenes de compra / tablero de En progreso), dicho número de orden
         .aplicar en el sistema despachar y descargar stock
-        .sistema: actualiza el inventario y finaliza la orden de compra trasladandola al tablero de "Resueltas"
+        .sistema: actualiza el inventario y finaliza la orden de compra trasladándola al tablero de "Resueltas"
     . Sistema: corre una tarea programada para eliminar todos combos no validados por el usuario que pasaron en esa condicion por varios dias (la cantidad de dias no se define aún)
 🟠 analisis de la factura digital ocean:
     DigitalOcean:
@@ -133,9 +119,16 @@ CLIENTE:
 SEGURIDAD:
     🔵 Sin pendientes
 PLATAFORMA:
-    🟢 tamaño de la imagen: autoregular a un tamaño y/o peso específico
-    🟢 verificar si se borra la imagen al borarr el registro del usuario
+    🟢 programar colas para el envio de correos
+    🟢 regular titulo de la ventana a: nombre de la app "Gestor de Tareas"
+    🟢 regular el color nivel de advertencia en toda la app
+    🟢 contruir tratamiento de errores y registro de incidencias
+    🟢 implementar un brand logo svg de la manera correcta
 SERVICIOS:
+    🟢 Para cada producto elegido la IA podría ayudar a seleccionar el item mas adecuado de entre los disponibles en el catalogo de solicitudes
+            .esto cambia cuando se fusione la tienda al gestor de tareas:
+                .la solicitud se va elegir dependiendo de un promedio estadistico de los nombres de los combos 
+                y detalles se va usar para solicitudes de tratamiento preferente para la orden de compra
     🟢 construir funcionalidades del catalogo de productos
     🟢 agregar un campo para el codigo físico del producto y mantenerlo visible en el catalogo de productos
     🟢 crear funcionalidad de combos personalizables

@@ -10,7 +10,7 @@
         content="Gestor de tareas te apoya en la administración de las tareas diarias de tu organización manteniendo una fluidez excepcional y eleva la calidad de la atención al cliente.">
     <meta name="keywords" content="gestión, tareas, calidad, control, fluidez, atención al cliente">
     <meta name="author" content=".">
-    <title>Gestor de Ventas {{ config('app.version') }}</title>
+    <title>Gestor de Tareas {{ config('app.version') }}</title>
     <link rel="apple-touch-icon" href="{{ asset('app-assets/images/icons/favicon-32x32.png') }}">
     <link rel="shortcut icon" type="image/x-icon" href="{{ asset('app-assets/images/icons/favicon-32x32.png') }}">
     <link href="https://fonts.googleapis.com/css?family=Rubik:300,400,500,600%7CIBM+Plex+Sans:300,400,500,600,700"
@@ -58,7 +58,7 @@
                                         </div>
                                         <div class="card-header">
                                             <div class="card-title m-0 p-0">
-                                                <h6 class="text-center">GESTOR DE VENTAS</h6>
+                                                <h6 class="text-center">GESTOR DE TAREAS</h6>
                                             </div>
                                         </div>
                                         <div class="card-content m-0">

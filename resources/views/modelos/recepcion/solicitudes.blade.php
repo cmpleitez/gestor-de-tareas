@@ -315,27 +315,27 @@
             let usersHtml = generarHtmlUsuarios(tarjeta.users, tarjeta.estado_id,
                 tipo); // Generar HTML de usuarios usando la función auxiliar estándar
             return `
-                <div class="solicitud-card ${animar ? 'animar-llegada' : ''} border-${borderColor}" 
-                data-recepcion-id="${tarjeta.recepcion_id}"
-                data-atencion-id="${tarjeta.atencion_id}"
-                data-recepcion-estado-id="${tarjeta.estado_id}"
-                data-fecha="${tarjeta.created_at}">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div class="solicitud-titulo flex-grow-1">${titulo}</div>
-                    <div class="text-right ml-2">
-                        <div style="font-size: 0.9rem; font-weight: 600;">${tarjeta.atencion_id_ripped}</div>
-                        <div style="font-size: 0.6rem; color: #6c757d;">${tarjeta.fecha_relativa}</div>
-                    </div>
-                </div>
-                <div class="solicitud-estado" style="font-size: 11px; color: ${estadoColor}; margin-top: 5px;">
-                    ${tarjeta.traza}
-                </div>
-                <div class="progress-divider" data-atencion-id="${tarjeta.atencion_id}" data-avance="${tarjeta.porcentaje_progreso}"></div>
-                <div class="users-container" style="display: flex; align-items: center; justify-content: end; margin-top: 8px; padding-top: 6px;">
-                    ${usersHtml}
-                </div>
+        <div class="solicitud-card ${animar ? 'animar-llegada' : ''} border-${borderColor}" 
+        data-recepcion-id="${tarjeta.recepcion_id}"
+        data-atencion-id="${tarjeta.atencion_id}"
+        data-recepcion-estado-id="${tarjeta.estado_id}"
+        data-fecha="${tarjeta.created_at}">
+        <div class="d-flex justify-content-between align-items-start">
+            <div class="solicitud-titulo flex-grow-1">${titulo}</div>
+            <div class="text-right ml-2">
+                <div style="font-size: 0.9rem; font-weight: 600;">${tarjeta.atencion_id_ripped}</div>
+                <div style="font-size: 0.6rem; color: #6c757d;">${tarjeta.fecha_relativa}</div>
             </div>
-        `;
+        </div>
+        <div class="solicitud-estado" style="font-size: 11px; color: ${estadoColor}; margin-top: 5px;">
+            ${tarjeta.traza}
+        </div>
+        <div class="progress-divider" data-atencion-id="${tarjeta.atencion_id}" data-avance="${tarjeta.porcentaje_progreso}"></div>
+        <div class="users-container" style="display: flex; align-items: center; justify-content: end; margin-top: 8px; padding-top: 6px;">
+            ${usersHtml}
+        </div>
+    </div>
+`;
         }
 
         function obtenerAtencionIdsExistentes() {
@@ -576,19 +576,19 @@
                     let esCompletada = tarea.estado_id == 3;
                     let taskId = 'task_' + tarea.actividad_id;
                     let htmlGenerado = `
-                <div class="selectable-item ${esCompletada ? 'selected' : ''}" ${esCompletada ? 'style="pointer-events: none;"' : 'onclick="selectTask(\'' + taskId + '\')"'}">
-                    <div class="checkbox-indicator" id="checkbox_${tarea.actividad_id}" ${esCompletada ? 'style="background: none; border: none;"' : ''}>
-                        ${esCompletada ? '<i class="bx bx-check" style="color: #28a745; font-size: 2rem;"></i>' : ''}
-                    </div>
-                    <div class="item-body">
-                        <div class="item-info">
-                            <div class="item-name">${tarea.tarea}</div>
-                            <div class="item-desc">T-${tarea.actividad_id_ripped}</div>
-                        </div>
-                    </div>
-                    ${!esCompletada ? `<input type="checkbox" id="${taskId}" name="tarea_completada" value="${tarea.actividad_id}" style="display: none;">` : ''}
+        <div class="selectable-item ${esCompletada ? 'selected' : ''}" ${esCompletada ? 'style="pointer-events: none;"' : 'onclick="selectTask(\'' + taskId + '\')"'}">
+            <div class="checkbox-indicator" id="checkbox_${tarea.actividad_id}" ${esCompletada ? 'style="background: none; border: none;"' : ''}>
+                ${esCompletada ? '<i class="bx bx-check" style="color: #28a745; font-size: 2rem;"></i>' : ''}
+            </div>
+            <div class="item-body">
+                <div class="item-info">
+                    <div class="item-name">${tarea.tarea}</div>
+                    <div class="item-desc">T-${tarea.actividad_id_ripped}</div>
                 </div>
-                `;
+            </div>
+            ${!esCompletada ? `<input type="checkbox" id="${taskId}" name="tarea_completada" value="${tarea.actividad_id}" style="display: none;">` : ''}
+        </div>
+        `;
                     tareasHtml += htmlGenerado;
                 });
                 tareasHtml += '</div>';
@@ -819,32 +819,32 @@
                 }
                 if (cliente) { // Mostrar cliente primero
                     usersHtml += `
-                        <div style="margin: 0;" data-toggle="popover" 
-                            data-title="${cliente.name || 'Cliente'}" 
-                            data-content="<span class='badge badge-pill ${badgeColor}'>Cliente</span>"
-                            data-trigger="hover"
-                            data-placement="top">
-                            ${generarAvatar(cliente)}
-                        </div>
-                    `;
+                <div style="margin: 0;" data-toggle="popover" 
+                    data-title="${cliente.name || 'Cliente'}" 
+                    data-content="<span class='badge badge-pill ${badgeColor}'>Cliente</span>"
+                    data-trigger="hover"
+                    data-placement="top">
+                    ${generarAvatar(cliente)}
+                </div>
+            `;
                     if (participantes.length > 0) { // Agregar flecha si hay participantes
                         usersHtml += `
-                            <div style="margin: 0 8px; display: flex; align-items: center; justify-content: center; width: 20px; height: 32px;">
-                                <i class="fas fa-arrow-right" style="color: ${estadoColor}; font-size: 14px;"></i>
-                            </div>
-                        `;
+                    <div style="margin: 0 8px; display: flex; align-items: center; justify-content: center; width: 20px; height: 32px;">
+                        <i class="fas fa-arrow-right" style="color: ${estadoColor}; font-size: 14px;"></i>
+                    </div>
+                `;
                     }
                 }
                 participantes.forEach(function(user) { // Mostrar participantes
                     usersHtml += `
-                        <div style="margin: 0;" data-toggle="popover" 
-                            data-title="${user.name || 'Sin asignar'}" 
-                            data-content="<span class='badge badge-pill ${badgeColor}'>${user.recepcion_role_name || 'Sin rol'}</span>"
-                            data-trigger="hover"
-                            data-placement="top">
-                            ${generarAvatar(user)}
-                        </div>
-                    `;
+                <div style="margin: 0;" data-toggle="popover" 
+                    data-title="${user.name || 'Sin asignar'}" 
+                    data-content="<span class='badge badge-pill ${badgeColor}'>${user.recepcion_role_name || 'Sin rol'}</span>"
+                    data-trigger="hover"
+                    data-placement="top">
+                    ${generarAvatar(user)}
+                </div>
+            `;
                 });
             }
             return usersHtml;
