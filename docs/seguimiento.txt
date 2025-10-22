@@ -119,7 +119,6 @@ CLIENTE:
 SEGURIDAD:
     🔵 Sin pendientes
 PLATAFORMA:
-    🟢 regular el nombre del sistema a: gestor de tareas
     🟢 programar colas para el envio de correos
     🟢 regular titulo de la ventana a: nombre de la app "Gestor de Tareas"
     🟢 regular el color nivel de advertencia en toda la app
