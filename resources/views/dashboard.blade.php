@@ -6,9 +6,9 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
-    <meta name="description" content="Gestor de Ventas">
+    <meta name="description" content="Gestor de Tareas">
     <meta name="keywords" content="">
-    <meta name="author" content="">
+    <meta name="author" content="Carlos Pleitez - cpleitez.2@gmail.com">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     {{-- Titulo de la aplicación --}}
@@ -212,7 +212,7 @@
                     <a class="navbar-brand align-items-baseline" href="{{ route('dashboard') }}">
                         <div class="brand-logo">
                             <img src="{{ asset('app-assets/images/icons/favicon-32x32.png') }}" alt="logo"
-                                style="width: 2.5rem; height: 2rem; object-fit: fill;">
+                                style="width: 2.2rem; height: 2.2rem; object-fit: fill;">
                         </div>
                         <h2 class="brand-text mb-0"></h2>
                     </a>

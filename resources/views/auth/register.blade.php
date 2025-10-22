@@ -7,10 +7,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
     <meta name="description" content="Gestor de tareas">
-    <meta name="keywords" content="gestor, gestión, tareas, actividades, proyectos">
-    <meta name="author" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="Carlos Pleitez - cpleitez.2024@gmail.com">
 
-    <title>Registro de Usuarios - Gestor de tareas {{ config('app.version') }}</title>
+    <title>{{ auth()->user()->mainRole->name }} - ALFA.{{ config('app.version') }}</title>
 
     <link rel="apple-touch-icon" href="{{ asset('app-assets/images/icons/favicon-32x32.png') }}">
 
