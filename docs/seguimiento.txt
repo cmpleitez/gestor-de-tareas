@@ -120,7 +120,6 @@ SEGURIDAD:
     🔵 Sin pendientes
 PLATAFORMA:
     🟢 programar colas para el envio de correos
-    🟢 regular titulo de la ventana a: nombre de la app "Gestor de Tareas"
     🟢 regular el color nivel de advertencia en toda la app
     🟢 contruir tratamiento de errores y registro de incidencias
     🟢 implementar un brand logo svg de la manera correcta
