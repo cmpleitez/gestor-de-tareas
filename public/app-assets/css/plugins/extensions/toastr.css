@@ -1,7 +1,7 @@
 /* toast css */
 /* ----------*/
 /* toast container opacity */
-#toast-container > div {
+#toast-container>div {
   opacity: 0.9;
   -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=90);
   filter: alpha(opacity=90);
@@ -9,27 +9,27 @@
 }
 
 /* toast container hover shadow */
-.toast-container > div {
+.toast-container>div {
   box-shadow: none !important;
 }
 
 /* toast background colors starts */
 .toast {
-  background-color: #5A8DEE;
+  background-color: var(--color-primary);
 }
 
 .toast-success {
-  background-color: #39DA8A;
+  background-color: var(--color-success);
 }
 
 .toast-error {
-  background-color: #FF5B5C;
+  background-color: var(--color-danger);
 }
 
 .toast-info {
-  background-color: #00CFDD;
+  background-color: var(--color-info);
 }
 
 .toast-warning {
-  background-color: #FDAC41;
+  background-color: var(--color-warning);
 }

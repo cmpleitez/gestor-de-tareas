@@ -119,8 +119,9 @@ CLIENTE:
 SEGURIDAD:
     🔵 Sin pendientes
 PLATAFORMA:
-    🟢 programar colas para el envio de correos
     🟢 regular el color nivel de advertencia en toda la app
+            se estandarizaron los colores de texto, de fondo y de borde 
+                pendiente revisar toda la aplicación para que lo utilice en general
     🟢 contruir tratamiento de errores y registro de incidencias
     🟢 implementar un brand logo svg de la manera correcta
 SERVICIOS:

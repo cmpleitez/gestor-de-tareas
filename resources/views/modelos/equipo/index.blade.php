@@ -77,7 +77,7 @@
                                                 data-toggle="tooltip" data-popup="tooltip-custom" data-html="true"
                                                 data-placement="bottom"
                                                 title="<i class='bx bxs-edit-alt'></i> Editar datos de {{ $equipo->equipo }}"
-                                                class="button_edit align-center">
+                                                class="button_edit align-center border border-warning-dark text-warning-dark bg-warning-light">
                                                 <i class="bx bxs-edit-alt"></i>
                                             </a>
                                             @endcan
@@ -87,7 +87,7 @@
                                                 data-toggle="tooltip" data-popup="tooltip-custom" data-html="true"
                                                 data-placement="bottom"
                                                 title="<i class='bx bxs-eraser'></i> Eliminar {{ $equipo->equipo }}"
-                                                class="button_delete align-center">
+                                                class="button_delete align-center border border-danger-dark text-danger-dark bg-danger-light">
                                                 <i class="bx bxs-eraser"></i>
                                             </a>
                                             @endcan

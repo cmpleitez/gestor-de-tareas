@@ -54,9 +54,8 @@
                                             <td>{{ $user->equipos->pluck('equipo')->first() }}</td>
                                             <td>{{ $user->dui }}</td>
                                             <td>{{ $user->name }}</td>
-                                            <td>
-                                                <span class="badge badge-pill badge-light-warning"
-                                                    style="color: rgb(170, 95, 34) !important;">
+                                            <td class="text-center">
+                                                <span class="badge badge-pill badge-warning">
                                                     {{ $user->main_role ?? $user->roles->pluck('name')->first() }}
                                                 </span>
                                             </td>
@@ -93,7 +92,7 @@
                                                                 role="button" data-toggle="tooltip" data-popup="tooltip-custom"
                                                                 data-html="true" data-placement="bottom"
                                                                 title="<i class='bx bx-slider-alt'></i> Actualizar habilidades de {{ $user->name }}"
-                                                                class="button_show">
+                                                                class="button_edit border border-secondary-dark text-secondary-dark bg-secondary-light">
                                                                 <i class="bx bx-slider-alt"></i>
                                                             </a>
                                                             {{-- Asignar a equipos --}}
@@ -101,7 +100,7 @@
                                                                 role="button" data-toggle="tooltip" data-popup="tooltip-custom"
                                                                 data-html="true" data-placement="bottom"
                                                                 title="<i class='bx bxs-group'></i> Equipos de {{ $user->name }}"
-                                                                class="button_show">
+                                                                class="button_show border border-secondary-dark text-secondary-dark bg-secondary-light">
                                                                 <i class="bx bxs-group"></i>
                                                             </a>
                                                             {{-- Asignar roles --}}
@@ -109,7 +108,7 @@
                                                                 data-toggle="tooltip" data-popup="tooltip-custom"
                                                                 data-html="true" data-placement="bottom"
                                                                 title="<i class='bx bxs-key'></i> Roles de {{ $user->name }}"
-                                                                class="button_keys">
+                                                                class="button_keys border border-secondary-dark text-secondary-dark bg-secondary-light">
                                                                 <i class="bx bxs-key"></i>
                                                             </a>
                                                         @endcan
@@ -119,7 +118,7 @@
                                                                 data-toggle="tooltip" data-popup="tooltip-custom"
                                                                 data-html="true" data-placement="bottom"
                                                                 title="<i class='bx bxs-edit-alt'></i> Editar datos de {{ $user->name }}"
-                                                                class="button_edit align-center">
+                                                                class="button_edit align-center border border-warning-dark text-warning-dark bg-warning-light">
                                                                 <i class="bx bxs-edit-alt"></i>
                                                             </a>
                                                         @endcan
@@ -130,11 +129,11 @@
                                                                     data-toggle="tooltip" data-popup="tooltip-custom"
                                                                     data-html="true" data-placement="bottom"
                                                                     title="<i class='bx bxs-eraser'></i> Eliminar {{ $user->name }}"
-                                                                    class="button_delete align-center">
+                                                                    class="button_delete align-center border border-danger-dark text-danger-dark bg-danger-light">
                                                                     <i class="bx bxs-eraser"></i>
                                                                 </a>
                                                             @else
-                                                                <span class="button_delete align-center"
+                                                                <span class="button_delete align-center border border-danger-dark text-danger-dark bg-danger-light"
                                                                     style="opacity: 0.5; cursor: not-allowed;"
                                                                     data-toggle="tooltip" data-popup="tooltip-custom"
                                                                     data-html="true" data-placement="bottom"

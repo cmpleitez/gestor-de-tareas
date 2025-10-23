@@ -102,14 +102,14 @@
                                                             role="button" data-toggle="tooltip" data-popup="tooltip-custom"
                                                             data-html="true" data-placement="bottom"
                                                             title="<i class='bx bxs-cog'></i> Asignar tareas a {{ $solicitud->solicitud }}"
-                                                            class="button_edit align-center">
+                                                            class="button_edit align-center border border-secondary-dark text-secondary-dark bg-secondary-light">
                                                             <i class="bx bxs-cog"></i>
                                                         </a>
                                                         <a href="{{ route('solicitud.edit', $solicitud->id) }}" role="button"
                                                             data-toggle="tooltip" data-popup="tooltip-custom" data-html="true"
                                                             data-placement="bottom"
                                                             title="<i class='bx bxs-edit-alt'></i> Editar datos de {{ $solicitud->solicitud }}"
-                                                            class="button_edit align-center">
+                                                            class="button_edit align-center border border-warning-dark text-warning-dark bg-warning-light">
                                                             <i class="bx bxs-edit-alt"></i>
                                                         </a>
                                                     @endcan
@@ -119,7 +119,7 @@
                                                             role="button" data-toggle="tooltip" data-popup="tooltip-custom"
                                                             data-html="true" data-placement="bottom"
                                                             title="<i class='bx bxs-eraser'></i> Eliminar {{ $solicitud->solicitud }}"
-                                                            class="button_delete align-center">
+                                                            class="button_delete align-center border border-danger-dark text-danger-dark bg-danger-light">
                                                             <i class="bx bxs-eraser"></i>
                                                         </a>
                                                     @endcan

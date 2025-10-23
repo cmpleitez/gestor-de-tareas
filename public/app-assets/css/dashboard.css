@@ -11,53 +11,6 @@
     font-size: 0.6rem;
 }
 
-.badge-primary {
-    background-color: #007bff !important;
-    color: #ffffff !important;
-}
-
-.badge-secondary {
-    background-color: #6c757d !important;
-    color: #ffffff !important;
-}
-
-.badge-success {
-    background-color: #28a745 !important;
-    color: #ffffff !important;
-}
-
-.badge-danger {
-    background-color: #dc3545 !important;
-    color: #ffffff !important;
-}
-
-.badge-warning {
-    background-color: #ffc107 !important;
-    color: #212529 !important;
-    font-weight: 500 !important;
-}
-
-/* Clases para bordes de tarjetas según estado */
-.border-badge-secondary {
-    border-left-color: #6c757d !important;
-}
-
-.border-badge-primary {
-    border-left-color: #3498db !important;
-}
-
-.border-badge-success {
-    border-left-color: #28a745 !important;
-}
-
-.border-badge-danger {
-    border-left-color: #dc3545 !important;
-}
-
-.border-badge-warning {
-    border-left-color: #ffc107 !important;
-}
-
 html body.navbar-sticky .app-content .content-wrapper {
     padding: 3.8rem 2.2rem 0;
     margin-top: 3rem;
@@ -119,8 +72,6 @@ p {
 }
 
 .button_keys {
-    color: #28a745 !important;
-    border: 1px solid #28a745 !important;
     font-size: 1.1rem !important;
     border-radius: 0.2rem !important;
     padding: 0.3rem 0.3rem 0 0.2rem;
@@ -128,8 +79,6 @@ p {
 }
 
 .button_show {
-    color: #216cf7 !important;
-    border: 1px solid #216cf7 !important;
     font-size: 1.1rem !important;
     border-radius: 0.2rem !important;
     padding: 0.3rem 0.3rem 0 0.3rem;
@@ -137,8 +86,6 @@ p {
 }
 
 .button_edit {
-    color: rgb(255, 113, 57) !important;
-    border: 1px solid rgb(255, 113, 57) !important;
     font-size: 1.1rem !important;
     border-radius: 0.2rem !important;
     padding: 0.3rem 0.3rem 0 0.3rem;
@@ -146,8 +93,6 @@ p {
 }
 
 .button_delete {
-    color: rgb(250, 99, 120) !important;
-    border: 1px solid rgb(255, 58, 84) !important;
     font-size: 1.1rem !important;
     border-radius: 0.2rem !important;
     padding: 0.3rem 0.3rem 0 0.3rem;
@@ -209,31 +154,6 @@ div.dataTables_wrapper div.dataTables_length {
 .table.dataTable thead .sorting_desc_disabled:after {
     font-size: 1.3rem;
     top: -14px;
-}
-
-.toast-info {
-    background-color: rgb(29, 152, 235) !important;
-    color: #fff !important;
-    /* Texto blanco para mejor contraste */
-}
-
-.toast-success {
-    background-color: rgb(14, 155, 73) !important;
-    color: #fff !important;
-}
-
-.toast-error {
-    background-color: rgb(233, 87, 71) !important;
-    color: #fff !important;
-}
-
-.toast-warning {
-    background-color: rgb(247, 132, 66) !important;
-    color: #fff !important;
-}
-
-.toast-progress {
-    background-color: rgba(255, 255, 255, .5) !important;
 }
 
 .selectable-item {
@@ -469,7 +389,6 @@ div.dataTables_wrapper div.dataTables_length {
 .tarea-icon {
     width: 40px;
     height: 40px;
-    background: linear-gradient(135deg, #7367f0, #9c8cfc);
     border-radius: 50%;
     display: flex;
     align-items: center;

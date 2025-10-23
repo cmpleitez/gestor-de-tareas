@@ -32,7 +32,7 @@
                                 @foreach ($tareas as $tarea)
                                     <div class="tarea-card selectable-item" onclick="toggleCheckbox('{{ $loop->index }}')">
                                         <div class="tarea-header">
-                                            <div class="tarea-icon">
+                                            <div class="tarea-icon bg-secondary-dark">
                                                 <i class="bx bx-task"></i>
                                             </div>
                                             <div class="tarea-checkbox">
@@ -45,7 +45,7 @@
                                                 @endif
                                             </div>
                                         </div>
-                                        <div class="tarea-content">
+                                        <div class="tarea-content d-flex justify-content-center align-items-center">
                                             {{ $tarea->tarea }}
                                         </div>
                                     </div>
