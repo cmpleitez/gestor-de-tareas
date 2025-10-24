@@ -17,7 +17,7 @@
                     </div>
                     <div class="col-1 d-flex justify-content-end" style="padding: 0;">
                         <a href="{!! route('tarea.create') !!}">
-                            <div class="badge-circle badge-circle-md badge-circle-primary">
+                            <div class="badge-circle badge-circle-md btn-warning">
                                 <i class="bx bx-plus-medical font-small-3"></i>
                             </div>
                         </a>

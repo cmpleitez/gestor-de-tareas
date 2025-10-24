@@ -15,7 +15,7 @@
                             </div>
                             <div class="col-md-2 d-flex justify-content-end" style="padding: 0.1rem;">
                                 <a href="{!! route('user') !!}">
-                                    <div class="badge badge-pill badge-primary">
+                                    <div class="badge badge-pill btn-secondary-dark">
                                         <i class="bx bx-arrow-back font-medium-3"></i>
                                     </div>
                                 </a>
@@ -50,7 +50,7 @@
                         </div>
                     </div>
                     <div class="card-footer d-flex justify-content-end">
-                        <button type="submit" class="btn btn-primary">Asignar</button>
+                        <button type="submit" class="btn btn-secondary-dark">Asignar</button>
                     </div>
                 </form>
             </div>

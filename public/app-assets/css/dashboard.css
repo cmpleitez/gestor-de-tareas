@@ -361,6 +361,7 @@ div.dataTables_wrapper div.dataTables_length {
     flex-wrap: wrap;
     align-items: flex-start;
     gap: 20px;
+    justify-content: center;
 }
 
 /* ===== CLASES ESPECÍFICAS PARA TAREAS ===== */

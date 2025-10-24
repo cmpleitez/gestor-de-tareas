@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="{{ asset('app-assets/css/templatemo-zay.css') }}">
     <link rel="stylesheet" href="{{ asset('app-assets/css/custom-zay.css') }}">
     <link rel="stylesheet" href="{{ asset('app-assets/css/fontawesome-zay.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('app-assets/css/colors.css') }}">
 
     @stack('css')
 </head>

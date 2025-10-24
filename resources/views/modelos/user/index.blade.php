@@ -18,7 +18,7 @@
                         @if (auth()->user()->mainRole->name == 'admin' || auth()->user()->mainRole->name == 'superadmin')
                             <div class="col-1 d-flex justify-content-end" style="padding: 0;">
                                 <a href="{!! route('register') !!}">
-                                    <div class="badge-circle badge-circle-md badge-circle-primary">
+                                    <div class="badge-circle badge-circle-md bg-primary">
                                         <i class="bx bx-plus-medical font-small-3"></i>
                                     </div>
                                 </a>
@@ -55,7 +55,7 @@
                                             <td>{{ $user->dui }}</td>
                                             <td>{{ $user->name }}</td>
                                             <td class="text-center">
-                                                <span class="badge badge-pill badge-warning">
+                                                <span class="badge badge-pill bg-warning">
                                                     {{ $user->main_role ?? $user->roles->pluck('name')->first() }}
                                                 </span>
                                             </td>

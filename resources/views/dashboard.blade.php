@@ -286,7 +286,7 @@
                     </li>
                 @endrole
 
-                @role('cliente')
+                @role('cliente|superadmin')
                     <li class=" nav-item"><a href="#"><i class="bx bx-menu"></i><span class="menu-title"
                                 data-i18n="Menu Levels">Servicios</span></a>
                         <ul class="menu-content" style="display: block;">

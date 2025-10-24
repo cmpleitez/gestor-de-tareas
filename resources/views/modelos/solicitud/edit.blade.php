@@ -16,7 +16,7 @@
                         </div>
                         <div class="col-md-2 d-flex justify-content-end" style="padding: 0.1rem;">
                             <a href="{!! route('solicitud') !!}">
-                                <div class="badge badge-pill badge-primary">
+                                <div class="badge badge-pill btn-warning">
                                     <i class="bx bx-arrow-back font-medium-3"></i>
                                 </div>
                             </a>
@@ -55,7 +55,7 @@
                 </div>
                 {{-- GUARDAR --}}
                 <div class="card-footer d-flex justify-content-end">
-                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <button type="submit" class="btn btn-warning">Guardar</button>
                 </div>
             </form>
         </div>

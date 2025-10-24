@@ -29,7 +29,7 @@
 :root {
   /* Colores principales del sistema - MODIFICAR AQUÍ */
   --color-primary: #3b7fff;
-  --color-secondary: #5f80a7;
+  --color-secondary: #4d72a0;
   --color-success: #2ac575;
   --color-info: #00c6d3;
   --color-warning: #f78b64;
@@ -39,21 +39,21 @@
   --color-primary-light: rgba(90, 141, 238, 0.01);
   --color-secondary-light: rgba(71, 95, 123, 0.01);
   --color-success-light: rgba(42, 197, 117, 0.01);
-  --color-info-light: rgba(0, 207, 221, 0.01);
-  --color-warning-light: rgba(253, 172, 65, 0.01);
-  --color-danger-light: rgba(167, 0, 0, 0.01);
+  --color-info-light: rgba(0, 198, 211, 0.01);
+  --color-warning-light: rgba(247, 139, 100, 0.01);
+  --color-danger-light: rgba(243, 98, 98, 0.01);
 
   /* Variaciones de colores - dark */
   --color-primary-dark: #2453ad;
   --color-secondary-dark: #2c5381;
-  --color-success-dark: #1d7949;
+  --color-success-dark: #0d7941;
   --color-info-dark: #125a5f;
   --color-warning-dark: #d55122;
   --color-danger-dark: #d73e3e;
 
   /* Colores específicos para bordes dark */
   --border-primary-dark: #2c5381;
-  --border-secondary-dark: #2453ad;
+  --border-secondary-dark: #111e36;
   --border-success-dark: #1d7949;
   --border-info-dark: #125a5f;
   --border-warning-dark: #d55122;
@@ -66,6 +66,30 @@
   --text-info-dark: #125a5f;
   --text-warning-dark: #d55122;
   --text-danger-dark: #d73e3e;
+
+  /* Colores específicos para texto light */
+  --text-primary-light: #c0dbfa;
+  --text-secondary-light: #8ab1f8;
+  --text-success-light: #9cf7c8;
+  --text-info-light: #aff0f5;
+  --text-warning-light: #fac5b2;
+  --text-danger-light: #d69999;
+
+  /* Colores específicos para botones btn */
+  --btn-primary: #3b7fff;
+  --btn-secondary: #2e4f8b;
+  --btn-success: #2ac575;
+  --btn-info: #00c6d3;
+  --btn-warning: #f78b64;
+  --btn-danger: #f36262;
+
+  /* Botones dark */
+  --btn-primary-dark: #2453ad;
+  --btn-secondary-dark: #2c5381;
+  --btn-success-dark: #1d7949;
+  --btn-info-dark: #125a5f;
+  --btn-warning-dark: #d55122;
+  --btn-danger-dark: #d73e3e;
 }
 
 /* Clases personalizadas para variaciones dark */
@@ -2428,7 +2452,7 @@ input:focus~.bg-primary {
 /* Basic buttons */
 /* ------------- */
 .btn-secondary {
-  border-color: var(--color-secondary-dark) !important;
+  border-color: var(--border-secondary-dark) !important;
   background-color: var(--color-secondary) !important;
   color: #fff;
 }
@@ -6343,4 +6367,91 @@ input:focus~.bg-danger {
 .overlay-danger.overlay-light {
   background: #FFDEDE;
   background: rgba(255, 222, 222, 0.6);
+}
+
+/* Clases personalizadas para variaciones text-light */
+.text-primary-light {
+  color: var(--text-primary-light) !important;
+}
+
+.text-secondary-light {
+  color: var(--text-secondary-light) !important;
+}
+
+.text-success-light {
+  color: var(--text-success-light) !important;
+}
+
+.text-info-light {
+  color: var(--text-info-light) !important;
+}
+
+.text-warning-light {
+  color: var(--text-warning-light) !important;
+}
+
+.text-danger-light {
+  color: var(--text-danger-light) !important;
+}
+
+/* Clases personalizadas para botones */
+.btn-primary {
+  background-color: var(--btn-primary) !important;
+  color: white !important;
+}
+
+.btn-secondary {
+  background-color: var(--btn-secondary) !important;
+  color: white !important;
+}
+
+.btn-success {
+  background-color: var(--btn-success) !important;
+  color: white !important;
+}
+
+.btn-info {
+  background-color: var(--btn-info) !important;
+  color: white !important;
+}
+
+.btn-warning {
+  background-color: var(--btn-warning) !important;
+  color: white !important;
+}
+
+.btn-danger {
+  background-color: var(--btn-danger) !important;
+  color: white !important;
+}
+
+/* Clases personalizadas para botones dark */
+.btn-primary-dark {
+  background-color: var(--btn-primary-dark) !important;
+  color: white !important;
+}
+
+.btn-secondary-dark {
+  background-color: var(--btn-secondary-dark) !important;
+  color: white !important;
+}
+
+.btn-success-dark {
+  background-color: var(--btn-success-dark) !important;
+  color: white !important;
+}
+
+.btn-info-dark {
+  background-color: var(--btn-info-dark) !important;
+  color: white !important;
+}
+
+.btn-warning-dark {
+  background-color: var(--btn-warning-dark) !important;
+  color: white !important;
+}
+
+.btn-danger-dark {
+  background-color: var(--btn-danger-dark) !important;
+  color: white !important;
 }
