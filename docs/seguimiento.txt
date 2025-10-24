@@ -126,6 +126,7 @@ PLATAFORMA:
                     solo queda pendiente el catalogo de productos
     🟢 contruir tratamiento de errores y registro de incidencias
     🟢 implementar accesos directos a favoritos de la aplicacion
+    
 SERVICIOS:
     🟢 Para cada producto elegido la IA podría ayudar a seleccionar el item mas adecuado de entre los disponibles en el catalogo de solicitudes
             .esto cambia cuando se fusione la tienda al gestor de tareas:
