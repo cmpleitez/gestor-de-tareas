@@ -9,14 +9,9 @@
     <meta name="description" content="Gestor de tareas">
     <meta name="keywords" content="">
     <meta name="author" content="Carlos Pleitez - cpleitez.2024@gmail.com">
-
     <title>{{ auth()->user()->mainRole->name }} - ALFA.{{ config('app.version') }}</title>
-
-    <link rel="apple-touch-icon" href="{{ asset('app-assets/images/icons/favicon-32x32.png') }}">
-
-    <link rel="shortcut icon" type="image/svg+xml" href="{{ asset('app-assets/images/icons/favicon-32x32.png') }}">
-
-
+    <link rel="apple-touch-icon" href="{{ asset('app-assets/images/logo/logo.svg') }}">
+    <link rel="shortcut icon" type="image/svg+xml" href="{{ asset('app-assets/images/logo/logo.svg') }}">
     <link href="https://fonts.googleapis.com/css?family=Rubik:300,400,500,600%7CIBM+Plex+Sans:300,400,500,600,700"
         rel="stylesheet">
 
@@ -228,8 +223,7 @@
     <!-- LOGO -->
     <div class="row justify-content-center mb-3 mt-3">
         <div class="col-auto">
-            <img src="{{ asset('app-assets/images/logo/logo.png') }}" alt="Logo"
-                style="height: 100px; width: auto; object-fit: contain;">
+            <img src="{{ asset('app-assets/images/logo/logo.svg') }}" alt="Logo" class="auth-logo">
         </div>
     </div>
     <!-- FORMULARIO -->
@@ -415,28 +409,28 @@
         $(document).ready(function() {
             $('.select2').select2();
 
-/*
-            window.validateFileSize = function(input, maxSizeMB) { // Función para validar tamaño de archivo
-                const file = input.files[0];
-                if (file) {
-                    const fileSizeMB = file.size / (1024 * 1024);
-                    if (fileSizeMB > maxSizeMB) {
-                        alert('El archivo es demasiado grande. El tamaño máximo permitido es ' + maxSizeMB +
-                            'MB.');
-                        input.value = '';
-                        return false;
-                    }
-                    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png']; // Validar tipo de archivo
-                    if (!allowedTypes.includes(file.type)) {
-                        alert('Solo se permiten archivos JPEG, JPG o PNG.');
-                        input.value = '';
-                        return false;
-                    }
-                }
-                return true;
-            };
-*/
-            
+            /*
+                        window.validateFileSize = function(input, maxSizeMB) { // Función para validar tamaño de archivo
+                            const file = input.files[0];
+                            if (file) {
+                                const fileSizeMB = file.size / (1024 * 1024);
+                                if (fileSizeMB > maxSizeMB) {
+                                    alert('El archivo es demasiado grande. El tamaño máximo permitido es ' + maxSizeMB +
+                                        'MB.');
+                                    input.value = '';
+                                    return false;
+                                }
+                                const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png']; // Validar tipo de archivo
+                                if (!allowedTypes.includes(file.type)) {
+                                    alert('Solo se permiten archivos JPEG, JPG o PNG.');
+                                    input.value = '';
+                                    return false;
+                                }
+                            }
+                            return true;
+                        };
+            */
+
             $('form').on('submit', function() { // Loading spinner en el botón de envío
                 $('#submit-btn').prop('disabled', true);
                 $('#btn-text').hide();

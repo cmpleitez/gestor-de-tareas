@@ -1,3 +1,7 @@
+.fixed-top {
+    top: 6px;
+}
+
 .avatar {
     margin: 0px;
 }
@@ -483,4 +487,16 @@ div.dataTables_wrapper div.dataTables_length {
         height: 140px;
         padding: 1rem;
     }
+}
+
+.navbar-header .nav.navbar-nav .nav-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.navbar-header .nav.navbar-nav .nav-item>* {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
