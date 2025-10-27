@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Anillo base gris muy claro -->
+  <path d="M 100,25 
+           A 75,75 0 1,1 100,175 
+           A 75,75 0 0,1 100,25 
+           M 100,45 
+           A 55,55 0 0,0 100,155 
+           A 55,55 0 1,0 100,45 
+           Z" 
+        fill="#E0E0E0" 
+        stroke="none"/>
+  
+  <!-- Arco azul oscuro (lado izquierdo) -->
+  <path d="M 25,100 
+           A 75,75 0 0,1 100,25 
+           L 100,45 
+           A 55,55 0 0,0 45,100 
+           A 55,55 0 0,0 100,155 
+           L 100,175 
+           A 75,75 0 0,1 25,100 
+           Z" 
+        fill="#2453ad" 
+        stroke="none"/>
+  
+  <!-- Círculo central blanco (detrás de la figura naranja) -->
+  <circle cx="100" cy="100" r="8" 
+          fill="#FFFFFF" 
+          stroke="none"/>
+  
+  <!-- Forma naranja "G" (lado derecho) - Sólida sin hueco -->
+  <path d="M 100,25 
+           A 75,75 0 0,0 175,100 
+           A 75,75 0 0,0 100,175 
+           L 100,25 
+           Z" 
+        fill="#FF8C00" 
+        stroke="none"/>
+  
+  <!-- Barra horizontal de la G -->
+  <rect x="100" y="95" width="45" height="10" 
+        fill="#FF8C00" 
+        stroke="none"/>
+</svg>

@@ -136,7 +136,7 @@ Route::middleware([
     });
 
     //CLIENTES
-    Route::group(['middleware' => ['role:cliente']], function () {
+    Route::group(['middleware' => ['role:cliente|superadmin']], function () {
         Route::group(['prefix' => 'recepcion'], function () {
             Route::get('create', [RecepcionController::class, 'create'])->name('recepcion.create');
             Route::post('store', [RecepcionController::class, 'store'])->name('recepcion.store');

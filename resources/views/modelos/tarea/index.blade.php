@@ -17,7 +17,7 @@
                     </div>
                     <div class="col-1 d-flex justify-content-end" style="padding: 0;">
                         <a href="{!! route('tarea.create') !!}">
-                            <div class="badge-circle badge-circle-md badge-circle-primary">
+                            <div class="badge-circle badge-circle-md btn-warning">
                                 <i class="bx bx-plus-medical font-small-3"></i>
                             </div>
                         </a>
@@ -76,7 +76,7 @@
                                                 data-toggle="tooltip" data-popup="tooltip-custom" data-html="true"
                                                 data-placement="bottom"
                                                 title="<i class='bx bxs-edit-alt'></i> Editar datos de {{ $tarea->tarea }}"
-                                                class="button_edit align-center">
+                                                class="button_edit align-center border border-warning-dark text-warning-dark bg-warning-light">
                                                 <i class="bx bxs-edit-alt"></i>
                                             </a>
                                             @endcan
@@ -86,7 +86,7 @@
                                                 data-toggle="tooltip" data-popup="tooltip-custom" data-html="true"
                                                 data-placement="bottom"
                                                 title="<i class='bx bxs-eraser'></i> Eliminar {{ $tarea->tarea }}"
-                                                class="button_delete align-center">
+                                                class="button_delete align-center border border-danger-dark text-danger-dark bg-danger-light">
                                                 <i class="bx bxs-eraser"></i>
                                             </a>
                                             @endcan

@@ -13,8 +13,9 @@
 
     {{-- Titulo de la aplicación --}}
     <title>{{ auth()->user()->mainRole->name }} - ALFA.{{ config('app.version') }}</title>
-    <link rel="apple-touch-icon" href="{{ asset('app-assets/images/icons/favicon-32x32.png') }}">
-    <link rel="shortcut icon" type="image/svg+xml" href="{{ asset('app-assets/images/icons/favicon-32x32.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('app-assets/images/logo/logo.svg') }}">
+    <link rel="shortcut icon" type="image/svg+xml" href="{{ asset('app-assets/images/logo/logo.svg') }}">
+    <link rel="manifest" href="{{ asset('site.webmanifest') }}">
     <link href="https://fonts.googleapis.com/css?family=Rubik:300,400,500,600%7CIBM+Plex+Sans:300,400,500,600,700"
         rel="stylesheet">
 
@@ -209,10 +210,18 @@
         <div class="navbar-header">
             <ul class="nav navbar-nav flex-row">
                 <li class="nav-item mr-auto open">
-                    <a class="navbar-brand align-items-baseline" href="{{ route('dashboard') }}">
-                        <div class="brand-logo">
-                            <img src="{{ asset('app-assets/images/icons/favicon-32x32.png') }}" alt="logo"
-                                style="width: 2.2rem; height: 2.2rem; object-fit: fill;">
+                    <a class="navbar-brand d-flex justify-content-center align-items-center"
+                        href="{{ route('dashboard') }}">
+                        <div class="brand-logo d-flex justify-content-center">
+                            <svg viewBox="0 0 200 200" aria-label="Logo">
+                                <path fill="#e0e0e0"
+                                    d="M100 25a75 75 0 1 1 0 150 75 75 0 0 1 0-150m0 20a55 55 0 0 0 0 110 55 55 0 1 0 0-110" />
+                                <path fill="#2453ad"
+                                    d="M25 100a75 75 0 0 1 75-75v20a55 55 0 0 0-55 55 55 55 0 0 0 55 55v20a75 75 0 0 1-75-75" />
+                                <circle cx="100" cy="100" r="8" fill="#fff" />
+                                <path fill="#ff8c00" d="M100 25a75 75 0 0 0 75 75 75 75 0 0 0-75 75z" />
+                                <path fill="#ff8c00" d="M100 95h45v10h-45z" />
+                            </svg>
                         </div>
                         <h2 class="brand-text mb-0"></h2>
                     </a>
@@ -225,7 +234,7 @@
         </div>
 
         <div class="shadow-bottom"></div>
-        <div class="main-menu-content">
+        <div class="main-menu-content mt-3">
             <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation"
                 data-icon-style="">
 
@@ -286,7 +295,7 @@
                     </li>
                 @endrole
 
-                @role('cliente')
+                @role('cliente|superadmin')
                     <li class=" nav-item"><a href="#"><i class="bx bx-menu"></i><span class="menu-title"
                                 data-i18n="Menu Levels">Servicios</span></a>
                         <ul class="menu-content" style="display: block;">
@@ -316,10 +325,8 @@
             <div class="content-header row">
             </div>
             <div class="content-body">
-
                 @section('contenedor')
                 @show
-
             </div>
         </div>
     </div>

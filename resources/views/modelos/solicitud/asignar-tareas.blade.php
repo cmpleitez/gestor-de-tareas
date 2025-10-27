@@ -15,7 +15,7 @@
                             </div>
                             <div class="col-md-2 d-flex justify-content-end" style="padding: 0.1rem;">
                                 <a href="{!! route('solicitud') !!}">
-                                    <div class="badge badge-pill badge-primary">
+                                    <div class="badge badge-pill btn-secondary-dark">
                                         <i class="bx bx-arrow-back font-medium-3"></i>
                                     </div>
                                 </a>
@@ -32,7 +32,7 @@
                                 @foreach ($tareas as $tarea)
                                     <div class="tarea-card selectable-item" onclick="toggleCheckbox('{{ $loop->index }}')">
                                         <div class="tarea-header">
-                                            <div class="tarea-icon">
+                                            <div class="tarea-icon bg-secondary-dark">
                                                 <i class="bx bx-task"></i>
                                             </div>
                                             <div class="tarea-checkbox">
@@ -45,7 +45,7 @@
                                                 @endif
                                             </div>
                                         </div>
-                                        <div class="tarea-content">
+                                        <div class="tarea-content d-flex justify-content-center align-items-center">
                                             {{ $tarea->tarea }}
                                         </div>
                                     </div>
@@ -54,7 +54,7 @@
                         </div>
                     </div>
                     <div class="card-footer d-flex justify-content-end">
-                        <button type="submit" class="btn btn-primary">Asignar</button>
+                        <button type="submit" class="btn btn-secondary-dark">Asignar</button>
                     </div>
                 </form>
             </div>

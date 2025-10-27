@@ -16,7 +16,8 @@
     <link rel="stylesheet" href="{{ asset('app-assets/css/fontawesome-zay.min.css') }}">
 
     <!-- CSS -->
-    <link href="{{ asset('app-assets/css/app.css') }}" rel="stylesheet">
+    <link href="{{ asset('app-assets/css/bootstrap.css') }}" rel="stylesheet">
+    <link href="{{ asset('app-assets/css/colors.css') }}" rel="stylesheet">
 
     <!-- Scripts -->
     <script src="{{ asset('assets/js/js/core/libraries/jquery.min.js') }}"></script>

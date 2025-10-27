@@ -85,7 +85,6 @@ PAUTAS:
     ...rage agains the machine -> videos musicales -> War Within a Breath (sin escuchar aun)
 
 CLIENTE:
-    🔵 Pendiente que el cliente revise el procedimiento
     🔵 Que el cliente brinde la información del dominio
         Pasos básicos para enlazar IP pública con dominio:
         1. Configurar DNS en tu proveedor de dominio
@@ -119,11 +118,14 @@ CLIENTE:
 SEGURIDAD:
     🔵 Sin pendientes
 PLATAFORMA:
-    🟢 programar colas para el envio de correos
-    🟢 regular titulo de la ventana a: nombre de la app "Gestor de Tareas"
     🟢 regular el color nivel de advertencia en toda la app
+            se estandarizaron los colores de texto, de fondo y de borde 
+                recrear las clases de manera que contengan color de fondo, color de texto y color de borde
+                pendiente revisar toda la aplicación para que lo utilice en general
+                    solo queda pendiente el catalogo de productos
     🟢 contruir tratamiento de errores y registro de incidencias
-    🟢 implementar un brand logo svg de la manera correcta
+    🟢 implementar accesos directos a favoritos de la aplicacion
+    
 SERVICIOS:
     🟢 Para cada producto elegido la IA podría ayudar a seleccionar el item mas adecuado de entre los disponibles en el catalogo de solicitudes
             .esto cambia cuando se fusione la tienda al gestor de tareas:
