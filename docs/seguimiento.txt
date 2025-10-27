@@ -85,7 +85,6 @@ PAUTAS:
     ...rage agains the machine -> videos musicales -> War Within a Breath (sin escuchar aun)
 
 CLIENTE:
-    🔵 Pendiente que el cliente revise el procedimiento
     🔵 Que el cliente brinde la información del dominio
         Pasos básicos para enlazar IP pública con dominio:
         1. Configurar DNS en tu proveedor de dominio
