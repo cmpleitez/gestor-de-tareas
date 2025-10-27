@@ -65,31 +65,6 @@
                                     class="nav-link nav-menu-main menu-toggle hidden-xs" href="#"><i
                                         class="ficon bx bx-menu"></i></a></li>
                         </ul>
-                        <ul class="nav navbar-nav bookmark-icons">
-                            <li class="nav-item d-none d-lg-block"><a class="nav-link" href="app-email.html"
-                                    data-toggle="tooltip" data-placement="top" data-title="Email"><i
-                                        class="ficon bx bx-envelope"></i></a></li>
-                            <li class="nav-item d-none d-lg-block"><a class="nav-link" href="app-chat.html"
-                                    data-toggle="tooltip" data-placement="top" data-title="Chat"><i
-                                        class="ficon bx bx-chat"></i></a></li>
-                            <li class="nav-item d-none d-lg-block"><a class="nav-link" href="app-todo.html"
-                                    data-toggle="tooltip" data-placement="top" data-title="Todo"><i
-                                        class="ficon bx bx-check-circle"></i></a></li>
-                            <li class="nav-item d-none d-lg-block"><a class="nav-link" href="app-calendar.html"
-                                    data-toggle="tooltip" data-placement="top" data-title="Calendar"><i
-                                        class="ficon bx bx-calendar-alt"></i></a></li>
-                        </ul>
-                        <ul class="nav navbar-nav">
-                            <li class="nav-item d-none d-lg-block"><a class="nav-link bookmark-star"><i
-                                        class="ficon bx bx-star warning"></i></a>
-                                <div class="bookmark-input search-input">
-                                    <div class="bookmark-input-icon"><i class="bx bx-search primary"></i></div>
-                                    <input class="form-control input" type="text" placeholder="Explore Frest..."
-                                        tabindex="0" data-search="template-list">
-                                    <ul class="search-list"></ul>
-                                </div>
-                            </li>
-                        </ul>
                     </div>
                     <ul class="nav navbar-nav float-right">
                         <li class="nav-item d-none d-lg-block"><a class="nav-link nav-link-expand"><i

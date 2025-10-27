@@ -1,14 +1,6 @@
 PAUTAS:
-🟠 Habrá un receptor, y si el mismo receptor necesita ser operador, entonces debe crear dos cuentas una para cada rol.
-🟠 Si se necesita cambiarle el nombre a los catalogos, se deberá construir la funcionalidad y aplicar la regla de las dependencias
+🟠 El uso de combos debería resolver el problema de las equivocaciones entre los codigos de un producto y otro producto
 🟠 Se detectan dos categorias: tipo de producto y marca
-🟠 Solo hay un movimiento manual disponible: el impulso desde Recibidas hacia En progreso, lo demás es automatico
-🟠 Consumo estimado por la actualizacion automatica del gestor de tareas
-    Cada 15 segundos por día (8 horas):
-    Mínimo: ~4.2 MB/día
-    Máximo: ~9.2 MB/día
-    Promedio: ~6.7 MB/día
-    Mes: 200 MB
 🟠 Duis validos:
     012345678
     023456783
@@ -19,12 +11,34 @@ PAUTAS:
     https://docs.digitalocean.com/support/
     https://www.digitalocean.com/company/contact/sales?referrer=pricing/managed-databases
     https://www.digitalocean.com/community/tools/bandwidth?active=%5B%7B%22slug%22%3A%22s-1vcpu-2gb%22%2C%22type%22%3A%22droplet%22%2C%22hours%22%3A722%2C%22consumption%22%3A1500%2C%22nodes%22%3A1%7D%5D&additional=0
-🟠 El uso de combos debería resolver el problema de las equivocaciones entre los codigos de un producto y otro producto
+🟠 analisis de la factura digital ocean:
+    DigitalOcean:
+        ¿Cómo funciona la transferencia gratuita?
+        ✅ NO es solo para el mes de gratuidad:
+        La transferencia gratuita es PERMANENTE en tu plan
+        Cada mes tienes derecho a 1366 GB de transferencia gratuita
+        No se acaba después del mes de prueba
+        ✅ Es parte de tu plan pagado:
+        Tu factura de $6.05 incluye la transferencia gratuita
+        No pagas extra por usar hasta 1366 GB mensuales
+        Solo pagas si excedes ese límite
+        ¿Qué incluye tu factura de $6.05?
+        Servicios que pagas:
+        Droplet (servidor): ~$15-30/mes
+        Base de datos MySQL: ~$15-30/mes
+        Otros servicios que tengas activos
+        Transferencia de datos:
+        0.29 GB usado: GRATIS (está dentro del límite)
+        Hasta 1366 GB: GRATIS cada mes
+        Solo pagas si excedes 1366 GB
+        Conclusión:
+            La transferencia gratuita es PERMANENTE y real. Cada mes tienes derecho a 1366 GB sin costo adicional. Tu factura de $6.05 es por los servicios, no por la transferencia de datos.
+            Tu módulo de seguridad puede usarse sin límites mensuales de transferencia.    
 🟠 Procedimiento: https://miro.com/app/board/uXjVLl8VYdo=/
-    . Cliente: visualmente agrega el combo al carrito, puede repetir ésta acción indefinidamente, por el momento no tiene un limite definido.
+    . Cliente: agrega al carrito cuantos combos se necesite y especifica si la orden será de reserva o de compra
     . Sistema: registra en base de datos el combo agregado, el registro queda en condicion "inactivo = no validado por el usuario"
-    . Cliente: visualmente entra al carrito y personaliza el combo recien agregado luego presiona el boton "Enviar"
-    . Sistema: crea así una "Orden de Compra" válida. (tipo_documento_id="orden de compra"; "activo = validado" )
+    . Cliente: entra al carrito y personaliza el combo recien agregado luego presiona el boton "Enviar"
+    . Sistema: Se vacía el el carrito y crea así una "Orden de Compra" válida. (tipo_documento_id="orden de compra"; "activo = validado" )
     . Sistema establece la orden de compra el estado de "Recibida"
     . Receptor: Tendrá la vista el kanvan y lo refrescará con cierta frecuencia vigilando si hay ordenes nuevas
     . Receptor: Al detectar una orden nueva la asignará al operador designado
@@ -57,32 +71,23 @@ PAUTAS:
         .aplicar en el sistema despachar y descargar stock
         .sistema: actualiza el inventario y finaliza la orden de compra trasladándola al tablero de "Resueltas"
     . Sistema: corre una tarea programada para eliminar todos combos no validados por el usuario que pasaron en esa condicion por varios dias (la cantidad de dias no se define aún)
-🟠 analisis de la factura digital ocean:
-    DigitalOcean:
-        ¿Cómo funciona la transferencia gratuita?
-        ✅ NO es solo para el mes de gratuidad:
-        La transferencia gratuita es PERMANENTE en tu plan
-        Cada mes tienes derecho a 1366 GB de transferencia gratuita
-        No se acaba después del mes de prueba
-        ✅ Es parte de tu plan pagado:
-        Tu factura de $6.05 incluye la transferencia gratuita
-        No pagas extra por usar hasta 1366 GB mensuales
-        Solo pagas si excedes ese límite
-        ¿Qué incluye tu factura de $6.05?
-        Servicios que pagas:
-        Droplet (servidor): ~$15-30/mes
-        Base de datos MySQL: ~$15-30/mes
-        Otros servicios que tengas activos
-        Transferencia de datos:
-        0.29 GB usado: GRATIS (está dentro del límite)
-        Hasta 1366 GB: GRATIS cada mes
-        Solo pagas si excedes 1366 GB
-        Conclusión:
-            La transferencia gratuita es PERMANENTE y real. Cada mes tienes derecho a 1366 GB sin costo adicional. Tu factura de $6.05 es por los servicios, no por la transferencia de datos.
-            Tu módulo de seguridad puede usarse sin límites mensuales de transferencia.    
 
-🟠 rage agains the machine & limp bizkit & korn & alice in chains
-    ...rage agains the machine -> videos musicales -> War Within a Breath (sin escuchar aun)
+REGLAS DEL NEGOCIO:
+🟠 Inluyen reglas técnicas consensuadas con el cliente propietario:
+    . Se manejarán 4 stocks: En bodega general, Reservados, Reservadors en tránsito, y En bodega de reservados.
+    . El Receptor va a ser el encargado de actualizar los stocks manualmente, esto proyectado a la creación del módulo de compras
+    . El operador por su parte en el paso de revisión de la orden de compra verificará que los productos se encuentren
+    físicamente en sus stock respectivo.
+    . A la orden de compra se le agregará un campo de datos indicador: Orden de reserva u orden de compra
+    . Las ordenes de reserva se quedarán en el paso de "Recibidos", mientras que las ordenes de compra podrán pasar a iniciar el su despacho, 
+    . A las tarjetas se les agregará un distintivo de "orden de reserva" cuando tengan esta condición, 
+    . Igual técnicamente podrán pasar a iniciar despacho en el caso que los productos en tránsito ya hayan llegado 
+    a las bodegas, solo tendra una venatan de confirmación para cuidar la calidad de la introducción de datos.
+    . El cliente valida y cierra su orden en el momento que le da enviar en el carrito
+    . El Receptor valida y cierra en el momento en que le da enviar en el tablero Kanban
+    . El Operador valida y cierra en el momento cuando le da a Descargar Stock
+    . Habrá un receptor, y si el mismo receptor necesita ser operador, entonces debe crear dos cuentas una para cada rol.
+    . Solo hay un movimiento manual disponible: el impulso desde Recibidas hacia En progreso, lo demás es automatico
 
 CLIENTE:
     🔵 Que el cliente brinde la información del dominio
@@ -118,29 +123,37 @@ CLIENTE:
 SEGURIDAD:
     🔵 Sin pendientes
 PLATAFORMA:
+    🟢 construir la funcionalidad para cambiar nombres a los registros de catálogos y aplicar la regla de las dependencias
     🟢 regular el color nivel de advertencia en toda la app
             se estandarizaron los colores de texto, de fondo y de borde 
                 recrear las clases de manera que contengan color de fondo, color de texto y color de borde
                 pendiente revisar toda la aplicación para que lo utilice en general
                     solo queda pendiente el catalogo de productos
-    🟢 contruir tratamiento de errores y registro de incidencias
-    🟢 implementar accesos directos a favoritos de la aplicacion
-    
+
+
 SERVICIOS:
-    🟢 Para cada producto elegido la IA podría ayudar a seleccionar el item mas adecuado de entre los disponibles en el catalogo de solicitudes
-            .esto cambia cuando se fusione la tienda al gestor de tareas:
-                .la solicitud se va elegir dependiendo de un promedio estadistico de los nombres de los combos 
-                y detalles se va usar para solicitudes de tratamiento preferente para la orden de compra
-    🟢 construir funcionalidades del catalogo de productos
+    ...🟢 analizar y crear diagrama de datos del módulo de inventario
+    🟢 analizar y crear diagrama de datos del módulo de ventas
+    🟢 crear migraciones para las modificaciones de las tablas existentes
+    🟢 aprender a crear seeders acumulativos para alimentar nuevos catálogos
+    🟢 construir catalogo de productos: nombre de la orden será un estadístico segun los nombres de los combos
     🟢 agregar un campo para el codigo físico del producto y mantenerlo visible en el catalogo de productos
     🟢 crear funcionalidad de combos personalizables
-    🟢 cambiar el registro de nuevos usuarios hacia dentro del sistema
-    🟢 proceso de anulación de una orden de compra
-    🟢 proceso de solicitud de revision sobre una orden de compra
-    🟢 auditoria de actividades sobre una orden de compra
     🟢 aun no hay priorizaciòn de tarjetas eso es un servicio a construir
     🟢 revisar si se mantendrá el dui o se retira
     🟢 para trasladar todo un equipo de trabajadores de una oficina a otra
         agregar en la transaccional el equipo que trabajó cada registro
         agregar en el equipo.editar un selector de oficina
+    🟢 crear servicio de actualización para los 4 stocks
+    🟢 crear servicio revisión de la orden de compra se replicará al:
+        . carrito
+        . dar clic sobre una tarjeta en el tablero de las "En progreso" en el rol del Receptor
+        . al dar clic sobre el paso de "Crear factura / Revisión de la Orden"
+    🟢 funcionalidad de acceso al carrito al Receptor y al Operador desde la zona de revisión de la orden
+    🟢 mensaje de advertencia "Revise el stock de disopnibles" cuando el Receptor intente impulsar una Orden de reservas
+    🟢 crear seeder random para productos y categoría de productos
+    🟢 verificar indices en nombres unicos de catalogos
 
+🟠 rage agains the machine & limp bizkit & korn & alice in chains
+
+    ...rage agains the machine -> videos musicales -> War Within a Breath (sin escuchar aun)
