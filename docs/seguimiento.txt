@@ -33,15 +33,38 @@ PAUTAS:
         Solo pagas si excedes 1366 GB
         Conclusión:
             La transferencia gratuita es PERMANENTE y real. Cada mes tienes derecho a 1366 GB sin costo adicional. Tu factura de $6.05 es por los servicios, no por la transferencia de datos.
-            Tu módulo de seguridad puede usarse sin límites mensuales de transferencia.    
-🟠 Procedimiento: https://miro.com/app/board/uXjVLl8VYdo=/
-    . Cliente: agrega al carrito cuantos combos se necesite y especifica si la orden será de reserva o de compra
-    . Sistema: registra en base de datos el combo agregado, el registro queda en condicion "inactivo = no validado por el usuario"
-    . Cliente: entra al carrito y personaliza el combo recien agregado luego presiona el boton "Enviar"
-    . Sistema: Se vacía el el carrito y crea así una "Orden de Compra" válida. (tipo_documento_id="orden de compra"; "activo = validado" )
-    . Sistema establece la orden de compra el estado de "Recibida"
-    . Receptor: Tendrá la vista el kanvan y lo refrescará con cierta frecuencia vigilando si hay ordenes nuevas
-    . Receptor: Al detectar una orden nueva la asignará al operador designado
+            Tu módulo de seguridad puede usarse sin límites mensuales de transferencia.
+
+🟠 Cada usuario de la app participante en el procedimiento, tendrá una copia de la solicitud u orden de compra
+🟠 Número de atención va ser válido cuando se complete todo el procedimiento, cada copia de las "recepciones iran siendo validadas por el usuario destino"
+
+🟠 Procedimiento: perfil cpleitez.2024@gmail.com https://miro.com/app/board/uXjVJy6iRzE=/
+    
+    . Cliente: Agrega al carrito cuantos kits necesite 
+    . Cliente: Especifica si se trata de una orden de compra o de una reserva
+    . Sistema: Registra <copia solicitud receptor> con el estado aún no validada (<recepcion.validada_origen = false>) por el cliente (<recepcion.user_id_origen>) ni por el receptor (<recepcion.user_id_destino>) (<recepcion.validada_destino=false>)
+    . Sistema: Registra la <orden de compra/reserva>: los <kits y sus productos>
+    
+    . Cliente: Entra al carrito, modifica la <orden de compra/reserva> 
+    . Cliente: Valida la <copia solicitud receptor> con la orden <Enviar> (<recepcion.validada_origen = true>), con esto se desactiva la <escritura> para el cliente
+    . Sistema: Establece <copia solicitud receptor> en estado de <Recibida> y de manera predeterminada viene activa la <escritura> para el receptor 
+
+    . Receptor: Entra al servicio <Mis ordenes de compra>
+    . Sistema: Brinda la vista <kanvan> con <autorefrescado> en intervalos de 5 minutos
+    . Receptor: Ubica y selecciona la <copia solicitud receptor> dando clic sobre ella para <editar> la <orden de compra/reserva>
+    . Sistema: Muestra en el <sidebar> los datos de la gestión, la <orden de compra/reserva> y los <kits con sus productos>
+    . Receptor: Revisa <stocks digitales> para <orden de compra/reserva>
+    . Receptor: Agrega o cambia <kits con sus productos> para la <orden de compra/reserva>
+    . Receptor: Valida la <orden de compra/reserva> (<recepcion.validada_destino = true>), dando clic en <Enviar>
+    
+
+
+aqui...
+
+
+
+    . Sistema: Crea nueva <copia solicitud operador> en estado de <Recibida>, tracking <Despacho iniciado> y de manera predeterminada viene con <escritura> activa (<recepcion.validada_origen = true> y <recepcion.validada_destino = false>)
+
     . Operador: 
         .consulta las ordenes de compra que ha recibido (recepcion.usuarioDestino), dando clic en la opción perfil / mis ordenes de compra
         .toma la orden por prioridad o la toma por orden de llegada
@@ -74,21 +97,26 @@ PAUTAS:
 
 REGLAS DEL NEGOCIO:
 🟠 Inluyen reglas técnicas consensuadas con el cliente propietario:
-    . Se manejarán 4 stocks: En bodega general, Reservados, Reservadors en tránsito, y En bodega de reservados.
-    . El Receptor va a ser el encargado de actualizar los stocks manualmente, esto proyectado a la creación del módulo de compras
-    . El operador por su parte en el paso de revisión de la orden de compra verificará que los productos se encuentren
-    físicamente en sus stock respectivo.
+    . Se manejarán 4 stocks: 
+        Bodega
+        Estante de Reservados
+        Entrantes en tránsito
+        Comprados en espera de entrega
+    . El Receptor va a ser el encargado de registrar las entradas a los diferebtesdiferentes stocks
+    . El operador por su parte en el paso de revisión verificará que los productos se encuentren
+    físicamente en sus stocks respectivo.
     . A la orden de compra se le agregará un campo de datos indicador: Orden de reserva u orden de compra
     . Las ordenes de reserva se quedarán en el paso de "Recibidos", mientras que las ordenes de compra podrán pasar a iniciar el su despacho, 
+      técnicamente podrán pasar a iniciar despacho en el caso que los productos en tránsito ya hayan llegado, 
+      el usuario solo debe confirmar que el stock ya está listo
     . A las tarjetas se les agregará un distintivo de "orden de reserva" cuando tengan esta condición, 
-    . Igual técnicamente podrán pasar a iniciar despacho en el caso que los productos en tránsito ya hayan llegado 
-    a las bodegas, solo tendra una venatan de confirmación para cuidar la calidad de la introducción de datos.
-    . El cliente valida y cierra su orden en el momento que le da enviar en el carrito
-    . El Receptor valida y cierra en el momento en que le da enviar en el tablero Kanban
-    . El Operador valida y cierra en el momento cuando le da a Descargar Stock
+    . El cliente valida y cierra la orden de compra su orden en el momento que le da enviar en el carrito
+    . El Receptor valida y cierra la orden de compra en el momento en que le da enviar en el tablero Kanban
+    . El Operador valida y cierra la orden de compra en el momento cuando le da a Descargar Stock
+    . Tanto la orden en el módulo de ventas, tanto como el número de atención en el módulo de inventarios se guardaran al mismo tiempo
     . Habrá un receptor, y si el mismo receptor necesita ser operador, entonces debe crear dos cuentas una para cada rol.
-    . Solo hay un movimiento manual disponible: el impulso desde Recibidas hacia En progreso, lo demás es automatico
-
+    . Para todos los usuarios en general, solo hay un movimiento manual disponible: el impulso desde Recibidas hacia En progreso, lo demás es automatico
+    
 CLIENTE:
     🔵 Que el cliente brinde la información del dominio
         Pasos básicos para enlazar IP pública con dominio:
@@ -130,10 +158,14 @@ PLATAFORMA:
                 pendiente revisar toda la aplicación para que lo utilice en general
                     solo queda pendiente el catalogo de productos
 
-
 SERVICIOS:
     ...🟢 analizar y crear diagrama de datos del módulo de inventario
-    🟢 analizar y crear diagrama de datos del módulo de ventas
+    ...🟢 analizar y crear diagrama de datos del módulo de ventas
+        . verificar llave única de "entradas" actualmente en varchar(12)
+        . definir las reglas de cuantas unidades de cada producto segun el kit
+    ...🟢 crear inventario de servicios a construir y la lista debe estar en orden "consecuencial", es decir en secuencia causal o causa y efecto, sería según procedimiento establecido
+
+    🟢 crear indices unicos para todos los nombres en los catálogos
     🟢 crear migraciones para las modificaciones de las tablas existentes
     🟢 aprender a crear seeders acumulativos para alimentar nuevos catálogos
     🟢 construir catalogo de productos: nombre de la orden será un estadístico segun los nombres de los combos
@@ -153,6 +185,9 @@ SERVICIOS:
     🟢 mensaje de advertencia "Revise el stock de disopnibles" cuando el Receptor intente impulsar una Orden de reservas
     🟢 crear seeder random para productos y categoría de productos
     🟢 verificar indices en nombres unicos de catalogos
+    🟢 registro de entradas en stocks, y reversiones de entradas en stocks (a los 4 tipos de stocks)
+    🟢 revisión de historial de entradas y reversiones en stocks
+    
 
 🟠 rage agains the machine & limp bizkit & korn & alice in chains
 
