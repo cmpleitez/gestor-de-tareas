@@ -8,12 +8,10 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('atenciones', function (Blueprint $table) {
-            $table->char('id', 12)->primary();
+        Schema::create('stocks', function (Blueprint $table) {
+            $table->unsignedBigInteger('id')->primary();
             $table->foreignId('oficina_id')->constrained('oficinas');
-            $table->foreignId('estado_id')->constrained('estados');
-            $table->decimal('avance', 5, 2)->default(0.00);
-            $table->boolean('reserva')->default(false);
+            $table->bigInteger('unidades');
             $table->boolean('activo')->default(true);
             $table->timestamps();
         });
@@ -21,6 +19,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('atenciones');
+        Schema::dropIfExists('stocks');
     }
 };
