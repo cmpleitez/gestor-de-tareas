@@ -1,123 +1,58 @@
 PAUTAS:
-🟠 El uso de combos debería resolver el problema de las equivocaciones entre los codigos de un producto y otro producto
-🟠 Se detectan dos categorias: tipo de producto y marca
-🟠 Duis validos:
-    012345678
-    023456783
-    123456784
-    234567890
-    456789012
-🟠 Soporte Digital Ocean:
-    https://docs.digitalocean.com/support/
-    https://www.digitalocean.com/company/contact/sales?referrer=pricing/managed-databases
-    https://www.digitalocean.com/community/tools/bandwidth?active=%5B%7B%22slug%22%3A%22s-1vcpu-2gb%22%2C%22type%22%3A%22droplet%22%2C%22hours%22%3A722%2C%22consumption%22%3A1500%2C%22nodes%22%3A1%7D%5D&additional=0
-🟠 analisis de la factura digital ocean:
-    DigitalOcean:
-        ¿Cómo funciona la transferencia gratuita?
-        ✅ NO es solo para el mes de gratuidad:
-        La transferencia gratuita es PERMANENTE en tu plan
-        Cada mes tienes derecho a 1366 GB de transferencia gratuita
-        No se acaba después del mes de prueba
-        ✅ Es parte de tu plan pagado:
-        Tu factura de $6.05 incluye la transferencia gratuita
-        No pagas extra por usar hasta 1366 GB mensuales
-        Solo pagas si excedes ese límite
-        ¿Qué incluye tu factura de $6.05?
-        Servicios que pagas:
-        Droplet (servidor): ~$15-30/mes
-        Base de datos MySQL: ~$15-30/mes
-        Otros servicios que tengas activos
-        Transferencia de datos:
-        0.29 GB usado: GRATIS (está dentro del límite)
-        Hasta 1366 GB: GRATIS cada mes
-        Solo pagas si excedes 1366 GB
-        Conclusión:
-            La transferencia gratuita es PERMANENTE y real. Cada mes tienes derecho a 1366 GB sin costo adicional. Tu factura de $6.05 es por los servicios, no por la transferencia de datos.
-            Tu módulo de seguridad puede usarse sin límites mensuales de transferencia.
-
-🟠 Cada usuario de la app participante en el procedimiento, tendrá una copia de la solicitud u orden de compra
-🟠 Número de atención va ser válido cuando se complete todo el procedimiento, cada copia de las "recepciones iran siendo validadas por el usuario destino"
-
-🟠 Procedimiento: perfil cpleitez.2024@gmail.com https://miro.com/app/board/uXjVJy6iRzE=/
-    
-    . Cliente: Agrega al carrito cuantos kits necesite 
-    . Cliente: Especifica si se trata de una orden de compra o de una reserva
-    . Sistema: Registra <copia solicitud receptor> con el estado aún no validada (<recepcion.validada_origen = false>) por el cliente (<recepcion.user_id_origen>) ni por el receptor (<recepcion.user_id_destino>) (<recepcion.validada_destino=false>)
-    . Sistema: Registra la <orden de compra/reserva>: los <kits y sus productos>
-    
-    . Cliente: Entra al carrito, modifica la <orden de compra/reserva> 
-    . Cliente: Valida la <copia solicitud receptor> con la orden <Enviar> (<recepcion.validada_origen = true>), con esto se desactiva la <escritura> para el cliente
-    . Sistema: Establece <copia solicitud receptor> en estado de <Recibida> y de manera predeterminada viene activa la <escritura> para el receptor 
-
-    . Receptor: Entra al servicio <Mis ordenes de compra>
-    . Sistema: Brinda la vista <kanvan> con <autorefrescado> en intervalos de 5 minutos
-    . Receptor: Ubica y selecciona la <copia solicitud receptor> dando clic sobre ella para <editar> la <orden de compra/reserva>
-    . Sistema: Muestra en el <sidebar> los datos de la gestión, la <orden de compra/reserva> y los <kits con sus productos>
-    . Receptor: Revisa <stocks digitales> para <orden de compra/reserva>
-    . Receptor: Agrega o cambia <kits con sus productos> para la <orden de compra/reserva>
-    . Receptor: Valida la <orden de compra/reserva> (<recepcion.validada_destino = true>), dando clic en <Enviar>
-    
-
-
-aqui...
-
-
-
-    . Sistema: Crea nueva <copia solicitud operador> en estado de <Recibida>, tracking <Despacho iniciado> y de manera predeterminada viene con <escritura> activa (<recepcion.validada_origen = true> y <recepcion.validada_destino = false>)
-
-    . Operador: 
-        .consulta las ordenes de compra que ha recibido (recepcion.usuarioDestino), dando clic en la opción perfil / mis ordenes de compra
-        .toma la orden por prioridad o la toma por orden de llegada
-            .procesa las tareas respectivas (tabla de recibidas / clic a la tarjeta )
-                .iniciar el despacho
-                    . tarea automática del sistema
-                .creación de una factura digital:
-                    .da clic en la tarjeta de la tabla de recibidas y luego en la tarea respectiva
-                    .sistema: habre la orden de compra para que pueda revisarla
-                    .revisa la existencia en stock y que la cantidad sea un dato común o usual, dando clic en el boton <Stock>
-                    .da clic en guardar (validando los cambios)
-                    .sistema: torna el tipo de documento en una factura (tipo_documento_id="factura"), 
-                    y queda habierta la posibilidad para que si en algun momento implementamos una pasarela de pagos el documento pueda convertirse 
-                    una vez pagado en un recibo "tipo_doucmento_id=recibo"
-                    .sistema: publica el avance del proceso
-                    .el operador puede entrar nuevamente via la tarea de orden de compra y corregir algún error que hibiere en la factura antes de enviarla, y vuelve a guardar los cambios en la factura
-                .envío de la factura digital
-                    .da clic en la tarea
-                    .sistema: envia el correo con la factura digital adjunta y confirma el envío.
-                    .sistema: publica avance del proceso en las tarjetas visibles en frontend
-    . Cliente: efectua el pago y se lo hace saber al Receptor con un mensaje de whatsapp adjuntandole el número de orden (de compra)
-    . Operador:
-        .verifica pago de factura en coordinación con el Receptor
-        .retira fisicamente los productos del almacen y preparar el paquete para su entrega
-        .realiza el envío o entrega de los productos
-        .ubicar en el sistema (perfil del usuario / mis ordenes de compra / tablero de En progreso), dicho número de orden
-        .aplicar en el sistema despachar y descargar stock
-        .sistema: actualiza el inventario y finaliza la orden de compra trasladándola al tablero de "Resueltas"
-    . Sistema: corre una tarea programada para eliminar todos combos no validados por el usuario que pasaron en esa condicion por varios dias (la cantidad de dias no se define aún)
-
-REGLAS DEL NEGOCIO:
-🟠 Inluyen reglas técnicas consensuadas con el cliente propietario:
-    . Se manejarán 4 stocks: 
-        Bodega
-        Estante de Reservados
-        Entrantes en tránsito
-        Comprados en espera de entrega
-    . El Receptor va a ser el encargado de registrar las entradas a los diferebtesdiferentes stocks
-    . El operador por su parte en el paso de revisión verificará que los productos se encuentren
-    físicamente en sus stocks respectivo.
-    . A la orden de compra se le agregará un campo de datos indicador: Orden de reserva u orden de compra
-    . Las ordenes de reserva se quedarán en el paso de "Recibidos", mientras que las ordenes de compra podrán pasar a iniciar el su despacho, 
-      técnicamente podrán pasar a iniciar despacho en el caso que los productos en tránsito ya hayan llegado, 
-      el usuario solo debe confirmar que el stock ya está listo
-    . A las tarjetas se les agregará un distintivo de "orden de reserva" cuando tengan esta condición, 
-    . El cliente valida y cierra la orden de compra su orden en el momento que le da enviar en el carrito
-    . El Receptor valida y cierra la orden de compra en el momento en que le da enviar en el tablero Kanban
-    . El Operador valida y cierra la orden de compra en el momento cuando le da a Descargar Stock
-    . Tanto la orden en el módulo de ventas, tanto como el número de atención en el módulo de inventarios se guardaran al mismo tiempo
-    . Habrá un receptor, y si el mismo receptor necesita ser operador, entonces debe crear dos cuentas una para cada rol.
-    . Para todos los usuarios en general, solo hay un movimiento manual disponible: el impulso desde Recibidas hacia En progreso, lo demás es automatico
-    
+    🟠 El uso de combos debería resolver el problema de las equivocaciones entre los codigos de un producto y otro producto
+    🟠 Duis validos:
+        012345678
+        023456783
+        123456784
+        234567890
+        456789012
+    🟠 Cada usuario de la app participante en el procedimiento, tendrá una copia de la solicitud u orden de compra
 CLIENTE:
+    🔵 Procedimiento: perfil cpleitez.2024@gmail.com https://miro.com/app/board/uXjVJy6iRzE=/
+        . Cliente: Entra a la <Tienda>, selecciona en el catálogo el kit y da clic en <agregar al carrito>
+        . Sistema: En atención a la orden del cliente (<recepcion.user_id_origen>), crea <copia solicitud receptor> pendiente de validar por el mismo (<recepcion.validada_origen = false>)
+        y pendiente de validar (<recepcion.validada_destino=false>) por el receptor (<recepcion.user_id_destino>)
+        . Cliente: 
+            . Entra al <formulario del carrito> y agrega o cambia los <kits y sus productos> y especifica si va enviar una <orden de compra> o una <reserva>
+            . Después de revisar <formulario del carrito>, da clic en <Enviar>
+        . Sistema: En atención a la orden (<Enviar>), del cliente: 
+            . Crea a partir del <formulario del carrito> una <copia solicitud receptor>
+            y crea una <orden de compra/reserva>, los <kits y sus productos>
+            . Desactiva la <escritura> (<recepcion.validada_origen = true>) para el cliente (<recepcion.user_id_origen>) de la <copia solicitud receptor>
+            . Activa la escritura (<recepcion.validada_destino = true>) para el receptor (<recepcion.user_id_destino>) en la <copia solicitud receptor>
+            . Establece <copia solicitud receptor> en estado de <Recibida>
+
+        . Receptor: Entra al servicio <Mis ordenes de compra>
+        . Sistema: Brinda la vista <kanvan> con <autorefrescado> en intervalos de 5 minutos
+        . Receptor: Ubica en el tablero de <recibidas> y selecciona la <copia solicitud receptor> dando clic sobre ella
+        . Sistema: Muestra formulario en el <sidebar> los datos de la gestión (<copia solicitud receptor>), la <orden de compra/reserva> y los <kits con sus productos>
+        . Receptor: 
+            . Revisa <stocks digitales> para la <orden de compra/reserva>
+            . Agrega o cambia <kits y sus productos> en la <orden de compra/reserva>
+            . Valida la <copia solicitud receptor> (<recepcion.validada_destino = true>) y la <orden de compra/reserva>, dando clic en <Enviar> en el formulario <sidebar> 
+            o arrastrando la <copia solicitud receptor> hacia el tablero de "En progreso"
+        . Sistema: Crea <copia solicitud operador> ya validada (<recepcion.validada_origen = true>) por el receptor (<recepcion.user_id_origen>) 
+        y pendiente de validar (<recepcion.validada_destino=false>) por el operador (<recepcion.user_id_destino>)
+        
+        . Operador: Entra al servicio <Mis ordenes de compra>
+        . Sistema: Brinda la vista <kanvan> con <autorefrescado> en intervalos de 5 minutos
+        . Operador: 
+            . En el tablero de <recibidas> ubica la <copia solicitud operador> que va procesar
+            . Arrastra la <copia solicitud operador> ubicada hacia el tablero de "En progreso" para dar inicio al proceso
+            . Da clic a la tarea "Revisar viabilidad técnica y disponibilidad en stocks físicos"
+        . Sistema: Muestra en una ventana modal la <orden de compra/reserva> y los <kits con sus productos>
+        . Operador: 
+            . Revisa si los productos son coherentes con cada kit, así como la compatibilidad entre las marcas y modelos de los primeros
+            . Revisa si se dispone en el <stock físico> las cantidades solicitadas en cada producto
+            . Si es necesario: Agrega o cambia <kits y sus productos> en la <orden de compra/reserva>
+            . Finalizadas estas actividades da clic a la tarea "Envió de <orden de compra/reserva> revisada"
+        . Sistema: Envía un correo al cliente con la <orden de compra/reserva> revisada
+        . Operador: 
+            . Verifica que el pago por parte del cliente haya sido efectuado
+            . Una vez el pago sea efectivo: da clic a la tarea "Descarga de <stock digital>"
+        . Sistema: Establece cada una de las <copias solicitud> y la <solicitud principal> al estado de <Resuelta>
+        . Cliente: Traslada los productos a la zona de despacho y hace la entrega al cliente
+
     🔵 Que el cliente brinde la información del dominio
         Pasos básicos para enlazar IP pública con dominio:
         1. Configurar DNS en tu proveedor de dominio
@@ -148,6 +83,16 @@ CLIENTE:
         Opción 3: Ambos (recomendado):
             Registro A: @ → IP del servidor
             Registro A: www → IP del servidor
+    🔵 Reglas técnicas del negocio:
+        . Se manejarán 4 stocks: 
+            Bodega
+            Estante de Reservados
+            Entrantes en tránsito
+            Comprados en espera de entrega
+        . Las ordenes de reserva se quedarán en el paso de "Recibidos", mientras que las ordenes de compra podrán pasar a iniciar su despacho, 
+        técnicamente podrán pasar a iniciar despacho en el caso que los productos en tránsito ya hayan llegado a los stocks
+        . A las tarjetas se les agregará un distintivo de "orden de reserva" cuando tengan esta condición
+        . Los roles que se utilizarán para el proceso son: Cliente, Receptor y Operador, si se necesita asignar los dos últimos roles a una misma persona, se deben crear dos cuentas de usuario una para cada rol
 SEGURIDAD:
     🔵 Sin pendientes
 PLATAFORMA:
@@ -157,14 +102,17 @@ PLATAFORMA:
                 recrear las clases de manera que contengan color de fondo, color de texto y color de borde
                 pendiente revisar toda la aplicación para que lo utilice en general
                     solo queda pendiente el catalogo de productos
-
 SERVICIOS:
-    ...🟢 analizar y crear diagrama de datos del módulo de inventario
-    ...🟢 analizar y crear diagrama de datos del módulo de ventas
+    🟢 Número de atención va ser validado cuando se complete todo el procedimiento, cada copia de las "recepciones iran siendo validadas por el usuario destino"
+    🟢 En el Kanban el receptor podrá escribir en la <orden de compra/reserva> en el tablero de <recibidas> pero no en el resto de tableros
+    🟢 En el Kanban el operador podrá escribir en la <orden de compra/reserva> en el tablero de <en progreso> pero no en el resto de tableros
+    🟢 Si el sistema va envíar la Orden de compra/reserva revisada por correo sera necesario implementar SendGrid como servicio gratuito y que el usuario revise su bandeja de spam
+    ...🟢 Analizar y crear diagrama de datos del módulo de inventario
+    ...🟢 Analizar y crear diagrama de datos del módulo de ventas
         . verificar llave única de "entradas" actualmente en varchar(12)
         . definir las reglas de cuantas unidades de cada producto segun el kit
-    ...🟢 crear inventario de servicios a construir y la lista debe estar en orden "consecuencial", es decir en secuencia causal o causa y efecto, sería según procedimiento establecido
-
+    ...🟢 Crear inventario de servicios a construir y la lista debe estar en orden "consecuencial", es decir en secuencia causal o causa y efecto, sería según procedimiento establecido
+    ...🟢 Revisar que las aperturas y cierres de escritura estén funcionando correctamente en cada impulso (envío) de <copia solicitud destinatario>
     🟢 crear indices unicos para todos los nombres en los catálogos
     🟢 crear migraciones para las modificaciones de las tablas existentes
     🟢 aprender a crear seeders acumulativos para alimentar nuevos catálogos
@@ -187,8 +135,4 @@ SERVICIOS:
     🟢 verificar indices en nombres unicos de catalogos
     🟢 registro de entradas en stocks, y reversiones de entradas en stocks (a los 4 tipos de stocks)
     🟢 revisión de historial de entradas y reversiones en stocks
-    
-
-🟠 rage agains the machine & limp bizkit & korn & alice in chains
-
-    ...rage agains the machine -> videos musicales -> War Within a Breath (sin escuchar aun)
+    🟢 Cara cierta cantidad de días se debe correr una tarea programada para borrar todas las solicitudes no validadas por el cliente
