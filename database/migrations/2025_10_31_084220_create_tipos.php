@@ -8,17 +8,15 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('equipos', function (Blueprint $table) {
+        Schema::create('tipos', function (Blueprint $table) {
             $table->unsignedBigInteger('id')->primary();
-            $table->foreignId('oficina_id')->constrained('oficinas');
-            $table->string('equipo')->unique();
-            $table->boolean('activo')->default(true);
+            $table->string('tipo')->unique();
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('equipos');
+        Schema::dropIfExists('tipos');
     }
 };

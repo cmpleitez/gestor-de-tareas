@@ -8,10 +8,13 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('equipos', function (Blueprint $table) {
+        Schema::create('productos', function (Blueprint $table) {
             $table->unsignedBigInteger('id')->primary();
-            $table->foreignId('oficina_id')->constrained('oficinas');
-            $table->string('equipo')->unique();
+            $table->foreignId('tipo_id')->constrained('tipos');
+            $table->foreignId('modelo_id')->constrained('modelos');
+            $table->string('producto')->unique();
+            $table->boolean('accesorio')->default(false);
+            $table->decimal('precio', 20, 4);
             $table->boolean('activo')->default(true);
             $table->timestamps();
         });
@@ -19,6 +22,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('equipos');
+        Schema::dropIfExists('productos');
     }
 };

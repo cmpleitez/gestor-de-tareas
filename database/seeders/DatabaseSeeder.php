@@ -12,14 +12,8 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-                // Seeders existentes
-                // UserSeeder::class,
-                // ... otros seeders existentes
-
-                // ========================================
-                // SEEDERS DE SEGURIDAD - MONITOREO AVANZADO
-                // ========================================
             UserSeeder::class,
+            InventarioSeeder::class,
         ]);
     }
 }
