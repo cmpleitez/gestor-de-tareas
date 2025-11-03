@@ -2,11 +2,11 @@
 namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
-class Stock extends Model
+class TipoEntrada extends Model
 {
     public $incrementing = false;
     protected $keyType   = 'int';
-
+    protected $fillable = ['tipo_entrada'];
     protected $casts = [
         'activo' => 'boolean',
     ];
@@ -14,16 +14,6 @@ class Stock extends Model
     public function entradas()
     {
         return $this->hasMany(Entrada::class);
-    }
-
-    public function oficina()
-    {
-        return $this->belongsTo(Oficina::class);
-    }
-
-    public function producto()
-    {
-        return $this->belongsTo(Producto::class);
     }
 
 }

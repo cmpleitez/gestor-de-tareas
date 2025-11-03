@@ -14,6 +14,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users');
             $table->foreignId('stock_id')->constrained('stocks');
             $table->foreignId('producto_id')->constrained('productos');
+            $table->foreignId('tipo_entrada_id')->constrained('tipo_entradas');
             $table->bigInteger('unidades');
             $table->boolean('activo')->default(true);
             $table->timestamps();

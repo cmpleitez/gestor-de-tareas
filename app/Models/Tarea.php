@@ -1,18 +1,15 @@
 <?php
-
 namespace App\Models;
-
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Tarea extends Model
 {
-    use HasFactory;
-
     public $incrementing = false;
     protected $keyType   = 'int';
-
     protected $fillable = ['tarea'];
+    protected $casts = [
+        'activo' => 'boolean',
+    ];
 
     public function solicitudes()
     {

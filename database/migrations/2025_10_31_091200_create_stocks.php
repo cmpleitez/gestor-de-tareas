@@ -12,7 +12,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id')->primary();
             $table->foreignId('oficina_id')->constrained('oficinas');
             $table->foreignId('producto_id')->constrained('productos');
-            $table->string('stock')->unique();
+            $table->string('stock');
             $table->bigInteger('unidades');
             $table->boolean('activo')->default(true);
             $table->timestamps();

@@ -1,14 +1,13 @@
 <?php
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class IPReputation extends Model
 {
-    use HasFactory;
+    public $incrementing = false;
+    protected $keyType   = 'int';
     protected $table = 'ip_reputations';
 
     protected $fillable = [

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Producto;
 
 class ProductoController extends Controller
 {
@@ -14,7 +15,14 @@ class ProductoController extends Controller
     }
 
 
-    public function create()
+    public function entrada()
+    {
+        $productos = Producto::where('activo', true)->with('modelo', 'tipo')->get();
+        return view('modelos.producto.entrada', compact('productos'));
+    }
+
+
+    public function agregar()
     {
         //
     }

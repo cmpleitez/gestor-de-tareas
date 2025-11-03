@@ -7,7 +7,8 @@ use Spatie\Permission\Models\Role;
 
 class Recepcion extends Model
 {
-    use HasFactory;
+    public $incrementing = false;
+    protected $keyType   = 'int';
     protected $table    = 'recepciones';
     protected $fillable = ['solicitud_id', 'detalles', 'observacion'];
 

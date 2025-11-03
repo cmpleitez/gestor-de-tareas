@@ -85,16 +85,17 @@ CLIENTE:
             Registro A: www → IP del servidor
     🔵 Reglas técnicas del negocio:
         . Se manejarán 4 stocks: 
+            Recién pedidos
+            En tránsito
             Bodega
             Estante de Reservados
-            Entrantes en tránsito
-            Comprados en espera de entrega
         . Las ordenes de reserva se quedarán en el paso de "Recibidos", mientras que las ordenes de compra podrán pasar a iniciar su despacho, 
         técnicamente podrán pasar a iniciar despacho en el caso que los productos en tránsito ya hayan llegado a los stocks
         . A las tarjetas se les agregará un distintivo de "orden de reserva" cuando tengan esta condición
         . Los roles que se utilizarán para el proceso son: Cliente, Receptor y Operador, si se necesita asignar los dos últimos roles a una misma persona, se deben crear dos cuentas de usuario una para cada rol
+    🔵 definir las reglas de cuantas unidades de cada producto segun el kit y las demás reglas que se necesiten
 SEGURIDAD:
-    🔵 Sin pendientes
+    🔵 Revisar todos las inserciones porque se cambio la llave automática por una manual, para evitar las pérdidas de números correlativos cuando falla el guardado
 PLATAFORMA:
     🟢 construir la funcionalidad para cambiar nombres a los registros de catálogos y aplicar la regla de las dependencias
     🟢 regular el color nivel de advertencia en toda la app
@@ -102,40 +103,37 @@ PLATAFORMA:
                 recrear las clases de manera que contengan color de fondo, color de texto y color de borde
                 pendiente revisar toda la aplicación para que lo utilice en general
                     solo queda pendiente el catalogo de productos
+    🟢 Vacíar seeders de prueba
 SERVICIOS:
-    🟢 error pndiente:
-        SQLSTATE[HY000]: General error: 1364 Field 'marca_id' doesn't have a default value (Connection: mysql, SQL: insert into `modelos` (`id`, `modelo`, `updated_at`, `created_at`) values (1, Suzuki Jimny AllGrip, 2025-10-31 15:28:04, 2025-10-31 15:28:04))    
-    🟢 ajustar los seeders del sistema gestor de tareas
+    ...🟢 Crear inventario de servicios a construir y la lista debe estar en orden "consecuencial", es decir en secuencia causal o causa y efecto, sería según procedimiento establecido
+        🪒registro de entradas (a los 4 tipos de stocks)
+            .Compras
+                Recien pedidos
+            .Aprovisionamientos
+                Recien pedidos -> En transito
+            .Recepción de producto
+                En transito -> Bodega
+                En transito -> Estante de Reservados
+        🪒tienda
+        🪒orden de compra para:
+            . carrito
+            . tarjeta en el tablero "En progreso" en el rol del Receptor
+            . paso "Revisión de la Orden/Reserva"
+        🪒historial de entradas y reversiones en stocks
+        🪒Cada cierta cantidad de días se debe correr una tarea programada para borrar todas las solicitudes no validadas por el cliente
+        
+                ... me quedé creando las relaciones en los modelos
+
     🟢 Número de atención va ser validado cuando se complete todo el procedimiento, cada copia de las "recepciones iran siendo validadas por el usuario destino"
     🟢 En el Kanban el receptor podrá escribir en la <orden de compra/reserva> en el tablero de <recibidas> pero no en el resto de tableros
     🟢 En el Kanban el operador podrá escribir en la <orden de compra/reserva> en el tablero de <en progreso> pero no en el resto de tableros
     🟢 Si el sistema va envíar la Orden de compra/reserva revisada por correo sera necesario implementar SendGrid como servicio gratuito y que el usuario revise su bandeja de spam
-    ...🟢 Analizar y crear diagrama de datos del módulo de inventario
-    ...🟢 Analizar y crear diagrama de datos del módulo de ventas
-        . verificar llave única de "entradas" actualmente en varchar(12)
-        . definir las reglas de cuantas unidades de cada producto segun el kit
-    ...🟢 Crear inventario de servicios a construir y la lista debe estar en orden "consecuencial", es decir en secuencia causal o causa y efecto, sería según procedimiento establecido
-    ...🟢 Revisar que las aperturas y cierres de escritura estén funcionando correctamente en cada impulso (envío) de <copia solicitud destinatario>
-    🟢 crear indices unicos para todos los nombres en los catálogos
-    🟢 crear migraciones para las modificaciones de las tablas existentes
-    🟢 aprender a crear seeders acumulativos para alimentar nuevos catálogos
+    🟢 Revisar que las aperturas y cierres de escritura estén funcionando correctamente en cada impulso (envío) de <copia solicitud destinatario>
     🟢 construir catalogo de productos: nombre de la orden será un estadístico segun los nombres de los combos
     🟢 agregar un campo para el codigo físico del producto y mantenerlo visible en el catalogo de productos
     🟢 crear funcionalidad de combos personalizables
-    🟢 aun no hay priorizaciòn de tarjetas eso es un servicio a construir
     🟢 revisar si se mantendrá el dui o se retira
-    🟢 para trasladar todo un equipo de trabajadores de una oficina a otra
-        agregar en la transaccional el equipo que trabajó cada registro
-        agregar en el equipo.editar un selector de oficina
-    🟢 crear servicio de actualización para los 4 stocks
-    🟢 crear servicio revisión de la orden de compra se replicará al:
-        . carrito
-        . dar clic sobre una tarjeta en el tablero de las "En progreso" en el rol del Receptor
-        . al dar clic sobre el paso de "Crear factura / Revisión de la Orden"
+    🟢 agregar en el equipo.editar un selector de oficina
     🟢 funcionalidad de acceso al carrito al Receptor y al Operador desde la zona de revisión de la orden
-    🟢 mensaje de advertencia "Revise el stock de disopnibles" cuando el Receptor intente impulsar una Orden de reservas
-    🟢 crear seeder random para productos y categoría de productos
-    🟢 verificar indices en nombres unicos de catalogos
-    🟢 registro de entradas en stocks, y reversiones de entradas en stocks (a los 4 tipos de stocks)
-    🟢 revisión de historial de entradas y reversiones en stocks
-    🟢 Cara cierta cantidad de días se debe correr una tarea programada para borrar todas las solicitudes no validadas por el cliente
+    🟢 mensaje de advertencia "Revise el stock de disponibles" cuando el Receptor intente impulsar una Orden de reservas
+

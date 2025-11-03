@@ -1,4 +1,4 @@
-@extends('modelos.producto.principal')
+@extends('servicios')
 
 @section('title', 'Lista de Productos - Gestor de Tareas')
 

@@ -8,16 +8,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ThreatIntelligence extends Model
 {
-    use HasFactory;
-
-    /**
-     * La tabla asociada al modelo
-     */
+    public $incrementing = false;
+    protected $keyType   = 'int';
     protected $table = 'threat_intelligence';
-
-    /**
-     * Los atributos que son asignables masivamente
-     */
     protected $fillable = [
         'ip_address',
         'threat_score',
@@ -41,10 +34,6 @@ class ThreatIntelligence extends Model
         'false_positive',
         'metadata',
     ];
-
-    /**
-     * Los atributos que deben ser convertidos a tipos nativos
-     */
     protected $casts = [
         'threat_score'     => 'float',
         'confidence'       => 'float',

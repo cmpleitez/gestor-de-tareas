@@ -214,7 +214,7 @@
                 data-icon-style="">
 
                 @role('superadmin')
-                    <li class=" nav-item"><a href="#"><i class="bx bx-shield"></i><span class="menu-title"
+                    <li class=" nav-item"><a href="#"><i class="bx bxs-shield"></i><span class="menu-title"
                                 data-i18n="Menu Levels">Seguridad</span></a>
                         <ul class="menu-content" style="display: block;">
                             <li><a href="{{ Route('security.parametros') }}">
@@ -247,7 +247,7 @@
                 @endrole
 
                 @role('admin|superadmin')
-                    <li class=" nav-item"><a href="#"><i class="bx bx-cog"></i><span class="menu-title"
+                    <li class=" nav-item"><a href="#"><i class="bx bxs-cog"></i><span class="menu-title"
                                 data-i18n="Menu Levels">Administración</span></a>
                         <ul class="menu-content" style="display: block;">
                             <li><a href="{{ Route('user') }}">
@@ -270,21 +270,30 @@
                     </li>
                 @endrole
 
-                @role('cliente|superadmin')
-                    <li class=" nav-item"><a href="#"><i class="bx bx-menu"></i><span class="menu-title"
+                @role('cliente|superadmin|admin')
+                    <li class="nav-item"><a href="#"><i class="bx bx-list-ul"></i><span class="menu-title"
                                 data-i18n="Menu Levels">Servicios</span></a>
                         <ul class="menu-content" style="display: block;">
+
+
+                            <li><a href="{{ route('producto.entrada') }}">
+                                <i class="bx bx-right-arrow-alt"></i>
+                                <span class="menu-item" data-i18n="Second Level">Entradas</span>
+                            </a></li>
+
+
                             <li><a href="{{ Route('recepcion.create') }}">
                                     <i class="bx bx-right-arrow-alt"></i>
                                     <span class="menu-item" data-i18n="Second Level">Recepciones</span>
                                 </a></li>
                             <li><a href="{{ route('producto') }}">
-                                    <i class="bx bx-package"></i>
+                                    <i class="bx bx-right-arrow-alt"></i>
                                     <span class="menu-item" data-i18n="Second Level">Catálogo</span>
                                 </a></li>
                         </ul>
                     </li>
                 @endrole
+                
 
                 <li class=" navigation-header"><span>Soporte</span>
                 </li>

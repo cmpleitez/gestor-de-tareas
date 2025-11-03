@@ -8,19 +8,16 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('incidencias', function (Blueprint $table) {
-            $table->char('id', 14)->primary();
-            $table->char('actividad_id', 12)->foreignId();
-            $table->string('observacion')->nullable();
+        Schema::create('tipo_entradas', function (Blueprint $table) {
+            $table->unsignedBigInteger('id')->primary();
+            $table->string('tipo_entrada')->unique();
             $table->boolean('activo')->default(true);
             $table->timestamps();
-
-            $table->foreign('actividad_id')->references('id')->on('actividades');
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('incidencias');
+        Schema::dropIfExists('tipo_entradas');
     }
 };

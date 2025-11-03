@@ -6,6 +6,7 @@ use App\Models\Tipo;
 use App\Models\Marca;
 use App\Models\Modelo;
 use App\Models\Producto;
+use App\Models\TipoEntrada;
 
 class InventarioSeeder extends Seeder
 {
@@ -52,7 +53,11 @@ class InventarioSeeder extends Seeder
             ['id' => 10, 'marca_id' => 10, 'modelo' => 'Volkswagen Amarok'],
         ];
         foreach ($modelos as $modelo) {
-            Modelo::firstOrCreate(['id' => $modelo['id'], 'modelo' => $modelo['modelo']]);
+            Modelo::firstOrCreate([
+                'id' => $modelo['id'],
+                'marca_id' => $modelo['marca_id'],
+                'modelo' => $modelo['modelo']
+            ]);
         }
 
         //CREACION DE PRODUCTOS
@@ -165,6 +170,18 @@ class InventarioSeeder extends Seeder
         foreach ($stocks as $stock) {
             Stock::firstOrCreate(['id' => $stock['id'], 'oficina_id' => $stock['oficina_id'], 'producto_id' => $stock['producto_id'], 'stock' => $stock['stock'], 'unidades' => $stock['unidades']]);
         }        
+
+        //CREACION DE TIPOS DE ENTRADAS
+        $tipos_entradas = [
+            ['id' => 1, 'tipo_entrada' => 'Recien pedidos'],
+            ['id' => 2, 'tipo_entrada' => 'En transito'],
+            ['id' => 3, 'tipo_entrada' => 'Bodega'],
+            ['id' => 4, 'tipo_entrada' => 'Estante de Reservados'],
+        ];
+        foreach ($tipos_entradas as $tipo_entrada) {
+            TipoEntrada::firstOrCreate(['id' => $tipo_entrada['id'], 'tipo_entrada' => $tipo_entrada['tipo_entrada']]);
+        }
+
 
     }
 }
