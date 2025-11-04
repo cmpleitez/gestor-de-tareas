@@ -94,6 +94,9 @@ CLIENTE:
         . A las tarjetas se les agregará un distintivo de "orden de reserva" cuando tengan esta condición
         . Los roles que se utilizarán para el proceso son: Cliente, Receptor y Operador, si se necesita asignar los dos últimos roles a una misma persona, se deben crear dos cuentas de usuario una para cada rol
     🔵 definir las reglas de cuantas unidades de cada producto segun el kit y las demás reglas que se necesiten
+    🔵 reglas técnicas para la creación de kits
+    🔵 reglas técnicas para creación de ordenes de compra para cada kit
+
 SEGURIDAD:
     🔵 Revisar todos las inserciones porque se cambio la llave automática por una manual, para evitar las pérdidas de números correlativos cuando falla el guardado
 PLATAFORMA:
@@ -122,7 +125,8 @@ SERVICIOS:
         🪒historial de entradas y reversiones en stocks
         🪒Cada cierta cantidad de días se debe correr una tarea programada para borrar todas las solicitudes no validadas por el cliente
         
-                ... me quedé creando las relaciones en los modelos
+            ... me quedé creando las relaciones en los modelos
+                    ...se handetectado llaves autoincrementales, hay que revisar todo el diagrama de datos para reparar esas situaciones
 
     🟢 Número de atención va ser validado cuando se complete todo el procedimiento, cada copia de las "recepciones iran siendo validadas por el usuario destino"
     🟢 En el Kanban el receptor podrá escribir en la <orden de compra/reserva> en el tablero de <recibidas> pero no en el resto de tableros
