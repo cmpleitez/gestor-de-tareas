@@ -10,4 +10,9 @@ class Marca extends Model
     protected $casts = [
         'activo' => 'boolean',
     ];
+
+    public function modelos()
+    {
+        return $this->hasMany(Modelo::class);
+    }
 }

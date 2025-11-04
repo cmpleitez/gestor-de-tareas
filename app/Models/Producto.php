@@ -23,4 +23,14 @@ class Producto extends Model
         return $this->belongsTo(Modelo::class);
     }
 
+    public function kits()
+    {
+        return $this->belongsToMany(Kit::class);
+    }
+    
+    public function atencionDetalles()
+    {
+        return $this->hasMany(AtencionDetalle::class);
+    }
+
 }

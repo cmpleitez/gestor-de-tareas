@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('detalle_orden', function (Blueprint $table) {
+        Schema::create('atencion_detalles', function (Blueprint $table) {
             $table->string('atencion_id', 12);
             $table->foreign('atencion_id')->references('id')->on('atenciones');
             $table->foreignId('kit_id')->constrained('kits');
@@ -24,6 +24,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('detalle_orden');
+        Schema::dropIfExists('atencion_detalles');
     }
 };

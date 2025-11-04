@@ -11,7 +11,6 @@ class Recepcion extends Model
     protected $keyType   = 'int';
     protected $table    = 'recepciones';
     protected $fillable = ['solicitud_id', 'detalles', 'observacion'];
-
     protected $casts = [
         'activo' => 'boolean',
     ];

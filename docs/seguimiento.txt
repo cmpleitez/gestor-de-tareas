@@ -99,6 +99,9 @@ CLIENTE:
 
 SEGURIDAD:
     🔵 Revisar todos las inserciones porque se cambio la llave automática por una manual, para evitar las pérdidas de números correlativos cuando falla el guardado
+        .hay que revisar todos los controladores y otros procesos y corregirlos
+    
+
 PLATAFORMA:
     🟢 construir la funcionalidad para cambiar nombres a los registros de catálogos y aplicar la regla de las dependencias
     🟢 regular el color nivel de advertencia en toda la app
@@ -109,7 +112,7 @@ PLATAFORMA:
     🟢 Vacíar seeders de prueba
 SERVICIOS:
     ...🟢 Crear inventario de servicios a construir y la lista debe estar en orden "consecuencial", es decir en secuencia causal o causa y efecto, sería según procedimiento establecido
-        🪒registro de entradas (a los 4 tipos de stocks)
+        ...🪒registro de entradas (a los 4 tipos de stocks)
             .Compras
                 Recien pedidos
             .Aprovisionamientos
@@ -124,9 +127,6 @@ SERVICIOS:
             . paso "Revisión de la Orden/Reserva"
         🪒historial de entradas y reversiones en stocks
         🪒Cada cierta cantidad de días se debe correr una tarea programada para borrar todas las solicitudes no validadas por el cliente
-        
-            ... me quedé creando las relaciones en los modelos
-                    ...se handetectado llaves autoincrementales, hay que revisar todo el diagrama de datos para reparar esas situaciones
 
     🟢 Número de atención va ser validado cuando se complete todo el procedimiento, cada copia de las "recepciones iran siendo validadas por el usuario destino"
     🟢 En el Kanban el receptor podrá escribir en la <orden de compra/reserva> en el tablero de <recibidas> pero no en el resto de tableros

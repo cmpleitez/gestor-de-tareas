@@ -47,9 +47,8 @@
                                                     {{-- AGREGAR ENTRADA --}}
                                                     @can('editar')
                                                         <a href="#" role="button"
-                                                            data-toggle="tooltip" data-popup="tooltip-custom" data-html="true"
-                                                            data-placement="bottom"
-                                                            title="<i class='bx bxs-truck'></i> Agregar entrada a {{ $producto->producto }}"
+                                                            data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom"
+                                                            title="<i class='bx bx-truck'></i> Agregar entrada a {{ $producto->producto }}"
                                                             class="button_edit align-center border border-warning-dark text-warning-dark bg-warning-light">
                                                             <i class="bx bxs-truck"></i>
                                                         </a>

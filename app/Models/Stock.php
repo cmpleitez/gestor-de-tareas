@@ -6,7 +6,6 @@ class Stock extends Model
 {
     public $incrementing = false;
     protected $keyType   = 'int';
-
     protected $casts = [
         'activo' => 'boolean',
     ];
