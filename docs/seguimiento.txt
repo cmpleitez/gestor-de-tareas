@@ -113,13 +113,12 @@ PLATAFORMA:
 SERVICIOS:
     ...🟢 Crear inventario de servicios a construir y la lista debe estar en orden "consecuencial", es decir en secuencia causal o causa y efecto, sería según procedimiento establecido
         ...🪒registro de entradas (a los 4 tipos de stocks)
-            .Compras
-                Recien pedidos
-            .Aprovisionamientos
-                Recien pedidos -> En transito
-            .Recepción de producto
-                En transito -> Bodega
-                En transito -> Estante de Reservados
+            .Compra
+                Recien comprados
+            .Revisión de tracking
+                Recien comprados -> En transito
+            .Recepción para bodega
+            .Recepción para Estante de Reservados
         🪒tienda
         🪒orden de compra para:
             . carrito
@@ -127,6 +126,8 @@ SERVICIOS:
             . paso "Revisión de la Orden/Reserva"
         🪒historial de entradas y reversiones en stocks
         🪒Cada cierta cantidad de días se debe correr una tarea programada para borrar todas las solicitudes no validadas por el cliente
+
+        ...consultando la IA -> ok creo que aqui en la plantilla en la que sta basado el proyecto, en esta direccion file:///C:/laragon/www/NobleUI/demo1/pages/forms/advanced-elements.html sen encuentra la informacion de las mascaras
 
     🟢 Número de atención va ser validado cuando se complete todo el procedimiento, cada copia de las "recepciones iran siendo validadas por el usuario destino"
     🟢 En el Kanban el receptor podrá escribir en la <orden de compra/reserva> en el tablero de <recibidas> pero no en el resto de tableros

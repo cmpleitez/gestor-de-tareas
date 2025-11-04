@@ -40,17 +40,18 @@
                                             <td class="text-center">{{ $producto->tipo->tipo }}</td>
                                             <td class="text-center">{{ $producto->accesorio ? 'Accesorio' : 'Producto' }}
                                             </td>
-
                                             {{-- TABLERO DE CONTROL --}}
                                             <td class="text-center">
                                                 <div class="btn-group" role="group" aria-label="label">
                                                     {{-- AGREGAR ENTRADA --}}
                                                     @can('editar')
-                                                        <a href="#" role="button"
-                                                            data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom"
-                                                            title="<i class='bx bx-truck'></i> Agregar entrada a {{ $producto->producto }}"
-                                                            class="button_edit align-center border border-warning-dark text-warning-dark bg-warning-light">
-                                                            <i class="bx bxs-truck"></i>
+                                                        <a href="#" role="button" data-toggle="modal"
+                                                            data-target="#modalEntrada" data-producto-id="{{ $producto->id }}"
+                                                            data-producto-nombre="{{ $producto->producto }}"
+                                                            data-popup="tooltip-custom" data-html="true" data-placement="bottom"
+                                                            title="<i class='bx bx-log-in-circle'></i> Agregar entrada a {{ $producto->producto }}"
+                                                            class="button_edit align-center border border-secondary text-secondary-dark bg-secondary-light">
+                                                            <i class="bx bx-log-in-circle"></i>
                                                         </a>
                                                     @endcan
                                                 </div>
@@ -75,6 +76,65 @@
             </div>
         </div>
     </div>
+
+    {{-- MODAL DE ENTRADA --}}
+    <div class="modal fade" id="modalEntrada" tabindex="-1" role="dialog" aria-labelledby="modalEntradaLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalEntradaLabel">
+                        Agregar Entrada
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center">
+                    <p id="modalProductoNombre" style="font-size: 1.2rem; font-weight: 500;"></p>
+                    
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="unidades">Unidades</label>
+                                <input type="number" class="form-control" name="unidades" id="unidades" min="1" step="1" required>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="ageSelect">Origen</label>
+                                <select class="form-control" name="age_select" id="ageSelect">
+                                    <option selected disabled>Select your age</option>
+                                    <option>12-18</option>
+                                    <option>18-22</option>
+                                    <option>22-30</option>
+                                    <option>30-60</option>
+                                    <option>Above 60</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="ageSelect">Destino</label>
+                                <select class="form-control" name="age_select" id="ageSelect">
+                                    <option selected disabled>Select your age</option>
+                                    <option>12-18</option>
+                                    <option>18-22</option>
+                                    <option>22-30</option>
+                                    <option>30-60</option>
+                                    <option>Above 60</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 @stop
 
 @section('js')
@@ -100,7 +160,7 @@
                     "language": {
                         "url": "/app-assets/Spanish.json"
                     },
-                    "pageLength": 50
+                    "pageLength": 10
                 });
             }
 
@@ -108,6 +168,17 @@
             $('[data-toggle="tooltip"]').tooltip({
                 html: true,
                 placement: 'bottom'
+            });
+
+            // Actualizar modal con datos del producto cuando se abre
+            $('#modalEntrada').on('show.bs.modal', function(event) {
+                var button = $(event.relatedTarget); // Botón que activó el modal
+                var productoNombre = button.data('producto-nombre'); // Obtener nombre del producto
+                var productoId = button.data('producto-id'); // Obtener ID del producto
+
+                // Actualizar el contenido del modal con el nombre del producto
+                var modal = $(this);
+                modal.find('#modalProductoNombre').text(productoNombre);
             });
         });
     </script>
