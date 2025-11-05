@@ -37,6 +37,7 @@
     <link href="{{ asset('app-assets/css/core/menu/menu-types/vertical-menu.css') }}" rel="stylesheet">
     <link href="{{ asset('app-assets/css/pages/dashboard-analytics.css') }}" rel="stylesheet">
     <link href="{{ asset('app-assets/css/plugins/forms/validation/form-validation.css') }}" rel="stylesheet">
+    <link href="{{ asset('app-assets/css/plugins/forms/input-clear.css') }}" rel="stylesheet">
     <link href="{{ asset('app-assets/css/plugins/extensions/toastr.css') }}" rel="stylesheet">
     <!-- END: All CSS-->
 
@@ -277,9 +278,9 @@
 
 
                             <li><a href="{{ route('producto.entrada') }}">
-                                <i class="bx bx-right-arrow-alt"></i>
-                                <span class="menu-item" data-i18n="Second Level">Entradas</span>
-                            </a></li>
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Entradas</span>
+                                </a></li>
 
 
                             <li><a href="{{ Route('recepcion.create') }}">
@@ -293,7 +294,7 @@
                         </ul>
                     </li>
                 @endrole
-                
+
 
                 <li class=" navigation-header"><span>Soporte</span>
                 </li>
@@ -347,7 +348,9 @@
     <script src="{{ asset('app-assets/vendors/js/extensions/numeral/numeral.js') }}"></script>
     <script src="{{ asset('app-assets/vendors/js/extensions/dragula.min.js') }}"></script>
     <script src="{{ asset('app-assets/vendors/js/forms/validation/jqBootstrapValidation.js') }}"></script>
+    <script src="{{ asset('app-assets/js/scripts/forms/validation/form-validation.js') }}"></script>
     <script src="{{ asset('app-assets/vendors/js/forms/select/select2.full.min.js') }}"></script>
+    <script src="{{ asset('app-assets/vendors/js/inputmask/jquery.inputmask.min.js') }}"></script>
     <script src="{{ asset('app-assets/vendors/js/extensions/toastr.min.js') }}"></script>
     <script src="{{ asset('app-assets/vendors/js/tables/datatable/datatables.min.js') }}"></script>
     <script src="{{ asset('app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}"></script>
@@ -358,6 +361,7 @@
     <script src="{{ asset('app-assets/vendors/js/tables/datatable/pdfmake.min.js') }}"></script>
     <script src="{{ asset('app-assets/vendors/js/tables/datatable/vfs_fonts.js') }}"></script>
     <script src="{{ asset('app-assets/vendors/js/charts/chart.min.js') }}"></script>
+    <script src="{{ asset('app-assets/js/scripts/forms/input-clear.js') }}"></script>
 
     <!-- END: Vendor JavaScript -->
 
@@ -403,6 +407,11 @@
             @if (Session::has('danger'))
                 toastr.error("{{ Session::get('danger') }}");
             @endif
+
+            // Inicializar Inputmask globalmente para todos los inputs con atributos data-inputmask
+            if (typeof $.fn.inputmask !== 'undefined') {
+                $(":input[data-inputmask]").inputmask();
+            }
         });
     </script>
     <!-- ... otros scripts ... -->

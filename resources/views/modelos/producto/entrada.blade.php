@@ -2,6 +2,35 @@
 
 @section('css')
     <link href="{{ asset('app-assets/vendors/css/tables/datatable/datatables.min.css') }}" rel="stylesheet">
+    <style>
+        /* Modal de ancho completo en móviles */
+        @media (max-width: 767.98px) {
+            #modalEntrada .modal-dialog {
+                max-width: 100%;
+                margin: 0;
+                height: 100%;
+            }
+
+            #modalEntrada .modal-content {
+                height: 100%;
+                border-radius: 0;
+            }
+        }
+
+        /* Modal más ancha en tablets y pantallas grandes */
+        @media (min-width: 768px) {
+            #modalEntrada .modal-dialog {
+                max-width: 800px;
+            }
+        }
+
+        /* Modal aún más ancha en desktops y laptops */
+        @media (min-width: 992px) {
+            #modalEntrada .modal-dialog {
+                max-width: 900px;
+            }
+        }
+    </style>
 @stop
 
 @section('contenedor')
@@ -42,9 +71,8 @@
                                             </td>
                                             {{-- TABLERO DE CONTROL --}}
                                             <td class="text-center">
-                                                <div class="btn-group" role="group" aria-label="label">
-                                                    {{-- AGREGAR ENTRADA --}}
-                                                    @can('editar')
+                                                @can('editar') {{-- AGREGAR ENTRADA --}}
+                                                    <div class="btn-group" role="group" aria-label="label">
                                                         <a href="#" role="button" data-toggle="modal"
                                                             data-target="#modalEntrada" data-producto-id="{{ $producto->id }}"
                                                             data-producto-nombre="{{ $producto->producto }}"
@@ -53,8 +81,8 @@
                                                             class="button_edit align-center border border-secondary text-secondary-dark bg-secondary-light">
                                                             <i class="bx bx-log-in-circle"></i>
                                                         </a>
-                                                    @endcan
-                                                </div>
+                                                    </div>
+                                                @endcan
                                             </td>
                                         </tr>
                                     @endforeach
@@ -80,27 +108,32 @@
     {{-- MODAL DE ENTRADA --}}
     <div class="modal fade" id="modalEntrada" tabindex="-1" role="dialog" aria-labelledby="modalEntradaLabel"
         aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-dialog modal-dialog-centered modal-md" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="modalEntradaLabel">
-                        Agregar Entrada
+                        Entrada de producto
                     </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body text-center">
-                    <p id="modalProductoNombre" style="font-size: 1.2rem; font-weight: 500;"></p>
-                    
-                    <div class="row">
-                        <div class="col-4">
+                    <div class="row p-1">
+                        <div class="col-12">
+                            <p id="modalProductoNombre"></p>
+                        </div>
+                    </div>
+                    <div class="row p-1">
+                        <div class="col-12 col-md-2">
                             <div class="form-group">
                                 <label for="unidades">Unidades</label>
-                                <input type="number" class="form-control" name="unidades" id="unidades" min="1" step="1" required>
+                                <input type="text" class="form-control text-center" name="unidades" id="unidades"
+                                    data-inputmask="'alias': 'numeric', 'groupSeparator': ',', 'digits': 0, 'rightAlign': false"
+                                    required>
                             </div>
                         </div>
-                        <div class="col-4">
+                        <div class="col-12 col-md-5">
                             <div class="form-group">
                                 <label for="ageSelect">Origen</label>
                                 <select class="form-control" name="age_select" id="ageSelect">
@@ -113,7 +146,7 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-4">
+                        <div class="col-12 col-md-5">
                             <div class="form-group">
                                 <label for="ageSelect">Destino</label>
                                 <select class="form-control" name="age_select" id="ageSelect">
@@ -130,6 +163,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btnRegistrar">Registrar</button>
                 </div>
             </div>
         </div>
@@ -179,6 +213,16 @@
                 // Actualizar el contenido del modal con el nombre del producto
                 var modal = $(this);
                 modal.find('#modalProductoNombre').text(productoNombre);
+            });
+
+            // Limpiar formato de Inputmask antes de enviar el formulario (preparación para futuro formulario)
+            $('#modalEntrada').on('submit', 'form', function(e) {
+                var unidadesInput = $('#unidades');
+                if (unidadesInput.length && unidadesInput[0].inputmask) {
+                    // Obtener el valor sin formato usando unmaskedvalue()
+                    var unidadesValue = unidadesInput.inputmask('unmaskedvalue');
+                    unidadesInput.val(unidadesValue);
+                }
             });
         });
     </script>

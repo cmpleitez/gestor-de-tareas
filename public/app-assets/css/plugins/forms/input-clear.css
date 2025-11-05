@@ -1,0 +1,46 @@
+/*=========================================================================================
+  File Name: input-clear.css
+  Description: Estilos para botón de limpiar campo en inputs
+  ----------------------------------------------------------------------------------------
+  Author: Sistema
+==========================================================================================*/
+
+/* Contenedor relativo para el input con botón de limpiar */
+.input-clear-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+/* Botón de limpiar flotante */
+.input-clear-btn {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: #6c757d;
+    font-size: 18px;
+    line-height: 1;
+    padding: 4px 6px;
+    cursor: pointer;
+    z-index: 10;
+    opacity: 0.6;
+    transition: opacity 0.2s ease, color 0.2s ease;
+    display: none;
+}
+
+.input-clear-btn:hover {
+    opacity: 1;
+    color: #495057;
+}
+
+.input-clear-btn:active {
+    color: #dc3545;
+}
+
+/* Ajustar padding del input para que no se solape con la X */
+.input-clear-wrapper input {
+    padding-right: 35px !important;
+}
