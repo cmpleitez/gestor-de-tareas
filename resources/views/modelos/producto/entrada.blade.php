@@ -2,35 +2,6 @@
 
 @section('css')
     <link href="{{ asset('app-assets/vendors/css/tables/datatable/datatables.min.css') }}" rel="stylesheet">
-    <style>
-        /* Modal de ancho completo en móviles */
-        @media (max-width: 767.98px) {
-            #modalEntrada .modal-dialog {
-                max-width: 100%;
-                margin: 0;
-                height: 100%;
-            }
-
-            #modalEntrada .modal-content {
-                height: 100%;
-                border-radius: 0;
-            }
-        }
-
-        /* Modal más ancha en tablets y pantallas grandes */
-        @media (min-width: 768px) {
-            #modalEntrada .modal-dialog {
-                max-width: 800px;
-            }
-        }
-
-        /* Modal aún más ancha en desktops y laptops */
-        @media (min-width: 992px) {
-            #modalEntrada .modal-dialog {
-                max-width: 900px;
-            }
-        }
-    </style>
 @stop
 
 @section('contenedor')
@@ -71,13 +42,14 @@
                                             </td>
                                             {{-- TABLERO DE CONTROL --}}
                                             <td class="text-center">
-                                                @can('editar') {{-- AGREGAR ENTRADA --}}
+                                                @can('editar')
+                                                    {{-- AGREGAR ENTRADA --}}
                                                     <div class="btn-group" role="group" aria-label="label">
                                                         <a href="#" role="button" data-toggle="modal"
                                                             data-target="#modalEntrada" data-producto-id="{{ $producto->id }}"
                                                             data-producto-nombre="{{ $producto->producto }}"
                                                             data-popup="tooltip-custom" data-html="true" data-placement="bottom"
-                                                            title="<i class='bx bx-log-in-circle'></i> Agregar entrada a {{ $producto->producto }}"
+                                                            title="<i class='bx bx-log-in-circle'></i> Agregar entrada a {!! $producto->producto !!}"
                                                             class="button_edit align-center border border-secondary text-secondary-dark bg-secondary-light">
                                                             <i class="bx bx-log-in-circle"></i>
                                                         </a>
@@ -136,13 +108,11 @@
                         <div class="col-12 col-md-5">
                             <div class="form-group">
                                 <label for="ageSelect">Origen</label>
-                                <select class="form-control" name="age_select" id="ageSelect">
-                                    <option selected disabled>Select your age</option>
-                                    <option>12-18</option>
-                                    <option>18-22</option>
-                                    <option>22-30</option>
-                                    <option>30-60</option>
-                                    <option>Above 60</option>
+                                <select class="form-control" name="tipo_entrada_id" id="tipo_entrada_id">
+                                    <option selected disabled>Stock Origen</option>
+                                    @foreach ($tipo_entradas as $tipo_entrada)
+                                        <option value="{{ $tipo_entrada->id }}">{{ $tipo_entrada->tipo_entrada }} - {{ $tipo_entrada->stock->stock }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
@@ -180,16 +150,13 @@
     <script src="{{ asset('app-assets/vendors/js/tables/datatable/buttons.bootstrap.min.js') }}"></script>
     <script src="{{ asset('app-assets/vendors/js/tables/datatable/pdfmake.min.js') }}"></script>
     <script src="{{ asset('app-assets/vendors/js/tables/datatable/vfs_fonts.js') }}"></script>
-
-    {{-- Componente de orientación para tablas --}}
+    {{-- ORIENTACIÓN PARA TABLAS EN MÓVILES --}}
     @include('components.orientation-manager')
-
     <script>
-        // ===== CONFIGURACIÓN MÍNIMA Y FUNCIONAL =====
+        
         $(document).ready(function() {
-
-            // Inicializar DataTable de forma básica
-            if ($.fn.DataTable) {
+            // CONFIGURACIÓN PARA LOS DATATABLES
+            if ($.fn.DataTable) { // Inicializar DataTable de forma básica
                 $('.zero-configuration').DataTable({
                     "language": {
                         "url": "/app-assets/Spanish.json"
@@ -197,29 +164,21 @@
                     "pageLength": 10
                 });
             }
-
-            // Inicializar tooltips de Bootstrap 4 con HTML habilitado
-            $('[data-toggle="tooltip"]').tooltip({
+            $('[data-toggle="tooltip"], [data-popup="tooltip-custom"]').tooltip({ // Inicializar tooltips de Bootstrap 4 con HTML habilitado
                 html: true,
                 placement: 'bottom'
             });
-
-            // Actualizar modal con datos del producto cuando se abre
-            $('#modalEntrada').on('show.bs.modal', function(event) {
-                var button = $(event.relatedTarget); // Botón que activó el modal
-                var productoNombre = button.data('producto-nombre'); // Obtener nombre del producto
-                var productoId = button.data('producto-id'); // Obtener ID del producto
-
-                // Actualizar el contenido del modal con el nombre del producto
-                var modal = $(this);
+            // CONFIGURACIÓN PARA EL MODAL DE ENTRADA
+            $('#modalEntrada').on('show.bs.modal', function(event) { // Actualizar modal con datos del producto cuando se abre
+                var button = $(event.relatedTarget);
+                var productoNombre = button.data('producto-nombre');
+                var productoId = button.data('producto-id');
+                var modal = $(this); // Actualizar el contenido del modal con el nombre del producto
                 modal.find('#modalProductoNombre').text(productoNombre);
             });
-
-            // Limpiar formato de Inputmask antes de enviar el formulario (preparación para futuro formulario)
-            $('#modalEntrada').on('submit', 'form', function(e) {
+            $('#modalEntrada').on('submit', 'form', function(e) { // Limpiar formato de Inputmask antes de enviar el formulario (preparación para futuro formulario)
                 var unidadesInput = $('#unidades');
                 if (unidadesInput.length && unidadesInput[0].inputmask) {
-                    // Obtener el valor sin formato usando unmaskedvalue()
                     var unidadesValue = unidadesInput.inputmask('unmaskedvalue');
                     unidadesInput.val(unidadesValue);
                 }

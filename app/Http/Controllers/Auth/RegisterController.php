@@ -32,23 +32,24 @@ class RegisterController extends Controller
             return back()->with('error', 'No tienes permisos para realizar esta acción.');
         }
         $validated = Validator::make($request->all(), [ // Validación
-            'name'               => ['required', 'string', 'max:255', 'regex:/^(?! )[a-zA-ZáéíóúÁÉÍÓÚ]+( [a-zA-ZáéíóúÁÉÍÓÚ]+)*$/'],
+            'name'               => ['required', 'string', 'min:3', 'max:255', 'regex:/^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$/'],
             'email'              => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')],
             'dui'                => ['required', 'string', Rule::unique('users', 'dui'), new ValidDui],
-            'password'           => ['required', 'string', 'min:8', 'confirmed'],
+            'password'           => ['required', 'string', 'min:6', 'max:16', 'confirmed'],
             'terms'              => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
             'profile_photo_path' => ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:5120'],
         ], [
             'profile_photo_path.mimes' => 'Solo se permiten imágenes en formato JPG, JPEG o PNG.',
             'profile_photo_path.max'   => 'El archivo no debe exceder de 5 MB.',
             'profile_photo_path.image' => 'El archivo debe ser una imagen válida.',
-            'name.regex'               => 'El nombre no debe contener espacios en blanco al inicio o al final.',
-            'name.required'            => 'El nombre es requerido.',
+            'name.regex'               => 'Solo se permiten letras, sin espacios al inicio/final ni dobles espacios.',
+            'name.required'            => 'Este campo es obligatorio.',
             'name.string'              => 'El nombre debe ser una cadena de texto.',
+            'name.min'                 => 'El nombre debe tener al menos 3 caracteres.',
             'name.max'                 => 'El nombre no debe exceder de 255 caracteres.',
             'email.required'           => 'El email es requerido.',
             'email.string'             => 'El email debe ser una cadena de texto.',
-            'email.email'              => 'El email debe ser una dirección de email válida.',
+            'email.email'              => 'Debe ser un correo electrónico válido.',
             'email.max'                => 'El email no debe exceder de 255 caracteres.',
             'email.unique'             => 'El email ya está registrado.',
             'dui.required'             => 'El DUI es requerido.',
@@ -56,8 +57,9 @@ class RegisterController extends Controller
             'dui.unique'               => 'El DUI ya está registrado.',
             'password.required'        => 'La contraseña es requerida.',
             'password.string'          => 'La contraseña debe ser una cadena de texto.',
-            'password.min'             => 'La contraseña debe tener al menos 8 caracteres.',
-            'password.confirmed'       => 'La contraseña no coincide.',
+            'password.min'             => 'La contraseña debe tener al menos 6 caracteres.',
+            'password.max'             => 'La contraseña debe tener máximo 16 caracteres.',
+            'password.confirmed'       => 'Las contraseñas no coinciden.',
         ])->validate();
         try {
             DB::beginTransaction();

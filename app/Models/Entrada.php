@@ -15,9 +15,14 @@ class Entrada extends Model
         return $this->belongsTo(Producto::class);
     }
 
-    public function stock()
+    public function stockOrigen()
     {
-        return $this->belongsTo(Stock::class);
+        return $this->belongsTo(Stock::class, 'stock_origen_id');
+    }
+
+    public function stockDestino()
+    {
+        return $this->belongsTo(Stock::class, 'stock_destino_id');
     }
 
     public function user()
@@ -28,11 +33,6 @@ class Entrada extends Model
     public function oficina()
     {
         return $this->belongsTo(Oficina::class);
-    }
-
-    public function tipoEntrada()
-    {
-        return $this->belongsTo(TipoEntrada::class);
     }
 
 }

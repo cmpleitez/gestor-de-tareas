@@ -122,10 +122,12 @@ SERVICIOS:
             .Revisión de tracking
                 Recien comprados -> En transito
             .Recepción para bodega
+                Bodega
             .Recepción para Estante de Reservados
-        
-        
-        
+                Estante de reservados
+
+
+
         🪒tienda
         🪒orden de compra para:
             . carrito

@@ -34,10 +34,26 @@ class UserController extends Controller
     {
         //VALIDANDO
         $validated = $request->validate([
-            'name'               => 'sometimes|required|string|max:255',
-            'email'              => ['email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
-            'oficina_id'         => 'required|numeric|exists:oficinas,id',
-            'profile_photo_path' => 'nullable|image|max:1024',
+            'name'               => ['sometimes', 'required', 'string', 'min:3', 'max:255', 'regex:/^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$/'],
+            'email'              => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
+            'oficina_id'         => ['required', 'numeric', 'exists:oficinas,id'],
+            'profile_photo_path' => ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:5120'],
+        ], [
+            'name.required'            => 'Este campo es obligatorio.',
+            'name.string'              => 'El nombre debe ser una cadena de texto.',
+            'name.min'                 => 'El nombre debe tener al menos 3 caracteres.',
+            'name.max'                 => 'El nombre no debe exceder de 255 caracteres.',
+            'name.regex'               => 'Solo se permiten letras, sin espacios al inicio/final ni dobles espacios.',
+            'email.required'           => 'El email es requerido.',
+            'email.email'              => 'Debe ser un correo electrónico válido.',
+            'email.max'                => 'El email no debe exceder de 255 caracteres.',
+            'email.unique'             => 'El email ya está registrado.',
+            'oficina_id.required'      => 'Este campo es obligatorio.',
+            'oficina_id.numeric'       => 'La oficina debe ser un valor numérico.',
+            'oficina_id.exists'        => 'La oficina seleccionada no es válida.',
+            'profile_photo_path.image' => 'El archivo debe ser una imagen válida.',
+            'profile_photo_path.mimes' => 'Solo se permiten imágenes en formato JPG, JPEG o PNG.',
+            'profile_photo_path.max'   => 'El archivo no debe exceder de 5 MB.',
         ]);
         // Restringir cambio de name si existen recepciones asociadas como destino
         $incomingName = $request->input('name');

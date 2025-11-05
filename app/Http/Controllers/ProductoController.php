@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Producto;
+use App\Models\TipoEntrada;
 
 class ProductoController extends Controller
 {
@@ -17,8 +18,9 @@ class ProductoController extends Controller
 
     public function entrada()
     {
+        $tipos_entradas = TipoEntrada::all();
         $productos = Producto::where('activo', true)->with('modelo', 'tipo')->get();
-        return view('modelos.producto.entrada', compact('productos'));
+        return view('modelos.producto.entrada', compact('productos', 'tipo_entradas'));
     }
 
 

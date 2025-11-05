@@ -60,12 +60,14 @@
                                     <div class="form-group">
                                         <label>Equipo</label>
                                         <div class="controls">
-                                            <input type="text" name="equipo"
+                                            <input type="text" name="equipo" id="equipo"
                                                 class="form-control {{ $errors->has('equipo') ? 'is-invalid' : '' }}"
-                                                data-validation-required-message="El nombre del equipo es requerido"
+                                                data-validation-required-message="Este campo es obligatorio"
                                                 data-validation-containsnumber-regex="^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$"
-                                                data-validation-containsnumber-message="El nombre debe contener solo letras (incluyendo tildes), no se permiten dobles espacios entre palabras, ni espacios al principio o final de las palabras."
-                                                placeholder="Nombre del nuevo equipo" value="{{ old('equipo') }}" required>
+                                                data-validation-containsnumber-message="Solo se permiten letras, sin espacios al inicio/final ni dobles espacios"
+                                                data-validation-minlength-message="El nombre debe tener al menos 3 caracteres"
+                                                data-clear="true" minlength="3" placeholder="Nombre del nuevo equipo"
+                                                value="{{ old('equipo') }}" required>
                                             @error('equipo')
                                                 <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
                                                     {{ $errors->first('equipo') }}

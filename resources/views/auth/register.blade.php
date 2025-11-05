@@ -29,6 +29,7 @@
     <link href="{{ asset('app-assets/css/core/menu/menu-types/vertical-menu.css') }}" rel="stylesheet">
     <link href="{{ asset('app-assets/css/pages/dashboard-analytics.css') }}" rel="stylesheet">
     <link href="{{ asset('app-assets/css/plugins/forms/validation/form-validation.css') }}" rel="stylesheet">
+    <link href="{{ asset('app-assets/css/plugins/forms/input-clear.css') }}" rel="stylesheet">
     <link href="{{ asset('app-assets/css/plugins/extensions/toastr.css') }}" rel="stylesheet">
     <!-- END: All CSS-->
 
@@ -247,7 +248,7 @@
                     </div>
                 </div>
                 <form class="form-horizontal" action="{{ route('register') }}" method="POST"
-                    enctype="multipart/form-data"> {{-- Contenido --}}
+                    enctype="multipart/form-data" novalidate> {{-- Contenido --}}
                     @csrf
                     <div class="card-content">
                         <div class="card-body">
@@ -256,13 +257,14 @@
                                     <div class="form-group">
                                         <label>Nombre</label>
                                         <div class="controls">
-                                            <input type="text" name="name"
+                                            <input type="text" name="name" id="name"
                                                 class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}"
-                                                data-validation-required-message="El nombre es requerido"
+                                                data-validation-required-message="Este campo es obligatorio"
                                                 data-validation-containsnumber-regex="^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$"
-                                                data-validation-containsnumber-message="El nombre debe contener solo letras (incluyendo tildes), no se permiten dobles espacios entre palabras, ni espacios al principio o final de las palabras."
-                                                placeholder="Nombre del nuevo usuario" value="{{ old('name') }}"
-                                                required>
+                                                data-validation-containsnumber-message="Solo se permiten letras, sin espacios al inicio/final ni dobles espacios"
+                                                data-validation-minlength-message="El nombre debe tener al menos 3 caracteres"
+                                                data-clear="true" minlength="3" placeholder="Nombre del nuevo usuario"
+                                                value="{{ old('name') }}" required>
                                             @error('name')
                                                 <div class="col-sm-12 badge bg-danger text-wrap"
                                                     style="margin-top: 0.2rem;">
@@ -276,11 +278,13 @@
                                     <div class="form-group">
                                         <label>DUI</label>
                                         <div class="controls">
-                                            <input type="text" name="dui" maxlength="9" minlength="9"
+                                            <input type="text" name="dui" id="dui" maxlength="9"
+                                                minlength="9"
                                                 class="form-control {{ $errors->has('dui') ? 'is-invalid' : '' }}"
-                                                data-validation-required-message="El DUI es requerido"
-                                                data-validation-regex-regex="^[0-9]{9}$"
-                                                data-validation-regex-message="El DUI debe contener exactamente 9 dígitos numéricos, sin guión"
+                                                data-validation-required-message="El DUI es requerido."
+                                                data-validation-regex-regex="^\d{9}$"
+                                                data-validation-regex-message="El D.U.I. ingresado no es válido."
+                                                data-clear="true"
                                                 placeholder="Ingrese los 9 dígitos del DUI sin guión"
                                                 value="{{ old('dui') }}" required>
                                             @error('dui')
@@ -294,13 +298,13 @@
                                 </div>
                                 <div class="col-sm-12"> {{-- Fotografia --}}
                                     <div class="form-group">
-                                        <label>Fotografia del Operador <small class="text-muted">(Máximo 512KB, solo
+                                        <label>Fotografia del Operador <small class="text-muted">(Máximo 5 MB, solo
                                                 JPEG/PNG)</small></label>
                                         <input type="file" name="profile_photo_path" class="form-control"
                                             style="padding-bottom: 35px;" accept="image/jpeg,image/jpg,image/png"
-                                            onchange="validateFileSize(this, 0.5)">
+                                            onchange="validateFileSize(this, 5)">
                                         <small class="form-text text-muted">Formatos permitidos: JPEG, JPG, PNG. Tamaño
-                                            máximo: 512KB</small>
+                                            máximo: 5 MB</small>
                                     </div>
                                     @error('profile_photo_path')
                                         <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
@@ -312,9 +316,11 @@
                                     <div class="form-group">
                                         <label>Correo electrónico</label>
                                         <div class="controls">
-                                            <input type="email" name="email" class="form-control"
-                                                placeholder="correo@ejemplo.com"
-                                                data-validation-required-message="El correo electrónico es requerido"
+                                            <input type="email" name="email" id="email"
+                                                class="form-control {{ $errors->has('email') ? 'is-invalid' : '' }}"
+                                                data-validation-required-message="El email es requerido."
+                                                data-validation-email-message="Debe ser un correo electrónico válido"
+                                                data-clear="true" placeholder="correo@ejemplo.com"
                                                 value="{{ old('email') }}" required>
                                         </div>
                                         @error('email')
@@ -330,8 +336,11 @@
                                     <div class="form-group">
                                         <label>Clave</label>
                                         <div class="controls">
-                                            <input type="password" name="password" class="form-control"
-                                                data-validation-required-message="La clave debe ser una cadena de 6 a 16 caracteres"
+                                            <input type="password" name="password" id="password"
+                                                class="form-control {{ $errors->has('password') ? 'is-invalid' : '' }}"
+                                                data-validation-required-message="La contraseña es requerida."
+                                                data-validation-minlength-message="La contraseña debe tener al menos 6 caracteres."
+                                                data-validation-maxlength-message="La contraseña debe tener máximo 16 caracteres."
                                                 minlength="6" maxlength="16"
                                                 placeholder="Una contraseña de 6 a 16 caracteres"
                                                 value="{{ old('password') }}" required>
@@ -347,9 +356,12 @@
                                     <div class="form-group">
                                         <label>Confirmar clave</label>
                                         <div class="controls">
-                                            <input type="password" name="password_confirmation" class="form-control"
+                                            <input type="password" name="password_confirmation"
+                                                id="password_confirmation"
+                                                class="form-control {{ $errors->has('password_confirmation') ? 'is-invalid' : '' }}"
                                                 data-validation-match-match="password"
-                                                data-validation-required-message="Se requiere una clave de confirmación"
+                                                data-validation-required-message="Este campo es obligatorio"
+                                                data-validation-match-message="Las contraseñas no coinciden."
                                                 minlength="6" maxlength="16" placeholder="Clave de confirmación"
                                                 value="{{ old('password_confirmation') }}" required>
                                         </div>
@@ -396,7 +408,9 @@
     <script src="{{ asset('app-assets/fonts/LivIconsEvo/js/LivIconsEvo.defaults.js') }}"></script>
     <script src="{{ asset('app-assets/fonts/LivIconsEvo/js/LivIconsEvo.min.js') }}"></script>
     <script src="{{ asset('app-assets/vendors/js/forms/validation/jqBootstrapValidation.js') }}"></script>
+    <script src="{{ asset('app-assets/js/scripts/forms/validation/form-validation.js') }}"></script>
     <script src="{{ asset('app-assets/vendors/js/forms/select/select2.full.min.js') }}"></script>
+    <script src="{{ asset('app-assets/js/scripts/forms/input-clear.js') }}"></script>
     <script src="{{ asset('app-assets/js/scripts/configs/vertical-menu-light.js') }}"></script>
     <script src="{{ asset('app-assets/js/core/app-menu.js') }}"></script>
     <script src="{{ asset('app-assets/js/core/app.js') }}"></script>

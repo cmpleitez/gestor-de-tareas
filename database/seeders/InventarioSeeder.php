@@ -173,10 +173,10 @@ class InventarioSeeder extends Seeder
 
         //CREACION DE TIPOS DE ENTRADAS
         $tipos_entradas = [
-            ['id' => 1, 'tipo_entrada' => 'Recien pedidos'],
+            ['id' => 1, 'tipo_entrada' => 'Recien comprados'],
             ['id' => 2, 'tipo_entrada' => 'En transito'],
             ['id' => 3, 'tipo_entrada' => 'Bodega'],
-            ['id' => 4, 'tipo_entrada' => 'Estante de Reservados'],
+            ['id' => 4, 'tipo_entrada' => 'Estante de reservados'],
         ];
         foreach ($tipos_entradas as $tipo_entrada) {
             TipoEntrada::firstOrCreate(['id' => $tipo_entrada['id'], 'tipo_entrada' => $tipo_entrada['tipo_entrada']]);
