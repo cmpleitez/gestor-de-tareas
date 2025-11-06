@@ -79,62 +79,83 @@
 
     {{-- MODAL DE ENTRADA --}}
     <div class="modal fade" id="modalEntrada" tabindex="-1" role="dialog" aria-labelledby="modalEntradaLabel"
-        aria-hidden="true">
+        aria-hidden="true" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-md" role="document">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalEntradaLabel">
-                        Entrada de producto
-                    </h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body text-center">
-                    <div class="row p-1">
-                        <div class="col-12">
-                            <p id="modalProductoNombre"></p>
+                <form id="formEntrada" action="{{ route('producto.ingreso') }}" method="POST" novalidate>
+                    @csrf
+                    <input type="hidden" name="producto_id" id="producto_id">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalEntradaLabel">
+                            Entrada de producto
+                        </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <div class="row p-1">
+                            <div class="col-12">
+                                <p id="modalProductoNombre"></p>
+                            </div>
+                        </div>
+                        <div class="row p-1">
+                            <div class="col-12 col-md-2">
+                                <div class="form-group">
+                                    <label for="unidades">Unidades</label>
+                                    <div class="controls">
+                                        <input type="text" class="form-control text-center" name="unidades"
+                                            id="unidades"
+                                            data-inputmask="'alias': 'numeric', 'groupSeparator': ',', 'digits': 0, 'rightAlign': false"
+                                            data-validation-regex-regex="^[1-9]\d*(?:,\d{3})*$"
+                                            data-validation-regex-message="El cero no es válido" required
+                                            data-validation-required-message="Este campo es obligatorio">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-5">
+                                <div class="form-group">
+                                    <label for="ageSelect">Desde</label>
+                                    <div class="controls">
+                                        <select class="form-control" name="origen_stock_id" id="origen_stock_id" required
+                                            form="formEntrada">
+                                            @foreach ($stocks as $stock)
+                                                <option value="{{ $stock->id }}">{{ $stock->stock }}</option>
+                                            @endforeach
+                                        </select>
+                                        @error('origen_stock_id')
+                                            <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                                {{ $errors->first('origen_stock_id') }}
+                                            </div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-5">
+                                <div class="form-group">
+                                    <label for="ageSelect">Hacia</label>
+                                    <div class="controls">
+                                        <select class="form-control" name="destino_stock_id" id="destino_stock_id"
+                                            required form="formEntrada">
+                                            @foreach ($stocks as $stock)
+                                                <option value="{{ $stock->id }}">{{ $stock->stock }}</option>
+                                            @endforeach
+                                        </select>
+                                        @error('destino_stock_id')
+                                            <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                                {{ $errors->first('destino_stock_id') }}
+                                            </div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="row p-1">
-                        <div class="col-12 col-md-2">
-                            <div class="form-group">
-                                <label for="unidades">Unidades</label>
-                                <input type="text" class="form-control text-center" name="unidades" id="unidades"
-                                    data-inputmask="'alias': 'numeric', 'groupSeparator': ',', 'digits': 0, 'rightAlign': false"
-                                    required>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-5">
-                            <div class="form-group">
-                                <label for="ageSelect">Origen</label>
-                                <select class="form-control" name="tipo_entrada_id" id="tipo_entrada_id">
-                                    <option selected disabled>Stock Origen</option>
-                                    @foreach ($tipo_entradas as $tipo_entrada)
-                                        <option value="{{ $tipo_entrada->id }}">{{ $tipo_entrada->tipo_entrada }} - {{ $tipo_entrada->stock->stock }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-5">
-                            <div class="form-group">
-                                <label for="ageSelect">Destino</label>
-                                <select class="form-control" name="age_select" id="ageSelect">
-                                    <option selected disabled>Select your age</option>
-                                    <option>12-18</option>
-                                    <option>18-22</option>
-                                    <option>22-30</option>
-                                    <option>30-60</option>
-                                    <option>Above 60</option>
-                                </select>
-                            </div>
-                        </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" id="btnRegistrar">Registrar</button>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" id="btnRegistrar">Registrar</button>
-                </div>
+                </form>
             </div>
         </div>
     </div>
@@ -153,7 +174,6 @@
     {{-- ORIENTACIÓN PARA TABLAS EN MÓVILES --}}
     @include('components.orientation-manager')
     <script>
-        
         $(document).ready(function() {
             // CONFIGURACIÓN PARA LOS DATATABLES
             if ($.fn.DataTable) { // Inicializar DataTable de forma básica
@@ -164,23 +184,40 @@
                     "pageLength": 10
                 });
             }
-            $('[data-toggle="tooltip"], [data-popup="tooltip-custom"]').tooltip({ // Inicializar tooltips de Bootstrap 4 con HTML habilitado
-                html: true,
-                placement: 'bottom'
-            });
+            $('[data-toggle="tooltip"], [data-popup="tooltip-custom"]')
+                .tooltip({ // Inicializar tooltips de Bootstrap 4 con HTML habilitado
+                    html: true,
+                    placement: 'bottom'
+                });
             // CONFIGURACIÓN PARA EL MODAL DE ENTRADA
-            $('#modalEntrada').on('show.bs.modal', function(event) { // Actualizar modal con datos del producto cuando se abre
+            $('#modalEntrada').on('show.bs.modal', function(
+                event) { // Actualizar modal con datos del producto cuando se abre
                 var button = $(event.relatedTarget);
                 var productoNombre = button.data('producto-nombre');
                 var productoId = button.data('producto-id');
                 var modal = $(this); // Actualizar el contenido del modal con el nombre del producto
                 modal.find('#modalProductoNombre').text(productoNombre);
+                modal.find('#producto_id').val(productoId);
             });
-            $('#modalEntrada').on('submit', 'form', function(e) { // Limpiar formato de Inputmask antes de enviar el formulario (preparación para futuro formulario)
-                var unidadesInput = $('#unidades');
+            //COMPLETANDO VALIDACIÓN DEL FORMULARIO MODAL
+            $('#formEntrada').on('submit', function(e) {
+                var origenVal = $('#origen_stock_id').val(); //Stocks origen y destino deden ser diferentes
+                var destinoVal = $('#destino_stock_id').val();
+                if (origenVal && destinoVal && origenVal === destinoVal) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (typeof toastr !== 'undefined') {
+                        toastr.error('El stock origen y destino no deben ser iguales', '', {
+                            positionClass: 'toast-bottom-right'
+                        });
+                    }
+                    return false;
+                }
+                var unidadesInput = $(
+                    '#unidades'); // Limpiar formato de Inputmask antes de enviar el formulario
                 if (unidadesInput.length && unidadesInput[0].inputmask) {
-                    var unidadesValue = unidadesInput.inputmask('unmaskedvalue');
-                    unidadesInput.val(unidadesValue);
+                    var unmasked = unidadesInput.inputmask('unmaskedvalue');
+                    unidadesInput.val(unmasked);
                 }
             });
         });

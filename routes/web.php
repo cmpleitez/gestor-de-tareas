@@ -144,7 +144,7 @@ Route::middleware([
         Route::group(['prefix' => 'producto'], function () {
             Route::get('/', [ProductoController::class, 'index'])->name('producto');
             Route::get('entrada', [ProductoController::class, 'entrada'])->name('producto.entrada');
-            Route::get('agregar', [ProductoController::class, 'agregar'])->name('producto.agregar');
+            Route::post('ingreso', [ProductoController::class, 'ingreso'])->name('producto.ingreso');
         });
     });
 });

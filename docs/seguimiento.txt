@@ -114,10 +114,6 @@ PLATAFORMA:
 SERVICIOS:
     ...🟢 Crear inventario de servicios a construir y la lista debe estar en orden "consecuencial", es decir en secuencia causal o causa y efecto, sería según procedimiento establecido
 
-        
-        ...🪒re-diseñando diagrama de datos: entradas/stock/stock/tipos
-            el problema actual consiste en que la tabla stocks tiene llave triple y en la tabla entradas esta originando triple foranea para el origen y triple foránea para el destino
-
         ...🪒registro de entradas (a los 4 tipos de stocks)
             .Compra
                 Recien comprados
@@ -127,6 +123,8 @@ SERVICIOS:
                 Bodega
             .Recepción para Estante de Reservados
                 Estante de reservados
+
+                    ... verificando cuantas unidades hay en el stock origen
 
         🪒tienda
         🪒orden de compra para:
