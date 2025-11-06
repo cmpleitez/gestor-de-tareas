@@ -6,7 +6,7 @@ use App\Models\Tipo;
 use App\Models\Marca;
 use App\Models\Modelo;
 use App\Models\Producto;
-use App\Models\TipoEntrada;
+use App\Models\Entrada;
 
 class InventarioSeeder extends Seeder
 {
@@ -116,72 +116,17 @@ class InventarioSeeder extends Seeder
 
         //CREACION DE STOCKS
         $stocks = [
-            // producto_id = 1
-            ['id' => 1, 'oficina_id' => 1, 'producto_id' => 1, 'stock' => 'Bodega', 'unidades' => 110],
-            ['id' => 2, 'oficina_id' => 1, 'producto_id' => 1, 'stock' => 'Estante de reservados', 'unidades' => 24],
-            ['id' => 3, 'oficina_id' => 1, 'producto_id' => 1, 'stock' => 'Entrantes reservados en tránsito', 'unidades' => 58],
-            ['id' => 4, 'oficina_id' => 1, 'producto_id' => 1, 'stock' => 'Comprados en espera de entrega', 'unidades' => 172],
-            // producto_id = 2
-            ['id' => 5, 'oficina_id' => 1, 'producto_id' => 2, 'stock' => 'Bodega', 'unidades' => 47],
-            ['id' => 6, 'oficina_id' => 1, 'producto_id' => 2, 'stock' => 'Estante de reservados', 'unidades' => 18],
-            ['id' => 7, 'oficina_id' => 1, 'producto_id' => 2, 'stock' => 'Entrantes reservados en tránsito', 'unidades' => 199],
-            ['id' => 8, 'oficina_id' => 1, 'producto_id' => 2, 'stock' => 'Comprados en espera de entrega', 'unidades' => 156],
-            // producto_id = 3
-            ['id' => 9, 'oficina_id' => 1, 'producto_id' => 3, 'stock' => 'Bodega', 'unidades' => 61],
-            ['id' => 10, 'oficina_id' => 1, 'producto_id' => 3, 'stock' => 'Estante de reservados', 'unidades' => 32],
-            ['id' => 11, 'oficina_id' => 1, 'producto_id' => 3, 'stock' => 'Entrantes reservados en tránsito', 'unidades' => 83],
-            ['id' => 12, 'oficina_id' => 1, 'producto_id' => 3, 'stock' => 'Comprados en espera de entrega', 'unidades' => 13],
-            // producto_id = 4
-            ['id' => 13, 'oficina_id' => 1, 'producto_id' => 4, 'stock' => 'Bodega', 'unidades' => 146],
-            ['id' => 14, 'oficina_id' => 1, 'producto_id' => 4, 'stock' => 'Estante de reservados', 'unidades' => 71],
-            ['id' => 15, 'oficina_id' => 1, 'producto_id' => 4, 'stock' => 'Entrantes reservados en tránsito', 'unidades' => 38],
-            ['id' => 16, 'oficina_id' => 1, 'producto_id' => 4, 'stock' => 'Comprados en espera de entrega', 'unidades' => 101],
-            // producto_id = 5
-            ['id' => 17, 'oficina_id' => 1, 'producto_id' => 5, 'stock' => 'Bodega', 'unidades' => 190],
-            ['id' => 18, 'oficina_id' => 1, 'producto_id' => 5, 'stock' => 'Estante de reservados', 'unidades' => 14],
-            ['id' => 19, 'oficina_id' => 1, 'producto_id' => 5, 'stock' => 'Entrantes reservados en tránsito', 'unidades' => 57],
-            ['id' => 20, 'oficina_id' => 1, 'producto_id' => 5, 'stock' => 'Comprados en espera de entrega', 'unidades' => 120],
-            // producto_id = 6
-            ['id' => 21, 'oficina_id' => 1, 'producto_id' => 6, 'stock' => 'Bodega', 'unidades' => 22],
-            ['id' => 22, 'oficina_id' => 1, 'producto_id' => 6, 'stock' => 'Estante de reservados', 'unidades' => 125],
-            ['id' => 23, 'oficina_id' => 1, 'producto_id' => 6, 'stock' => 'Entrantes reservados en tránsito', 'unidades' => 65],
-            ['id' => 24, 'oficina_id' => 1, 'producto_id' => 6, 'stock' => 'Comprados en espera de entrega', 'unidades' => 34],
-            // producto_id = 7
-            ['id' => 25, 'oficina_id' => 1, 'producto_id' => 7, 'stock' => 'Bodega', 'unidades' => 54],
-            ['id' => 26, 'oficina_id' => 1, 'producto_id' => 7, 'stock' => 'Estante de reservados', 'unidades' => 180],
-            ['id' => 27, 'oficina_id' => 1, 'producto_id' => 7, 'stock' => 'Entrantes reservados en tránsito', 'unidades' => 40],
-            ['id' => 28, 'oficina_id' => 1, 'producto_id' => 7, 'stock' => 'Comprados en espera de entrega', 'unidades' => 75],
-            // producto_id = 8
-            ['id' => 29, 'oficina_id' => 1, 'producto_id' => 8, 'stock' => 'Bodega', 'unidades' => 18],
-            ['id' => 30, 'oficina_id' => 1, 'producto_id' => 8, 'stock' => 'Estante de reservados', 'unidades' => 163],
-            ['id' => 31, 'oficina_id' => 1, 'producto_id' => 8, 'stock' => 'Entrantes reservados en tránsito', 'unidades' => 120],
-            ['id' => 32, 'oficina_id' => 1, 'producto_id' => 8, 'stock' => 'Comprados en espera de entrega', 'unidades' => 94],
-            // producto_id = 9
-            ['id' => 33, 'oficina_id' => 1, 'producto_id' => 9, 'stock' => 'Bodega', 'unidades' => 76],
-            ['id' => 34, 'oficina_id' => 1, 'producto_id' => 9, 'stock' => 'Estante de reservados', 'unidades' => 36],
-            ['id' => 35, 'oficina_id' => 1, 'producto_id' => 9, 'stock' => 'Entrantes reservados en tránsito', 'unidades' => 112],
-            ['id' => 36, 'oficina_id' => 1, 'producto_id' => 9, 'stock' => 'Comprados en espera de entrega', 'unidades' => 150],
-            // producto_id = 10
-            ['id' => 37, 'oficina_id' => 1, 'producto_id' => 10, 'stock' => 'Bodega', 'unidades' => 29],
-            ['id' => 38, 'oficina_id' => 1, 'producto_id' => 10, 'stock' => 'Estante de reservados', 'unidades' => 200],
-            ['id' => 39, 'oficina_id' => 1, 'producto_id' => 10, 'stock' => 'Entrantes reservados en tránsito', 'unidades' => 88],
-            ['id' => 40, 'oficina_id' => 1, 'producto_id' => 10, 'stock' => 'Comprados en espera de entrega', 'unidades' => 10],
+            ['id' => 1, 'stock' => 'Bodega'],
+            ['id' => 2, 'stock' => 'Estante de reservados'],
+            ['id' => 3, 'stock' => 'Reservados en tránsito'],
+            ['id' => 4, 'stock' => 'Recién comprados'],
         ];
         foreach ($stocks as $stock) {
-            Stock::firstOrCreate(['id' => $stock['id'], 'oficina_id' => $stock['oficina_id'], 'producto_id' => $stock['producto_id'], 'stock' => $stock['stock'], 'unidades' => $stock['unidades']]);
-        }        
-
-        //CREACION DE TIPOS DE ENTRADAS
-        $tipos_entradas = [
-            ['id' => 1, 'tipo_entrada' => 'Recien comprados'],
-            ['id' => 2, 'tipo_entrada' => 'En transito'],
-            ['id' => 3, 'tipo_entrada' => 'Bodega'],
-            ['id' => 4, 'tipo_entrada' => 'Estante de reservados'],
-        ];
-        foreach ($tipos_entradas as $tipo_entrada) {
-            TipoEntrada::firstOrCreate(['id' => $tipo_entrada['id'], 'tipo_entrada' => $tipo_entrada['tipo_entrada']]);
+            Stock::firstOrCreate([
+                'id'    => $stock['id'],
+                'stock' => $stock['stock'],
+            ]);
         }
-
 
     }
 }

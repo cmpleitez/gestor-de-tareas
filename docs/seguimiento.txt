@@ -128,7 +128,6 @@ SERVICIOS:
             .Recepción para Estante de Reservados
                 Estante de reservados
 
-
         🪒tienda
         🪒orden de compra para:
             . carrito

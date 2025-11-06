@@ -10,10 +10,7 @@ return new class extends Migration
     {
         Schema::create('stocks', function (Blueprint $table) {
             $table->unsignedBigInteger('id')->primary();
-            $table->foreignId('oficina_id')->constrained('oficinas');
-            $table->foreignId('producto_id')->constrained('productos');
-            $table->string('stock');
-            $table->bigInteger('unidades');
+            $table->string('stock')->unique();
             $table->boolean('activo')->default(true);
             $table->timestamps();
         });

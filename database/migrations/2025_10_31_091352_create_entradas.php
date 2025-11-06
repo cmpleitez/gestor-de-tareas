@@ -12,11 +12,9 @@ return new class extends Migration
             $table->unsignedBigInteger('id')->primary();
             $table->foreignId('oficina_id')->constrained('oficinas');
             $table->foreignId('user_id')->constrained('users');
-            $table->foreignId('stock_id')->constrained('stocks');
-            $table->foreignId('producto_id')->constrained('productos');
-            $table->foreignId('tipo_entrada_id')->constrained('tipo_entradas');
-            $table->foreignId('orientación');
+            $table->string('entrada');
             $table->bigInteger('unidades');
+            $table->string('url_tracking')->nullable();
             $table->boolean('activo')->default(true);
             $table->timestamps();
         });

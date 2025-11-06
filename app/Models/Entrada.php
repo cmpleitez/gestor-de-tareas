@@ -10,29 +10,14 @@ class Entrada extends Model
         'activo' => 'boolean',
     ];
 
-    public function producto()
+    public function oficina()
     {
-        return $this->belongsTo(Producto::class);
-    }
-
-    public function stockOrigen()
-    {
-        return $this->belongsTo(Stock::class, 'stock_origen_id');
-    }
-
-    public function stockDestino()
-    {
-        return $this->belongsTo(Stock::class, 'stock_destino_id');
+        return $this->belongsTo(Oficina::class);
     }
 
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function oficina()
-    {
-        return $this->belongsTo(Oficina::class);
     }
 
 }
