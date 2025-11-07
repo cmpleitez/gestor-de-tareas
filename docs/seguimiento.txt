@@ -112,7 +112,8 @@ PLATAFORMA:
     🟢 Vacíar seeders de prueba
     🟢 Estandarizar tamaño y tipo de letra
 SERVICIOS:
-    ...🟢 Crear inventario de servicios a construir y la lista debe estar en orden "consecuencial", es decir en secuencia causal o causa y efecto, sería según procedimiento establecido
+    ...🟢 Crear inventario de servicios a construir y la lista debe estar en orden "consecuencial", es decir en secuencia causal o causa y efecto, 
+    sería según procedimiento establecido
 
         ...🪒registro de entradas (a los 4 tipos de stocks)
             .Compra

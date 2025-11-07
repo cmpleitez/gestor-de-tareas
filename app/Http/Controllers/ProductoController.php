@@ -5,9 +5,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Producto;
 use App\Models\Stock;
 use Illuminate\Http\Request;
+use App\Models\OficinaStock;
 
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
 
 
 class ProductoController extends Controller
@@ -37,28 +37,15 @@ class ProductoController extends Controller
             'unidades'         => 'required|numeric|min:1',
         ]);
 
+        $unidades_disponibles = OficinaStock::where('oficina_id', auth()->user()->oficina_id)->where('stock_id', $request->origen_stock_id)->where('producto_id', $request->producto_id)->first();
 
-        $stock = Stock::find($request->origen_stock_id);
-
-
-        if ($stock) {
-            Log::info('Resultado de la consulta $stock-> en ProductoController@ingreso:', ['stock' => $stock]); // Registrar en el log de Laravel
-            return redirect()->route('producto.entrada')->with('success', 'Entrada creada correctamente');
-
-
-            //return redirect()->route('producto.entrada')->with('error', 'Stock origen no tiene unidades disponibles');
+        if ($unidades_disponibles) {
+            return redirect()->route('producto.entrada')->with('success', 'Ya existen unidades');
         } else {
-/*             $entrada = Entrada::create([
-                'stock_origen_id' => $request->origen_stock_id,
-                'stock_destino_id' => $request->destino_stock_id,
-                'modelo_id' => $request->modelo_id,
-                'tipo_id' => $request->tipo_id,
-                'producto_id' => $request->producto_id,
-                'cantidad' => $request->cantidad,
-            ]);
-*/
-
+            
+            return redirect()->route('producto.entrada')->with('warning', 'No existen unidades disponibles');
         }
+
     }
 
     public function store(Request $request)
