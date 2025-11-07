@@ -30,4 +30,9 @@ class Oficina extends Model
         return $this->hasMany(Atencion::class);
     }
 
+    public function stocks()
+    {
+        return $this->belongsToMany(Stock::class)->withPivot('unidades', 'producto_id');
+    }
+
 }

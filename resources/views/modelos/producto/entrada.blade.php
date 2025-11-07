@@ -84,7 +84,7 @@
             <div class="modal-content">
                 <form id="formEntrada" action="{{ route('producto.ingreso') }}" method="POST" novalidate>
                     @csrf
-                    <input type="hidden" name="producto_id" id="producto_id">
+                    <input type="hidden" name="producto_id" id="producto_id" value="{{ old('producto_id') }}">
                     <div class="modal-header">
                         <h5 class="modal-title" id="modalEntradaLabel">
                             Entrada de producto
@@ -105,11 +105,16 @@
                                     <label for="unidades">Unidades</label>
                                     <div class="controls">
                                         <input type="text" class="form-control text-center" name="unidades"
-                                            id="unidades"
+                                            id="unidades" value="{{ old('unidades') }}"
                                             data-inputmask="'alias': 'numeric', 'groupSeparator': ',', 'digits': 0, 'rightAlign': false"
                                             data-validation-regex-regex="^[1-9]\d*(?:,\d{3})*$"
-                                            data-validation-regex-message="El cero no es válido" required
+                                            data-validation-regex-message="Cero no es válido" required
                                             data-validation-required-message="Este campo es obligatorio">
+                                        @error('unidades')
+                                            <div class="col-sm-12 badge bg-warning text-wrap" style="margin-top: 0.2rem;">
+                                                {{ $errors->first('unidades') }}
+                                            </div>
+                                        @enderror
                                     </div>
                                 </div>
                             </div>
@@ -120,11 +125,14 @@
                                         <select class="form-control" name="origen_stock_id" id="origen_stock_id" required
                                             form="formEntrada">
                                             @foreach ($stocks as $stock)
-                                                <option value="{{ $stock->id }}">{{ $stock->stock }}</option>
+                                                <option
+                                                    value="{{ $stock->id }}"{{ old('origen_stock_id') == $stock->id ? ' selected' : '' }}>
+                                                    {{ $stock->stock }}
+                                                </option>
                                             @endforeach
                                         </select>
                                         @error('origen_stock_id')
-                                            <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                            <div class="col-sm-12 badge bg-warning text-wrap" style="margin-top: 0.2rem;">
                                                 {{ $errors->first('origen_stock_id') }}
                                             </div>
                                         @enderror
@@ -138,11 +146,14 @@
                                         <select class="form-control" name="destino_stock_id" id="destino_stock_id"
                                             required form="formEntrada">
                                             @foreach ($stocks as $stock)
-                                                <option value="{{ $stock->id }}">{{ $stock->stock }}</option>
+                                                <option
+                                                    value="{{ $stock->id }}"{{ old('destino_stock_id') == $stock->id ? ' selected' : '' }}>
+                                                    {{ $stock->stock }}
+                                                </option>
                                             @endforeach
                                         </select>
                                         @error('destino_stock_id')
-                                            <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                            <div class="col-sm-12 badge bg-warning text-wrap" style="margin-top: 0.2rem;">
                                                 {{ $errors->first('destino_stock_id') }}
                                             </div>
                                         @enderror
@@ -152,7 +163,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                         <button type="submit" class="btn btn-primary" id="btnRegistrar">Registrar</button>
                     </div>
                 </form>
@@ -213,13 +224,10 @@
                     }
                     return false;
                 }
-                var unidadesInput = $(
-                    '#unidades'); // Limpiar formato de Inputmask antes de enviar el formulario
-                if (unidadesInput.length && unidadesInput[0].inputmask) {
-                    var unmasked = unidadesInput.inputmask('unmaskedvalue');
-                    unidadesInput.val(unmasked);
-                }
             });
+            @if ($errors->any())
+                $('#modalEntrada').modal('show');
+            @endif
         });
     </script>
 

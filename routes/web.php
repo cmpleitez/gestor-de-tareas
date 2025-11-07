@@ -44,14 +44,9 @@ Route::middleware([
         return view('dashboard');
     })->name('dashboard');
 
-    //ROLES EN GENERAL
-    Route::get('solicitudes', [RecepcionController::class, 'solicitudes'])->name('recepcion.solicitudes');
-    Route::get('equipos/{solicitud}', [recepcionController::class, 'equipos'])->name('recepcion.equipos');
-    Route::get('operadores/{solicitud}', [recepcionController::class, 'operadores'])->name('recepcion.operadores');
-    Route::post('avance-tablero', [RecepcionController::class, 'consultarAvance'])->name('recepcion.consultar-avance');
-    Route::post('nuevas-recibidas', [RecepcionController::class, 'nuevasRecibidas'])->name('recepcion.nuevas-recibidas');
+   
 
-    //SUPER-ADMINISTRADORES
+    //SEGURIDAD
     Route::group(['middleware' => ['role:superadmin']], function () {
         Route::group(['prefix' => 'security'], function () {
             Route::get('/', [SecurityController::class, 'index'])->name('security.index');
@@ -70,8 +65,8 @@ Route::middleware([
         });
     });
 
-    //ADMINISTRADORES y SUPER-ADMINISTRADORES
-    Route::group(['middleware' => ['role:admin|superadmin']], function () {
+    //ENROLAMIENTO
+    Route::group(['middleware' => ['role:admin|superadmin|cliente']], function () {
         Route::group(['prefix' => 'user'], function () { //Usuarios
             Route::get('/', [userController::class, 'index'])->name('user');
             Route::get('edit/{user}', [userController::class, 'edit'])->name('user.edit');
@@ -85,7 +80,6 @@ Route::middleware([
             Route::get('destroy/{user}', [userController::class, 'destroy'])->name('user.destroy');
             Route::post('activate/{user}', [userController::class, 'activate'])->name('user.activate');
         });
-
         Route::group(['prefix' => 'equipo'], function () { //Equipos
             Route::get('/', [equipoController::class, 'index'])->name('equipo');
             Route::get('create', [equipoController::class, 'create'])->name('equipo.create');
@@ -95,7 +89,6 @@ Route::middleware([
             Route::get('destroy/{equipo}', [equipoController::class, 'destroy'])->name('equipo.destroy');
             Route::post('activate/{equipo}', [equipoController::class, 'activate'])->name('equipo.activate');
         });
-
         Route::group(['prefix' => 'tarea'], function () { //Tareas
             Route::get('/', [tareaController::class, 'index'])->name('tarea');
             Route::get('create', [tareaController::class, 'create'])->name('tarea.create');
@@ -105,7 +98,6 @@ Route::middleware([
             Route::get('destroy/{tarea}', [tareaController::class, 'destroy'])->name('tarea.destroy');
             Route::post('activate/{tarea}', [tareaController::class, 'activate'])->name('tarea.activate');
         });
-
         Route::group(['prefix' => 'solicitud'], function () { //Solicitudes
             Route::get('/', [solicitudController::class, 'index'])->name('solicitud');
             Route::get('create', [solicitudController::class, 'create'])->name('solicitud.create');
@@ -119,14 +111,17 @@ Route::middleware([
         });
     });
 
-    //RECEPTORES
+    //GESTIÓN
+    Route::get('solicitudes', [RecepcionController::class, 'solicitudes'])->name('recepcion.solicitudes');
+    Route::get('equipos/{solicitud}', [recepcionController::class, 'equipos'])->name('recepcion.equipos');
+    Route::get('operadores/{solicitud}', [recepcionController::class, 'operadores'])->name('recepcion.operadores');
+    Route::post('avance-tablero', [RecepcionController::class, 'consultarAvance'])->name('recepcion.consultar-avance');
+    Route::post('nuevas-recibidas', [RecepcionController::class, 'nuevasRecibidas'])->name('recepcion.nuevas-recibidas');
     Route::group(['middleware' => ['role:receptor']], function () {
         Route::group(['prefix' => 'recepcion'], function () {
             Route::post('asignar/{recepcion}/{equipo}', [RecepcionController::class, 'asignar'])->name('recepcion.asignar');
         });
     });
-
-    //OPERADORES
     Route::group(['middleware' => ['role:operador']], function () {
         Route::group(['prefix' => 'recepcion'], function () {
             Route::get('tareas/{recepcion_id}', [RecepcionController::class, 'tareas'])->name('recepcion.tareas');
@@ -134,9 +129,7 @@ Route::middleware([
             Route::post('reportar-tarea/{actividad_id}', [RecepcionController::class, 'reportarTarea'])->name('recepcion.reportar-tarea');
         });
     });
-
-    //CLIENTES
-    Route::group(['middleware' => ['role:cliente|superadmin']], function () {
+    Route::group(['middleware' => ['role:cliente|superadmin|admin']], function () {
         Route::group(['prefix' => 'recepcion'], function () {
             Route::get('create', [RecepcionController::class, 'create'])->name('recepcion.create');
             Route::post('store', [RecepcionController::class, 'store'])->name('recepcion.store');
@@ -147,4 +140,19 @@ Route::middleware([
             Route::post('ingreso', [ProductoController::class, 'ingreso'])->name('producto.ingreso');
         });
     });
+
+    //TIENDA
+    Route::group(['middleware' => ['role:cliente|superadmin|admin']], function () {
+        Route::group(['prefix' => 'producto'], function () {
+            Route::get('/', [ProductoController::class, 'index'])->name('producto');
+        });
+    });
+    Route::group(['middleware' => ['role:superadmin|admin']], function () {
+        Route::group(['prefix' => 'producto'], function () {
+            Route::get('entrada', [ProductoController::class, 'entrada'])->name('producto.entrada');
+            Route::post('ingreso', [ProductoController::class, 'ingreso'])->name('producto.ingreso');
+        });
+    });
+
+
 });

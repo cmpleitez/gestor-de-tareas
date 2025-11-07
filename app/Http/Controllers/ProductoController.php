@@ -2,10 +2,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\Entrada;
 use App\Models\Producto;
 use App\Models\Stock;
 use Illuminate\Http\Request;
+
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+
 
 class ProductoController extends Controller
 {
@@ -24,18 +27,25 @@ class ProductoController extends Controller
 
     public function ingreso(Request $request)
     {
-        $request->validate([
+        $request->merge([ //Limpiando máscara de entrada
+            'unidades' => preg_replace('/[\s,]/', '', (string) $request->input('unidades')),
+        ]);
+        $validated = $request->validate([
             'origen_stock_id'  => 'required|different:destino_stock_id|exists:stocks,id',
             'destino_stock_id' => 'required|different:origen_stock_id|exists:stocks,id',
             'producto_id'      => 'required|exists:productos,id',
             'unidades'         => 'required|numeric|min:1',
         ]);
 
-        $stock = Stock::find($request->origen_stock_id)->entradas->count();
 
-        dd($stock);
+        $stock = Stock::find($request->origen_stock_id);
 
-        if ($stock > 0) {
+
+        if ($stock) {
+            Log::info('Resultado de la consulta $stock-> en ProductoController@ingreso:', ['stock' => $stock]); // Registrar en el log de Laravel
+            return redirect()->route('producto.entrada')->with('success', 'Entrada creada correctamente');
+
+
             //return redirect()->route('producto.entrada')->with('error', 'Stock origen no tiene unidades disponibles');
         } else {
 /*             $entrada = Entrada::create([
@@ -46,7 +56,8 @@ class ProductoController extends Controller
                 'producto_id' => $request->producto_id,
                 'cantidad' => $request->cantidad,
             ]);
-            return redirect()->route('producto.entrada')->with('success', 'Entrada creada correctamente'); */
+*/
+
         }
     }
 

@@ -8,20 +8,19 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('entradas', function (Blueprint $table) {
-            $table->unsignedBigInteger('id')->primary();
+        Schema::create('oficina_stock', function (Blueprint $table) {
+            $table->unsignedBigInteger('id');
+            $table->foreignId('stock_id')->constrained('stocks');
             $table->foreignId('oficina_id')->constrained('oficinas');
-            $table->foreignId('user_id')->constrained('users');
-            $table->string('entrada');
+            $table->foreignId('producto_id')->constrained('productos');
             $table->bigInteger('unidades');
-            $table->string('url_tracking')->nullable();
-            $table->boolean('activo')->default(true);
             $table->timestamps();
+            $table->primary(['id', 'oficina_id', 'stock_id', 'producto_id' ]);
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('entradas');
+        Schema::dropIfExists('oficina_stock');
     }
 };

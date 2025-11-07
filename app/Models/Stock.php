@@ -14,9 +14,9 @@ class Stock extends Model
         'activo' => 'boolean',
     ];
 
-    public function entradas()
+    public function oficinas()
     {
-        return $this->belongsToMany(Entrada::class)->withPivot('unidades');
+        return $this->belongsToMany(Oficina::class)->withPivot('unidades', 'producto_id');
     }
 
 }

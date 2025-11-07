@@ -20,4 +20,9 @@ class Entrada extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function oficinaStock()
+    {
+        return $this->belongsTo(OficinaStock::class, 'oficina_stock_id');
+    }
+
 }

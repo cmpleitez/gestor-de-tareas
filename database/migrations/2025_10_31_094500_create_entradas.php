@@ -8,18 +8,21 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('entrada_stock', function (Blueprint $table) {
-            $table->foreignId('entrada_id')->constrained('entradas');
+        Schema::create('entradas', function (Blueprint $table) {
+            $table->unsignedBigInteger('id')->primary();
+            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('oficina_stock_id')->constrained('oficina_stock');
+            $table->foreignId('oficina_id')->constrained('oficinas');
             $table->foreignId('stock_id')->constrained('stocks');
             $table->foreignId('producto_id')->constrained('productos');
+            $table->string('entrada');
             $table->bigInteger('unidades');
-            $table->primary(['entrada_id', 'stock_id', 'producto_id']);
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('entrada_stock');
+        Schema::dropIfExists('entradas');
     }
 };

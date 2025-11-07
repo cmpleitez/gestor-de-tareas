@@ -124,8 +124,6 @@ SERVICIOS:
             .Recepción para Estante de Reservados
                 Estante de reservados
 
-                    ... verificando cuantas unidades hay en el stock origen
-
         🪒tienda
         🪒orden de compra para:
             . carrito
