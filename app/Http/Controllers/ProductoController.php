@@ -30,6 +30,10 @@ class ProductoController extends Controller
         $request->merge([ //Limpiando máscara de entrada
             'unidades' => preg_replace('/[\s,]/', '', (string) $request->input('unidades')),
         ]);
+
+
+return $request->all();
+
         $validated = $request->validate([
             'origen_stock_id'  => 'required|different:destino_stock_id|exists:stocks,id',
             'destino_stock_id' => 'required|different:origen_stock_id|exists:stocks,id',

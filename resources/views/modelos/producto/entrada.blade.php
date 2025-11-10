@@ -120,7 +120,7 @@
                         </div>
                         <div class="col-12 col-md-5">
                             <div class="form-group">
-                                <label for="ageSelect">Desde</label>
+                                <label for="origen_stock_id">Desde</label>
                                 <div class="controls">
                                     <select class="form-control" name="origen_stock_id" id="origen_stock_id" required
                                         form="formEntrada">
@@ -142,7 +142,7 @@
                         </div>
                         <div class="col-12 col-md-5">
                             <div class="form-group">
-                                <label for="ageSelect">Hacia</label>
+                                <label for="destino_stock_id">Hacia</label>
                                 <div class="controls">
                                     <select class="form-control" name="destino_stock_id" id="destino_stock_id" required
                                         form="formEntrada">
@@ -187,7 +187,7 @@
 <script>
     $(document).ready(function() {
             //CASO DE COMPRA INICIAL
-            $('#destino_stock_id').val('4').prop('disabled', true);
+            $('#destino_stock_id').val('4').prop('readonly', true);
             $('#origen_stock_id').on('change', function () {
                 var origenVal = $(this).val();
                 if (origenVal !== '0') {
@@ -195,10 +195,9 @@
                         return $(this).val() !== '4' && $(this).val() !== origenVal;
                     }).first().val();
                     $('#destino_stock_id').val(valorDestino);
-
-                    $('#destino_stock_id').prop('disabled', false);
+                    $('#destino_stock_id').prop('readonly', false);
                 } else {
-                    $('#destino_stock_id').val('4').prop('disabled', true);
+                    $('#destino_stock_id').val('4').prop('readonly', true);
                 }
             });
             $('#destino_stock_id').on('change', function () {
@@ -208,12 +207,14 @@
                         return $(this).val() !== '0' && $(this).val() !== destinoVal;
                     }).first().val();
                     $('#origen_stock_id').val(valorOrigen);
-
-                    $('#origen_stock_id').prop('disabled', false);
+                    $('#origen_stock_id').prop('readonly', false);
                 } else {
-                    $('#origen_stock_id').val('0').prop('disabled', true);
+                    $('#origen_stock_id').val('0').prop('readonly', true);
                 }
             });
+
+
+
             // CONFIGURACIÓN PARA LOS DATATABLES
             if ($.fn.DataTable) {
                 $('.zero-configuration').DataTable({
