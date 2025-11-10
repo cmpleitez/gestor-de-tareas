@@ -116,7 +116,9 @@ SERVICIOS:
     sería según procedimiento establecido
 
         ...🪒registro de entradas (a los 4 tipos de stocks)
-            ...se encontro otro problema en el diseño de los stocks
+            ...se encontró un error en el campo origen_stock_id ya que no puede ser cero, sucedio
+            cuando se intentaba guardar el registro en la tabla "entradas", lo cual nos lleva a la necesidad
+            de agregar proveedores como codigo 1 en la tabla stocks via seeders
 
         🪒tienda
         🪒orden de compra para:
