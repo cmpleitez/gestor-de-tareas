@@ -38,14 +38,19 @@ class ProductoController extends Controller
         ]);
 
         $unidades_disponibles = OficinaStock::where('oficina_id', auth()->user()->oficina_id)->where('stock_id', $request->origen_stock_id)->where('producto_id', $request->producto_id)->first();
-
-        if ($unidades_disponibles) {
+        if ($request->origen_stock_id == 0) { //Stock de recien comprados
+            //
+        } else { //Resto de stocks
+            //
+        }
+        
+/*         if ($unidades_disponibles) {
             return redirect()->route('producto.entrada')->with('success', 'Ya existen unidades');
         } else {
             
             return redirect()->route('producto.entrada')->with('warning', 'No existen unidades disponibles');
         }
-
+ */
     }
 
     public function store(Request $request)
