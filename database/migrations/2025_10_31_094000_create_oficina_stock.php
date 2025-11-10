@@ -9,13 +9,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('oficina_stock', function (Blueprint $table) {
-            $table->unsignedBigInteger('id');
-            $table->foreignId('stock_id')->constrained('stocks');
             $table->foreignId('oficina_id')->constrained('oficinas');
+            $table->foreignId('stock_id')->constrained('stocks');
             $table->foreignId('producto_id')->constrained('productos');
             $table->bigInteger('unidades');
             $table->timestamps();
-            $table->primary(['id', 'oficina_id', 'stock_id', 'producto_id' ]);
+            $table->primary(['oficina_id', 'stock_id', 'producto_id' ]);
         });
     }
 

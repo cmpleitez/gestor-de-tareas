@@ -11,10 +11,10 @@ return new class extends Migration
         Schema::create('entradas', function (Blueprint $table) {
             $table->unsignedBigInteger('id')->primary();
             $table->foreignId('user_id')->constrained('users');
-            $table->foreignId('oficina_stock_id')->constrained('oficina_stock');
-            $table->foreignId('oficina_id')->constrained('oficinas');
-            $table->foreignId('stock_id')->constrained('stocks');
-            $table->foreignId('producto_id')->constrained('productos');
+            $table->foreignId('origen_stock_id')->constrained('stocks');
+            $table->foreignId('oficina_id')->constrained('oficina_stock', 'oficina_id');
+            $table->foreignId('destino_stock_id')->constrained('oficina_stock', 'stock_id');
+            $table->foreignId('producto_id')->constrained('oficina_stock', 'producto_id');
             $table->string('entrada');
             $table->bigInteger('unidades');
             $table->timestamps();

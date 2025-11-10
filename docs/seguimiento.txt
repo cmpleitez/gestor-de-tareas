@@ -116,7 +116,7 @@ SERVICIOS:
     sería según procedimiento establecido
 
         ...🪒registro de entradas (a los 4 tipos de stocks)
-            ...los escuchadores de origien y destino estan funcionando mal 
+            ...se encontro otro problema en el diseño de los stocks
 
         🪒tienda
         🪒orden de compra para:
