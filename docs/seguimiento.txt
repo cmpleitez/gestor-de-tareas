@@ -116,14 +116,7 @@ SERVICIOS:
     sería según procedimiento establecido
 
         ...🪒registro de entradas (a los 4 tipos de stocks)
-            .Compra
-                Recien comprados
-            .Revisión de tracking
-                Recien comprados -> En transito
-            .Recepción para bodega
-                Bodega
-            .Recepción para Estante de Reservados
-                Estante de reservados
+            ...los escuchadores de origien y destino estan funcionando mal 
 
         🪒tienda
         🪒orden de compra para:
