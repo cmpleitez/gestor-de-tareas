@@ -1,31 +1,3 @@
-/* Modal de ancho completo en móviles */
-@media (max-width: 767.98px) {
-    #modalEntrada .modal-dialog {
-        max-width: 100%;
-        margin: 0;
-        height: 100%;
-    }
-
-    #modalEntrada .modal-content {
-        height: 100%;
-        border-radius: 0;
-    }
-}
-
-/* Modal más ancha en tablets y pantallas grandes */
-@media (min-width: 768px) {
-    #modalEntrada .modal-dialog {
-        max-width: 800px;
-    }
-}
-
-/* Modal aún más ancha en desktops y laptops */
-@media (min-width: 992px) {
-    #modalEntrada .modal-dialog {
-        max-width: 900px;
-    }
-}
-
 .fixed-top {
     top: 6px;
 }

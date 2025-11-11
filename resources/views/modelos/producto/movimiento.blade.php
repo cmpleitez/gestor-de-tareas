@@ -79,101 +79,101 @@
         </div>
     </div>
 
-{{-- MODAL PARA PROCESAR MOVIMIENTOS --}}
-<div class="modal fade" id="modalMovimiento" tabindex="-1" role="dialog" aria-labelledby="modalMovimientoLabel"
-    aria-hidden="true" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-        <div class="modal-content">
-            <form id="formMovimiento" action="{{ route('producto.store-movimiento') }}" method="POST" novalidate>
-                @csrf
-                <input type="hidden" name="producto_id" id="producto_id" value="{{ old('producto_id') }}">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalMovimientoLabel">
-                        Movimiento de producto
-                    </h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body text-center">
-                    <div class="row p-1">
-                        <div class="col-12">
-                            <p id="ProductoNombre"></p>
+    {{-- MODAL PARA PROCESAR MOVIMIENTOS --}}
+    <div class="modal fade" id="modalMovimiento" tabindex="-1" role="dialog" aria-labelledby="modalMovimientoLabel"
+        aria-hidden="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
+            <div class="modal-content">
+                <form id="formMovimiento" action="{{ route('producto.store-movimiento') }}" method="POST" novalidate>
+                    @csrf
+                    <input type="hidden" name="producto_id" id="producto_id" value="{{ old('producto_id') }}">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalMovimientoLabel">
+                            Movimiento de producto
+                        </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <div class="row p-1">
+                            <div class="col-12">
+                                <p id="ProductoNombre"></p>
+                            </div>
+                        </div>
+                        <div class="row p-1">
+                            <div class="col-12 col-md-2">
+                                <div class="form-group">
+                                    <label for="unidades">Unidades</label>
+                                    <div class="controls">
+                                        <input type="text" class="form-control text-center" name="unidades"
+                                            id="unidades" value="{{ old('unidades') }}"
+                                            data-inputmask="'alias': 'numeric', 'groupSeparator': ',', 'digits': 0, 'rightAlign': false"
+                                            data-validation-regex-regex="^[1-9]\d*(?:,\d{3})*$"
+                                            data-validation-regex-message="Cero no es válido" required
+                                            data-validation-required-message="Este campo es obligatorio">
+                                        @error('unidades')
+                                            <div class="col-sm-12 badge bg-warning text-wrap" style="margin-top: 0.2rem;">
+                                                {{ $errors->first('unidades') }}
+                                            </div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-5">
+                                <div class="form-group">
+                                    <label for="origen_stock_id">Desde</label>
+                                    <div class="controls">
+                                            <select class="form-control" name="origen_stock_id" id="origen_stock_id" required
+                                                form="formMovimiento">
+                                            @foreach ($stocks as $stock)
+                                                <option value="{{ $stock->id }}"
+                                                    {{ old('origen_stock_id') == $stock->id ? 'selected': '' }}>
+                                                    {{ $stock->stock }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('origen_stock_id')
+                                            <div class="col-sm-12 badge bg-warning text-wrap" style="margin-top: 0.2rem;">
+                                                {{ $errors->first('origen_stock_id') }}
+                                            </div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-5">
+                                <div class="form-group">
+                                    <label for="destino_stock_id">Hacia</label>
+                                    <div class="controls">
+                                            <select class="form-control" name="destino_stock_id" id="destino_stock_id"
+                                                required form="formMovimiento">
+                                            @foreach ($stocks as $stock)
+                                                <option value="{{ $stock->id }}"
+                                                    {{ old('destino_stock_id') == $stock->id
+                                                        ? 'selected'
+                                                        : '' }}>
+                                                    {{ $stock->stock }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('destino_stock_id')
+                                            <div class="col-sm-12 badge bg-warning text-wrap" style="margin-top: 0.2rem;">
+                                                {{ $errors->first('destino_stock_id') }}
+                                            </div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="row p-1">
-                        <div class="col-12 col-md-2">
-                            <div class="form-group">
-                                <label for="unidades">Unidades</label>
-                                <div class="controls">
-                                    <input type="text" class="form-control text-center" name="unidades"
-                                        id="unidades" value="{{ old('unidades') }}"
-                                        data-inputmask="'alias': 'numeric', 'groupSeparator': ',', 'digits': 0, 'rightAlign': false"
-                                        data-validation-regex-regex="^[1-9]\d*(?:,\d{3})*$"
-                                        data-validation-regex-message="Cero no es válido" required
-                                        data-validation-required-message="Este campo es obligatorio">
-                                    @error('unidades')
-                                        <div class="col-sm-12 badge bg-warning text-wrap" style="margin-top: 0.2rem;">
-                                            {{ $errors->first('unidades') }}
-                                        </div>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-5">
-                            <div class="form-group">
-                                <label for="origen_stock_id">Desde</label>
-                                <div class="controls">
-                                        <select class="form-control" name="origen_stock_id" id="origen_stock_id" required
-                                            form="formMovimiento">
-                                        @foreach ($stocks as $stock)
-                                            <option value="{{ $stock->id }}"
-                                                {{ old('origen_stock_id') == $stock->id ? 'selected': '' }}>
-                                                {{ $stock->stock }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('origen_stock_id')
-                                        <div class="col-sm-12 badge bg-warning text-wrap" style="margin-top: 0.2rem;">
-                                            {{ $errors->first('origen_stock_id') }}
-                                        </div>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-5">
-                            <div class="form-group">
-                                <label for="destino_stock_id">Hacia</label>
-                                <div class="controls">
-                                        <select class="form-control" name="destino_stock_id" id="destino_stock_id"
-                                            required form="formMovimiento">
-                                        @foreach ($stocks as $stock)
-                                            <option value="{{ $stock->id }}"
-                                                {{ old('destino_stock_id') == $stock->id
-                                                    ? 'selected'
-                                                    : '' }}>
-                                                {{ $stock->stock }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('destino_stock_id')
-                                        <div class="col-sm-12 badge bg-warning text-wrap" style="margin-top: 0.2rem;">
-                                            {{ $errors->first('destino_stock_id') }}
-                                        </div>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
+                    <div class="modal-footer justify-content-end">
+                        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn btn-primary btn-sm" id="btnRegistrar">Registrar</button>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Cerrar</button>
-                    <button type="submit" class="btn btn-primary btn-sm" id="btnRegistrar">Registrar</button>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 @stop
 
 @section('js')
