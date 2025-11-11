@@ -2,7 +2,7 @@
 namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
-class Entrada extends Model
+class Movimiento extends Model
 {
     public $incrementing = false;
     protected $keyType   = 'string';
@@ -34,7 +34,4 @@ class Entrada extends Model
     {
         return $this->belongsTo(Stock::class, 'origen_stock_id', 'id');
     }
-
-
-
 }

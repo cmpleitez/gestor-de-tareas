@@ -44,8 +44,6 @@ Route::middleware([
         return view('dashboard');
     })->name('dashboard');
 
-   
-
     //SEGURIDAD
     Route::group(['middleware' => ['role:superadmin']], function () {
         Route::group(['prefix' => 'security'], function () {
@@ -149,8 +147,8 @@ Route::middleware([
     });
     Route::group(['middleware' => ['role:superadmin|admin']], function () {
         Route::group(['prefix' => 'producto'], function () {
-            Route::get('entrada', [ProductoController::class, 'entrada'])->name('producto.entrada');
-            Route::post('ingreso', [ProductoController::class, 'ingreso'])->name('producto.ingreso');
+            Route::get('movimiento', [ProductoController::class, 'createMovimiento'])->name('producto.create-movimiento');
+            Route::post('movimiento', [ProductoController::class, 'storeMovimiento'])->name('producto.store-movimiento');
         });
     });
 

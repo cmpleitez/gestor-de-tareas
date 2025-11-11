@@ -9,7 +9,7 @@ use Exception;
 use App\Models\Producto;    
 use App\Models\Stock;
 use App\Models\OficinaStock;
-use App\Models\Entrada;
+use App\Models\Movimiento;
 use App\Services\KeyMaker;
 
 use Illuminate\Support\Facades\Log;
@@ -22,17 +22,17 @@ class ProductoController extends Controller
         return view('modelos.producto.index');
     }
 
-    public function entrada()
+    public function createMovimiento()
     {
         $stocks    = Stock::where('activo', true)->get();
         $productos = Producto::where('activo', true)->with('modelo', 'tipo')->get();
-        return view('modelos.producto.entrada', compact('productos', 'stocks'));
+        return view('modelos.producto.movimiento', compact('productos', 'stocks'));
     }
 
-    public function ingreso(Request $request)
+    public function storeMovimiento(Request $request)
     {
         //PREESTABLECIMIENTOS
-        $compra = $request->origen_stock_id == 0 ? true : false;
+        $compra = $request->origen_stock_id == 1 ? true : false;
         if ($compra) {
             $request->merge([
                 'origen_stock_id' => 1,
@@ -52,9 +52,6 @@ class ProductoController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             return back()->with('error', 'Error en la validación: ' . $e->getMessage());;
         }
-
-        
-
         //PROCESOS
         if ($compra) { //Compra
             Log::info('Antes del try');
@@ -85,18 +82,16 @@ class ProductoController extends Controller
                         $stock->save();
                     }
 
-
-
-                    $entrada = new Entrada();
-                    $entrada->id = app(KeyMaker::class)->generate('Entrada', $stock->stock_id);
-                    $entrada->user_id = auth()->id();
-                    $entrada->origen_stock_id = 0;
-                    $entrada->oficina_id = auth()->user()->oficina_id;
-                    $entrada->destino_stock_id = $stock->stock_id;
-                    $entrada->producto_id = $stock->producto_id;
-                    $entrada->entrada = 'Compra';
-                    $entrada->unidades = $stock->unidades;
-                    $entrada->save();
+                    $movimiento = new Movimiento();
+                    $movimiento->id = app(KeyMaker::class)->generate('Movimiento', $stock->stock_id);
+                    $movimiento->user_id = auth()->id();
+                    $movimiento->origen_stock_id = 0;
+                    $movimiento->oficina_id = auth()->user()->oficina_id;
+                    $movimiento->destino_stock_id = $stock->stock_id;
+                    $movimiento->producto_id = $stock->producto_id;
+                    $movimiento->movimiento = 'Compra';
+                    $movimiento->unidades = $stock->unidades;
+                    $movimiento->save();
                 DB::commit();
                 
             } catch (QueryException $e) {

@@ -275,9 +275,9 @@
                             data-i18n="Menu Levels">Servicios</span></a>
                     <ul class="menu-content" style="display: block;">
                         @role('superadmin|admin')
-                        <li><a href="{{ route('producto.entrada') }}">
+                        <li><a href="{{ route('producto.create-movimiento') }}">
                                 <i class="bx bx-right-arrow-alt"></i>
-                                <span class="menu-item" data-i18n="Second Level">Entradas</span>
+                                <span class="menu-item" data-i18n="Second Level">Movimientos</span>
                             </a></li>
                         @endrole
 

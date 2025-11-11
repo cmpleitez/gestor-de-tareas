@@ -27,7 +27,6 @@
     },
     "extensions": {
         "recommendations": [
-            "onecentlin.laravel-blade",
             "bmewburn.vscode-intelephense-client",
             "ms-vscode.vscode-json"
         ]
