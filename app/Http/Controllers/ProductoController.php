@@ -32,12 +32,6 @@ class ProductoController extends Controller
     public function storeMovimiento(Request $request)
     {
         //PREESTABLECIMIENTOS
-        $compra = $request->origen_stock_id == 1 ? true : false;
-        if ($compra) {
-            $request->merge([
-                'origen_stock_id' => 1,
-            ]);
-        }
         $request->merge([ //Limpiando máscara de entrada
             'unidades' => preg_replace('/[\s,]/', '', (string) $request->input('unidades')),
         ]);
@@ -50,60 +44,50 @@ class ProductoController extends Controller
                 'unidades'         => 'required|numeric|min:1',
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return back()->with('error', 'Error en la validación: ' . $e->getMessage());;
+            return back()->with('error', 'Error en la validación: ' . $e->getMessage());
         }
         //PROCESOS
-        if ($compra) { //Compra
-            Log::info('Antes del try');
-            try {
-                Log::info('inicio del try');
-                DB::beginTransaction();
-                    
-                    Log::info('antes de la consulta');
-                    $stock = OficinaStock::where('oficina_id', auth()->user()->oficina_id)->where('stock_id', $request->origen_stock_id)->where('producto_id', $request->producto_id)->first();
-                    
-                    Log::info('despues de la consulta');
-
-                    if (!$stock) {
-
-                        Log::info('inicio de registro de nuevo stock');
-
-                        $stock = new OficinaStock();
-                        $stock->oficina_id = auth()->user()->oficina_id;
-                        $stock->stock_id = $request->destino_stock_id;
-                        $stock->producto_id = $request->producto_id;
-                        $stock->unidades = $request->unidades;
-                        $stock->save();
-
-                        Log::info('final del registro de nuevo stock');
-
-                    } else {
-                        $stock->unidades += $request->unidades;
-                        $stock->save();
-                    }
-
-                    $movimiento = new Movimiento();
-                    $movimiento->id = app(KeyMaker::class)->generate('Movimiento', $stock->stock_id);
-                    $movimiento->user_id = auth()->id();
-                    $movimiento->origen_stock_id = 0;
-                    $movimiento->oficina_id = auth()->user()->oficina_id;
-                    $movimiento->destino_stock_id = $stock->stock_id;
-                    $movimiento->producto_id = $stock->producto_id;
-                    $movimiento->movimiento = 'Compra';
-                    $movimiento->unidades = $stock->unidades;
-                    $movimiento->save();
-                DB::commit();
+        try {
+            DB::beginTransaction();
                 
-            } catch (QueryException $e) {
-                DB::rollBack();
-                return back()->with('error', 'Error en la consulta: ' . $e->getMessage());
-            } catch (Exception $e) {
-                DB::rollBack();
-                return back()->with('error', 'Error en la consulta: ' . $e->getMessage());
-            }
-        } else { //Entrada
-            return back()->with('success', 'Se trata de una entrada.');
+                //POR CADA MOVIMIENTO HAY QUE ACTUALIZAR DOS STOCKS (ORIGEN Y DESTINO)
+            
+                $oficinaStock = OficinaStock::where('oficina_id', auth()->user()->oficina_id)->where('stock_id', $request->origen_stock_id)->where('producto_id', $request->producto_id)->with('stock')->first();
+                
+                
+                $origenStockName = Stock::findOrfail($request->origen_stock_id)->stock;
+                
+                if (!$oficinaStock) {
+                    $oficinaStock = new OficinaStock();
+                    $oficinaStock->oficina_id = auth()->user()->oficina_id;
+                    $oficinaStock->stock_id = $request->destino_stock_id;
+                    $oficinaStock->producto_id = $request->producto_id;
+                    $oficinaStock->unidades = $request->unidades;
+                    $oficinaStock->save();
+                } else {
+                    $oficinaStock->unidades += $request->unidades;
+                    $oficinaStock->save();
+                }
+                $movimiento = new Movimiento();
+                $movimiento->id = app(KeyMaker::class)->generate('Movimiento', $oficinaStock->stock_id);
+                $movimiento->user_id = auth()->id();
+                $movimiento->oficina_id = auth()->user()->oficina_id;
+                $movimiento->origen_stock_id = $request->origen_stock_id;
+                $movimiento->destino_stock_id = $oficinaStock->stock_id;
+                $movimiento->producto_id = $oficinaStock->producto_id;
+                $movimiento->movimiento = $origenStockName . ' -> ' . $oficinaStock->stock->stock;
+                $movimiento->unidades = $oficinaStock->unidades;
+                $movimiento->save();
+            DB::commit();
+            return back()->with('success', 'Movimiento registrado correctamente');
+        } catch (QueryException $e) {
+            DB::rollBack();
+            return back()->with('error', 'Error en la consulta: ' . $e->getMessage());
+        } catch (Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Error en la consulta: ' . $e->getMessage());
         }
+        
     }
 
     public function store(Request $request)

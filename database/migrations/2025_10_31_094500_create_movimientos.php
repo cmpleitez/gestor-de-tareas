@@ -20,7 +20,6 @@ return new class extends Migration
             $table->foreignId('producto_id')->constrained('oficina_stock', 'producto_id');
             $table->string('movimiento');
             $table->bigInteger('unidades');
-            $table->boolean('entrada');
             $table->timestamps();
         });
     }
