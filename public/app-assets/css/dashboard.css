@@ -500,3 +500,30 @@ div.dataTables_wrapper div.dataTables_length {
     justify-content: center;
     align-items: center;
 }
+
+@media (max-width: 767.98px) {
+    #modalMovimiento.modal {
+        padding: 0 !important;
+    }
+
+    #modalMovimiento .modal-dialog {
+        margin: 0;
+        max-width: 100%;
+        width: 100%;
+        min-height: 100vh;
+        display: flex;
+        align-items: stretch;
+    }
+
+    #modalMovimiento .modal-content {
+        border-radius: 0;
+        display: flex;
+        flex-direction: column;
+        flex: 1 1 auto;
+    }
+
+    #modalMovimiento .modal-body {
+        flex: 1 1 auto;
+        overflow: auto;
+    }
+}
