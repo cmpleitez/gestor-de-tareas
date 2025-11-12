@@ -5,6 +5,7 @@ use Spatie\Permission\Models\Role;
 
 class Actividad extends Model
 {
+    protected $table = 'actividades';
     public $incrementing = false;
     protected $keyType   = 'string';
     protected $casts = [

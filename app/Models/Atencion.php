@@ -4,6 +4,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Atencion extends Model
 {
+    protected $table = 'atenciones';
     public $incrementing = false;
     protected $keyType   = 'string';
     protected $casts = [

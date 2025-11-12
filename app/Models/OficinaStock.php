@@ -8,6 +8,13 @@ class OficinaStock extends Model
     public $incrementing = false;
     protected $keyType   = 'int';
 
+    protected function setKeysForSaveQuery($query)
+    {
+        return $query->where('oficina_id', $this->oficina_id)
+        ->where('stock_id', $this->stock_id)
+        ->where('producto_id', $this->producto_id);
+    }
+
     public function oficina()
     {
         return $this->belongsTo(Oficina::class);

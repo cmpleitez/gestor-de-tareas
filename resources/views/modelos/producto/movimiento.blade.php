@@ -127,6 +127,7 @@
                                         <div class="controls">
                                                 <select class="form-control" name="origen_stock_id" id="origen_stock_id" required
                                                     form="formMovimiento">
+
                                                 @foreach ($stocks as $stock)
                                                     <option value="{{ $stock->id }}"
                                                         {{ old('origen_stock_id') == $stock->id ? 'selected': '' }}>
