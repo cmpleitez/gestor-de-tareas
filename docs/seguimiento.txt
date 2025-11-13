@@ -116,17 +116,21 @@ SERVICIOS:
     sería según procedimiento establecido
 
         ...🪒registro de entradas (a los 4 tipos de stocks)
-            ...agregar consulta de los stocks disponibles para el producto solicitado
-            ...luego cambiar valores en vivo, no cerrar la modal para poder ver los resultados.
+            el tipo de dato en el ordenamiento 
+        ...🪒tienda
+            crud de marcas
+            crud de modelos
+            crud de tipos
+            crud de productos
+            crud de kits
+                asignacion de productos
 
-        🪒tienda
         🪒orden de compra para:
             . carrito
             . tarjeta en el tablero "En progreso" en el rol del Receptor
             . paso "Revisión de la Orden/Reserva"
         🪒historial de entradas y reversiones en stocks
         🪒Cada cierta cantidad de días se debe correr una tarea programada para borrar todas las solicitudes no validadas por el cliente
-        🪒maquetación
         
 
     🟢 Número de atención va ser validado cuando se complete todo el procedimiento, cada copia de las "recepciones iran siendo validadas por el usuario destino"
