@@ -56,15 +56,25 @@ class ProductoController extends Controller
             $origenStockUnidades = $validated['unidades'];
             $destinoStockUnidades = $validated['unidades'];
         }
+        $oficinaStockOrigen = OficinaStock::where('oficina_id', auth()->user()->oficina_id) //Rebasamiento
+        ->where('stock_id', $validated['origen_stock_id'])
+        ->where('producto_id', $validated['producto_id'])
+        ->with('stock')
+        ->first();
+        $oficinaStockDestino = OficinaStock::where('oficina_id', auth()->user()->oficina_id) 
+        ->where('stock_id', $validated['destino_stock_id'])
+        ->where('producto_id', $validated['producto_id'])
+        ->with('stock')
+        ->first();
+        if ($oficinaStockOrigen && $validated['unidades'] > $oficinaStockOrigen->unidades) { 
+            return back()->with('error', 
+            'No hay suficientes unidades en '.$oficinaStockOrigen->stock->stock. 
+            '. Cantidad disponible: '.$oficinaStockOrigen->unidades);
+        }
         //PROCESOS
         try {
             DB::beginTransaction();
-                $oficinaStockOrigen = OficinaStock::where('oficina_id', auth()->user()->oficina_id) //Stock origen
-                ->where('stock_id', $validated['origen_stock_id'])
-                ->where('producto_id', $validated['producto_id'])
-                ->with('stock')
-                ->first();
-                if (!$oficinaStockOrigen) {
+                if (!$oficinaStockOrigen) { //Stock origen
                     $oficinaStockOrigen = new OficinaStock();
                     $oficinaStockOrigen->oficina_id = auth()->user()->oficina_id;
                     $oficinaStockOrigen->stock_id = $validated['origen_stock_id'];
@@ -75,12 +85,7 @@ class ProductoController extends Controller
                     $oficinaStockOrigen->unidades -= $origenStockUnidades;
                     $oficinaStockOrigen->save();
                 }
-                $oficinaStockDestino = OficinaStock::where('oficina_id', auth()->user()->oficina_id) //Stock destino
-                ->where('stock_id', $validated['destino_stock_id'])
-                ->where('producto_id', $validated['producto_id'])
-                ->with('stock')
-                ->first();
-                if (!$oficinaStockDestino) {
+                if (!$oficinaStockDestino) { //Stock destino
                     $oficinaStockDestino = new OficinaStock();
                     $oficinaStockDestino->oficina_id = auth()->user()->oficina_id;
                     $oficinaStockDestino->stock_id = $validated['destino_stock_id'];

@@ -118,9 +118,6 @@ SERVICIOS:
         ...🪒registro de entradas (a los 4 tipos de stocks)
             ...agregar consulta de los stocks disponibles para el producto solicitado
             ...luego cambiar valores en vivo, no cerrar la modal para poder ver los resultados.
-            integrar un cuadre para dar seguridad transaccional al usuario (la clave perece ser la suma de los stocks->unidad)
-            solo hay que ver la excepcion compras/devoluciones(1/5)
-            agregar reglas del rebase
 
         🪒tienda
         🪒orden de compra para:
