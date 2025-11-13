@@ -149,6 +149,7 @@ Route::middleware([
         Route::group(['prefix' => 'producto'], function () {
             Route::get('movimiento', [ProductoController::class, 'createMovimiento'])->name('producto.create-movimiento');
             Route::post('movimiento', [ProductoController::class, 'storeMovimiento'])->name('producto.store-movimiento');
+            Route::get('get-stocks-producto/{productoId}', [ProductoController::class, 'getStocksProducto'])->name('producto.get-stocks-producto');
         });
     });
 

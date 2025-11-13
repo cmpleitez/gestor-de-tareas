@@ -99,7 +99,14 @@
                         <div class="modal-body">
                             <div class="row p-1">
                                 <div class="col-12">
-                                    <p id="ProductoNombre"></p>
+                                    <h5 id="ProductoNombre" class="font-weight-bold mb-2 p-1"></h5>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div id="ProductoStocks" class="row g-2">
+                                            {{-- Grid de stocks por producto --}}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="row p-1">
@@ -107,7 +114,7 @@
                                     <div class="form-group">
                                         <label for="unidades">Unidades</label>
                                         <div class="controls">
-                                            <input type="text" class="form-control text-center" name="unidades"
+                                            <input type="text" class="form-control" name="unidades"
                                                 id="unidades" value="{{ old('unidades') }}"
                                                 data-inputmask="'alias': 'numeric', 'groupSeparator': ',', 'digits': 0, 'rightAlign': false"
                                                 data-validation-regex-regex="^[1-9]\d*(?:,\d{3})*$"
@@ -127,7 +134,6 @@
                                         <div class="controls">
                                                 <select class="form-control" name="origen_stock_id" id="origen_stock_id" required
                                                     form="formMovimiento">
-
                                                 @foreach ($stocks as $stock)
                                                     <option value="{{ $stock->id }}"
                                                         {{ old('origen_stock_id') == $stock->id ? 'selected': '' }}>
@@ -263,7 +269,55 @@
                 var modal = $(this);
                 modal.find('#ProductoNombre').text(productoNombre);
                 modal.find('#producto_id').val(productoId);
+                var stocksWrapper = modal.find('#ProductoStocks');
+                stocksWrapper.empty().append(
+                    $('<div>', { class: 'col-12 text-center text-muted' }).text('Cargando stocks...')
+                );
+                $.ajax({
+                    url: '{{ route('producto.get-stocks-producto', ['productoId' => ':productoId']) }}'.replace(':productoId', productoId),
+                    type: 'GET',
+                    success: function(response) {
+                        stocksWrapper.empty();
+                        if (response && Array.isArray(response.stocks) && response.stocks.length) {
+                            response.stocks.forEach(function(stock) {
+                                var nombre = stock.nombre || 'Stock sin nombre';
+                                var unidades = typeof stock.unidades !== 'undefined' ? stock.unidades : 0;
+                                var col = $('<div>', {
+                                    class: 'col-6 col-sm-6 col-lg-4 mb-1'
+                                });
+                                var card = $('<div>', {
+                                    class: 'border rounded p-2 h-100'
+                                });
+                                card.append(
+                                    $('<h6>', { class: 'mb-50 text-primary' }).text(nombre),
+                                    $('<div>', { class: 'd-flex justify-content-between align-items-center' }).append(
+                                        $('<span>', { class: 'text-muted small' }).text('Unidades'),
+                                        $('<span>', { 
+                                            class: 'badge badge-pill ' + ((unidades == 0 && stock.id != 1) ? 'badge-warning' : 'badge-primary')
+                                        }).text(unidades)
+                                    )
+                                );
+                                col.append(card);
+                                stocksWrapper.append(col);
+                            });
+                        } else {
+                            stocksWrapper.append(
+                                $('<div>', { class: 'col-12 text-center text-muted' }).text('Sin stocks registrados.')
+                            );
+                        }
+                    },
+                    error: function() {
+                        stocksWrapper.empty().append(
+                            $('<div>', { class: 'col-12 text-center text-warning' }).text('No fue posible cargar los stocks.')
+                        );
+                    }
+                });
             });
+
+            $('#modalMovimiento').on('hidden.bs.modal', function() {
+                $(this).find('#ProductoStocks').empty();
+            });
+            
 
         });
     </script>

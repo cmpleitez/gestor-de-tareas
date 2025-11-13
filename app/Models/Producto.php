@@ -33,4 +33,9 @@ class Producto extends Model
         return $this->hasMany(AtencionDetalle::class);
     }
 
+    public function oficinaStock()
+    {
+        return $this->hasMany(OficinaStock::class, 'producto_id', 'id');
+    }
+
 }

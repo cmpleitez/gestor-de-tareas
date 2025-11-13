@@ -24,7 +24,7 @@ class ProductoController extends Controller
 
     public function createMovimiento()
     {
-        $stocks    = Stock::where('activo', true)->get();
+        $stocks = Stock::where('activo', true)->get();
         $productos = Producto::where('activo', true)->with('modelo', 'tipo')->get();
         return view('modelos.producto.movimiento', compact('productos', 'stocks'));
     }
@@ -118,6 +118,30 @@ class ProductoController extends Controller
         }
     }
 
+    public function getStocksProducto(int $productoId)
+    {
+        $producto = Producto::with(['oficinaStock' => function ($query) {
+            $query->where('oficina_id', auth()->user()->oficina_id)
+                ->with('stock');
+        }])->find($productoId);
+        if (!$producto) {
+            return response()->json([
+                'message' => 'Producto no encontrado',
+                'stocks'  => [],
+            ], 404);
+        }
+        $stocks = $producto->oficinaStock->map(function ($registro) {
+            return [
+                'id'   => optional($registro->stock)->id,
+                'nombre'   => optional($registro->stock)->stock,
+                'unidades' => (int) $registro->unidades
+            ];
+        });
+        return response()->json([
+            'stocks' => $stocks,
+        ]);
+    }
+
     public function store(Request $request)
     {
         //
@@ -142,4 +166,6 @@ class ProductoController extends Controller
     {
         //
     }
+
+
 }
