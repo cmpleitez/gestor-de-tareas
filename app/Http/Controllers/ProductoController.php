@@ -66,7 +66,7 @@ class ProductoController extends Controller
         ->where('producto_id', $validated['producto_id'])
         ->with('stock')
         ->first();
-        if ($oficinaStockOrigen && $validated['unidades'] > $oficinaStockOrigen->unidades) { 
+        if ($oficinaStockOrigen && $oficinaStockOrigen->stock->id != 1 && $validated['unidades'] > $oficinaStockOrigen->unidades) { 
             return back()->with('error', 
             'No hay suficientes unidades en '.$oficinaStockOrigen->stock->stock. 
             '. Cantidad disponible: '.$oficinaStockOrigen->unidades);

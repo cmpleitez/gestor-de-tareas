@@ -109,7 +109,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row p-1">
+                            <div class="row" style="padding: 0 2.1rem 0 2.1rem;">
                                 <div class="col-12 col-md-2">
                                     <div class="form-group">
                                         <label for="unidades">Unidades</label>
@@ -283,20 +283,24 @@
                                 var nombre = stock.nombre || 'Stock sin nombre';
                                 var unidades = typeof stock.unidades !== 'undefined' ? stock.unidades : 0;
                                 var col = $('<div>', {
-                                    class: 'col-6 col-sm-6 col-lg-4 mb-1'
+                                    class: 'col-6 col-md-6 ' + (response.stocks.length <= 2 ? 'col-lg-6' : 'col-lg-4') + ' mb-2 d-flex'
                                 });
                                 var card = $('<div>', {
-                                    class: 'border rounded p-2 h-100'
+                                    class: 'border rounded p-2 w-100'
                                 });
-                                card.append(
-                                    $('<h6>', { class: 'mb-50 text-primary' }).text(nombre),
-                                    $('<div>', { class: 'd-flex justify-content-between align-items-center' }).append(
-                                        $('<span>', { class: 'text-muted small' }).text('Unidades'),
-                                        $('<span>', { 
-                                            class: 'badge badge-pill ' + ((unidades == 0 && stock.id != 1) ? 'badge-warning' : 'badge-primary')
-                                        }).text(unidades)
-                                    )
+                                var headerRow = $('<div>', { class: 'mb-75' }).append(
+                                    $('<div>', {
+                                        class: 'text-primary mb-0 font-weight-semibold'
+                                    }).text(nombre)
                                 );
+                                var unidadesRow = $('<div>', { class: 'd-flex justify-content-between align-items-center' });
+                                unidadesRow.append(
+                                    $('<span>', { class: 'text-muted small mb-0' }).text('Unidades'),
+                                    $('<span>', {
+                                        class: 'badge badge-pill ' + ((unidades == 0 && stock.id != 1) ? 'badge-warning' : 'badge-primary')
+                                    }).text(unidades)
+                                );
+                                card.append(headerRow, unidadesRow);
                                 col.append(card);
                                 stocksWrapper.append(col);
                             });
