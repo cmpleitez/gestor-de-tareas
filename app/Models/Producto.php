@@ -6,7 +6,7 @@ class Producto extends Model
 {
     public $incrementing = false;
     protected $keyType   = 'int';
-    protected $fillable  = ['producto', 'precio', 'modelo_id'];
+    protected $fillable  = ['producto', 'precio', 'modelo_id', 'tipo_id'];
 
     protected $casts = [
         'accesorio' => 'boolean',

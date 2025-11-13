@@ -27,10 +27,6 @@ class Actividad extends Model
         return $this->belongsTo(Recepcion::class);
     }
 
-    public function incidencias()
-    {
-        return $this->hasMany(Incidencia::class);
-    }
 
     public function role()
     {

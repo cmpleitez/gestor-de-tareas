@@ -11,12 +11,13 @@ return new class extends Migration
         Schema::create('movimientos', function (Blueprint $table) {
             $table->unsignedBigInteger('id')->primary();
             $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('oficina_id')->constrained('oficinas');
             $table->foreignId('origen_stock_id')->constrained('stocks');
-            $table->foreignId('oficina_id')->constrained('oficina_stock', 'oficina_id');
-            $table->foreignId('destino_stock_id')->constrained('oficina_stock', 'stock_id');
-            $table->foreignId('producto_id')->constrained('oficina_stock', 'producto_id');
+            $table->foreignId('destino_stock_id')->constrained('stocks');
+            $table->foreignId('producto_id')->constrained('productos');
             $table->string('movimiento');
             $table->bigInteger('unidades');
+            $table->boolean('activo')->default(true);
             $table->timestamps();
         });
     }

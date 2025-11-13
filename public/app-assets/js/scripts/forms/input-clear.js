@@ -67,9 +67,29 @@
         // Inicializar
         initInputClear();
 
-        // Reinicializar si se agregan campos dinámicamente
-        $(document).on('DOMNodeInserted', function () {
-            initInputClear();
+        // Reinicializar solo para inputs nuevos agregados dinámicamente usando MutationObserver
+        var observer = new MutationObserver(function (mutations) {
+            var hasNewInputs = false;
+            mutations.forEach(function (mutation) {
+                mutation.addedNodes.forEach(function (node) {
+                    if (node.nodeType === 1) { // Element node
+                        // Verificar si el nodo agregado es un input con data-clear o contiene uno
+                        if ($(node).is('input[data-clear="true"]') ||
+                            $(node).find('input[data-clear="true"]').length > 0) {
+                            hasNewInputs = true;
+                        }
+                    }
+                });
+            });
+            if (hasNewInputs) {
+                initInputClear();
+            }
+        });
+
+        // Observar cambios en el body
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
         });
     });
 
