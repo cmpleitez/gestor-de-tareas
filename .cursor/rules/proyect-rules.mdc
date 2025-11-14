@@ -15,6 +15,7 @@ alwaysApply: true
         2º. Grok 4 Fast
     ✅ Cuando diga "baja modelo" dependiendo en que nivel te encuentres debes cambiar al proximo modelo segun correlativo
     ✅ Cuando diga "eleva modelo" dependiendo en que nivel te encuentres debes cambiar al anterior modelo segun correlativo
+    ✅ Cuando diga "pruebalo" debes probar en el explorador especificamente en la pestaña activa (en la cual ya me he logueado), seteado lo que acabas de construir, ajustar o revisar
     ✅ Debes mencionar al principio y al final de cada respuesta tuya el modelo que estas usando para la misma.
     ✅ Cuando diga: esta línea o lineas me refiero a que ya hice referencia dichas líneas con CTRL+L o he hecho referencia a un archivo en especifico
     ✅ Ante cualquier peticion de mi parte: busca primero en la pestaña activa y luego en las demás. 

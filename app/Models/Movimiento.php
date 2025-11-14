@@ -5,7 +5,7 @@ use Illuminate\Database\Eloquent\Model;
 class Movimiento extends Model
 {
     public $incrementing = false;
-    protected $keyType   = 'integer';
+    protected $keyType   = 'string';
     protected $casts     = [
         'activo' => 'boolean',
     ];
