@@ -5,10 +5,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class AtencionDetalle extends Model
 {
-    public $incrementing = false;
-    protected $keyType   = 'string';
-    protected $fillable  = ['producto_id', 'unidades'];
-
     public function atencion()
     {
         return $this->belongsTo(Atencion::class);

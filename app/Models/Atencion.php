@@ -27,9 +27,3 @@ class Atencion extends Model
         return $this->belongsTo(Estado::class);
     }
 
-    public function kits()
-    {
-        return $this->belongsToMany(Kit::class);
-    }
-
-}

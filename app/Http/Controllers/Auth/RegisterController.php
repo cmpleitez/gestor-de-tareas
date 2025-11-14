@@ -35,7 +35,7 @@ class RegisterController extends Controller
             'name'               => ['required', 'string', 'min:3', 'max:255', 'regex:/^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$/'],
             'email'              => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')],
             'dui'                => ['required', 'string', Rule::unique('users', 'dui'), new ValidDui],
-            'password'           => ['required', 'string', 'min:6', 'max:16', 'confirmed'],
+            'password'           => ['required', 'string', 'min:8', 'confirmed'],
             'terms'              => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
             'profile_photo_path' => ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:5120'],
         ], [
@@ -57,8 +57,7 @@ class RegisterController extends Controller
             'dui.unique'               => 'El DUI ya está registrado.',
             'password.required'        => 'La contraseña es requerida.',
             'password.string'          => 'La contraseña debe ser una cadena de texto.',
-            'password.min'             => 'La contraseña debe tener al menos 6 caracteres.',
-            'password.max'             => 'La contraseña debe tener máximo 16 caracteres.',
+            'password.min'             => 'La contraseña debe tener al menos 8 caracteres.',
             'password.confirmed'       => 'Las contraseñas no coinciden.',
         ])->validate();
         try {

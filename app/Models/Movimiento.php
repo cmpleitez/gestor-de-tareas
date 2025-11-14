@@ -12,26 +12,27 @@ class Movimiento extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'destino_stock_id', 'stock_id');
+        return $this->belongsTo(User::class);
     }
 
     public function oficina()
     {
-        return $this->belongsTo(OficinaStock::class, 'oficina_id', 'oficina_id');
+        return $this->belongsTo(Oficina::class);
     }
 
-    public function stockDestino()
+    public function origenStock()
     {
-        return $this->belongsTo(OficinaStock::class, 'origen_stock_id', 'stock_id');
+        return $this->belongsTo(Stock::class, 'origen_stock_id', 'id');
+    }
+
+    public function destinoStock()
+    {
+        return $this->belongsTo(Stock::class, 'destino_stock_id', 'id');
     }
 
     public function producto()
     {
-        return $this->belongsTo(OficinaStock::class, 'producto_id', 'producto_id');
+        return $this->belongsTo(Producto::class);
     }
 
-    public function stockOrigen()
-    {
-        return $this->belongsTo(Stock::class, 'origen_stock_id', 'id');
-    }
 }

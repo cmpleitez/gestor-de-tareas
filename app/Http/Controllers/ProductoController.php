@@ -66,7 +66,17 @@ class ProductoController extends Controller
         ->where('producto_id', $validated['producto_id'])
         ->with('stock')
         ->first();
-        if ($oficinaStockOrigen && $oficinaStockOrigen->stock->id != 1 && $validated['unidades'] > $oficinaStockOrigen->unidades) { 
+        // Cargar los stocks para obtener sus nombres
+        $stockOrigen = Stock::find($validated['origen_stock_id']);
+        $stockDestino = Stock::find($validated['destino_stock_id']);
+        // Verificar que los stocks existan (condición de carrera)
+        if (!$stockOrigen) {
+            return back()->with('error', 'El stock de origen seleccionado ya no existe. Por favor, recarga la página.');
+        }
+        if (!$stockDestino) {
+            return back()->with('error', 'El stock de destino seleccionado ya no existe. Por favor, recarga la página.');
+        }
+        if ($oficinaStockOrigen && $oficinaStockOrigen->stock && $oficinaStockOrigen->stock->id != 1 && $validated['unidades'] > $oficinaStockOrigen->unidades) { 
             return back()->with('error', 
             'No hay suficientes unidades en '.$oficinaStockOrigen->stock->stock. 
             '. Cantidad disponible: '.$oficinaStockOrigen->unidades);
@@ -81,6 +91,8 @@ class ProductoController extends Controller
                     $oficinaStockOrigen->producto_id = $validated['producto_id'];
                     $oficinaStockOrigen->unidades = $origenStockUnidades;
                     $oficinaStockOrigen->save();
+                    // Cargar la relación stock después de guardar
+                    $oficinaStockOrigen->load('stock');
                 } else {
                     $oficinaStockOrigen->unidades -= $origenStockUnidades;
                     $oficinaStockOrigen->save();
@@ -92,6 +104,8 @@ class ProductoController extends Controller
                     $oficinaStockDestino->producto_id = $validated['producto_id'];
                     $oficinaStockDestino->unidades = $destinoStockUnidades;
                     $oficinaStockDestino->save();
+                    // Cargar la relación stock después de guardar
+                    $oficinaStockDestino->load('stock');
                 } else {
                     $oficinaStockDestino->unidades += $destinoStockUnidades;
                     $oficinaStockDestino->save();
@@ -104,7 +118,8 @@ class ProductoController extends Controller
                 $movimiento->origen_stock_id = $validated['origen_stock_id'];
                 $movimiento->destino_stock_id = $validated['destino_stock_id'];
                 $movimiento->producto_id = $validated['producto_id'];
-                $movimiento->movimiento = $oficinaStockOrigen->stock->stock . ' -> ' . $oficinaStockDestino->stock->stock;
+                // Usar los stocks cargados directamente (verificados anteriormente)
+                $movimiento->movimiento = $stockOrigen->stock . ' -> ' . $stockDestino->stock;
                 $movimiento->unidades = $validated['unidades'];
                 $movimiento->save();
             DB::commit();

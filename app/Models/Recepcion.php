@@ -6,7 +6,7 @@ use Spatie\Permission\Models\Role;
 class Recepcion extends Model
 {
     public $incrementing = false;
-    protected $keyType   = 'int';
+    protected $keyType   = 'string';
     protected $table    = 'recepciones';
     protected $fillable = ['solicitud_id', 'detalles', 'observacion'];
     protected $casts = [
