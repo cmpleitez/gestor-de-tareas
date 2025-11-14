@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('tipos', function (Blueprint $table) {
             $table->unsignedBigInteger('id')->primary();
             $table->string('tipo')->unique();
+            $table->boolean('activo')->default(true);
             $table->timestamps();
         });
     }

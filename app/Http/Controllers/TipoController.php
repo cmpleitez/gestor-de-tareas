@@ -1,65 +1,70 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use App\Models\Tipo;
-use Illuminate\Http\Request;
+use App\Http\Requests\TipoStoreRequest;
+use App\Http\Requests\TipoUpdateRequest;
+use App\Services\CorrelativeIdGenerator;
 
 class TipoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $tipos = Tipo::orderBy('id', 'desc')->paginate(10);
+        return view('modelos.tipo.index', compact('tipos'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        return view('modelos.tipo.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(TipoStoreRequest $request)
     {
-        //
+        $generator = new CorrelativeIdGenerator();
+        $id        = $generator->generate('Tipo');
+        $tipo     = new Tipo();
+        $tipo->fill($request->validated());
+        $tipo->id = $id;
+        $tipo->save();
+        return redirect()->route('tipo')->with('success', 'Tipo creado correctamente');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Tipo $tipo)
     {
-        //
+        return view('modelos.tipo.show', compact('tipo'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Tipo $tipo)
     {
-        //
+        return view('modelos.tipo.edit', compact('tipo'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Tipo $tipo)
+    public function update(TipoUpdateRequest $request, Tipo $tipo)
     {
-        //
+        $tipo->update($request->validated());
+        return redirect()->route('tipo')->with('success', 'Tipo actualizado correctamente');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Tipo $tipo)
     {
-        //
+        if ($tipo->productos()->exists()) {
+            $firstProducto = $tipo->productos()->select('producto')->first();
+            return back()->with('error', 'El tipo no puede ser eliminado porque está asignado a el producto: ' . ($firstProducto->producto ?? ''));
+        }
+        try {
+            $tipo->delete();
+        } catch (\Exception $e) {
+            return back()->with('error', 'Ocurrió un error cuando se intentaba eliminar el tipo: ' . $e->getMessage());
+        }
+        return redirect()->route('tipo')->with('success', 'El tipo "' . $tipo->tipo . '" ha sido eliminado correctamente');
     }
+
+    public function activate(Tipo $tipo)
+    {
+        $tipo->activo = !$tipo->activo;
+        $tipo->save();
+        return redirect()->route('tipo')->with('success', 'Tipo ' . ($tipo->activo ? 'activado' : 'desactivado') . ' correctamente');
+    }
+
 }
+

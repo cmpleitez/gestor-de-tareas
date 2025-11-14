@@ -213,7 +213,6 @@
         <div class="main-menu-content mt-3">
             <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation"
                 data-icon-style="">
-
                 @role('superadmin')
                     <li class=" nav-item"><a href="#"><i class="bx bxs-shield"></i><span class="menu-title"
                                 data-i18n="Menu Levels">Seguridad</span></a>
@@ -266,6 +265,18 @@
                             <li><a href="{{ Route('solicitud') }}">
                                     <i class="bx bx-right-arrow-alt"></i>
                                     <span class="menu-item" data-i18n="Second Level">Solicitudes</span>
+                                </a></li>
+                            <li><a href="{{ Route('marca') }}">
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Marcas</span>
+                                </a></li>
+                            <li><a href="{{ Route('modelo') }}">
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Modelos</span>
+                                </a></li>
+                            <li><a href="{{ Route('tipo') }}">
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Tipos</span>
                                 </a></li>
                         </ul>
                     </li>
@@ -360,10 +371,10 @@
     <script src="{{ asset('app-assets/vendors/js/tables/datatable/vfs_fonts.js') }}"></script>
     <script src="{{ asset('app-assets/vendors/js/charts/chart.min.js') }}"></script>
     <script src="{{ asset('app-assets/js/scripts/forms/input-clear.js') }}"></script>
-
     <!-- END: Vendor JavaScript -->
 
     <!-- ... otros scripts ... -->
+    <script src="{{ asset('app-assets/vendors/js/forms/select/select2.full.min.js') }}"></script>
     <script>
         // Configuración global de toastr para todo el proyecto
         toastr.options = {

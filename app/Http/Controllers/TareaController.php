@@ -10,7 +10,7 @@ class TareaController extends Controller
 {
     public function index()
     {
-        $tareas = Tarea::orderBy('id', 'desc')->paginate(15);
+        $tareas = Tarea::orderBy('id', 'desc')->paginate(10);
         return view('modelos.tarea.index', compact('tareas'));
     }
 

@@ -115,24 +115,24 @@ SERVICIOS:
     ...🟢 Crear inventario de servicios a construir y la lista debe estar en orden "consecuencial", es decir en secuencia causal o causa y efecto, 
     sería según procedimiento establecido
 
-        ...🪒registro de entradas (a los 4 tipos de stocks)
-            el tipo de dato en el ordenamiento 
-        ...🪒tienda
-            crud de marcas
-            crud de modelos
-            crud de tipos
-            crud de productos
-            crud de kits
-                asignacion de productos
-
+        👍🏻🪒registro de movimientos (a los 4 tipos de stocks)
+        👍🏻🪒crud de marcas
+        👍🏻🪒crud de modelos
+        👍🏻🪒crud de tipos
+        🪒crud de productos
+        🪒crud de kits
+            asignacion de productos
+        🪒tienda
         🪒orden de compra para:
             . carrito
             . tarjeta en el tablero "En progreso" en el rol del Receptor
             . paso "Revisión de la Orden/Reserva"
         🪒historial de entradas y reversiones en stocks
         🪒Cada cierta cantidad de días se debe correr una tarea programada para borrar todas las solicitudes no validadas por el cliente
-        
+        🪒Resolver problemas de maquetacion existentes
+            . Los datatables: en sus encabezados se desordenan los iconos de ordenamiento de datos cuando la ventana cambia de tamaño
 
+    🟢 Los botones agregar o nuevo de los datatables debe ser azul no naranja
     🟢 Número de atención va ser validado cuando se complete todo el procedimiento, cada copia de las "recepciones iran siendo validadas por el usuario destino"
     🟢 En el Kanban el receptor podrá escribir en la <orden de compra/reserva> en el tablero de <recibidas> pero no en el resto de tableros
     🟢 En el Kanban el operador podrá escribir en la <orden de compra/reserva> en el tablero de <en progreso> pero no en el resto de tableros

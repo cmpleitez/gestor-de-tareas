@@ -1,8 +1,10 @@
 <?php
+
 namespace App\Http\Requests;
+
 use Illuminate\Foundation\Http\FormRequest;
 
-class SolicitudStoreRequest extends FormRequest
+class TipoStoreRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -12,7 +14,7 @@ class SolicitudStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'solicitud' => 'required|unique:solicitudes|min:3|max:128|regex:/^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$/',
+            'tipo' => 'required|unique:tipos|min:3|max:128|regex:/^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$/',
         ];
     }
 }

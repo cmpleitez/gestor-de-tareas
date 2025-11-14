@@ -126,22 +126,25 @@
 <script src="{{ asset('app-assets/vendors/js/tables/datatable/pdfmake.min.js') }}"></script>
 <script src="{{ asset('app-assets/vendors/js/tables/datatable/vfs_fonts.js') }}"></script>
 
-{{-- Componente de orientación para tablas --}}
+{{-- ORIENTACIÓN PARA TABLAS EN MÓVILES --}}
 @include('components.orientation-manager')
 
 <script>
-    // ===== CONFIGURACIÓN MÍNIMA Y FUNCIONAL =====
         $(document).ready(function() {
-            
-            // Inicializar DataTable de forma básica
+            //INICIALIZACION DE DATATABLES
             if ($.fn.DataTable) {
                 $('.zero-configuration').DataTable({
                     "language": { "url": "/app-assets/Spanish.json" },
-                    "pageLength": 50
+                    "pageLength": 50,
+                    "columnDefs": [
+                        {
+                            "targets": 0,
+                            "type": "num"
+                        }
+                    ],                    
                 });
             }
-            
-            // Inicializar tooltips de Bootstrap 4 con HTML habilitado
+            // INICIALIZAR TOOLTIPS
             $('[data-toggle="tooltip"]').tooltip({
                 html: true,
                 placement: 'bottom'

@@ -1,65 +1,71 @@
 <?php
-
 namespace App\Http\Controllers;
-
+use App\Http\Requests\ModeloStoreRequest;
+use App\Http\Requests\ModeloUpdateRequest;
+use App\Models\Marca;
 use App\Models\Modelo;
-use Illuminate\Http\Request;
+use App\Services\CorrelativeIdGenerator;
 
 class ModeloController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $modelos = Modelo::orderBy('id', 'desc')->paginate(10);
+        return view('modelos.modelo.index', compact('modelos'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        $marcas = Marca::where('activo', true)->get();
+        return view('modelos.modelo.create', compact('marcas'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(ModeloStoreRequest $request)
     {
-        //
+        $generator = new CorrelativeIdGenerator();
+        $id        = $generator->generate('Modelo');
+        $modelo     = new Modelo();
+        $modelo->fill($request->validated());
+        $modelo->id = $id;
+        $modelo->save();
+        return redirect()->route('modelo')->with('success', 'Modelo creado correctamente');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Modelo $modelo)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Modelo $modelo)
     {
-        //
+        $marcas = Marca::where('activo', true)->get();
+        return view('modelos.modelo.edit', compact('modelo', 'marcas'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Modelo $modelo)
+    public function update(ModeloUpdateRequest $request, Modelo $modelo)
     {
-        //
+        $modelo->update($request->validated());
+        return redirect()->route('modelo')->with('success', 'Modelo actualizado correctamente');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Modelo $modelo)
     {
-        //
+        if ($modelo->productos()->exists()) {
+            $firstProducto = $modelo->productos()->select('producto')->first();
+            return back()->with('error', 'El modelo no puede ser eliminado porque está asignado a el producto: ' . ($firstProducto->producto ?? ''));
+        }
+        try {
+            $modelo->delete();
+        } catch (\Exception $e) {
+            return back()->with('error', 'Ocurrió un error cuando se intentaba eliminar el modelo: ' . $e->getMessage());
+        }
+        return redirect()->route('modelo')->with('success', 'El modelo "' . $modelo->modelo . '" ha sido eliminado correctamente');
+    }
+
+    public function activate(Modelo $modelo)
+    {
+        $modelo->activo = ! $modelo->activo;
+        $modelo->save();
+        return redirect()->route('modelo')->with('success', 'El modelo "' . $modelo->modelo . '" ha sido ' . ($modelo->activo ? 'activado' : 'desactivado') . ' correctamente');
     }
 }

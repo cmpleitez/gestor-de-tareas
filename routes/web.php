@@ -1,4 +1,6 @@
 <?php
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EquipoController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\RecepcionController;
@@ -6,9 +8,9 @@ use App\Http\Controllers\SecurityController;
 use App\Http\Controllers\SolicitudController;
 use App\Http\Controllers\TareaController;
 use App\Http\Controllers\UserController;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\MarcaController;
+use App\Http\Controllers\ModeloController;
+use App\Http\Controllers\TipoController;
 
 // Rutas públicas
 Route::get('/', function () {
@@ -63,8 +65,8 @@ Route::middleware([
         });
     });
 
-    //ENROLAMIENTO
-    Route::group(['middleware' => ['role:admin|superadmin|cliente']], function () {
+    //ADMINISTRACIÓN
+    Route::group(['middleware' => ['role:admin|superadmin']], function () {
         Route::group(['prefix' => 'user'], function () { //Usuarios
             Route::get('/', [userController::class, 'index'])->name('user');
             Route::get('edit/{user}', [userController::class, 'edit'])->name('user.edit');
@@ -96,6 +98,37 @@ Route::middleware([
             Route::get('destroy/{tarea}', [tareaController::class, 'destroy'])->name('tarea.destroy');
             Route::post('activate/{tarea}', [tareaController::class, 'activate'])->name('tarea.activate');
         });
+
+        Route::group(['prefix' => 'marca'], function () { //Marcas
+            Route::get('/', [marcaController::class, 'index'])->name('marca');
+            Route::get('create', [marcaController::class, 'create'])->name('marca.create');
+            Route::post('store', [marcaController::class, 'store'])->name('marca.store');
+            Route::get('edit/{marca}', [marcaController::class, 'edit'])->name('marca.edit');
+            Route::put('update/{marca}', [marcaController::class, 'update'])->name('marca.update');
+            Route::get('destroy/{marca}', [marcaController::class, 'destroy'])->name('marca.destroy');
+            Route::post('activate/{marca}', [marcaController::class, 'activate'])->name('marca.activate');
+        });
+
+        Route::group(['prefix' => 'modelo'], function () { //Modelos
+            Route::get('/', [modeloController::class, 'index'])->name('modelo');
+            Route::get('create', [modeloController::class, 'create'])->name('modelo.create');
+            Route::post('store', [modeloController::class, 'store'])->name('modelo.store');
+            Route::get('edit/{modelo}', [modeloController::class, 'edit'])->name('modelo.edit');
+            Route::put('update/{modelo}', [modeloController::class, 'update'])->name('modelo.update');
+            Route::get('destroy/{modelo}', [modeloController::class, 'destroy'])->name('modelo.destroy');
+            Route::post('activate/{modelo}', [modeloController::class, 'activate'])->name('modelo.activate');
+        });
+
+        Route::group(['prefix' => 'tipo'], function () { //Tipos
+            Route::get('/', [TipoController::class, 'index'])->name('tipo');
+            Route::get('create', [TipoController::class, 'create'])->name('tipo.create');
+            Route::post('store', [TipoController::class, 'store'])->name('tipo.store');
+            Route::get('edit/{tipo}', [TipoController::class, 'edit'])->name('tipo.edit');
+            Route::put('update/{tipo}', [TipoController::class, 'update'])->name('tipo.update');
+            Route::get('destroy/{tipo}', [TipoController::class, 'destroy'])->name('tipo.destroy');
+            Route::post('activate/{tipo}', [TipoController::class, 'activate'])->name('tipo.activate');
+        });
+
         Route::group(['prefix' => 'solicitud'], function () { //Solicitudes
             Route::get('/', [solicitudController::class, 'index'])->name('solicitud');
             Route::get('create', [solicitudController::class, 'create'])->name('solicitud.create');

@@ -1,7 +1,7 @@
 @extends('dashboard')
 
 @section('css')
-    <link href="{{ asset('app-assets/vendors/css/tables/datatable/datatables.min.css') }}" rel="stylesheet">
+<link href="{{ asset('app-assets/vendors/css/tables/datatable/datatables.min.css') }}" rel="stylesheet">
 @stop
 
 @section('contenedor')
@@ -11,17 +11,15 @@
             <div class="card-header">
                 <div class="col-md-12 d-flex justify-content-between" style="padding: 0;">
                     <div class="col-11 p-1">
-                        <h4 class="card-title">EQUIPOS DE TRABAJO</h4>
-                        <p class="card-text">Grupos de operadores con diferentes roles y de diferentes areas formados para resolver casos prederminados</p>
+                        <h4 class="card-title">MODELOS</h4>
+                        <p class="card-text">Los modelos son las variantes de una marca que se diferencian por sus características técnicas y funcionales</p>
                     </div>
                     <div class="col-1 d-flex justify-content-end" style="padding: 0;">
-                        @can('crear')
-                            <a href="{!! route('equipo.create') !!}">
-                                <div class="badge-circle badge-circle-md bg-primary">
-                                    <i class="bx bx-plus-medical font-small-3"></i>
-                                </div>
-                            </a>
-                        @endcan
+                        <a href="{!! route('modelo.create') !!}">
+                            <div class="badge-circle badge-circle-md btn-warning">
+                                <i class="bx bx-plus-medical font-small-3"></i>
+                            </div>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -32,7 +30,8 @@
                             <thead>
                                 <tr>
                                     <th class="text-center">ID</th>
-                                    <th>Equipo</th>
+                                    <th>Modelo</th>
+                                    <th>Marca</th>
                                     <th class="text-center">Creado</th>
                                     <th class="text-center">Actualizado</th>
                                     @can('autorizar')
@@ -42,28 +41,29 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($equipos as $equipo)
+                                @foreach ($modelos as $modelo)
                                 <tr>
                                     {{-- CAMPOS --}}
-                                    <td class="text-center">{{ $equipo->id }}</td>
-                                    <td>{{ $equipo->equipo }}</td>
-                                    <td class="text-center">{{ $equipo->created_at->format('d/m/Y') }}</td>
-                                    <td class="text-center">{{ $equipo->updated_at->format('d/m/Y') }}</td>
+                                    <td class="text-center">{{ $modelo->id }}</td>
+                                    <td>{{ $modelo->modelo }}</td>
+                                    <td>{{ $modelo->marca->marca }}</td>
+                                    <td class="text-center">{{ $modelo->created_at->format('d/m/Y') }}</td>
+                                    <td class="text-center">{{ $modelo->updated_at->format('d/m/Y') }}</td>
                                     {{-- ACTIVAR --}}
                                     @can('autorizar')
                                     <td class="text-center">
-                                        <form action="{{ route('equipo.activate', $equipo->id) }}" method="POST"
+                                        <form action="{{ route('modelo.activate', $modelo->id) }}" method="POST"
                                             style="display: inline;">
                                             @csrf
                                             <div class="custom-control custom-switch"
                                                 style="transform: scale(0.6); margin: 0;" data-toggle="tooltip"
                                                 data-html="true" data-placement="bottom"
-                                                title="<i class='bx bxs-error-circle'></i> {{ $equipo->activo ? 'Desactivar' : 'Activar' }} {{ $equipo->equipo }}">
-                                                <input id="activate_{{ $equipo->id }}" type="checkbox"
-                                                    class="custom-control-input" @if ($equipo->activo) checked @endif
+                                                title="<i class='bx bxs-error-circle'></i> {{ $modelo->activo ? 'Desactivar' : 'Activar' }} {{ $modelo->modelo }}">
+                                                <input id="activate_{{ $modelo->id }}" type="checkbox"
+                                                    class="custom-control-input" @if ($modelo->activo) checked @endif
                                                 onchange="this.form.submit();">
                                                 <label class="custom-control-label"
-                                                    for="activate_{{ $equipo->id }}"></label>
+                                                    for="activate_{{ $modelo->id }}"></label>
                                             </div>
                                         </form>
                                     </td>
@@ -73,20 +73,20 @@
                                         <div class="btn-group" role="group" aria-label="label">
                                             {{-- EDITAR --}}
                                             @can('editar')
-                                            <a href="{{ route('equipo.edit', $equipo->id) }}" role="button"
+                                            <a href="{{ route('modelo.edit', $modelo->id) }}" role="button"
                                                 data-toggle="tooltip" data-popup="tooltip-custom" data-html="true"
                                                 data-placement="bottom"
-                                                title="<i class='bx bxs-edit-alt'></i> Editar datos de {{ $equipo->equipo }}"
+                                                title="<i class='bx bxs-edit-alt'></i> Editar datos de {{ $modelo->modelo }}"
                                                 class="button_edit align-center border border-warning-dark text-warning-dark bg-warning-light">
                                                 <i class="bx bxs-edit-alt"></i>
                                             </a>
                                             @endcan
                                             {{-- ELIMINAR --}}
                                             @can('eliminar')
-                                            <a href="{{ route('equipo.destroy', $equipo->id) }}" role="button"
+                                            <a href="{{ route('modelo.destroy', $modelo->id) }}" role="button"
                                                 data-toggle="tooltip" data-popup="tooltip-custom" data-html="true"
                                                 data-placement="bottom"
-                                                title="<i class='bx bxs-eraser'></i> Eliminar {{ $equipo->equipo }}"
+                                                title="<i class='bx bxs-eraser'></i> Eliminar {{ $modelo->modelo }}"
                                                 class="button_delete align-center border border-danger-dark text-danger-dark bg-danger-light">
                                                 <i class="bx bxs-eraser"></i>
                                             </a>
@@ -99,11 +99,12 @@
                             <tfoot>
                                 <tr>
                                     <th class="text-center">ID</th>
-                                    <th>Equipo</th>
+                                    <th>Modelo</th>
+                                    <th>Marca</th>
                                     <th class="text-center">Creado</th>
                                     <th class="text-center">Actualizado</th>
                                     @can('autorizar')
-                                    <th class="text-center">Estado</th>
+                                        <th class="text-center">Estado</th>
                                     @endcan
                                     <th class="text-center">Tablero de control</th>
                                 </tr>
@@ -118,7 +119,6 @@
 @stop
 
 @section('js')
-<!-- BEGIN: Page Vendor JS-->
 <script src="{{ asset('app-assets/vendors/js/tables/datatable/datatables.min.js') }}"></script>
 <script src="{{ asset('app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}"></script>
 <script src="{{ asset('app-assets/vendors/js/tables/datatable/dataTables.buttons.min.js') }}"></script>
@@ -127,14 +127,12 @@
 <script src="{{ asset('app-assets/vendors/js/tables/datatable/buttons.bootstrap.min.js') }}"></script>
 <script src="{{ asset('app-assets/vendors/js/tables/datatable/pdfmake.min.js') }}"></script>
 <script src="{{ asset('app-assets/vendors/js/tables/datatable/vfs_fonts.js') }}"></script>
-<!-- END: Page Vendor JS-->
 
-{{-- Componente de orientación para tablas --}}
+{{-- ORIENTACION PARA TABLAS EN MÓVILES --}}
 @include('components.orientation-manager')
-
 <script>
         $(document).ready(function() {
-            // INICIALIZACION DE DATATABLES
+            //INICIALIZACION DE DATATABLES
             if ($.fn.DataTable) {
                 $('.zero-configuration').DataTable({
                     "language": { "url": "/app-assets/Spanish.json" },

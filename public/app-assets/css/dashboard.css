@@ -1,3 +1,22 @@
+.select2-selection__clear {
+    font-size: 1.25rem !important;
+    font-weight: normal !important;
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-right: 0.5rem !important;
+    opacity: 0.6 !important;
+    transition: opacity 0.2s ease !important;
+    padding: 0 !important;
+    width: 1.5rem !important;
+}
+
+.select2-selection__clear:hover {
+    opacity: 1 !important;
+    color: #495057 !important;
+}
+
 .fixed-top {
     top: 6px;
 }

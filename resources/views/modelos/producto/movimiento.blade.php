@@ -246,21 +246,31 @@
             @if ($errors->any())
                 $('#modalMovimiento').modal('show');
             @endif
-            // CONFIGURACIÓN PARA LOS DATATABLES
+            // INICIALIZACION DE DATATABLES
             if ($.fn.DataTable) {
                 $('.zero-configuration').DataTable({
                     "language": {
                         "url": "/app-assets/Spanish.json"
                     },
-                    "pageLength": 10
+                    "pageLength": 10,
+                    "columnDefs": [
+                        {
+                            "targets": 0,
+                            "type": "num"
+                        }
+                    ],
                 });
             }
-            $('[data-toggle="tooltip"], [data-popup="tooltip-custom"]')
-                .tooltip({
-                    html: true,
-                    placement: 'bottom'
-                });
-            // CONFIGURACIÓN PARA EL MODAL DE ENTRADA
+            // INICIALIZAR TOOLTIPS
+            $('[data-toggle="tooltip"], [data-popup="tooltip-custom"]').tooltip({
+                html: true,
+                placement: 'bottom'
+            });
+            $(document).on('show.bs.tooltip', '[data-toggle="tooltip"], [data-popup="tooltip-custom"]', function() {
+                $('.tooltip').remove();
+                $('[data-toggle="tooltip"], [data-popup="tooltip-custom"]').not(this).tooltip('hide');
+            });
+            //DIBUJANDO DATOS EN EL MODAL
             $('#modalMovimiento').on('show.bs.modal', function(
                 event) {
                 var button = $(event.relatedTarget);
@@ -317,13 +327,11 @@
                     }
                 });
             });
-
             $('#modalMovimiento').on('hidden.bs.modal', function() {
                 $(this).find('#ProductoStocks').empty();
             });
-            
-
         });
+        
     </script>
 
 @stop
