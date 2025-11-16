@@ -1,7 +1,7 @@
 @extends('dashboard')
 
 @section('css')
-    <link href="{{ asset('app-assets/vendors/css/tables/datatable/datatables.min.css') }}" rel="stylesheet">
+<link href="{{ asset('app-assets/vendors/css/tables/datatable/datatables.min.css') }}" rel="stylesheet">
 @stop
 
 @section('contenedor')
@@ -12,15 +12,16 @@
                 <div class="col-md-12 d-flex justify-content-between" style="padding: 0;">
                     <div class="col-11 p-1">
                         <h4 class="card-title">EQUIPOS DE TRABAJO</h4>
-                        <p class="card-text">Grupos de operadores con diferentes roles y de diferentes areas formados para resolver casos prederminados</p>
+                        <p class="card-text">Grupos de operadores con diferentes roles y de diferentes areas formados
+                            para resolver casos prederminados</p>
                     </div>
                     <div class="col-1 d-flex justify-content-end" style="padding: 0;">
                         @can('crear')
-                            <a href="{!! route('equipo.create') !!}">
-                                <div class="badge-circle badge-circle-md bg-primary">
-                                    <i class="bx bx-plus-medical font-small-3"></i>
-                                </div>
-                            </a>
+                        <a href="{!! route('equipo.create') !!}">
+                            <div class="badge-circle badge-circle-md bg-primary">
+                                <i class="bx bx-plus-medical font-small-3"></i>
+                            </div>
+                        </a>
                         @endcan
                     </div>
                 </div>
@@ -133,7 +134,7 @@
 @include('components.orientation-manager')
 
 <script>
-        $(document).ready(function() {
+    $(document).ready(function() {
             // INICIALIZACION DE DATATABLES
             if ($.fn.DataTable) {
                 $('.zero-configuration').DataTable({

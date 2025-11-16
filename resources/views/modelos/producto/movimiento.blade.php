@@ -13,8 +13,8 @@
                 <div class="card-header">
                     <div class="col-md-12 d-flex justify-content-between" style="padding: 0;">
                         <div class="col-11 p-1">
-                            <h4 class="card-title">ENTRADAS</h4>
-                            <p class="card-text">Registro de entradas de productos a los diferentes stocks</p>
+                            <h4 class="card-title">MOVIMIENTOS</h4>
+                            <p class="card-text">Registro de entradas y salidas de productos a los diferentes stocks</p>
                         </div>
                     </div>
                 </div>
@@ -84,7 +84,7 @@
         aria-hidden="true" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
             <div class="modal-content">
-                <form id="formMovimiento" action="{{ route('producto.store-movimiento') }}" method="POST" novalidate>
+                <form id="formMovimiento" action="{{ route('tienda.store-movimiento') }}" method="POST" novalidate>
                     @csrf
                     <div class="d-flex flex-column h-100">
                         <input type="hidden" name="producto_id" id="producto_id" value="{{ old('producto_id') }}">
@@ -284,7 +284,7 @@
                     $('<div>', { class: 'col-12 text-center text-muted' }).text('Cargando stocks...')
                 );
                 $.ajax({
-                    url: '{{ route('producto.get-stocks-producto', ['productoId' => ':productoId']) }}'.replace(':productoId', productoId),
+                    url: '{{ route('tienda.get-stocks-producto', ['productoId' => ':productoId']) }}'.replace(':productoId', productoId),
                     type: 'GET',
                     success: function(response) {
                         stocksWrapper.empty();

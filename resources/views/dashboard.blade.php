@@ -278,6 +278,10 @@
                                     <i class="bx bx-right-arrow-alt"></i>
                                     <span class="menu-item" data-i18n="Second Level">Tipos</span>
                                 </a></li>
+                            <li><a href="{{ Route('producto') }}">
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Productos</span>
+                                </a></li>
                         </ul>
                     </li>
                 @endrole
@@ -286,7 +290,7 @@
                             data-i18n="Menu Levels">Servicios</span></a>
                     <ul class="menu-content" style="display: block;">
                         @role('superadmin|admin')
-                        <li><a href="{{ route('producto.create-movimiento') }}">
+                        <li><a href="{{ route('tienda.create-movimiento') }}">
                                 <i class="bx bx-right-arrow-alt"></i>
                                 <span class="menu-item" data-i18n="Second Level">Movimientos</span>
                             </a></li>
@@ -297,9 +301,9 @@
                                 <i class="bx bx-right-arrow-alt"></i>
                                 <span class="menu-item" data-i18n="Second Level">Recepciones</span>
                             </a></li>
-                        <li><a href="{{ route('producto') }}">
+                        <li><a href="{{ Route('tienda') }}">
                                 <i class="bx bx-right-arrow-alt"></i>
-                                <span class="menu-item" data-i18n="Second Level">Catálogo</span>
+                                <span class="menu-item" data-i18n="Second Level">Tienda</span>
                             </a></li>
                         @endrole
                     </ul>

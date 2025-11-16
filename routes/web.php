@@ -11,6 +11,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\MarcaController;
 use App\Http\Controllers\ModeloController;
 use App\Http\Controllers\TipoController;
+use App\Http\Controllers\TiendaController;
 
 // Rutas públicas
 Route::get('/', function () {
@@ -129,6 +130,18 @@ Route::middleware([
             Route::post('activate/{tipo}', [TipoController::class, 'activate'])->name('tipo.activate');
         });
 
+        Route::group(['middleware' => ['role:superadmin|admin']], function () {
+            Route::group(['prefix' => 'producto'], function () {
+                Route::get('/', [ProductoController::class, 'index'])->name('producto');
+                Route::get('create', [ProductoController::class, 'create'])->name('producto.create');
+                Route::post('store', [ProductoController::class, 'store'])->name('producto.store');
+                Route::get('edit/{producto}', [ProductoController::class, 'edit'])->name('producto.edit');
+                Route::put('update/{producto}', [ProductoController::class, 'update'])->name('producto.update');
+                Route::get('destroy/{producto}', [ProductoController::class, 'destroy'])->name('producto.destroy');
+                Route::post('activate/{producto}', [ProductoController::class, 'activate'])->name('producto.activate');
+            });
+        });
+
         Route::group(['prefix' => 'solicitud'], function () { //Solicitudes
             Route::get('/', [solicitudController::class, 'index'])->name('solicitud');
             Route::get('create', [solicitudController::class, 'create'])->name('solicitud.create');
@@ -160,31 +173,19 @@ Route::middleware([
             Route::post('reportar-tarea/{actividad_id}', [RecepcionController::class, 'reportarTarea'])->name('recepcion.reportar-tarea');
         });
     });
+    
+    //TIENDA
     Route::group(['middleware' => ['role:cliente|superadmin|admin']], function () {
         Route::group(['prefix' => 'recepcion'], function () {
             Route::get('create', [RecepcionController::class, 'create'])->name('recepcion.create');
             Route::post('store', [RecepcionController::class, 'store'])->name('recepcion.store');
         });
-        Route::group(['prefix' => 'producto'], function () {
-            Route::get('/', [ProductoController::class, 'index'])->name('producto');
-            Route::get('entrada', [ProductoController::class, 'entrada'])->name('producto.entrada');
-            Route::post('ingreso', [ProductoController::class, 'ingreso'])->name('producto.ingreso');
+        Route::group(['prefix' => 'tienda'], function () {
+            Route::get('/', [TiendaController::class, 'index'])->name('tienda');
+            Route::get('movimiento', [TiendaController::class, 'createMovimiento'])->name('tienda.create-movimiento');
+            Route::post('movimiento', [TiendaController::class, 'storeMovimiento'])->name('tienda.store-movimiento');
+            Route::get('get-stocks-producto/{productoId}', [TiendaController::class, 'getStocksProducto'])->name('tienda.get-stocks-producto');
         });
     });
-
-    //TIENDA
-    Route::group(['middleware' => ['role:cliente|superadmin|admin']], function () {
-        Route::group(['prefix' => 'producto'], function () {
-            Route::get('/', [ProductoController::class, 'index'])->name('producto');
-        });
-    });
-    Route::group(['middleware' => ['role:superadmin|admin']], function () {
-        Route::group(['prefix' => 'producto'], function () {
-            Route::get('movimiento', [ProductoController::class, 'createMovimiento'])->name('producto.create-movimiento');
-            Route::post('movimiento', [ProductoController::class, 'storeMovimiento'])->name('producto.store-movimiento');
-            Route::get('get-stocks-producto/{productoId}', [ProductoController::class, 'getStocksProducto'])->name('producto.get-stocks-producto');
-        });
-    });
-
 
 });
