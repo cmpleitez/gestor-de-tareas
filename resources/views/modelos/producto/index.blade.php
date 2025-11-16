@@ -147,6 +147,20 @@
                         {
                             "targets": 0,
                             "type": "num"
+                        },
+                        {
+                            "targets": 4,
+                            "render": function (data, type) {
+                                var num = Number(data || 0);
+                                if (type === 'display') {
+                                    try {
+                                        return new Intl.NumberFormat(navigator.language || 'es-ES', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 }).format(num);
+                                    } catch (e) {
+                                        return num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                                    }
+                                }
+                                return num;
+                            }
                         }
                     ],                    
                 });
