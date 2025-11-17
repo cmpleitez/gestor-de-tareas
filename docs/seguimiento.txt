@@ -120,7 +120,8 @@ SERVICIOS:
         👍🏻🪒crud de marcas
         👍🏻🪒crud de modelos
         👍🏻🪒crud de tipos
-        🪒crud de productos
+        ...🪒crud de productos
+            ...agregar el parentesis en los requests
         🪒crud de kits
             asignacion de productos
         🪒tienda

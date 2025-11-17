@@ -32,24 +32,23 @@
                         <div class="card-body">
                             <div class="row">
                                 {{-- TAREA --}}
-                                <div class="col-sm-12">
-                                    <div class="form-group">
-                                        <label>Tarea</label>
-                                        <div class="controls">
-                                            <input type="text" name="tarea" id="tarea"
-                                                class="form-control {{ $errors->has('tarea') ? 'is-invalid' : '' }}"
-                                                data-validation-required-message="Este campo es obligatorio"
-                                                data-validation-containsnumber-regex="^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$"
-                                                data-validation-containsnumber-message="Solo se permiten letras, sin espacios al inicio/final ni dobles espacios"
-                                                data-validation-minlength-message="El nombre debe tener al menos 3 caracteres"
-                                                data-clear="true" minlength="3" placeholder="Nombre de la nueva tarea"
-                                                value="{{ old('tarea', $tarea->tarea) }}" required>
-                                            @error('tarea')
-                                                <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
-                                                    {{ $errors->first('tarea') }}
-                                                </div>
-                                            @enderror
-                                        </div>
+                                <div class="col-md-12">
+                                    <div class="form-group"> {{-- Tarea --}}
+                                        <label for="tarea">Tarea</label>
+                                        <input type="text" name="tarea" id="tarea"
+                                            class="form-control {{ $errors->has('tarea') ? 'is-invalid' : '' }}"
+                                            data-validation-required-message="Este campo es obligatorio"
+                                            data-validation-containsnumber-regex="^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ()]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ()]+)*$"
+                                            data-validation-containsnumber-message="Solo se permiten letras y paréntesis, sin espacios al inicio/final ni dobles espacios"
+                                            data-validation-minlength-message="El nombre debe tener al menos 3 caracteres"
+                                            data-clear="true" minlength="3" placeholder="Nombre de la nueva tarea"
+                                            value="{{ old('tarea', $tarea->tarea) }}" required>
+                                        <div class="help-block"></div>
+                                        @error('tarea')
+                                            <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                                {{ $errors->first('tarea') }}
+                                            </div>
+                                        @enderror
                                     </div>
                                 </div>
                             </div>

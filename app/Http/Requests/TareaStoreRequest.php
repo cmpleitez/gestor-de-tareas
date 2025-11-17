@@ -13,7 +13,7 @@ class TareaStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'tarea' => 'required|unique:tareas|min:3|max:128|regex:/^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$/',
+            'tarea' => 'required|unique:tareas|min:3|max:128|regex:/^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ()]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ()]+)*$/',
         ];
     }
 }

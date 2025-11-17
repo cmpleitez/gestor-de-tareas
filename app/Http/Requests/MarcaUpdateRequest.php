@@ -14,7 +14,7 @@ class MarcaUpdateRequest extends FormRequest
     {
         $marca = $this->route('marca');
         return [
-            'marca' => ['required', 'min:3', 'max:128', 'regex:/^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$/', Rule::unique('marcas')->ignore($marca->id)],
+            'marca' => ['required', 'min:3', 'max:128', 'regex:/^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ()]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ()]+)*$/', Rule::unique('marcas')->ignore($marca->id)],
         ];
     }
 }

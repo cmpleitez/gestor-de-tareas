@@ -50,7 +50,7 @@
                                     <td>{{ $producto->producto }}</td>
                                     <td>{{ $producto->modelo->modelo }}</td>
                                     <td>{{ $producto->tipo->tipo }}</td>
-                                    <td>{{ $producto->precio }}</td>
+                                    <td class="td-currency">{{ $producto->precio }}</td>
                                     <td class="text-center">{{ $producto->created_at->format('d/m/Y') }}</td>
                                     <td class="text-center">{{ $producto->updated_at->format('d/m/Y') }}</td>
                                     {{-- ACTIVAR --}}
@@ -148,21 +148,13 @@
                             "targets": 0,
                             "type": "num"
                         },
-                        {
-                            "targets": 4,
-                            "render": function (data, type) {
-                                var num = Number(data || 0);
-                                if (type === 'display') {
-                                    try {
-                                        return new Intl.NumberFormat(navigator.language || 'es-ES', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 }).format(num);
-                                    } catch (e) {
-                                        return num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                                    }
-                                }
-                                return num;
-                            }
+                    ],
+                    "drawCallback": function(settings) {
+                        // Formatear celdas con clase .td-currency después de que DataTables dibuje la tabla
+                        if (typeof formatCurrencyCells !== 'undefined') {
+                            formatCurrencyCells(true); // true = forzar reformateo
                         }
-                    ],                    
+                    }
                 });
             }
             // INICIALIZAR TOOLTIPS

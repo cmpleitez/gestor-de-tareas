@@ -13,8 +13,8 @@ return new class extends Migration
             $table->foreignId('tipo_id')->constrained('tipos');
             $table->foreignId('modelo_id')->constrained('modelos');
             $table->string('producto')->unique();
-            $table->boolean('accesorio')->default(false);
             $table->decimal('precio', 20, 4);
+            $table->boolean('accesorio')->default(false);
             $table->boolean('activo')->default(true);
             $table->timestamps();
         });

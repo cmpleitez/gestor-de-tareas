@@ -375,6 +375,7 @@
     <script src="{{ asset('app-assets/vendors/js/tables/datatable/vfs_fonts.js') }}"></script>
     <script src="{{ asset('app-assets/vendors/js/charts/chart.min.js') }}"></script>
     <script src="{{ asset('app-assets/js/scripts/forms/input-clear.js') }}"></script>
+    <script src="{{ asset('app-assets/js/scripts/forms/input-masks.js') }}"></script>
     <!-- END: Vendor JavaScript -->
 
     <!-- ... otros scripts ... -->

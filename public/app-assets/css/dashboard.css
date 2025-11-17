@@ -591,3 +591,20 @@ div.dataTables_wrapper div.dataTables_length {
         padding: 1.5rem 1.25rem;
     }
 }
+
+/* ===== MÁSCARAS DE ENTRADA ===== */
+
+/**
+ * Clase para campos de entrada con formato de moneda
+ * 
+ * Uso:
+ * <input type="text" class="form-control input-currency" name="precio" value="1499.99">
+ * 
+ * La máscara se aplica automáticamente mediante input-masks.js
+ * Formato: $1,499.99 (USD con separador de miles y 2 decimales)
+ * El valor se envía sin formato al servidor (solo números)
+ */
+.input-currency {
+    /* Los estilos visuales se manejan mediante Inputmask */
+    /* Esta clase es principalmente un selector para JavaScript */
+}

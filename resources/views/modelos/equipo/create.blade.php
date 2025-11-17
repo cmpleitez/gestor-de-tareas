@@ -31,49 +31,47 @@
                         <div class="card-body">
                             <div class="row">
                                 {{-- OFICINA --}}
-                                <div class="col-sm-12">
-                                    <div class="form-group">
-                                        <label>Oficina</label>
-                                        <div class="controls">
-                                            <select name="oficina_id"
-                                                class="form-control {{ $errors->has('oficina_id') ? 'is-invalid' : '' }}"
-                                                data-validation-required-message="La oficina es requerida" required>
-                                                <option value="">Seleccione una oficina</option>
-                                                @foreach ($oficinas as $oficina)
-                                                    <option value="{{ $oficina->id }}"
-                                                        {{ old('oficina_id') == $oficina->id ? 'selected' : '' }}>
-                                                        {{ $oficina->oficina }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                            @error('oficina_id')
-                                                <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
-                                                    {{ $errors->first('oficina_id') }}
-                                                </div>
-                                            @enderror
-                                        </div>
+                                <div class="col-md-12">
+                                    <div class="form-group"> {{-- Oficina --}}
+                                        <label for="oficina_id">Oficina</label>
+                                        <select name="oficina_id" id="oficina_id"
+                                            class="form-control {{ $errors->has('oficina_id') ? 'is-invalid' : '' }}"
+                                            data-validation-required-message="La oficina es requerida" required>
+                                            <option value="">Seleccione una oficina</option>
+                                            @foreach ($oficinas as $oficina)
+                                                <option value="{{ $oficina->id }}"
+                                                    {{ old('oficina_id') == $oficina->id ? 'selected' : '' }}>
+                                                    {{ $oficina->oficina }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        <div class="help-block"></div>
+                                        @error('oficina_id')
+                                            <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                                {{ $errors->first('oficina_id') }}
+                                            </div>
+                                        @enderror
                                     </div>
                                 </div>
 
                                 {{-- NOMBRE --}}
-                                <div class="col-sm-12">
-                                    <div class="form-group">
-                                        <label>Equipo</label>
-                                        <div class="controls">
-                                            <input type="text" name="equipo" id="equipo"
-                                                class="form-control {{ $errors->has('equipo') ? 'is-invalid' : '' }}"
-                                                data-validation-required-message="Este campo es obligatorio"
-                                                data-validation-containsnumber-regex="^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$"
-                                                data-validation-containsnumber-message="Solo se permiten letras, sin espacios al inicio/final ni dobles espacios"
-                                                data-validation-minlength-message="El nombre debe tener al menos 3 caracteres"
-                                                data-clear="true" minlength="3" placeholder="Nombre del nuevo equipo"
-                                                value="{{ old('equipo') }}" required>
-                                            @error('equipo')
-                                                <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
-                                                    {{ $errors->first('equipo') }}
-                                                </div>
-                                            @enderror
-                                        </div>
+                                <div class="col-md-12">
+                                    <div class="form-group"> {{-- Equipo --}}
+                                        <label for="equipo">Equipo</label>
+                                        <input type="text" name="equipo" id="equipo"
+                                            class="form-control {{ $errors->has('equipo') ? 'is-invalid' : '' }}"
+                                            data-validation-required-message="Este campo es obligatorio"
+                                            data-validation-containsnumber-regex="^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ()]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ()]+)*$"
+                                            data-validation-containsnumber-message="Solo se permiten letras y paréntesis, sin espacios al inicio/final ni dobles espacios"
+                                            data-validation-minlength-message="El nombre debe tener al menos 3 caracteres"
+                                            data-clear="true" minlength="3" placeholder="Nombre del nuevo equipo"
+                                            value="{{ old('equipo') }}" required>
+                                        <div class="help-block"></div>
+                                        @error('equipo')
+                                            <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                                {{ $errors->first('equipo') }}
+                                            </div>
+                                        @enderror
                                     </div>
                                 </div>
                             </div>

@@ -32,24 +32,23 @@
                         <div class="card-body">
                             <div class="row">
                                 {{-- TAREA --}}
-                                <div class="col-sm-12">
-                                    <div class="form-group">
-                                        <label>Tipo</label>
-                                        <div class="controls">
-                                            <input type="text" name="tipo" id="tipo"
-                                                class="form-control {{ $errors->has('tipo') ? 'is-invalid' : '' }}"
-                                                data-validation-required-message="Este campo es obligatorio"
-                                                data-validation-containsnumber-regex="^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$"
-                                                data-validation-containsnumber-message="Solo se permiten letras, sin espacios al inicio/final ni dobles espacios"
-                                                data-validation-minlength-message="El nombre debe tener al menos 3 caracteres"
-                                                data-clear="true" minlength="3" placeholder="Nombre del tipo"
-                                                value="{{ old('tipo', $tipo->tipo) }}" required>
-                                            @error('tipo')
-                                                <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
-                                                    {{ $errors->first('tipo') }}
-                                                </div>
-                                            @enderror
-                                        </div>
+                                <div class="col-md-12">
+                                    <div class="form-group"> {{-- Tipo --}}
+                                        <label for="tipo">Tipo</label>
+                                        <input type="text" name="tipo" id="tipo"
+                                            class="form-control {{ $errors->has('tipo') ? 'is-invalid' : '' }}"
+                                            data-validation-required-message="Este campo es obligatorio"
+                                            data-validation-containsnumber-regex="^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ()]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ()]+)*$"
+                                            data-validation-containsnumber-message="Solo se permiten letras y paréntesis, sin espacios al inicio/final ni dobles espacios"
+                                            data-validation-minlength-message="El nombre debe tener al menos 3 caracteres"
+                                            data-clear="true" minlength="3" placeholder="Nombre del tipo"
+                                            value="{{ old('tipo', $tipo->tipo) }}" required>
+                                        <div class="help-block"></div>
+                                        @error('tipo')
+                                            <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                                {{ $errors->first('tipo') }}
+                                            </div>
+                                        @enderror
                                     </div>
                                 </div>
                             </div>

@@ -31,24 +31,23 @@
                         <div class="card-body">
                             <div class="row">
                                 {{-- TAREA --}}
-                                <div class="col-sm-12">
-                                    <div class="form-group">
-                                        <label>Marca</label>
-                                        <div class="controls">
-                                            <input type="text" name="marca" id="marca"
-                                                class="form-control {{ $errors->has('marca') ? 'is-invalid' : '' }}"
-                                                data-validation-required-message="Este campo es obligatorio"
-                                                data-validation-containsnumber-regex="^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$"
-                                                data-validation-containsnumber-message="Solo se permiten letras, sin espacios al inicio/final ni dobles espacios"
-                                                data-validation-minlength-message="El nombre debe tener al menos 3 caracteres"
-                                                data-clear="true" minlength="3" placeholder="Nombre de la nueva marca"
-                                                value="{{ old('marca') }}" required>
-                                            @error('marca')
-                                                <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
-                                                    {{ $errors->first('marca') }}
-                                                </div>
-                                            @enderror
-                                        </div>
+                                <div class="col-md-12">
+                                    <div class="form-group"> {{-- Marca --}}
+                                        <label for="marca">Marca</label>
+                                        <input type="text" name="marca" id="marca"
+                                            class="form-control {{ $errors->has('marca') ? 'is-invalid' : '' }}"
+                                            data-validation-required-message="Este campo es obligatorio"
+                                            data-validation-containsnumber-regex="^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ()]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ()]+)*$"
+                                            data-validation-containsnumber-message="Solo se permiten letras y paréntesis, sin espacios al inicio/final ni dobles espacios"
+                                            data-validation-minlength-message="El nombre debe tener al menos 3 caracteres"
+                                            data-clear="true" minlength="3" placeholder="Nombre de la nueva marca"
+                                            value="{{ old('marca') }}" required>
+                                        <div class="help-block"></div>
+                                        @error('marca')
+                                            <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                                {{ $errors->first('marca') }}
+                                            </div>
+                                        @enderror
                                     </div>
                                 </div>
                             </div>
