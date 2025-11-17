@@ -44,8 +44,8 @@ class ProductoController extends Controller
 
     public function edit(Producto $producto)
     {
-        $modelos = Modelo::all();
-        $tipos = Tipo::all();
+        $modelos = Modelo::where('activo', true)->get();
+        $tipos = Tipo::where('activo', true)->get();
         return view('modelos.producto.edit', compact('producto', 'modelos', 'tipos'));
     }
 
