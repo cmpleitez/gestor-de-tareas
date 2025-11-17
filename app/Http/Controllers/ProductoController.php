@@ -3,7 +3,9 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\Producto;    
+use App\Models\Producto;
+use App\Models\Modelo;
+use App\Models\Tipo;
 
 class ProductoController extends Controller
 {
@@ -24,9 +26,11 @@ class ProductoController extends Controller
         //
     }
 
-    public function edit(string $id)
+    public function edit(Producto $producto)
     {
-        //
+        $modelos = Modelo::all();
+        $tipos = Tipo::all();
+        return view('modelos.producto.edit', compact('producto', 'modelos', 'tipos'));
     }
 
     public function update(Request $request, string $id)

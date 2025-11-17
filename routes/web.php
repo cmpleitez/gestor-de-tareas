@@ -130,16 +130,14 @@ Route::middleware([
             Route::post('activate/{tipo}', [TipoController::class, 'activate'])->name('tipo.activate');
         });
 
-        Route::group(['middleware' => ['role:superadmin|admin']], function () {
-            Route::group(['prefix' => 'producto'], function () {
-                Route::get('/', [ProductoController::class, 'index'])->name('producto');
-                Route::get('create', [ProductoController::class, 'create'])->name('producto.create');
-                Route::post('store', [ProductoController::class, 'store'])->name('producto.store');
-                Route::get('edit/{producto}', [ProductoController::class, 'edit'])->name('producto.edit');
-                Route::put('update/{producto}', [ProductoController::class, 'update'])->name('producto.update');
-                Route::get('destroy/{producto}', [ProductoController::class, 'destroy'])->name('producto.destroy');
-                Route::post('activate/{producto}', [ProductoController::class, 'activate'])->name('producto.activate');
-            });
+        Route::group(['prefix' => 'producto'], function () { //Productos
+            Route::get('/', [ProductoController::class, 'index'])->name('producto');
+            Route::get('create', [ProductoController::class, 'create'])->name('producto.create');
+            Route::post('store', [ProductoController::class, 'store'])->name('producto.store');
+            Route::get('edit/{producto}', [ProductoController::class, 'edit'])->name('producto.edit');
+            Route::put('update/{producto}', [ProductoController::class, 'update'])->name('producto.update');
+            Route::get('destroy/{producto}', [ProductoController::class, 'destroy'])->name('producto.destroy');
+            Route::post('activate/{producto}', [ProductoController::class, 'activate'])->name('producto.activate');
         });
 
         Route::group(['prefix' => 'solicitud'], function () { //Solicitudes
