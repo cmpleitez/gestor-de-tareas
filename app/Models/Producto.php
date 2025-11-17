@@ -27,7 +27,12 @@ class Producto extends Model
     {
         return $this->belongsToMany(Kit::class);
     }
-    
+
+    public function movimientos()
+    {
+        return $this->hasMany(Movimiento::class);
+    }
+
     public function atencionDetalles()
     {
         return $this->hasMany(AtencionDetalle::class);

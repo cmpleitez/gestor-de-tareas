@@ -142,7 +142,7 @@
             if ($.fn.DataTable) {
                 $('.zero-configuration').DataTable({
                     "language": { "url": "/app-assets/Spanish.json" },
-                    "pageLength": 50,
+                    "pageLength": 10,
                     "columnDefs": [
                         {
                             "targets": 0,

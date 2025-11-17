@@ -1,13 +1,14 @@
 <?php
 namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 
 use App\Models\Producto;
 use App\Models\Modelo;
 use App\Models\Tipo;
 use App\Services\CorrelativeIdGenerator;
 use App\Http\Requests\ProductoStoreRequest;
+use App\Http\Requests\ProductoUpdateRequest;
+use Illuminate\Support\Facades\DB;
 
 class ProductoController extends Controller
 {
@@ -48,15 +49,47 @@ class ProductoController extends Controller
         return view('modelos.producto.edit', compact('producto', 'modelos', 'tipos'));
     }
 
-    public function update(Request $request, string $id)
+    public function update(ProductoUpdateRequest $request, Producto $producto)
     {
-        //
+        $producto->fill($request->validated());
+        $producto->save();
+        return redirect()->route('producto')->with('success', 'Producto actualizado correctamente');
     }
 
-    public function destroy(string $id)
+    public function destroy(Producto $producto)
     {
-        //
+        if ($producto->movimientos()->exists()) {
+            $firstMovimiento = $producto->movimientos()->select('movimiento')->first();
+            return back()->with('error', 'El producto no puede ser eliminado porque está asignado a el movimiento: ' . ($firstMovimiento->movimiento ?? ''));
+        }
+
+        $oficinaStock = $producto->oficinaStock()->exists();
+        if ($oficinaStock) {
+            $firstOficinaStock = $producto->oficinaStock()->select('oficina_stock')->first();
+            return back()->with('error', 'El producto no puede ser eliminado porque está asignado a la oficina de stock: ' . ($firstOficinaStock->oficina_stock ?? ''));
+        }
+        $atencionDetalles = $producto->atencionDetalles()->exists();
+        if ($atencionDetalles) {
+            $firstAtencionDetalle = $producto->atencionDetalles()->select('atencion_detalle')->first();
+            return back()->with('error', 'El producto no puede ser eliminado porque está asignado a la atención de detalle: ' . ($firstAtencionDetalle->atencion_detalle ?? ''));
+        }
+        if ($producto->kits()->count() > 0) {
+            $firstKit = $producto->kits()->first();
+            return back()->with('error', 'El producto no puede ser eliminado porque está asignado a el Kit: ' . ($firstKit->kit ?? ''));
+        }
+        try {
+            $producto->delete();
+        } catch (\Exception $e) {
+            return back()->with('error', 'Ocurrió un error cuando se intentaba eliminar el producto: ' . $e->getMessage());
+        }
+        return redirect()->route('producto')->with('success', 'El producto "' . $producto->producto . '" ha sido eliminado correctamente');
     }
 
+    public function activate(Producto $producto)
+    {
+        $producto->activo = ! $producto->activo;
+        $producto->save();
+        return redirect()->route('producto')->with('success', 'El producto "' . $producto->producto . '" ha sido ' . ($producto->activo ? 'activado' : 'desactivado') . ' correctamente');
+    }
 
 }

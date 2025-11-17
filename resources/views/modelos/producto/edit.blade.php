@@ -94,7 +94,7 @@
                                 <div class="col-md-12">
                                     <div class="form-group"> {{-- Precio --}}
                                         <label for="precio">Precio</label>
-                                        <input type="text" name="precio" id="precio" class="form-control input-currency {{ $errors->has('precio') ? 'is-invalid' : '' }}" value="{{ old('precio', $producto->precio) }}" required>
+                                        <input type="text" name="precio" id="precio" class="form-control input-currency {{ $errors->has('precio') ? 'is-invalid' : '' }}" value="{{ old('precio', $producto->precio) }}" data-clear="true" required>
                                         <div class="help-block"></div>
                                         @error('precio')
                                             <div class="col-sm-6 badge bg-danger text-wrap" style="margin-top: 0.2rem;">

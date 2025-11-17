@@ -11,6 +11,17 @@ class ProductoStoreRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('precio')) {
+            $precio = $this->input('precio');
+            $precio = preg_replace('/[^0-9.]/', '', $precio);
+            $this->merge([
+                'precio' => $precio !== '' ? (float) $precio : null
+            ]);
+        }
+    }
+
     public function rules(): array
     {
         return [
