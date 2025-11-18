@@ -1,65 +1,68 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Kit;
-use Illuminate\Http\Request;
+use App\Http\Requests\KitStoreRequest;
+use App\Http\Requests\KitUpdateRequest;
+use App\Services\CorrelativeIdGenerator;
 
 class KitController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $kits = Kit::orderBy('id', 'desc')->paginate(10);
+        return view('modelos.kit.index', compact('kits'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        return view('modelos.kit.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(KitStoreRequest $request)
     {
-        //
+        $generator = new CorrelativeIdGenerator();
+        $id        = $generator->generate('Kit');
+        $kit       = new Kit();
+        $kit->fill($request->validated());
+        $kit->id = $id;
+        $kit->save();
+        return redirect()->route('kit')->with('success', 'Kit creado correctamente');    
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Kit $kit)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Kit $kit)
     {
-        //
+        return view('modelos.kit.edit', compact('kit'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Kit $kit)
+    public function update(KitUpdateRequest $request, Kit $kit)
     {
-        //
+        $kit->update($request->validated());
+        return redirect()->route('kit')->with('success', 'Kit actualizado correctamente');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Kit $kit)
     {
-        //
+        if ($kit->productos()->exists()) {
+            $firstProducto = $kit->productos()->select('producto')->first();
+            return back()->with('error', 'El kit no puede ser eliminado porque está asignado al producto: ' . ($firstProducto->producto ?? ''));
+        }
+        if ($kit->atencionDetalles()->exists()) {
+            $firstAtencionDetalle = $kit->atencionDetalles()->first();
+            return back()->with('error', 'El kit no puede ser eliminado tiene historial de ordenes de compra');
+        }
+        try {
+            $kit->delete();
+            return redirect()->route('kit')->with('success', 'Kit eliminado correctamente');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Ocurrió un error cuando se intentaba eliminar el kit: ' . $e->getMessage());
+        }
+    }
+
+    public function activate(Kit $kit)
+    {
+        $kit->activo = ! $kit->activo;
+        $kit->save();
+        return redirect()->route('kit')->with('success', 'El kit "' . $kit->kit . '" ha sido ' . ($kit->activo ? 'activado' : 'desactivado') . ' correctamente');
     }
 }

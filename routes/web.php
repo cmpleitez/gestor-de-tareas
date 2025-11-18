@@ -12,6 +12,7 @@ use App\Http\Controllers\MarcaController;
 use App\Http\Controllers\ModeloController;
 use App\Http\Controllers\TipoController;
 use App\Http\Controllers\TiendaController;
+use App\Http\Controllers\KitController;
 
 // Rutas públicas
 Route::get('/', function () {
@@ -138,6 +139,16 @@ Route::middleware([
             Route::put('update/{producto}', [ProductoController::class, 'update'])->name('producto.update');
             Route::get('destroy/{producto}', [ProductoController::class, 'destroy'])->name('producto.destroy');
             Route::post('activate/{producto}', [ProductoController::class, 'activate'])->name('producto.activate');
+        });
+
+        Route::group(['prefix' => 'kit'], function () { //Kits
+            Route::get('/', [KitController::class, 'index'])->name('kit');
+            Route::get('create', [KitController::class, 'create'])->name('kit.create');
+            Route::post('store', [KitController::class, 'store'])->name('kit.store');
+            Route::get('edit/{kit}', [KitController::class, 'edit'])->name('kit.edit');
+            Route::put('update/{kit}', [KitController::class, 'update'])->name('kit.update');
+            Route::get('destroy/{kit}', [KitController::class, 'destroy'])->name('kit.destroy');
+            Route::post('activate/{kit}', [KitController::class, 'activate'])->name('kit.activate');
         });
 
         Route::group(['prefix' => 'solicitud'], function () { //Solicitudes
