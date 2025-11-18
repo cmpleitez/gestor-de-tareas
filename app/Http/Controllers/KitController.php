@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Models\Kit;
 use App\Http\Requests\KitStoreRequest;
 use App\Http\Requests\KitUpdateRequest;
@@ -42,11 +43,16 @@ class KitController extends Controller
         return redirect()->route('kit')->with('success', 'Kit actualizado correctamente');
     }
 
-
     public function asignarProductos(Kit $kit)
     {
-        $productos = Producto::where('activo', true)->get();
-        return view('modelos.kit.asignar-productos', compact('kit', 'productos'));
+        $kit->load('productos');
+        $productos = Producto::where('activo', true)
+            ->with(['modelo', 'tipo'])
+            ->orderByRaw("EXISTS(SELECT 1 FROM kit_producto WHERE kit_producto.kit_id = ? AND kit_producto.producto_id = productos.id) DESC", [$kit->id])
+            ->get();
+        $kitProductosIds = $kit->productos->pluck('id')->toArray();
+        $productosChunks = $productos->chunk(2);
+        return view('modelos.kit.asignar-productos', compact('kit', 'productos', 'kitProductosIds', 'productosChunks'));
     }
 
     public function actualizarProductos(Kit $kit, Request $request)

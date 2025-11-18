@@ -162,7 +162,6 @@
     <script>
         //SELECCIONANDO EL ITEM DESTINATARIO
         let userRole = @json(optional(auth()->user()->mainRole)->name) || '';
-
         function selectItem(radioId) { // Función para seleccionar items
             document.querySelectorAll('.selectable-item').forEach(selector => { // Desmarcar todos los selectores
                 selector.classList.remove('selected');
@@ -253,7 +252,6 @@
                 });
             }
         }
-
         function ordenarColumnas() {
             const columnas = ['columna-recibidas', 'columna-progreso', 'columna-resueltas'];
             columnas.forEach(function(columnaId) {
@@ -285,7 +283,6 @@
             actualizarMensajeColumnaVacia();
             inicializarPopovers(); // Inicializar popovers para las tarjetas cargadas
         }
-
         function generarTarjetaSolicitud(tarjeta, animar = false, tipo = 'recibidas') {
             const titulo = tarjeta.titulo && tarjeta.detalle ?
                 `${tarjeta.titulo} - ${tarjeta.detalle}` :
@@ -505,7 +502,6 @@
                 }
             });
         }
-
         function actualizarMensajeColumnaVacia() { //Mostrar u ocultar mensaje de columna vacía
             const columnas = [{
                     id: 'columna-recibidas',
@@ -563,7 +559,6 @@
                     }
                 });
             }
-
             function dibujarTareas(tareas) {
                 if (tareas.length === 0) {
                     $('#sidebar-card-body').append(
@@ -576,25 +571,24 @@
                     let esCompletada = tarea.estado_id == 3;
                     let taskId = 'task_' + tarea.actividad_id;
                     let htmlGenerado = `
-        <div class="selectable-item ${esCompletada ? 'selected' : ''}" ${esCompletada ? 'style="pointer-events: none;"' : 'onclick="selectTask(\'' + taskId + '\')"'}">
-            <div class="checkbox-indicator" id="checkbox_${tarea.actividad_id}" ${esCompletada ? 'style="background: none; border: none;"' : ''}>
-                ${esCompletada ? '<i class="bx bx-check" style="color: #28a745; font-size: 2rem;"></i>' : ''}
-            </div>
-            <div class="item-body">
-                <div class="item-info">
-                    <div class="item-name">${tarea.tarea}</div>
-                    <div class="item-desc">T-${tarea.actividad_id_ripped}</div>
-                </div>
-            </div>
-            ${!esCompletada ? `<input type="checkbox" id="${taskId}" name="tarea_completada" value="${tarea.actividad_id}" style="display: none;">` : ''}
-        </div>
-        `;
+                    <div class="selectable-item ${esCompletada ? 'selected' : ''}" ${esCompletada ? 'style="pointer-events: none;"' : 'onclick="selectTask(\'' + taskId + '\')"'}">
+                        <div class="checkbox-indicator" id="checkbox_${tarea.actividad_id}" ${esCompletada ? 'style="background: none; border: none;"' : ''}>
+                            ${esCompletada ? '<i class="bx bx-check" style="color: #28a745; font-size: 2rem;"></i>' : ''}
+                        </div>
+                        <div class="item-body">
+                            <div class="item-info">
+                                <div class="item-name">${tarea.tarea}</div>
+                                <div class="item-desc">T-${tarea.actividad_id_ripped}</div>
+                            </div>
+                        </div>
+                        ${!esCompletada ? `<input type="checkbox" id="${taskId}" name="tarea_completada" value="${tarea.actividad_id}" style="display: none;">` : ''}
+                    </div>
+                    `;
                     tareasHtml += htmlGenerado;
                 });
                 tareasHtml += '</div>';
                 $('#sidebar-card-body').append(tareasHtml);
             }
-
             function limpiarClasesDrag() {
                 $('.solicitud-card').removeClass('dragging sortable-drag sortable-chosen sortable-ghost');
                 $('.sortable-fallback').remove();
@@ -771,7 +765,6 @@
                 });
             }
         }
-
         function actualizarContadores() { // Función para actualizar los contadores de las columnas
             const recibidas = $('#columna-recibidas .solicitud-card').length;
             const progreso = $('#columna-progreso .solicitud-card').length;
@@ -781,7 +774,6 @@
             $('#contador-resueltas').text(resueltas);
             actualizarMensajeColumnaVacia(); // NUEVO: actualizar mensajes de columnas vacías
         }
-
         function obtenerAtencionIdsTableros() {
             let ids = [];
             $('.solicitud-card').each(function() {

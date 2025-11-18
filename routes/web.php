@@ -69,6 +69,7 @@ Route::middleware([
 
     //ADMINISTRACIÓN
     Route::group(['middleware' => ['role:admin|superadmin']], function () {
+        
         Route::group(['prefix' => 'user'], function () { //Usuarios
             Route::get('/', [userController::class, 'index'])->name('user');
             Route::get('edit/{user}', [userController::class, 'edit'])->name('user.edit');

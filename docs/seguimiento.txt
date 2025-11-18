@@ -129,9 +129,8 @@ SERVICIOS:
         👍🏻🪒crud de modelos
         👍🏻🪒crud de tipos
         👍🏻🪒crud de productos
-        ...🪒crud de kits
-                . asignacion de productos
-        🪒tienda
+        👍🏻🪒crud de kits
+        ...🪒tienda
         🪒orden de compra para:
             . carrito
             . tarjeta en el tablero "En progreso" en el rol del Receptor

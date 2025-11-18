@@ -64,14 +64,11 @@
 
 @section('js')
     <script>
-        function toggleCheckbox(id) {
+        function toggleCheckbox(id) { // Actualizar estado visual de la tarjeta
             const checkbox = document.getElementById(id);
             const card = checkbox.closest('.tarea-card');
-            
             if (checkbox) {
                 checkbox.checked = !checkbox.checked;
-                
-                // Actualizar estado visual de la tarjeta
                 if (checkbox.checked) {
                     card.classList.add('selected');
                 } else {
@@ -79,19 +76,14 @@
                 }
             }
         }
-        
         document.addEventListener('DOMContentLoaded', function() {
             const checkboxes = document.querySelectorAll('.tarea-checkbox-input');
-            
-            // Inicializar estado visual de las tarjetas
-            checkboxes.forEach(function(checkbox) {
+            checkboxes.forEach(function(checkbox) { // Inicializar estado visual de las tarjetas
                 const card = checkbox.closest('.tarea-card');
                 if (checkbox.checked) {
                     card.classList.add('selected');
                 }
-                
-                // Prevenir propagación del click en el checkbox
-                checkbox.addEventListener('click', function(e) {
+                checkbox.addEventListener('click', function(e) { // Prevenir propagación del click en el checkbox
                     e.stopPropagation();
                 });
             });
