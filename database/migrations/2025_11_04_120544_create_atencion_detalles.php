@@ -13,11 +13,9 @@ return new class extends Migration
             $table->foreign('atencion_id')->references('id')->on('atenciones');
             $table->foreignId('kit_id')->constrained('kits');
             $table->foreignId('producto_id')->constrained('productos');
-            $table->integer('correlativo');
             $table->integer('unidades');
             $table->decimal('precio', 20, 4);
             $table->primary(['atencion_id', 'kit_id', 'producto_id']);
-            $table->index('correlativo');
             $table->timestamps();
         });
     }

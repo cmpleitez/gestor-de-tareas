@@ -5,6 +5,7 @@ use App\Models\Kit;
 use App\Http\Requests\KitStoreRequest;
 use App\Http\Requests\KitUpdateRequest;
 use App\Services\CorrelativeIdGenerator;
+use App\Models\Producto;
 
 class KitController extends Controller
 {
@@ -38,6 +39,19 @@ class KitController extends Controller
     public function update(KitUpdateRequest $request, Kit $kit)
     {
         $kit->update($request->validated());
+        return redirect()->route('kit')->with('success', 'Kit actualizado correctamente');
+    }
+
+
+    public function asignarProductos(Kit $kit)
+    {
+        $productos = Producto::where('activo', true)->get();
+        return view('modelos.kit.asignar-productos', compact('kit', 'productos'));
+    }
+
+    public function actualizarProductos(Kit $kit, Request $request)
+    {
+        $kit->productos()->sync($request->productos);
         return redirect()->route('kit')->with('success', 'Kit actualizado correctamente');
     }
 

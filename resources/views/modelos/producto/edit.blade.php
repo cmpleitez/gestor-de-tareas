@@ -34,61 +34,61 @@
                                 <div class="col-sm-12">
                                     <div class="form-group"> {{-- Producto --}}
                                         <label for="producto">Producto</label>
-                                        <input type="text" name="producto" id="producto"
-                                            class="form-control {{ $errors->has('producto') ? 'is-invalid' : '' }}"
-                                            data-validation-required-message="Este campo es obligatorio"
+                                            <input type="text" name="producto" id="producto"
+                                                class="form-control {{ $errors->has('producto') ? 'is-invalid' : '' }}"
+                                                data-validation-required-message="Este campo es obligatorio"
                                             data-validation-containsnumber-regex="^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ()]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ()]+)*$"
                                             data-validation-containsnumber-message="Solo se permiten letras y paréntesis, sin espacios al inicio/final ni dobles espacios"
-                                            data-validation-minlength-message="El nombre debe tener al menos 3 caracteres"
-                                            data-clear="true" minlength="3" placeholder="Nombre del producto"
-                                            value="{{ old('producto', $producto->producto) }}" required>
+                                                data-validation-minlength-message="El nombre debe tener al menos 3 caracteres"
+                                                data-clear="true" minlength="3" placeholder="Nombre del producto"
+                                                value="{{ old('producto', $producto->producto) }}" required>
                                         <div class="help-block"></div>
-                                        @error('producto')
-                                            <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
-                                                {{ $errors->first('producto') }}
-                                            </div>
-                                        @enderror
+                                            @error('producto')
+                                                <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                                    {{ $errors->first('producto') }}
+                                                </div>
+                                            @enderror
                                     </div>
                                     <div class="form-group"> {{-- Modelo --}}
                                         <label for="modelo_id">Modelo</label>
-                                        <select name="modelo_id" id="modelo_id"
-                                            class="select2 form-control {{ $errors->has('modelo_id') ? 'is-invalid' : '' }}"
-                                            data-placeholder="Seleccione un modelo"
-                                            data-validation-required-message="Este campo es obligatorio" required>
-                                            <option value=""></option>
-                                            @foreach($modelos as $modelo)
-                                                <option value="{{ $modelo->id }}" {{ old('modelo_id', $producto->modelo_id) == $modelo->id ? 'selected' : '' }}>
-                                                    {{ $modelo->modelo }}
-                                                </option>
-                                            @endforeach
-                                        </select>
+                                            <select name="modelo_id" id="modelo_id"
+                                                class="select2 form-control {{ $errors->has('modelo_id') ? 'is-invalid' : '' }}"
+                                                data-placeholder="Seleccione un modelo"
+                                                data-validation-required-message="Este campo es obligatorio" required>
+                                                <option value=""></option>
+                                                @foreach($modelos as $modelo)
+                                                    <option value="{{ $modelo->id }}" {{ old('modelo_id', $producto->modelo_id) == $modelo->id ? 'selected' : '' }}>
+                                                        {{ $modelo->modelo }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
                                         <div class="help-block"></div>
-                                        @error('modelo_id')
-                                            <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
-                                                {{ $errors->first('modelo_id') }}
-                                            </div>
-                                        @enderror
+                                            @error('modelo_id')
+                                                <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                                    {{ $errors->first('modelo_id') }}
+                                                </div>
+                                            @enderror
                                     </div>
                                     <div class="form-group"> {{-- Tipo --}}
                                         <label for="tipo_id">Tipo</label>
-                                        <select name="tipo_id" id="tipo_id"
-                                            class="form-control {{ $errors->has('tipo_id') ? 'is-invalid' : '' }}"
-                                            data-validation-required-message="Este campo es obligatorio" required>
-                                            <option value="">Seleccione un tipo</option>
-                                            @foreach($tipos as $tipo)
-                                                <option value="{{ $tipo->id }}" {{ old('tipo_id', $producto->tipo_id) == $tipo->id ? 'selected' : '' }}>
-                                                    {{ $tipo->tipo }}
-                                                </option>
-                                            @endforeach
-                                        </select>
+                                            <select name="tipo_id" id="tipo_id"
+                                                class="form-control {{ $errors->has('tipo_id') ? 'is-invalid' : '' }}"
+                                                data-validation-required-message="Este campo es obligatorio" required>
+                                                <option value="">Seleccione un tipo</option>
+                                                @foreach($tipos as $tipo)
+                                                    <option value="{{ $tipo->id }}" {{ old('tipo_id', $producto->tipo_id) == $tipo->id ? 'selected' : '' }}>
+                                                        {{ $tipo->tipo }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
                                         <div class="help-block"></div>
-                                        @error('tipo_id')
-                                            <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
-                                                {{ $errors->first('tipo_id') }}
-                                            </div>
-                                        @enderror
+                                            @error('tipo_id')
+                                                <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                                    {{ $errors->first('tipo_id') }}
+                                                </div>
+                                            @enderror
+                                        </div>
                                     </div>
-                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-12">
@@ -114,8 +114,8 @@
                                         @error('accesorio')
                                             <div class="col-sm-6 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
                                                 {{ $errors->first('accesorio') }}
-                                            </div>
-                                        @enderror
+                                                </div>
+                                            @enderror
                                     </div>
                                 </div>
                             </div>

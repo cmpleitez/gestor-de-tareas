@@ -69,23 +69,31 @@
                                         <div class="btn-group" role="group" aria-label="label">
                                             {{-- EDITAR --}}
                                             @can('editar')
-                                            <a href="{{ route('kit.edit', $kit->id) }}" role="button"
-                                                data-toggle="tooltip" data-popup="tooltip-custom" data-html="true"
-                                                data-placement="bottom"
-                                                title="<i class='bx bxs-edit-alt'></i> Editar datos de {{ $kit->kit }}"
-                                                class="button_edit align-center border border-warning-dark text-warning-dark bg-warning-light">
-                                                <i class="bx bxs-edit-alt"></i>
-                                            </a>
+                                                <a href="{{ route('kit.asignar-productos', $kit->id) }}"
+                                                    role="button" data-toggle="tooltip" data-popup="tooltip-custom"
+                                                    data-html="true" data-placement="bottom"
+                                                    title="<i class='bx bxs-cog'></i> Asignar productos a {{ $kit->kit }}"
+                                                    class="button_edit align-center border border-secondary-dark text-secondary-dark bg-secondary-light">
+                                                    <i class="bx bxs-cog"></i>
+                                                </a>
+
+                                                <a href="{{ route('kit.edit', $kit->id) }}" role="button"
+                                                    data-toggle="tooltip" data-popup="tooltip-custom" data-html="true"
+                                                    data-placement="bottom"
+                                                    title="<i class='bx bxs-edit-alt'></i> Editar datos de {{ $kit->kit }}"
+                                                    class="button_edit align-center border border-warning-dark text-warning-dark bg-warning-light">
+                                                    <i class="bx bxs-edit-alt"></i>
+                                                </a>
                                             @endcan
                                             {{-- ELIMINAR --}}
                                             @can('eliminar')
-                                            <a href="{{ route('kit.destroy', $kit->id) }}" role="button"
-                                                data-toggle="tooltip" data-popup="tooltip-custom" data-html="true"
-                                                data-placement="bottom"
-                                                title="<i class='bx bxs-eraser'></i> Eliminar {{ $kit->kit }}"
-                                                class="button_delete align-center border border-danger-dark text-danger-dark bg-danger-light">
-                                                <i class="bx bxs-eraser"></i>
-                                            </a>
+                                                <a href="{{ route('kit.destroy', $kit->id) }}" role="button"
+                                                    data-toggle="tooltip" data-popup="tooltip-custom" data-html="true"
+                                                    data-placement="bottom"
+                                                    title="<i class='bx bxs-eraser'></i> Eliminar {{ $kit->kit }}"
+                                                    class="button_delete align-center border border-danger-dark text-danger-dark bg-danger-light">
+                                                    <i class="bx bxs-eraser"></i>
+                                                </a>
                                             @endcan
                                         </div>
                                     </td>

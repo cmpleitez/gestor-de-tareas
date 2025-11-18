@@ -54,7 +54,7 @@ class SolicitudController extends Controller
     public function actualizarTareas(Solicitud $solicitud, Request $request)
     {
         $solicitud->tareas()->sync($request->tareas);
-        return redirect()->route('solicitud')->with('success', 'Tareas actualizadas correctamente');
+        return redirect()->route('solicitud')->with('success', 'Solicitud actualizada correctamente');
     }
 
     public function destroy(Solicitud $solicitud)

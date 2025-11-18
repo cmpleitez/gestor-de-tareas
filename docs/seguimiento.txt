@@ -96,11 +96,19 @@ CLIENTE:
     🔵 definir las reglas de cuantas unidades de cada producto segun el kit y las demás reglas que se necesiten
     🔵 reglas técnicas para la creación de kits
     🔵 reglas técnicas para creación de ordenes de compra para cada kit
+    ¿Qué significa esto para ti (con tu app)?
+
 
 SEGURIDAD:
+    🔵 Implementación de la seguridad
+    . Si quieres que tus clientes (los ~25 usuarios) accedan a tu web app como si estuvieran dentro de una red privada (VPN), puedes configurar un servidor VPN en un Droplet y darles acceso con clientes VPN.
+    . Usar Netmaker es una opción moderna y robusta para crear una VPN corporativa (o red privada) con WireGuard, lo que es bastante seguro y tiene buen rendimiento.
+    . La otra opcion es que los clientes se conecten desde internet empresarial porque con esa no cambia la IP, pues es fija, asi que se puede dar permiso solo a las IP fijas
+
     🔵 Revisar todos las inserciones porque se cambio la llave automática por una manual, para evitar las pérdidas de números correlativos cuando falla el guardado
         .hay que revisar todos los controladores y otros procesos y corregirlos
-    
+
+    🔵 Retirar todos los servicios de seguridad que estan dentro de la App, solo dejar uno.
 
 PLATAFORMA:
     🟢 construir la funcionalidad para cambiar nombres a los registros de catálogos y aplicar la regla de las dependencias

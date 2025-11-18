@@ -6,7 +6,6 @@ class OficinaStock extends Model
 {
     protected $table = 'oficina_stock';
     public $incrementing = false;
-    protected $keyType   = 'int';
 
     protected function setKeysForSaveQuery($query)
     {
