@@ -65,13 +65,12 @@ class ProductoController extends Controller
 
         $oficinaStock = $producto->oficinaStock()->exists();
         if ($oficinaStock) {
-            $firstOficinaStock = $producto->oficinaStock()->select('oficina_stock')->first();
-            return back()->with('error', 'El producto no puede ser eliminado porque está asignado a la oficina de stock: ' . ($firstOficinaStock->oficina_stock ?? ''));
+            $firstOficinaStock = $producto->oficinaStock()->first();
+            return back()->with('error', 'El producto no puede ser eliminado porque está asignado a la oficina: ' . ($firstOficinaStock->oficina->oficina ?? ''));
         }
         $atencionDetalles = $producto->atencionDetalles()->exists();
         if ($atencionDetalles) {
-            $firstAtencionDetalle = $producto->atencionDetalles()->select('atencion_detalle')->first();
-            return back()->with('error', 'El producto no puede ser eliminado porque está asignado a la atención de detalle: ' . ($firstAtencionDetalle->atencion_detalle ?? ''));
+            return back()->with('error', 'El producto no puede ser eliminado porque tiene historial de ordenes de compra');
         }
         if ($producto->kits()->count() > 0) {
             $firstKit = $producto->kits()->first();
