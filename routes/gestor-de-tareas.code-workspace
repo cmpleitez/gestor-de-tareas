@@ -2,9 +2,10 @@
 	"folders": [
 		{
 			"path": ".."
+		},
+		{
+			"path": "../../estandares"
 		}
 	],
-	"settings": {
-		"Devdb.colorTheme": "dark"
-	}
+	"settings": {}
 }
