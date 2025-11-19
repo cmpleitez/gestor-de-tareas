@@ -58,26 +58,31 @@ class KitController extends Controller
     public function actualizarProductos(Kit $kit, Request $request)
     {
         $productos = Producto::whereIn('id', $request->productos)->pluck('producto')->toArray();
-        
-        $modelos = Producto::whereIn('id', $request->productos)->with('modelo')->get()->pluck('modelo.modelo')->toArray();
-
         $palabras_productos = [];
         foreach ($productos as $producto) {
             $palabras = explode(' ', $producto);
             $palabras_productos = array_merge($palabras_productos, $palabras);
         }
-        
+        $palabras_filtradas = array_filter($palabras_productos, function($palabra) {
+            return strlen($palabra) > 4;
+        });
+        $conteo_palabras = array_count_values($palabras_filtradas);
+        $producto_promedio = !empty($conteo_palabras) ? array_search(max($conteo_palabras), $conteo_palabras) : '';
 
-
-
-        dd($palabras_productos);
+        $modelos = Producto::whereIn('id', $request->productos)->with('modelo')->get()->pluck('modelo.modelo')->toArray();
         $palabras_modelos = [];
         foreach ($modelos as $modelo) {
             $palabras = explode(' ', $modelo);
             $palabras_modelos = array_merge($palabras_modelos, $palabras);
         }
+        $palabras_filtradas = array_filter($palabras_modelos, function($palabra) {
+            return strlen($palabra) > 4;
+        });
+        $conteo_palabras = array_count_values($palabras_filtradas);
+        $modelo_promedio = !empty($conteo_palabras) ? array_search(max($conteo_palabras), $conteo_palabras) : '';
 
-        
+
+        return $nuevo_nombre = $producto_promedio . ' de ' . $modelo_promedio;
 
         $kit->productos()->sync($request->productos);
         return redirect()->route('kit')->with('success', 'Kit actualizado correctamente');
