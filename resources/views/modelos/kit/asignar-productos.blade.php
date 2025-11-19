@@ -6,20 +6,25 @@
     #datatable_wrapper .row:first-child {
         margin-bottom: 1rem;
     }
+
     #datatable_wrapper .row:last-child {
         margin-top: 1rem;
     }
+
     #datatable tbody tr {
         display: flex;
         width: 100%;
     }
+
     #datatable tbody tr td {
         flex: 1;
         width: 50%;
     }
+
     #datatable tbody tr td:empty {
         min-height: 1px;
     }
+
 </style>
 @stop
 
@@ -52,15 +57,11 @@
                                 <tr>
                                     @foreach ($chunk as $producto)
                                     <td class="product-card-container">
-                                        <div class="product-card {{ in_array($producto->id, $kitProductosIds) ? 'selected' : '' }}" 
-                                             data-producto-id="{{ $producto->id }}">
+                                        <div class="product-card {{ in_array($producto->id, $kitProductosIds) ? 'border-primary-dark text-warning-dark bg-warning-light' : '' }}" data-producto-id="{{ $producto->id }}">
                                             @if(in_array($producto->id, $kitProductosIds))
-                                                <span class="product-card-badge">Asignado</span>
+                                            <span class="product-card-badge">Asignado</span>
                                             @endif
-                                            <input type="checkbox" 
-                                                   class="card-checkbox product-checkbox" 
-                                                   data-producto-id="{{ $producto->id }}"
-                                                   {{ in_array($producto->id, $kitProductosIds) ? 'checked' : '' }}>
+                                            <input type="checkbox" class="card-checkbox product-checkbox" data-producto-id="{{ $producto->id }}" {{ in_array($producto->id, $kitProductosIds) ? 'checked' : '' }}>
                                             <div class="product-card-header">
                                                 <h5 class="product-card-title">{{ $producto->producto }}</h5>
                                             </div>
@@ -112,6 +113,15 @@
     @method('PUT')
     <div id="selectedProductsContainer"></div>
 </form>
+@if($errors->any())
+toastr.error('{{ $errors->first() }}', 'Error');
+@endif
+@if(session('success'))
+toastr.success('{{ session('success ') }}', 'Éxito');
+@endif
+@if(session('error'))
+toastr.error('{{ session('error ') }}', 'Error');
+@endif
 @stop
 
 @section('js')
@@ -125,105 +135,100 @@
 <script src="{{ asset('app-assets/vendors/js/tables/datatable/vfs_fonts.js') }}"></script>
 
 <script>
-$(document).ready(function() {
-    // INICIALIZACION DE DATATABLES
-    if ($.fn.DataTable) {
-        var table = $('.zero-configuration').DataTable({
-            "language": { "url": "/app-assets/Spanish.json" },
-            "pageLength": 10,
-            "searching": true,
-            "paging": true,
-            "ordering": false,
-            "order": [],
-            "info": true,
-            "columnDefs": [
-                {
-                    "targets": [0, 1],
-                    "orderable": false,
-                    "searchable": true
+    $(document).ready(function() {
+        // INICIALIZACION DE DATATABLES
+        if ($.fn.DataTable) {
+            var table = $('.zero-configuration').DataTable({
+                "language": {
+                    "url": "/app-assets/Spanish.json"
                 }
-            ],
-            "drawCallback": function(settings) {
-                attachCardListeners(); // Re-aplicar event listeners después de que DataTables redibuje
-                initializeSelectedProducts(); // Actualizar estado de productos asignados después de cada redibujado
-                updateSaveButton();
-            },
-            "initComplete": function(settings, json) {
-                initializeSelectedProducts(); // Inicializar estado de productos asignados cuando DataTables termina de cargar
-                attachCardListeners();
-                updateSaveButton();
-            }
-        });
-    }
-    
-    // Funciones para manejar la selección de productos
-    function attachCardListeners() { // Aplicar event listeners a las tarjetas
-        $('.product-card').off('click').on('click', function(e) {
-            if ($(e.target).is('.card-checkbox') || $(e.target).closest('.card-checkbox').length) {
-                return;
-            }
-            var checkbox = $(this).find('.product-checkbox');
-            checkbox.prop('checked', !checkbox.prop('checked'));
-            toggleCardSelection($(this), checkbox.prop('checked'));
-        });
-        $('.product-checkbox').off('change').on('change', function() {
-            var card = $(this).closest('.product-card');
-            toggleCardSelection(card, $(this).prop('checked'));
-        });
-    }
-    function initializeSelectedProducts() {
-        $('.product-checkbox:checked').each(function() { // Asegurar que las tarjetas con checkboxes marcados tengan la clase 'selected'
-            var card = $(this).closest('.product-card');
-            if (!card.hasClass('selected')) {
-                card.addClass('selected');
-            }
-        });
-    }
-    function toggleCardSelection(card, isSelected) {
-        if (isSelected) {
-            card.addClass('selected');
-        } else {
-            card.removeClass('selected');
-        }
-        updateSaveButton();
-    }
-    function updateSaveButton() {
-        var selectedIds = [];
-        $('.product-checkbox:checked').each(function() {
-            selectedIds.push($(this).data('producto-id'));
-        });
-        var container = $('#selectedProductsContainer'); // Actualizar inputs ocultos para enviar como array
-        container.empty();
-        if (selectedIds.length > 0) {
-            selectedIds.forEach(function(id) {
-                container.append('<input type="hidden" name="productos[]" value="' + id + '">');
+                , "pageLength": 10
+                , "searching": true
+                , "paging": true
+                , "ordering": false
+                , "order": []
+                , "info": true
+                , "columnDefs": [{
+                    "targets": [0, 1]
+                    , "orderable": false
+                    , "searchable": true
+                }]
+                , "drawCallback": function(settings) {
+                    attachCardListeners(); // Re-aplicar event listeners después de que DataTables redibuje
+                    initializeSelectedProducts(); // Actualizar estado de productos asignados después de cada redibujado
+                    updateSaveButton();
+                }
+                , "initComplete": function(settings, json) {
+                    initializeSelectedProducts(); // Inicializar estado de productos asignados cuando DataTables termina de cargar
+                    attachCardListeners();
+                    updateSaveButton();
+                }
             });
-            $('#saveProductsBtn').prop('disabled', false).html('<i class="bx bx-save"></i> Guardar (' + selectedIds.length + ')');
-        } else {
-            $('#saveProductsBtn').prop('disabled', false).html('<i class="bx bx-save"></i> Guardar');
         }
-    }
-    if (!$('.zero-configuration').hasClass('dataTable')) { // Inicializar listeners y estado inicial // Si DataTables no se inicializó, ejecutar directamente
-        initializeSelectedProducts();
-        attachCardListeners();
-        updateSaveButton();
-    }
-    $('#saveProductsBtn').on('click', function(e) { // Guardar asignaciones
-        e.preventDefault();
-        var btn = $(this);
-        var originalHtml = btn.html();
-        btn.prop('disabled', true).html('<i class="bx bx-loader-alt bx-spin"></i> Guardando...');
-        $('#assignProductsForm').submit();
+
+        // FUNCIONES PARA MANEJAR LA SELECCION DE PRODUCTOS
+        function attachCardListeners() { // Aplicar event listeners a las tarjetas
+            $('.product-card').off('click').on('click', function(e) {
+                if ($(e.target).is('.card-checkbox') || $(e.target).closest('.card-checkbox').length) {
+                    return;
+                }
+                var checkbox = $(this).find('.product-checkbox');
+                checkbox.prop('checked', !checkbox.prop('checked'));
+                toggleCardSelection($(this), checkbox.prop('checked'));
+            });
+            $('.product-checkbox').off('change').on('change', function() {
+                var card = $(this).closest('.product-card');
+                toggleCardSelection(card, $(this).prop('checked'));
+            });
+        }
+
+        function initializeSelectedProducts() { // Asegurar que las tarjetas con checkboxes marcados tengan la clase 'border-primary-dark'
+            $('.product-checkbox:checked').each(function() {
+                var card = $(this).closest('.product-card');
+                if (!card.hasClass('border-primary-dark')) {
+                    card.addClass('border-primary-dark text-warning-dark bg-warning-light');
+                }
+            });
+        }
+
+        function toggleCardSelection(card, isSelected) { // Alternar la selección de una tarjeta
+            if (isSelected) {
+                card.addClass('border-success-dark text-warning-dark bg-warning-light');
+            } else {
+                card.removeClass('border-success-dark text-warning-dark bg-warning-light');
+            }
+            updateSaveButton();
+        }
+
+        function updateSaveButton() { // Actualizar inputs ocultos para enviar como array
+            var selectedIds = [];
+            $('.product-checkbox:checked').each(function() {
+                selectedIds.push($(this).data('producto-id'));
+            });
+            var container = $('#selectedProductsContainer');
+            container.empty();
+            if (selectedIds.length > 0) {
+                selectedIds.forEach(function(id) {
+                    container.append('<input type="hidden" name="productos[]" value="' + id + '">');
+                });
+                $('#saveProductsBtn').prop('disabled', false).html('<i class="bx bx-save"></i> Guardar (' + selectedIds.length + ')');
+            } else {
+                $('#saveProductsBtn').prop('disabled', false).html('<i class="bx bx-save"></i> Guardar');
+            }
+        }
+        if (!$('.zero-configuration').hasClass('dataTable')) { // Inicializar listeners y estado inicial // Si DataTables no se inicializó, ejecutar directamente
+            initializeSelectedProducts();
+            attachCardListeners();
+            updateSaveButton();
+        }
+        $('#saveProductsBtn').on('click', function(e) { // Guardar asignaciones
+            e.preventDefault();
+            var btn = $(this);
+            var originalHtml = btn.html();
+            btn.prop('disabled', true).html('<i class="bx bx-loader-alt bx-spin"></i> Guardando...');
+            $('#assignProductsForm').submit();
+        });
     });
-    @if($errors->any()) // Manejar errores de validación del formulario
-        toastr.error('{{ $errors->first() }}', 'Error');
-    @endif
-    @if(session('success'))
-        toastr.success('{{ session('success') }}', 'Éxito');
-    @endif
-    @if(session('error'))
-        toastr.error('{{ session('error') }}', 'Error');
-    @endif
-});
+
 </script>
 @stop
