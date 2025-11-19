@@ -131,14 +131,17 @@ SERVICIOS:
         👍🏻🪒crud de productos
         👍🏻🪒crud de kits
         ...🪒tienda
-        🪒orden de compra para:
-            . carrito
-            . tarjeta en el tablero "En progreso" en el rol del Receptor
-            . paso "Revisión de la Orden/Reserva"
-        🪒historial de entradas y reversiones en stocks
-        🪒Cada cierta cantidad de días se debe correr una tarea programada para borrar todas las solicitudes no validadas por el cliente
-        🪒Resolver problemas de maquetacion existentes
-            . Los datatables: en sus encabezados se desordenan los iconos de ordenamiento de datos cuando la ventana cambia de tamaño
+           orden de compra para el carrito
+           🪒enlace tienda gestor
+                . tarjeta en el tablero "En progreso" en el rol del Receptor
+                . paso "Revisión de la Orden/Reserva"
+        🪒reportes: 
+            . historial de entradas y reversiones en stocks
+        🪒procesos: 
+            . Cada cierta cantidad de días se debe correr una tarea programada para borrar todas las solicitudes no validadas por el cliente
+        🪒maquetación: 
+            Resolver problemas de maquetacion existentes
+                . Los datatables: en sus encabezados se desordenan los iconos de ordenamiento de datos cuando la ventana cambia de tamaño
 
     🟢 Los botones agregar o nuevo de los datatables debe ser azul no naranja
     🟢 Número de atención va ser validado cuando se complete todo el procedimiento, cada copia de las "recepciones iran siendo validadas por el usuario destino"
