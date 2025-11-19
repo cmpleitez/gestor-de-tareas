@@ -54,6 +54,7 @@
                             <thead style="display: none;"></thead>
                             <tbody>
                                 @foreach ($productosChunks as $chunk)
+                                
                                 <tr>
                                     @foreach ($chunk as $producto)
                                     <td class="product-card-container">
@@ -114,13 +115,13 @@
     <div id="selectedProductsContainer"></div>
 </form>
 @if($errors->any())
-toastr.error('{{ $errors->first() }}', 'Error');
+    toastr.error('{{ $errors->first() }}', 'Error');
 @endif
 @if(session('success'))
-toastr.success('{{ session('success ') }}', 'Éxito');
+    toastr.success('{{ session('success ') }}', 'Éxito');
 @endif
 @if(session('error'))
-toastr.error('{{ session('error ') }}', 'Error');
+    toastr.error('{{ session('error ') }}', 'Error');
 @endif
 @stop
 
@@ -136,6 +137,48 @@ toastr.error('{{ session('error ') }}', 'Error');
 
 <script>
     $(document).ready(function() {
+        // VARIABLES GLOBALES
+        var kitId = {{ $kit->id }};
+        var storageKey = 'selectedProducts_' + kitId;
+        var initialKitProductosIds = @json($kitProductosIds);
+
+        // FUNCIONES DE GESTION DE SESSIONSTORAGE
+        function getSelectedProducts() {
+            var stored = sessionStorage.getItem(storageKey);
+            return stored ? JSON.parse(stored) : [];
+        }
+
+        function saveSelectedProducts(ids) {
+            sessionStorage.setItem(storageKey, JSON.stringify(ids));
+        }
+
+        function addSelectedProduct(productId) {
+            var selectedIds = getSelectedProducts();
+            if (selectedIds.indexOf(productId) === -1) {
+                selectedIds.push(productId);
+                saveSelectedProducts(selectedIds);
+            }
+        }
+
+        function removeSelectedProduct(productId) {
+            var selectedIds = getSelectedProducts();
+            var index = selectedIds.indexOf(productId);
+            if (index > -1) {
+                selectedIds.splice(index, 1);
+                saveSelectedProducts(selectedIds);
+            }
+        }
+
+        // INICIALIZACION DE SESSIONSTORAGE
+        function initializeStorage() {
+            var stored = getSelectedProducts();
+            if (stored.length === 0 && initialKitProductosIds.length > 0) {
+                saveSelectedProducts(initialKitProductosIds);
+            }
+        }
+
+        initializeStorage();
+
         // INICIALIZACION DE DATATABLES
         if ($.fn.DataTable) {
             var table = $('.zero-configuration').DataTable({
@@ -154,12 +197,12 @@ toastr.error('{{ session('error ') }}', 'Error');
                     , "searchable": true
                 }]
                 , "drawCallback": function(settings) {
-                    attachCardListeners(); // Re-aplicar event listeners después de que DataTables redibuje
-                    initializeSelectedProducts(); // Actualizar estado de productos asignados después de cada redibujado
+                    attachCardListeners();
+                    initializeSelectedProducts();
                     updateSaveButton();
                 }
                 , "initComplete": function(settings, json) {
-                    initializeSelectedProducts(); // Inicializar estado de productos asignados cuando DataTables termina de cargar
+                    initializeSelectedProducts();
                     attachCardListeners();
                     updateSaveButton();
                 }
@@ -167,7 +210,7 @@ toastr.error('{{ session('error ') }}', 'Error');
         }
 
         // FUNCIONES PARA MANEJAR LA SELECCION DE PRODUCTOS
-        function attachCardListeners() { // Aplicar event listeners a las tarjetas
+        function attachCardListeners() {
             $('.product-card').off('click').on('click', function(e) {
                 if ($(e.target).is('.card-checkbox') || $(e.target).closest('.card-checkbox').length) {
                     return;
@@ -182,29 +225,37 @@ toastr.error('{{ session('error ') }}', 'Error');
             });
         }
 
-        function initializeSelectedProducts() { // Asegurar que las tarjetas con checkboxes marcados tengan la clase 'border-primary-dark'
-            $('.product-checkbox:checked').each(function() {
+        function initializeSelectedProducts() {
+            var selectedIds = getSelectedProducts();
+            $('.product-checkbox').each(function() {
+                var productId = $(this).data('producto-id');
+                var isSelected = selectedIds.indexOf(productId) > -1;
+                $(this).prop('checked', isSelected);
                 var card = $(this).closest('.product-card');
-                if (!card.hasClass('border-primary-dark')) {
-                    card.addClass('border-primary-dark text-warning-dark bg-warning-light');
+                if (isSelected) {
+                    if (!card.hasClass('border-primary-dark')) {
+                        card.addClass('border-primary-dark text-warning-dark bg-warning-light');
+                    }
+                } else {
+                    card.removeClass('border-primary-dark text-warning-dark bg-warning-light');
                 }
             });
         }
 
-        function toggleCardSelection(card, isSelected) { // Alternar la selección de una tarjeta
+        function toggleCardSelection(card, isSelected) {
+            var productId = card.data('producto-id');
             if (isSelected) {
                 card.addClass('border-success-dark text-warning-dark bg-warning-light');
+                addSelectedProduct(productId);
             } else {
                 card.removeClass('border-success-dark text-warning-dark bg-warning-light');
+                removeSelectedProduct(productId);
             }
             updateSaveButton();
         }
 
-        function updateSaveButton() { // Actualizar inputs ocultos para enviar como array
-            var selectedIds = [];
-            $('.product-checkbox:checked').each(function() {
-                selectedIds.push($(this).data('producto-id'));
-            });
+        function updateSaveButton() {
+            var selectedIds = getSelectedProducts();
             var container = $('#selectedProductsContainer');
             container.empty();
             if (selectedIds.length > 0) {
@@ -216,12 +267,12 @@ toastr.error('{{ session('error ') }}', 'Error');
                 $('#saveProductsBtn').prop('disabled', false).html('<i class="bx bx-save"></i> Guardar');
             }
         }
-        if (!$('.zero-configuration').hasClass('dataTable')) { // Inicializar listeners y estado inicial // Si DataTables no se inicializó, ejecutar directamente
+        if (!$('.zero-configuration').hasClass('dataTable')) {
             initializeSelectedProducts();
             attachCardListeners();
             updateSaveButton();
         }
-        $('#saveProductsBtn').on('click', function(e) { // Guardar asignaciones
+        $('#saveProductsBtn').on('click', function(e) {
             e.preventDefault();
             var btn = $(this);
             var originalHtml = btn.html();
