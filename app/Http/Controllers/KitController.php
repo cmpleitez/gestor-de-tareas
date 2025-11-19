@@ -57,6 +57,28 @@ class KitController extends Controller
 
     public function actualizarProductos(Kit $kit, Request $request)
     {
+        $productos = Producto::whereIn('id', $request->productos)->pluck('producto')->toArray();
+        
+        $modelos = Producto::whereIn('id', $request->productos)->with('modelo')->get()->pluck('modelo.modelo')->toArray();
+
+        $palabras_productos = [];
+        foreach ($productos as $producto) {
+            $palabras = explode(' ', $producto);
+            $palabras_productos = array_merge($palabras_productos, $palabras);
+        }
+        
+
+
+
+        dd($palabras_productos);
+        $palabras_modelos = [];
+        foreach ($modelos as $modelo) {
+            $palabras = explode(' ', $modelo);
+            $palabras_modelos = array_merge($palabras_modelos, $palabras);
+        }
+
+        
+
         $kit->productos()->sync($request->productos);
         return redirect()->route('kit')->with('success', 'Kit actualizado correctamente');
     }
