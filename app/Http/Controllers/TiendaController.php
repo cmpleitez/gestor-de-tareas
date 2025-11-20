@@ -1,20 +1,23 @@
 <?php
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\QueryException;
+use Exception;
+
 use App\Models\Stock;
 use App\Models\OficinaStock;
 use App\Models\Movimiento;
 use App\Services\KeyMaker;
 use App\Models\Producto;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Database\QueryException;
-use Exception;
+use App\Models\Kit;
 
 class TiendaController extends Controller
 {
     public function index()
     {
-        return view('modelos.producto.tienda');
+        $kits = Kit::where('activo', true)->get();
+        return view('modelos.producto.tienda', compact('kits'));
     }
 
     public function create()

@@ -160,11 +160,7 @@ toastr.error('{{ session('error ') }}', 'Error');
 <script>
     $(document).ready(function() {
         // VARIABLES GLOBALES
-        var kitId = {
-            {
-                $kit - > id
-            }
-        };
+        var kitId = {{ $kit->id }};
         var storageKey = 'selectedProducts_' + kitId;
         var initialKitProductosIds = @json($kitProductosIds);
 
@@ -197,18 +193,11 @@ toastr.error('{{ session('error ') }}', 'Error');
 
         // INICIALIZACION DE SESSIONSTORAGE
         function initializeStorage() {
-            @if(session('success'))
-            // Si hay un mensaje de éxito, limpiar sessionStorage y restaurar solo los productos de la BD
-            sessionStorage.removeItem(storageKey);
-            saveSelectedProducts(initialKitProductosIds);
-            @else
-            var stored = getSelectedProducts();
-            if (stored.length === 0 && initialKitProductosIds.length > 0) {
+            sessionStorage.removeItem(storageKey); // Siempre limpiar sessionStorage al cargar la página para evitar datos obsoletos
+            if (initialKitProductosIds.length > 0) { // Inicializar solo con los productos que vienen de la base de datos
                 saveSelectedProducts(initialKitProductosIds);
             }
-            @endif
         }
-
         initializeStorage();
 
         // INICIALIZACION DE DATATABLES

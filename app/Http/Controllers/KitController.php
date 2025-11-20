@@ -7,6 +7,7 @@ use App\Http\Requests\KitStoreRequest;
 use App\Http\Requests\KitUpdateRequest;
 use App\Services\CorrelativeIdGenerator;
 use App\Models\Producto;
+use App\Models\Parametro;
 
 class KitController extends Controller
 {
@@ -57,17 +58,35 @@ class KitController extends Controller
 
     public function actualizarProductos(Kit $kit, Request $request)
     {
-        $nombre_sugerido = $this->sugerirNombreKit($kit, $request);
-        if ($nombre_sugerido) {
-            $kit->kit = $nombre_sugerido;
-            $kit->save();
+        try { 
+            $nombre_automatico = Parametro::findOrFail(2)->valor; // Nombre automático
+            if ($nombre_automatico == '1') {
+                $nombre_creado = $this->sugerirNombreKit($kit, $request);
+                if ($nombre_creado) {
+                    $existe = \App\Models\Kit::where('kit', $nombre_creado)
+                        ->where('id', '<>', $kit->id)
+                        ->exists();
+                    if ($existe) {
+                        return redirect()->back()->with('info', 'El nombre sugerido para el kit ya existe, por favor revise los productos seleccionados.');
+                    }
+                }
+                if ($nombre_creado) {
+                    $kit->kit = $nombre_creado;
+                    $kit->save();
+                }
+            }
+            $kit->productos()->sync($request->productos);
+            return redirect()->route('kit')->with('success', 'Kit actualizado correctamente');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('info', 'Ocurrió un error al intentar actualizar el Kit: ' . $e->getMessage());
         }
-        $kit->productos()->sync($request->productos);
-        return redirect()->route('kit')->with('success', 'Kit actualizado correctamente');
     }
 
     public function sugerirNombreKit(Kit $kit, Request $request)
     {
+        if (!$request->has('productos') || empty($request->productos)) { // Validar que haya productos en la solicitud
+            return false;
+        }
         $productos = Producto::whereIn('id', $request->productos)->pluck('producto')->toArray(); //Producto promedio
         $palabras_productos = [];
         foreach ($productos as $producto) {
@@ -91,8 +110,23 @@ class KitController extends Controller
         });
         $conteo_palabras = array_count_values($palabras_filtradas);
         $modelo_promedio = !empty($conteo_palabras) ? array_search(max($conteo_palabras), $conteo_palabras) : '';
-
-        $nuevo_nombre = $producto_promedio . ' de ' . $modelo_promedio; //Resultado
+        if (empty($producto_promedio) && empty($modelo_promedio)) { // Validar que al menos uno de los promedios no esté vacío para generar un nombre válido
+            return false;
+        }
+        $nuevo_nombre = ''; // Construir el nombre solo con las partes que tienen valor
+        if (!empty($producto_promedio) && !empty($modelo_promedio)) {
+            $nuevo_nombre = $producto_promedio . ' de ' . $modelo_promedio;
+        } elseif (!empty($producto_promedio)) {
+            $nuevo_nombre = $producto_promedio;
+        } elseif (!empty($modelo_promedio)) {
+            $nuevo_nombre = $modelo_promedio;
+        }
+        if (!empty($nuevo_nombre) && mb_strlen($nuevo_nombre) > 0) { // Verificar que el $nuevo_nombre comience con inicial mayuscula, si comienza con minuscula se la cambia a mayuscula
+            $nuevo_nombre = mb_strtoupper(mb_substr($nuevo_nombre, 0, 1)) . mb_substr($nuevo_nombre, 1);
+        }
+        if (empty(trim($nuevo_nombre))) { // Validar que el nombre generado no sea solo espacios o esté vacío
+            return false;
+        }
         return $nuevo_nombre;
     }
 

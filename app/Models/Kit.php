@@ -6,7 +6,7 @@ class Kit extends Model
 {
     public $incrementing = false;
     protected $keyType   = 'int';
-    protected $fillable = ['kit'];
+    protected $fillable = ['kit', 'precio', 'descargas'];
     protected $casts = [
         'activo' => 'boolean',
     ];
