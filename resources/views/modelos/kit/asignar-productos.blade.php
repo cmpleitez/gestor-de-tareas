@@ -171,10 +171,16 @@
 
         // INICIALIZACION DE SESSIONSTORAGE
         function initializeStorage() {
-            var stored = getSelectedProducts();
-            if (stored.length === 0 && initialKitProductosIds.length > 0) {
+            @if(session('success'))
+                // Si hay un mensaje de éxito, limpiar sessionStorage y restaurar solo los productos de la BD
+                sessionStorage.removeItem(storageKey);
                 saveSelectedProducts(initialKitProductosIds);
-            }
+            @else
+                var stored = getSelectedProducts();
+                if (stored.length === 0 && initialKitProductosIds.length > 0) {
+                    saveSelectedProducts(initialKitProductosIds);
+                }
+            @endif
         }
 
         initializeStorage();

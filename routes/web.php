@@ -165,6 +165,7 @@ Route::middleware([
             Route::get('destroy/{solicitud}', [solicitudController::class, 'destroy'])->name('solicitud.destroy');
             Route::post('activate/{solicitud}', [solicitudController::class, 'activate'])->name('solicitud.activate');
         });
+
     });
 
     //GESTIÓN

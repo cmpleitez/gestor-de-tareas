@@ -202,6 +202,14 @@ class UserSeeder extends Seeder
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
+        DB::table('parametros')->insert([
+            'id'           => 2,
+            'parametro'  => 'Nombres de kits automáticos',
+            'valor'      => '1',
+            'unidad_medida' => 'boolean',
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
 
     }
 }

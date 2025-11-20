@@ -57,7 +57,18 @@ class KitController extends Controller
 
     public function actualizarProductos(Kit $kit, Request $request)
     {
-        $productos = Producto::whereIn('id', $request->productos)->pluck('producto')->toArray();
+        $nombre_sugerido = $this->sugerirNombreKit($kit, $request);
+        if ($nombre_sugerido) {
+            $kit->kit = $nombre_sugerido;
+            $kit->save();
+        }
+        $kit->productos()->sync($request->productos);
+        return redirect()->route('kit')->with('success', 'Kit actualizado correctamente');
+    }
+
+    public function sugerirNombreKit(Kit $kit, Request $request)
+    {
+        $productos = Producto::whereIn('id', $request->productos)->pluck('producto')->toArray(); //Producto promedio
         $palabras_productos = [];
         foreach ($productos as $producto) {
             $palabras = explode(' ', $producto);
@@ -69,7 +80,7 @@ class KitController extends Controller
         $conteo_palabras = array_count_values($palabras_filtradas);
         $producto_promedio = !empty($conteo_palabras) ? array_search(max($conteo_palabras), $conteo_palabras) : '';
 
-        $modelos = Producto::whereIn('id', $request->productos)->with('modelo')->get()->pluck('modelo.modelo')->toArray();
+        $modelos = Producto::whereIn('id', $request->productos)->with('modelo')->get()->pluck('modelo.modelo')->toArray(); //Modelo promedio
         $palabras_modelos = [];
         foreach ($modelos as $modelo) {
             $palabras = explode(' ', $modelo);
@@ -81,11 +92,8 @@ class KitController extends Controller
         $conteo_palabras = array_count_values($palabras_filtradas);
         $modelo_promedio = !empty($conteo_palabras) ? array_search(max($conteo_palabras), $conteo_palabras) : '';
 
-
-        return $nuevo_nombre = $producto_promedio . ' de ' . $modelo_promedio;
-
-        $kit->productos()->sync($request->productos);
-        return redirect()->route('kit')->with('success', 'Kit actualizado correctamente');
+        $nuevo_nombre = $producto_promedio . ' de ' . $modelo_promedio; //Resultado
+        return $nuevo_nombre;
     }
 
     public function destroy(Kit $kit)
