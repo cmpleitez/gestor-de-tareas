@@ -25,6 +25,28 @@
         min-height: 1px;
     }
 
+    /* ELIMINAR LINEAS DE DIVISION ENTRE FILAS */
+    #datatable tbody tr {
+        border: none !important;
+        border-bottom: none !important;
+    }
+
+    #datatable tbody tr td {
+        border: none !important;
+        border-bottom: none !important;
+        border-top: none !important;
+    }
+
+    #datatable thead tr th {
+        border: none !important;
+    }
+
+    #datatable.table td,
+    #datatable.table th {
+        border-top: none !important;
+        border-bottom: none !important;
+    }
+
 </style>
 @stop
 
@@ -54,7 +76,7 @@
                             <thead style="display: none;"></thead>
                             <tbody>
                                 @foreach ($productosChunks as $chunk)
-                                
+
                                 <tr>
                                     @foreach ($chunk as $producto)
                                     <td class="product-card-container">
@@ -115,13 +137,13 @@
     <div id="selectedProductsContainer"></div>
 </form>
 @if($errors->any())
-    toastr.error('{{ $errors->first() }}', 'Error');
+toastr.error('{{ $errors->first() }}', 'Error');
 @endif
 @if(session('success'))
-    toastr.success('{{ session('success ') }}', 'Éxito');
+toastr.success('{{ session('success ') }}', 'Éxito');
 @endif
 @if(session('error'))
-    toastr.error('{{ session('error ') }}', 'Error');
+toastr.error('{{ session('error ') }}', 'Error');
 @endif
 @stop
 
@@ -138,7 +160,11 @@
 <script>
     $(document).ready(function() {
         // VARIABLES GLOBALES
-        var kitId = {{ $kit->id }};
+        var kitId = {
+            {
+                $kit - > id
+            }
+        };
         var storageKey = 'selectedProducts_' + kitId;
         var initialKitProductosIds = @json($kitProductosIds);
 
@@ -172,14 +198,14 @@
         // INICIALIZACION DE SESSIONSTORAGE
         function initializeStorage() {
             @if(session('success'))
-                // Si hay un mensaje de éxito, limpiar sessionStorage y restaurar solo los productos de la BD
-                sessionStorage.removeItem(storageKey);
-                saveSelectedProducts(initialKitProductosIds);
+            // Si hay un mensaje de éxito, limpiar sessionStorage y restaurar solo los productos de la BD
+            sessionStorage.removeItem(storageKey);
+            saveSelectedProducts(initialKitProductosIds);
             @else
-                var stored = getSelectedProducts();
-                if (stored.length === 0 && initialKitProductosIds.length > 0) {
-                    saveSelectedProducts(initialKitProductosIds);
-                }
+            var stored = getSelectedProducts();
+            if (stored.length === 0 && initialKitProductosIds.length > 0) {
+                saveSelectedProducts(initialKitProductosIds);
+            }
             @endif
         }
 
