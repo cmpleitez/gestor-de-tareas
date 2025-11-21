@@ -50,6 +50,11 @@ class TiendaController extends Controller
         //
     }
 
+    public function agregar(Kit $kit)
+    {
+        return $kit;
+    }
+
     public function createMovimiento()
     {
         $stocks = Stock::where('activo', true)->get();

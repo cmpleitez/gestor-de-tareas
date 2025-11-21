@@ -35,12 +35,23 @@ class KitController extends Controller
 
     public function edit(Kit $kit)
     {
+        $kit->load('productos');
         return view('modelos.kit.edit', compact('kit'));
     }
 
     public function update(KitUpdateRequest $request, Kit $kit)
     {
-        $kit->update($request->validated());
+        $data = $request->validated(); // Guardar Kit
+        $productos = $data['producto'] ?? [];
+        unset($data['producto']);
+        $kit->update($data);
+        $productosSync = []; // Guardar productos
+        foreach ($productos as $productoId => $productoData) {
+            if (isset($productoData['unidades'])) {
+                $productosSync[$productoId] = ['unidades' => $productoData['unidades']];
+            }
+        }
+        $kit->productos()->sync($productosSync);
         return redirect()->route('kit')->with('success', 'Kit actualizado correctamente');
     }
 

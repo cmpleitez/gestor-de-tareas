@@ -25,9 +25,6 @@ Table of contents
 16. Extra large devices (large desktops, 1200px and up)
 --------------------------------------------- */
 
-
-
-
 /* Typography */
 body,
 ul,
@@ -38,7 +35,7 @@ label,
 input,
 div {
     font-family: 'Roboto', sans-serif;
-    font-size: 18px !important;
+    font-size: 15px !important;
     font-weight: 300 !important;
 }
 
@@ -297,7 +294,7 @@ div {
 .product-wap li,
 .product-wap i,
 .product-wap p {
-    font-size: 12px !important;
+    font-size: 1em !important;
 }
 
 .product-wap .product-color-dot {
@@ -332,7 +329,7 @@ div {
     .product-wap li,
     .product-wap i,
     .product-wap p {
-        font-size: 18px !important;
+        font-size: 1em !important;
     }
 
     .product-wap .product-color-dot {
