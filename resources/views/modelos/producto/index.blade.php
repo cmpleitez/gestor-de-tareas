@@ -1,7 +1,5 @@
 @extends('dashboard')
-
 @section('css')
-<link href="{{ asset('app-assets/vendors/css/tables/datatable/datatables.min.css') }}" rel="stylesheet">
 @stop
 
 @section('contenedor')
@@ -125,44 +123,33 @@
 @stop
 
 @section('js')
-<script src="{{ asset('app-assets/vendors/js/tables/datatable/datatables.min.js') }}"></script>
-<script src="{{ asset('app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}"></script>
-<script src="{{ asset('app-assets/vendors/js/tables/datatable/dataTables.buttons.min.js') }}"></script>
-<script src="{{ asset('app-assets/vendors/js/tables/datatable/buttons.html5.min.js') }}"></script>
-<script src="{{ asset('app-assets/vendors/js/tables/datatable/buttons.print.min.js') }}"></script>
-<script src="{{ asset('app-assets/vendors/js/tables/datatable/buttons.bootstrap.min.js') }}"></script>
-<script src="{{ asset('app-assets/vendors/js/tables/datatable/pdfmake.min.js') }}"></script>
-<script src="{{ asset('app-assets/vendors/js/tables/datatable/vfs_fonts.js') }}"></script>
-
-{{-- ORIENTACION PARA TABLAS EN MÓVILES --}}
-@include('components.orientation-manager')
-<script>
-        $(document).ready(function() {
-            //INICIALIZACION DE DATATABLES
-            if ($.fn.DataTable) {
-                $('.zero-configuration').DataTable({
-                    "language": { "url": "/app-assets/Spanish.json" },
-                    "pageLength": 10,
-                    "columnDefs": [
-                        {
-                            "targets": 0,
-                            "type": "num"
-                        },
-                    ],
-                    "drawCallback": function(settings) {
-                        // Formatear celdas con clase .td-currency después de que DataTables dibuje la tabla
-                        if (typeof formatCurrencyCells !== 'undefined') {
-                            formatCurrencyCells(true); // true = forzar reformateo
+    @include('components.orientation-manager') {{-- Componente de orientación para tablas --}}
+    <script>
+            $(document).ready(function() {
+                //INICIALIZACION DE DATATABLES
+                if ($.fn.DataTable) {
+                    $('.zero-configuration').DataTable({
+                        "language": { "url": "/app-assets/Spanish.json" },
+                        "pageLength": 10,
+                        "columnDefs": [
+                            {
+                                "targets": 0,
+                                "type": "num"
+                            },
+                        ],
+                        "drawCallback": function(settings) {
+                            // Formatear celdas con clase .td-currency después de que DataTables dibuje la tabla
+                            if (typeof formatCurrencyCells !== 'undefined') {
+                                formatCurrencyCells(true); // true = forzar reformateo
+                            }
                         }
-                    }
+                    });
+                }
+                // INICIALIZAR TOOLTIPS
+                $('[data-toggle="tooltip"]').tooltip({
+                    html: true,
+                    placement: 'bottom'
                 });
-            }
-            // INICIALIZAR TOOLTIPS
-            $('[data-toggle="tooltip"]').tooltip({
-                html: true,
-                placement: 'bottom'
             });
-        });
-</script>
-
+    </script>
 @stop

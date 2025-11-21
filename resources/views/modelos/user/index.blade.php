@@ -1,7 +1,5 @@
 @extends('dashboard')
-
 @section('css')
-    <link href="{{ asset('app-assets/vendors/css/tables/datatable/datatables.min.css') }}" rel="stylesheet">
 @stop
 
 @section('contenedor')
@@ -174,22 +172,9 @@
 @stop
 
 @section('js')
-    <!-- BEGIN: Page Vendor JS-->
-    <script src="{{ asset('app-assets/vendors/js/tables/datatable/datatables.min.js') }}"></script>
-    <script src="{{ asset('app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}"></script>
-    <script src="{{ asset('app-assets/vendors/js/tables/datatable/dataTables.buttons.min.js') }}"></script>
-    <script src="{{ asset('app-assets/vendors/js/tables/datatable/buttons.html5.min.js') }}"></script>
-    <script src="{{ asset('app-assets/vendors/js/tables/datatable/buttons.print.min.js') }}"></script>
-    <script src="{{ asset('app-assets/vendors/js/tables/datatable/buttons.bootstrap.min.js') }}"></script>
-    <script src="{{ asset('app-assets/vendors/js/tables/datatable/pdfmake.min.js') }}"></script>
-    <script src="{{ asset('app-assets/vendors/js/tables/datatable/vfs_fonts.js') }}"></script>
-    <!-- END: Page Vendor JS-->
-
+    @include('components.orientation-manager') {{-- Componente de orientación para tablas --}}
     <script>
-        // ===== CONFIGURACIÓN MÍNIMA Y FUNCIONAL =====
         $(document).ready(function() {
-
-            // Inicializar DataTable de forma básica
             if ($.fn.DataTable) {
                 $('.zero-configuration').DataTable({
                     "language": {
@@ -198,13 +183,10 @@
                     "pageLength": 50
                 });
             }
-
-            // Inicializar tooltips de Bootstrap 4 con HTML habilitado
             $('[data-toggle="tooltip"]').tooltip({
                 html: true,
                 placement: 'bottom'
             });
         });
     </script>
-
 @stop
