@@ -52,6 +52,7 @@ class TiendaController extends Controller
         //
     }
 
+
     public function agregar(Kit $kit)
     {
         try {
