@@ -27,7 +27,7 @@
    VARIABLES CSS CENTRALIZADAS
    ======================================== */
 :root {
-  /* Colores principales del sistema - MODIFICAR AQUÍ */
+  /* Colores principales del sistema */
   --color-primary: #3b7fff;
   --color-secondary: #4d72a0;
   --color-success: #2ac575;

@@ -16,8 +16,6 @@ return new class extends Migration
             $table->foreignId('user_id_origen')->constrained('users');
             $table->foreignId('user_id_destino')->constrained('users');
             $table->foreignId('estado_id')->constrained('estados');
-            $table->string('detalle');
-            $table->string('observacion')->nullable();
             $table->boolean('activo')->default(true);
             $table->timestamps();
         });

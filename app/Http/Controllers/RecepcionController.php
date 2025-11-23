@@ -362,7 +362,7 @@ class RecepcionController extends Controller
                 return back()->with('error', 'La funcionalidad se encuentra inhabilitada, consulte con el administrador del sistema');
             }
             $Receptor = $Receptors->random();
-                                                    //REGISTRANDO LA SOLICITUD
+            //REGISTRANDO LA SOLICITUD
             $atencion             = new Atencion(); //Creando el número de atención
             $atencion->id         = (new KeyMaker())->generate('Atencion', $request->solicitud_id);
             $atencion->oficina_id = $user->oficina_id;

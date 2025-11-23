@@ -10,7 +10,8 @@ PAUTAS:
 CLIENTE:
     🔵 Procedimiento: perfil cpleitez.2024@gmail.com https://miro.com/app/board/uXjVJy6iRzE=/
         . Cliente: Entra a la <Tienda>, selecciona en el catálogo el kit y da clic en <agregar al carrito>
-        . Sistema: En atención a la orden del cliente (<recepcion.user_id_origen>), crea <copia solicitud receptor> pendiente de validar por el mismo (<recepcion.validada_origen = false>)
+        . Sistema: En atención al cliente (<recepcion.user_id_origen>), crea <número de atención>, el detalle de productos y a qué kit pertenecen, 
+        y <copia solicitud receptor>; pendiente de validar por el mismo (<recepcion.validada_origen = false>)
         y pendiente de validar (<recepcion.validada_destino=false>) por el receptor (<recepcion.user_id_destino>)
         . Cliente: 
             . Entra al <formulario del carrito> y agrega o cambia los <kits y sus productos> y especifica si va enviar una <orden de compra> o una <reserva>
@@ -131,17 +132,25 @@ SERVICIOS:
         👍🏻🪒crud de productos
         👍🏻🪒crud de kits
         ...🪒tienda
-                . orden de compra para el carrito
-                . para calificar el producto que sea en base a cantidad de descargas en el mes anterior, 
-                por lo que cada vez que se descargue del inventario acumular en un campo de Kits
-                cuantas veces se han descargado y calcular en base a esto la cantidad de estrellas
-                que serán mostradas en cada kit de la tienda.
-                . se puede hacer lo mismo con un campo en productos para la calificación de los mismos
-                incluso se podría parametrizar cuantos meses se usarían para el barrido de datos, ademas 
-                se puede usar el like de la tienda, para abonar al calculo de alguna forma.
+                . creación de la solicitud y de la orden de compra
+                    . a la hora de crear el registro de <Atencion> se encontró que el nombre de solicitud está al mismo nivel de conjuntos que el <Tipo> o categoría del producto
+                    por lo que el concepto de <Solicitud> debe elevarse sobre el <Tipo>, puntualizando las <Solicitud> es el nombre del procedimiento que tiene <Tareas> es decir pasos
+                    entonces la nueva definición apunta a nombres de solicitud como <Orden de compra> la cual es posible que se use tan solo una, y que se deja abierto el diseño de datos
+                    para soportar otros procedimientos que se agreguen en el futuro.
+                        . en éste caso los seeders de solicitud hay que cambiarlo y dejarle un solo registro que nombre a la solicitud así: orden de compra
            🪒enlace tienda gestor
                 . tarjeta en el tablero "En progreso" en el rol del Receptor
                 . paso "Revisión de la Orden/Reserva"
+
+        🪒calificacion de productos y kits:
+            . para calificar el producto que sea en base a cantidad de descargas en el mes anterior, 
+            por lo que cada vez que se descargue del inventario acumular en un campo de Kits
+            cuantas veces se han descargado y calcular en base a esto la cantidad de estrellas
+            que serán mostradas en cada kit de la tienda.
+            . se puede hacer lo mismo con un campo en productos para la calificación de los mismos
+            incluso se podría parametrizar cuantos meses se usarían para el barrido de datos, ademas 
+            se puede usar el like de la tienda, para abonar al calculo de alguna forma.
+
         🪒reportes: 
             . historial de entradas y reversiones en stocks
         🪒procesos: 

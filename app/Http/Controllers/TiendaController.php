@@ -11,6 +11,8 @@ use App\Models\Movimiento;
 use App\Services\KeyMaker;
 use App\Models\Producto;
 use App\Models\Kit;
+use App\Models\Atencion;
+use App\Models\Estado;
 
 class TiendaController extends Controller
 {
@@ -48,6 +50,26 @@ class TiendaController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function agregar(Kit $kit)
+    {
+        try {
+            DB::beginTransaction();
+            //REGISTRANDO LA SOLICITUD
+/*             $atencion             = new Atencion(); //Creando el número de atención
+            $atencion->id         = (new KeyMaker())->generate('Atencion', $request->solicitud_id); //aqui se agregaría la solicitud llamada <Orden de compra>
+            $atencion->oficina_id = $user->oficina_id;
+            $atencion->estado_id  = Estado::where('estado', 'Recibida')->first()->id;
+            $atencion->avance     = 0.00;
+            $atencion->activo     = false; //Por defecto invalidada, se valida al ejemplo: procesar el carrito originando una orden de compra válida, luego una tarea programada borra cada cieto tiempo todos los registros con condicion nula en este campo
+            $atencion_id          = $atencion->id;
+            $atencion->save();            //code...
+         DB::commit();*/
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            //throw $th;
+        }
     }
 
     public function createMovimiento()
