@@ -56,6 +56,9 @@ class TiendaController extends Controller
     public function agregar(Kit $kit)
     {
         try {
+
+return $kit;
+
             DB::beginTransaction();
             //REGISTRANDO LA SOLICITUD
 /*             $atencion             = new Atencion(); //Creando el número de atención
