@@ -11,8 +11,12 @@ use App\Models\Movimiento;
 use App\Services\KeyMaker;
 use App\Models\Producto;
 use App\Models\Kit;
+use App\Models\Recepcion;
+use App\Models\User;
 use App\Models\Atencion;
 use App\Models\Estado;
+use App\Models\Role;
+use App\Models\Solicitud;
 
 class TiendaController extends Controller
 {
@@ -59,20 +63,48 @@ class TiendaController extends Controller
 
 return $kit;
 
-            DB::beginTransaction();
+        DB::beginTransaction();
+
+
+            //SELECCIONANDO UN RECEPTOR
+            $user      = auth()->user();
+            $Receptors = User::whereHas('roles', function ($query) {
+                $query->where('name', 'Receptor');
+            })->whereHas('oficina', function ($query) use ($user) {
+                $query->where('id', $user->oficina_id);
+            })->get();
+            if ($Receptors->isEmpty()) {
+                return back()->with('error', 'La funcionalidad se encuentra inhabilitada, consulte con el administrador del sistema');
+            }
+            $Receptor = $Receptors->random();
+
             //REGISTRANDO LA SOLICITUD
-/*             $atencion             = new Atencion(); //Creando el número de atención
-            $atencion->id         = (new KeyMaker())->generate('Atencion', $request->solicitud_id); //aqui se agregaría la solicitud llamada <Orden de compra>
-            $atencion->oficina_id = $user->oficina_id;
+            $atencion             = new Atencion(); //Creando el número de atención
+            $atencion->id         = (new KeyMaker())->generate('Atencion', Solicitud::where('solicitud', 'Orden de compra')->first()->id);
+            $atencion->oficina_id = auth()->user()->oficina_id;
             $atencion->estado_id  = Estado::where('estado', 'Recibida')->first()->id;
             $atencion->avance     = 0.00;
-            $atencion->activo     = false; //Por defecto invalidada, se valida al ejemplo: procesar el carrito originando una orden de compra válida, luego una tarea programada borra cada cieto tiempo todos los registros con condicion nula en este campo
-            $atencion_id          = $atencion->id;
-            $atencion->save();            //code...
-         DB::commit();*/
-        } catch (\Throwable $th) {
+            $atencion->activo     = false; //Por defecto no validada
+            $atencion->save();
+
+            $recepcion                  = new Recepcion(); //Creando la recepción
+            $recepcion->id              = (new KeyMaker())->generate('Recepcion', Solicitud::where('solicitud', 'Orden de compra')->first()->id);
+            $recepcion->atencion_id     = $atencion->id;
+            $recepcion->role_id         = Role::where('name', 'Receptor')->first()->id;
+            $recepcion->solicitud_id    = Solicitud::where('solicitud', 'Orden de compra')->first()->id;
+            $recepcion->user_id_origen  = auth()->user()->id;
+            $recepcion->user_id_destino = $Receptor->id;
+            $recepcion->estado_id       = Estado::where('estado', 'Recibida')->first()->id;
+            $recepcion->activo          = false; //Por defecto no validada
+            $recepcion->save();
+
+
+
+         DB::commit();
+         return back()->with('success', 'Kit agregado a la tienda correctamente');
+        } catch (\Exception $e) {
             DB::rollBack();
-            //throw $th;
+            return back()->with('error', 'Ocurrió un error cuando se intentaba agregar el kit a la tienda: ' . $e->getMessage());
         }
     }
 

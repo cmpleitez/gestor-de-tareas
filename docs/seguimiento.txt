@@ -132,12 +132,10 @@ SERVICIOS:
         👍🏻🪒crud de productos
         👍🏻🪒crud de kits
         ...🪒tienda
-                . creación de la solicitud y de la orden de compra
-                    . a la hora de crear el registro de <Atencion> se encontró que el nombre de solicitud está al mismo nivel de conjuntos que el <Tipo> o categoría del producto
-                    por lo que el concepto de <Solicitud> debe elevarse sobre el <Tipo>, puntualizando las <Solicitud> es el nombre del procedimiento que tiene <Tareas> es decir pasos
-                    entonces la nueva definición apunta a nombres de solicitud como <Orden de compra> la cual es posible que se use tan solo una, y que se deja abierto el diseño de datos
-                    para soportar otros procedimientos que se agreguen en el futuro.
-                        . en éste caso los seeders de solicitud hay que cambiarlo y dejarle un solo registro que nombre a la solicitud así: orden de compra
+                . creación del número de atención, de la copia de ésta última para el <Receptor> y la orden de compra
+                    . Se encontró que no existen varios tipos de solicitud, sino un único tipo y un único procedimiento
+                    si existe la necesidad de un receptor y un operador, por lo que la tabla solicitudes tendrá un único registro
+                    "Orden de compra", y todos los operadores trabajarán en sintonía de ese único procedimiento.
            🪒enlace tienda gestor
                 . tarjeta en el tablero "En progreso" en el rol del Receptor
                 . paso "Revisión de la Orden/Reserva"

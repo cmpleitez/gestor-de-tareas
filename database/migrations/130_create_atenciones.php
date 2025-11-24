@@ -12,7 +12,7 @@ return new class extends Migration
             $table->char('id', 12)->primary();
             $table->foreignId('oficina_id')->constrained('oficinas');
             $table->foreignId('estado_id')->constrained('estados');
-            $table->string('detalle');
+            $table->string('detalle')->nullable();
             $table->decimal('avance', 5, 2)->default(0.00);
             $table->boolean('reserva')->default(false);
             $table->boolean('activo')->default(true);
