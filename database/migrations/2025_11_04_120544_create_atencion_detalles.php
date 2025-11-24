@@ -9,8 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('atencion_detalles', function (Blueprint $table) {
-            $table->string('atencion_id', 12);
-            $table->foreign('atencion_id')->references('id')->on('atenciones');
+            $table->string('atencion_id', 12)->constrained('atenciones');
             $table->foreignId('kit_id')->constrained('kits');
             $table->foreignId('producto_id')->constrained('productos');
             $table->integer('unidades');

@@ -17,6 +17,7 @@ use App\Models\Atencion;
 use App\Models\Estado;
 use App\Models\Role;
 use App\Models\Solicitud;
+use App\Models\AtencionDetalle;
 
 class TiendaController extends Controller
 {
@@ -59,49 +60,69 @@ class TiendaController extends Controller
 
     public function agregar(Kit $kit)
     {
+        $user      = auth()->user(); //Seleccionando el receptor
+        $receptors = User::whereHas('roles', function ($query) {
+            $query->where('name', 'Receptor');
+        })->whereHas('oficina', function ($query) use ($user) {
+            $query->where('id', $user->oficina_id);
+        })->get();
+        if ($receptors->isEmpty()) {
+            return back()->with('error', 'No hay personal <Receptor> disponible para atender la solicitud');
+        }
         try {
+            DB::beginTransaction();
+                $receptor = $receptors->random(); 
+                $kitExiste = AtencionDetalle::where('kit_id', $kit->id) //Verificando si el Kit existe en la tienda
+                ->whereHas('atencion', function ($query) {
+                    $query->where('activo', false);
+                })->first();
+                
+                if ($kitExiste) { 
+                    //ACTUALIZANDO DATOS DEL KIT
+                    $atencionDetalles = AtencionDetalle::where('kit_id', $kit->id)
+                        ->whereHas('atencion', function ($query) {
+                            $query->where('activo', false);
+                        })->get();
+                    foreach ($atencionDetalles as $atencionDetalle) {
+                        //$atencionDetalle->unidades += $producto->pivot->unidades; agregar aqui producto[index]->pivot->unidades;
+                        $atencionDetalle->save();
+                    }
+                } else {
+                    //REGISTRANDO DATOS DEL KIT
+                    $atencion             = new Atencion(); //Creando el registro de atención al cliente
+                    $atencion->id         = (new KeyMaker())->generate('Atencion', Solicitud::where('solicitud', 'Orden de compra')->first()->id);
+                    $atencion->oficina_id = auth()->user()->oficina_id;
+                    $atencion->estado_id  = Estado::where('estado', 'Recibida')->first()->id;
+                    $atencion->avance     = 0.00;
+                    $atencion->activo     = false; 
+                    $atencion->save();
 
-return $kit;
-
-        DB::beginTransaction();
-
-
-            //SELECCIONANDO UN RECEPTOR
-            $user      = auth()->user();
-            $Receptors = User::whereHas('roles', function ($query) {
-                $query->where('name', 'Receptor');
-            })->whereHas('oficina', function ($query) use ($user) {
-                $query->where('id', $user->oficina_id);
-            })->get();
-            if ($Receptors->isEmpty()) {
-                return back()->with('error', 'La funcionalidad se encuentra inhabilitada, consulte con el administrador del sistema');
-            }
-            $Receptor = $Receptors->random();
-
-            //REGISTRANDO LA SOLICITUD
-            $atencion             = new Atencion(); //Creando el número de atención
-            $atencion->id         = (new KeyMaker())->generate('Atencion', Solicitud::where('solicitud', 'Orden de compra')->first()->id);
-            $atencion->oficina_id = auth()->user()->oficina_id;
-            $atencion->estado_id  = Estado::where('estado', 'Recibida')->first()->id;
-            $atencion->avance     = 0.00;
-            $atencion->activo     = false; //Por defecto no validada
-            $atencion->save();
-
-            $recepcion                  = new Recepcion(); //Creando la recepción
-            $recepcion->id              = (new KeyMaker())->generate('Recepcion', Solicitud::where('solicitud', 'Orden de compra')->first()->id);
-            $recepcion->atencion_id     = $atencion->id;
-            $recepcion->role_id         = Role::where('name', 'Receptor')->first()->id;
-            $recepcion->solicitud_id    = Solicitud::where('solicitud', 'Orden de compra')->first()->id;
-            $recepcion->user_id_origen  = auth()->user()->id;
-            $recepcion->user_id_destino = $Receptor->id;
-            $recepcion->estado_id       = Estado::where('estado', 'Recibida')->first()->id;
-            $recepcion->activo          = false; //Por defecto no validada
-            $recepcion->save();
+                    foreach ($kit->productos as $producto) { //Creando el detalle del registro de Atención
+                        $atencionDetalle = new AtencionDetalle();
+                        $atencionDetalle->atencion_id = $atencion->id;
+                        $atencionDetalle->kit_id = $kit->id;
+                        $atencionDetalle->producto_id = $producto->id;
 
 
 
-         DB::commit();
-         return back()->with('success', 'Kit agregado a la tienda correctamente');
+                        $atencionDetalle->unidades = $producto->pivot->unidades;
+                        $atencionDetalle->precio = $producto->precio;
+                        $atencionDetalle->save();
+                    }
+
+                    $recepcion                  = new Recepcion(); //Creando la copia <Receptor> 
+                    $recepcion->id              = (new KeyMaker())->generate('Recepcion', Solicitud::where('solicitud', 'Orden de compra')->first()->id);
+                    $recepcion->atencion_id     = $atencion->id;
+                    $recepcion->solicitud_id    = Solicitud::where('solicitud', 'Orden de compra')->first()->id;
+                    $recepcion->origen_user_id  = auth()->user()->id;
+                    $recepcion->destino_user_id = $receptor->id;
+                    $recepcion->user_destino_role_id = Role::where('name', 'Receptor')->first()->id;
+                    $recepcion->estado_id       = Estado::where('estado', 'Recibida')->first()->id;
+                    $recepcion->activo          = false; 
+                    $recepcion->save();
+                }
+            DB::commit();
+            return back()->with('success', 'Kit agregado a la tienda correctamente');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Ocurrió un error cuando se intentaba agregar el kit a la tienda: ' . $e->getMessage());

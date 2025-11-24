@@ -15,14 +15,15 @@
     <link rel="stylesheet" href="{{ asset('app-assets/css/custom-zay.css') }}">
     <link rel="stylesheet" href="{{ asset('app-assets/css/fontawesome-zay.min.css') }}">
     <link rel="stylesheet" href="{{ asset('app-assets/css/colors.css') }}">
+    <link href="{{ asset('app-assets/vendors/css/extensions/toastr.css') }}" rel="stylesheet">
 
     @stack('css')
 </head>
 
 <body>
-    
+
     <!-- Header Section -->
-    <header class="bg-primary-dark text-white py-3"> 
+    <header class="bg-primary-dark text-white py-3">
         <div class="container">
             <div class="row align-items-center flex-nowrap">
                 <div class="col-auto d-flex justify-content-start">
@@ -69,7 +70,61 @@
     <script src="{{ asset('app-assets/js/bootstrap-bundle-5-zay.min.js') }}"></script>
     <script src="{{ asset('app-assets/js/templatemo-zay.js') }}"></script>
     <script src="{{ asset('app-assets/js/custom-zay.js') }}"></script>
+    <script src="{{ asset('app-assets/vendors/js/extensions/toastr.min.js') }}"></script>
 
+    <script>
+        if (typeof toastr !== 'undefined') {
+            toastr.options = {
+                "closeButton": true
+                , "debug": false
+                , "newestOnTop": false
+                , "progressBar": true
+                , "positionClass": "toast-top-right"
+                , "preventDuplicates": false
+                , "onclick": null
+                , "showDuration": "300"
+                , "hideDuration": "1000"
+                , "timeOut": "5000"
+                , "extendedTimeOut": "1000"
+                , "showEasing": "swing"
+                , "hideEasing": "linear"
+                , "showMethod": "fadeIn"
+                , "hideMethod": "fadeOut"
+            };
+        }
+        $(document).ready(function() {
+            @if(session('success'))
+            toastr.success({
+                !!json_encode(session('success')) !!
+            });
+            @endif
+            @if(session('error'))
+            toastr.error({
+                !!json_encode(session('error')) !!
+            }, '', {
+                timeOut: 0
+                , extendedTimeOut: 0
+                , closeButton: true
+            });
+            @endif
+            @if(session('warning'))
+            toastr.warning({
+                !!json_encode(session('warning')) !!
+            });
+            @endif
+            @if(session('info'))
+            toastr.info({
+                !!json_encode(session('info')) !!
+            });
+            @endif
+            @if(session('danger'))
+            toastr.error({
+                !!json_encode(session('danger')) !!
+            });
+            @endif
+        });
+
+    </script>
     @stack('scripts')
 </body>
 

@@ -9,8 +9,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('actividades', function (Blueprint $table) {
-            $table->char('id', 12)->primary();
-            $table->char('recepcion_id', 12)->foreignId();
+            $table->string('id', 12)->primary();
+            $table->string('recepcion_id', 12)->constrained('recepciones');
             $table->foreignId('tarea_id');
             $table->foreignId('role_id');
             $table->foreignId('user_id_origen');

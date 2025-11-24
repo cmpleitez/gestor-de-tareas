@@ -65,12 +65,12 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function solicitudesRecibidas()
     {
-        return $this->belongsToMany(Solicitud::class, 'recepciones', 'user_id_origen');
+        return $this->belongsToMany(Solicitud::class, 'recepciones', 'origen_user_id');
     }
 
     public function solicitudesEnviadas()
     {
-        return $this->belongsToMany(Solicitud::class, 'recepciones', 'user_id_destino');
+        return $this->belongsToMany(Solicitud::class, 'recepciones', 'destino_user_id');
     }
 
     public function mainRole()

@@ -132,10 +132,10 @@ SERVICIOS:
         👍🏻🪒crud de productos
         👍🏻🪒crud de kits
         ...🪒tienda
-                . creación del número de atención, de la copia de ésta última para el <Receptor> y la orden de compra
-                    . Se encontró que no existen varios tipos de solicitud, sino un único tipo y un único procedimiento
-                    si existe la necesidad de un receptor y un operador, por lo que la tabla solicitudes tendrá un único registro
-                    "Orden de compra", y todos los operadores trabajarán en sintonía de ese único procedimiento.
+                . creación del número de atención, la copia <Receptor> y la orden de compra
+                    . aque hay que especificar que el rol al que se refiere la tabla Recepciones pertenece al usuario destino.
+                        . configurando las sugerencias: accept suggest IA -> shift + ctrl + A
+                        ... registrando el detalle de la <Atencion>
            🪒enlace tienda gestor
                 . tarjeta en el tablero "En progreso" en el rol del Receptor
                 . paso "Revisión de la Orden/Reserva"

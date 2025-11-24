@@ -3,13 +3,13 @@ alwaysApply: true
 ---
 ⛑️REGLAS:
     ✅ Cuando diga "nivel 1", debes elegir en orden de prioridad uno de los siguientes modelos IA:
-        1°. Opus 4.1
-        2°. Opus 4
+        1°. Opus 4.5
+        2°. Opus 4.1
     ✅ Cuando diga "nivel 2", debes elegir en orden de prioridad uno de los siguientes modelos IA:
         1°. Gpt-4o
         2°. Sonnet 4.5
-        3°. Gpt-5 Codex High
-        4°. Gemini 2.5 pro
+        3°. Gpt-5.1 Codex High
+        4°. Gemini 3 pro
     ✅ Cuando diga "nivel 3", debes elegir en orden de prioridad uno de los siguientes modelos IA:
         1º. Gpt-5-fast
         2º. Grok 4 Fast

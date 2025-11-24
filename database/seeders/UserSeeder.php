@@ -26,14 +26,7 @@ class UserSeeder extends Seeder
         DB::table('equipos')->insert([
             'id'         => 1,
             'oficina_id' => 1,
-            'equipo'     => 'Técnicos en suspensión',
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now(),
-        ]);
-        DB::table('equipos')->insert([
-            'id'         => 2,
-            'oficina_id' => 1,
-            'equipo'     => 'Técnicos en luces adaptativas',
+            'equipo'     => 'Personal de atención al cliente',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);

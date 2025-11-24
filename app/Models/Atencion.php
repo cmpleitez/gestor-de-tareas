@@ -27,3 +27,4 @@ class Atencion extends Model
         return $this->belongsTo(Estado::class);
     }
 
+}

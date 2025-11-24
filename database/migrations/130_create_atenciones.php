@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('atenciones', function (Blueprint $table) {
-            $table->char('id', 12)->primary();
+            $table->string('id', 12)->primary();
             $table->foreignId('oficina_id')->constrained('oficinas');
             $table->foreignId('estado_id')->constrained('estados');
             $table->string('detalle')->nullable();
