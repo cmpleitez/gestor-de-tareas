@@ -9,13 +9,13 @@
     <link rel="shortcut icon" type="image/svg+xml" href="{{ asset('app-assets/images/logo/logo.svg') }}">
     <link rel="manifest" href="{{ asset('site.webmanifest') }}">
 
-    <!-- CSS Files -->
     <link rel="stylesheet" href="{{ asset('app-assets/css/bootstrap-5.0.0-beta1.min.css') }}">
     <link rel="stylesheet" href="{{ asset('app-assets/css/templatemo-zay.css') }}">
     <link rel="stylesheet" href="{{ asset('app-assets/css/custom-zay.css') }}">
     <link rel="stylesheet" href="{{ asset('app-assets/css/fontawesome-zay.min.css') }}">
     <link rel="stylesheet" href="{{ asset('app-assets/css/colors.css') }}">
-    <link href="{{ asset('app-assets/vendors/css/extensions/toastr.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('app-assets/vendors/css/extensions/toastr.css') }}">
+    <link rel="stylesheet" href="{{ asset('app-assets/css/plugins/extensions/toastr.css') }}">
 
     @stack('css')
 </head>
@@ -73,19 +73,20 @@
     <script src="{{ asset('app-assets/vendors/js/extensions/toastr.min.js') }}"></script>
 
     <script>
+        // Configuración global de toastr para todo el proyecto
         if (typeof toastr !== 'undefined') {
             toastr.options = {
                 "closeButton": true
                 , "debug": false
                 , "newestOnTop": false
                 , "progressBar": true
-                , "positionClass": "toast-top-right"
+                , "positionClass": "toast-bottom-right"
                 , "preventDuplicates": false
                 , "onclick": null
                 , "showDuration": "300"
                 , "hideDuration": "1000"
                 , "timeOut": "5000"
-                , "extendedTimeOut": "1000"
+                , "extendedTimeOut": "30000"
                 , "showEasing": "swing"
                 , "hideEasing": "linear"
                 , "showMethod": "fadeIn"
@@ -93,37 +94,27 @@
             };
         }
         $(document).ready(function() {
-            @if(session('success'))
-            toastr.success({
-                !!json_encode(session('success')) !!
-            });
+            //Captura de alertas del backend
+            @if(Session::has('success'))
+            toastr.success("{{ Session::get('success') }}");
             @endif
-            @if(session('error'))
-            toastr.error({
-                !!json_encode(session('error')) !!
-            }, '', {
+            @if(Session::has('error'))
+            toastr.error("{{ Session::get('error') }}", '', {
                 timeOut: 0
                 , extendedTimeOut: 0
                 , closeButton: true
             });
             @endif
-            @if(session('warning'))
-            toastr.warning({
-                !!json_encode(session('warning')) !!
-            });
+            @if(Session::has('warning'))
+            toastr.warning("{{ Session::get('warning') }}");
             @endif
-            @if(session('info'))
-            toastr.info({
-                !!json_encode(session('info')) !!
-            });
+            @if(Session::has('info'))
+            toastr.info("{{ Session::get('info') }}");
             @endif
-            @if(session('danger'))
-            toastr.error({
-                !!json_encode(session('danger')) !!
-            });
+            @if(Session::has('danger'))
+            toastr.error("{{ Session::get('danger') }}");
             @endif
         });
-
     </script>
     @stack('scripts')
 </body>

@@ -132,12 +132,7 @@ SERVICIOS:
         👍🏻🪒crud de productos
         👍🏻🪒crud de kits
         ...🪒tienda
-                . creación del número de atención, la copia <Receptor> y la orden de compra
-                    . aque hay que especificar que el rol al que se refiere la tabla Recepciones pertenece al usuario destino.
-                        . configurando las sugerencias: accept suggest IA -> shift + ctrl + A
-                        ... registrando el detalle de la <Atencion>
-                        . se debe revisar en el gestor de tareas de que manera se hace la diferencia entre el uso de atencion.activo, recepcion.activo y recepcion.validada_origen
-                        . implementar los mensajes al usuario: de tipo toastr
+                . edicion de la orden de compra
            🪒enlace tienda gestor
                 . tarjeta en el tablero "En progreso" en el rol del Receptor
                 . paso "Revisión de la Orden/Reserva"
