@@ -17,11 +17,60 @@
     <link rel="stylesheet" href="{{ asset('app-assets/vendors/css/extensions/toastr.css') }}">
     <link rel="stylesheet" href="{{ asset('app-assets/css/plugins/extensions/toastr.css') }}">
 
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        main .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+        main .container>* {
+            flex-shrink: 0;
+        }
+        main .container>.d-flex {
+            flex: 1;
+            min-height: 0;
+        }
+        .badge-carrito-count {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: #ffc107;
+            color: #000;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            line-height: 1;
+        }
+        .badge-carrito-count.d-none {
+            display: none !important;
+        }
+    </style>
+
     @stack('css')
 </head>
 
 <body>
-
     <!-- Header Section -->
     <header class="bg-primary-dark text-white py-3">
         <div class="container">
@@ -35,35 +84,33 @@
                     <h1 class="h3 mb-0 text-truncate">CATÁLOGO</h1>
                 </div>
                 <div class="col-auto d-flex justify-content-end">
-                    <a href="{{ route('dashboard') }}" class="btn btn-primary">
+                    <a href="{{ route('dashboard') }}" class="btn btn-primary position-relative" id="btn-carrito">
                         <i class="fas fa-cart-plus"></i>
+                        <span id="badge-carrito" class="badge-carrito-count d-none">0</span>
                     </a>
                 </div>
             </div>
         </div>
     </header>
-
     <!-- Main Content -->
     <main class="py-4">
         <div class="container">
             @yield('content')
         </div>
     </main>
-
     <!-- Footer Section -->
-    <footer class="bg-primary-dark text-white py-4 mt-5">
+    <footer class="bg-primary-dark text-white py-4 mt-auto">
         <div class="container">
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-12 col-md-6 text-center text-md-start">
                     Texto a la izquierda del pie de página
                 </div>
-                <div class="col-md-6 text-end">
+                <div class="col-12 col-md-6 text-center text-md-end">
                     Texto a la derecha del pie de página
                 </div>
             </div>
         </div>
     </footer>
-
     <!-- JavaScript Files -->
     <script src="{{ asset('app-assets/js/jquery-1.11.0-zay.min.js') }}"></script>
     <script src="{{ asset('app-assets/js/jquery-migrate-1.2.1-zay.min.js') }}"></script>
@@ -71,10 +118,8 @@
     <script src="{{ asset('app-assets/js/templatemo-zay.js') }}"></script>
     <script src="{{ asset('app-assets/js/custom-zay.js') }}"></script>
     <script src="{{ asset('app-assets/vendors/js/extensions/toastr.min.js') }}"></script>
-
     <script>
-        // Configuración global de toastr para todo el proyecto
-        if (typeof toastr !== 'undefined') {
+        if (typeof toastr !== 'undefined') { // Configuración global de toastr para todo el proyecto
             toastr.options = {
                 "closeButton": true
                 , "debug": false
@@ -94,7 +139,6 @@
             };
         }
         $(document).ready(function() {
-            //Captura de alertas del backend
             @if(Session::has('success'))
             toastr.success("{{ Session::get('success') }}");
             @endif
@@ -114,7 +158,27 @@
             @if(Session::has('danger'))
             toastr.error("{{ Session::get('danger') }}");
             @endif
+            $.ajax({
+                url: '{{ route("tienda.cantidad") }}'
+                , type: 'GET'
+                , dataType: 'json'
+                , success: function(response) {
+                    var cantidad = response.cantidad || 0;
+                    var badge = $('#badge-carrito');
+
+                    if (cantidad > 0) {
+                        var texto = cantidad > 9 ? '+9' : cantidad.toString();
+                        badge.text(texto).removeClass('d-none');
+                    } else {
+                        badge.addClass('d-none');
+                    }
+                }
+                , error: function(xhr, status, error) {
+                    console.error('Error al cargar cantidad del carrito:', error);
+                }
+            });
         });
+
     </script>
     @stack('scripts')
 </body>

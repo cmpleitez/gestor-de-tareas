@@ -271,4 +271,21 @@ class TiendaController extends Controller
             'stocks' => $stocks,
         ]);
     }
+
+    public function cantidad()
+    {
+        $kitsUnicos = AtencionDetalle::whereNotNull('kit_id')
+            ->whereHas('atencion', function ($query1) {
+                $query1->whereHas('recepciones', function ($query2) {
+                    $query2->where('origen_user_id', auth()->user()->id)
+                        ->where('activo', false);
+                })->where('oficina_id', auth()->user()->oficina_id)
+                    ->where('activo', false);
+            })
+            ->pluck('kit_id')
+            ->unique()
+            ->count();
+        
+        return response()->json(['cantidad' => $kitsUnicos]);
+    }
 }

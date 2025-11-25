@@ -200,6 +200,7 @@ Route::middleware([
             Route::get('get-stocks-producto/{productoId}', [TiendaController::class, 'getStocksProducto'])->name('tienda.get-stocks-producto');
             Route::get('agregar/{kit}', [TiendaController::class, 'agregar'])->name('tienda.agregar');
             Route::get('retirar', [TiendaController::class, 'retirar'])->name('tienda.retirar');
+            Route::get('cantidad', [TiendaController::class, 'cantidad'])->name('tienda.cantidad');
         });
     });
 

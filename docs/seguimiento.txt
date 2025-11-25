@@ -9,13 +9,21 @@ PAUTAS:
     🟠 Cada usuario de la app participante en el procedimiento, tendrá una copia de la solicitud u orden de compra
 CLIENTE:
     🔵 Procedimiento: perfil cpleitez.2024@gmail.com https://miro.com/app/board/uXjVJy6iRzE=/
-        . Cliente: Entra a la <Tienda>, selecciona en el catálogo el kit y da clic en <agregar al carrito>
-        . Sistema: En atención al cliente (<recepcion.user_id_origen>), crea <número de atención>, el detalle de productos y a qué kit pertenecen, 
+        ✨. Cliente: Entra a la <Tienda>, selecciona en el catálogo el kit y da clic en <agregar al carrito>
+        ✨. Sistema: En respuesta al cliente (<recepcion.user_id_origen>), crea el registro de <Atención>, el detalle de la <Atencion>, 
         y <copia solicitud receptor>; pendiente de validar por el mismo (<recepcion.validada_origen = false>)
         y pendiente de validar (<recepcion.validada_destino=false>) por el receptor (<recepcion.user_id_destino>)
         . Cliente: 
             . Entra al <formulario del carrito> y agrega o cambia los <kits y sus productos> y especifica si va enviar una <orden de compra> o una <reserva>
             . Después de revisar <formulario del carrito>, da clic en <Enviar>
+                🪒 Editor del carrito 
+                    Cambiar el orden a: 1-elegir kit / 2-editar kit / 3-agregar kit / 4-revisar kit o borrarlo y volver a comenzar
+                🪒 enlace tienda gestor
+                    . tarjeta en el tablero "En progreso" en el rol del Receptor
+                    . paso "Revisión de la Orden/Reserva"
+                🪒 reportes: 
+                    . historial de entradas y reversiones en stocks
+
         . Sistema: En atención a la orden (<Enviar>), del cliente: 
             . Crea a partir del <formulario del carrito> una <copia solicitud receptor>
             y crea una <orden de compra/reserva>, los <kits y sus productos>
@@ -53,6 +61,8 @@ CLIENTE:
             . Una vez el pago sea efectivo: da clic a la tarea "Descarga de <stock digital>"
         . Sistema: Establece cada una de las <copias solicitud> y la <solicitud principal> al estado de <Resuelta>
         . Cliente: Traslada los productos a la zona de despacho y hace la entrega al cliente
+
+    🔵 procesos: Cada cierta cantidad de días se debe correr una tarea programada para borrar todas las solicitudes no validadas por el cliente        
 
     🔵 Que el cliente brinde la información del dominio
         Pasos básicos para enlazar IP pública con dominio:
@@ -125,35 +135,15 @@ SERVICIOS:
     ...🟢 Crear inventario de servicios a construir y la lista debe estar en orden "consecuencial", es decir en secuencia causal o causa y efecto, 
     sería según procedimiento establecido
 
-        👍🏻🪒registro de movimientos (a los 4 tipos de stocks)
-        👍🏻🪒crud de marcas
-        👍🏻🪒crud de modelos
-        👍🏻🪒crud de tipos
-        👍🏻🪒crud de productos
-        👍🏻🪒crud de kits
-        ...🪒tienda
-                . edicion de la orden de compra
-           🪒enlace tienda gestor
-                . tarjeta en el tablero "En progreso" en el rol del Receptor
-                . paso "Revisión de la Orden/Reserva"
-
-        🪒calificacion de productos y kits:
-            . para calificar el producto que sea en base a cantidad de descargas en el mes anterior, 
-            por lo que cada vez que se descargue del inventario acumular en un campo de Kits
-            cuantas veces se han descargado y calcular en base a esto la cantidad de estrellas
-            que serán mostradas en cada kit de la tienda.
-            . se puede hacer lo mismo con un campo en productos para la calificación de los mismos
-            incluso se podría parametrizar cuantos meses se usarían para el barrido de datos, ademas 
-            se puede usar el like de la tienda, para abonar al calculo de alguna forma.
-
-        🪒reportes: 
-            . historial de entradas y reversiones en stocks
-        🪒procesos: 
-            . Cada cierta cantidad de días se debe correr una tarea programada para borrar todas las solicitudes no validadas por el cliente
-        🪒maquetación:
-            Resolver problemas de maquetacion existentes
-                . Los datatables: en sus encabezados se desordenan los iconos de ordenamiento de datos cuando la ventana cambia de tamaño
-
+    🟢 Los datatables: en sus encabezados se desordenan los iconos de ordenamiento de datos cuando la ventana cambia de tamaño
+    🟢 calificacion de productos y kits:
+        . para calificar el producto que sea en base a cantidad de descargas en el mes anterior, 
+        por lo que cada vez que se descargue del inventario acumular en un campo de Kits
+        cuantas veces se han descargado y calcular en base a esto la cantidad de estrellas
+        que serán mostradas en cada kit de la tienda.
+        . se puede hacer lo mismo con un campo en productos para la calificación de los mismos
+        incluso se podría parametrizar cuantos meses se usarían para el barrido de datos, ademas 
+        se puede usar el like de la tienda, para abonar al calculo de alguna forma.
     🟢 Los botones agregar o nuevo de los datatables debe ser azul no naranja
     🟢 Número de atención va ser validado cuando se complete todo el procedimiento, cada copia de las "recepciones iran siendo validadas por el usuario destino"
     🟢 En el Kanban el receptor podrá escribir en la <orden de compra/reserva> en el tablero de <recibidas> pero no en el resto de tableros
