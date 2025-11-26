@@ -29,8 +29,6 @@ CLIENTE:
                 🪒 reportes: 
                     . historial de entradas y reversiones en stocks
 
-
-
         . Sistema: En atención a la orden (<Enviar>), del cliente: 
             . Crea a partir del <formulario del carrito> una <copia solicitud receptor>
             y crea una <orden de compra/reserva>, los <kits y sus productos>
