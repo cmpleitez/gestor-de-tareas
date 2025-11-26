@@ -4,10 +4,13 @@
 @endpush
 
 @section('content')
+{{-- GALERIA DE KITS --}}
 <div class="d-flex flex-column h-100">
     <div class="row">
         <div class="col-lg-12">
-            <div class="row">
+            
+            {{-- CATEGORIAS --}}
+            <div class="row mb-3">
                 <div class="col-md-6">
                     <ul class="list-inline shop-top-menu pb-3 pt-1">
                         <li class="list-inline-item">
@@ -27,6 +30,17 @@
                     </div>
                 </div>
             </div>
+            
+            {{-- PREFERENCIAS DEL CLIENTE --}}
+            <div class="row mb-3">
+                <div class="col-12">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalPreferencias">
+                        Preferencias del cliente
+                    </button>
+                </div>
+            </div>
+
+            {{-- GALERIA --}}
             <div class="row">
                 @foreach ($kits as $kit)
                 <div class="col-md-3">
@@ -84,6 +98,62 @@
         </ul>
     </div>
 </div>
+
+{{-- PREFERENCIAS DEL CLIENTE --}}
+<div class="modal fade" id="modalPreferencias" tabindex="-1" aria-labelledby="modalPreferenciasLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalPreferenciasLabel">Título de la Modal</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <div class="container-fluid">
+
+                    <div class="row">
+                        <div class="col-sm-6" style="background-color:rgb(255, 253, 160);">
+                            Foto del Kit
+                        </div>                        
+                        <div class="col-sm-6" style="background-color:rgb(110, 180, 104);">
+                            Detalles del Kit
+                        </div>                        
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-12" style="background-color:rgb(253, 184, 184);">
+                            <div class="row">
+                                <div class="col-12 col-sm-3" style="background-color: #e0e0e0;">
+                                    Productos (Carrusel de alternativas)
+                                </div>
+                                <div class="col-12 col-sm-3" style="background-color:rgb(199, 184, 184);">
+                                    Productos (Carrusel de alternativas)
+                                </div>
+                                <div class="col-12 col-sm-3" style="background-color: #e0e0e0;">
+                                    Productos (Carrusel de alternativas)
+                                </div>
+                                <div class="col-12 col-sm-3" style="background-color:rgb(199, 184, 184);">
+                                    Productos (Carrusel de alternativas)
+                                </div>
+                                <div class="col-12 col-sm-3" style="background-color: #e0e0e0;">
+                                    Productos (Carrusel de alternativas)
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary">Guardar cambios</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 @endsection
 
 @push('scripts')

@@ -30,8 +30,8 @@
                     <div class="card-content">
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group"> {{-- Kit --}}
+                                <div class="col-md-12"> 
+                                    <div class="form-group"> {{-- Nombre del kit --}}
                                         <label for="kit">Nombre del kit</label>
                                         <input type="text" name="kit" id="kit"
                                             class="form-control {{ $errors->has('kit') ? 'is-invalid' : '' }}"
@@ -48,6 +48,22 @@
                                             </div>
                                         @enderror
                                     </div>
+
+                                    <div class="form-group"> {{-- Fotografia --}}
+                                        <label>Fotografia del Kit <small class="text-muted">(Máximo 10 MB, solo
+                                                JPEG/PNG)</small></label>
+                                        <input type="file" name="imagen" class="form-control"
+                                            style="padding-bottom: 35px;" accept="image/jpeg,image/jpg,image/png"
+                                            onchange="validateFileSize(this, 10)">
+                                        <small class="form-text text-muted">Formatos permitidos: JPEG, JPG, PNG. Tamaño
+                                            máximo: 10 MB</small>
+                                    </div>
+                                    @error('imagen')
+                                        <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                            {{ $errors->first('imagen') }}
+                                        </div>
+                                    @enderror
+
                                     <div class="form-group"> {{-- Precio --}}
                                         <label for="precio">Precio</label>
                                         <input type="text" name="precio" id="precio" class="form-control input-currency {{ $errors->has('precio') ? 'is-invalid' : '' }}" 
@@ -60,6 +76,7 @@
                                         @enderror
                                     </div>
                                 </div>
+                              
                             </div>
                         </div>
                     </div>

@@ -298,13 +298,13 @@
                                 </div>
                                 <div class="col-sm-12"> {{-- Fotografia --}}
                                     <div class="form-group">
-                                        <label>Fotografia del Operador <small class="text-muted">(Máximo 5 MB, solo
+                                        <label>Fotografia del Operador <small class="text-muted">(Máximo 10 MB, solo
                                                 JPEG/PNG)</small></label>
                                         <input type="file" name="profile_photo_path" class="form-control"
                                             style="padding-bottom: 35px;" accept="image/jpeg,image/jpg,image/png"
-                                            onchange="validateFileSize(this, 5)">
+                                            onchange="validateFileSize(this, 10)">
                                         <small class="form-text text-muted">Formatos permitidos: JPEG, JPG, PNG. Tamaño
-                                            máximo: 5 MB</small>
+                                            máximo: 10 MB</small>
                                     </div>
                                     @error('profile_photo_path')
                                         <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
@@ -424,25 +424,25 @@
             $('.select2').select2();
 
             /*
-                        window.validateFileSize = function(input, maxSizeMB) { // Función para validar tamaño de archivo
-                            const file = input.files[0];
-                            if (file) {
-                                const fileSizeMB = file.size / (1024 * 1024);
-                                if (fileSizeMB > maxSizeMB) {
-                                    alert('El archivo es demasiado grande. El tamaño máximo permitido es ' + maxSizeMB +
-                                        'MB.');
-                                    input.value = '';
-                                    return false;
-                                }
-                                const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png']; // Validar tipo de archivo
-                                if (!allowedTypes.includes(file.type)) {
-                                    alert('Solo se permiten archivos JPEG, JPG o PNG.');
-                                    input.value = '';
-                                    return false;
-                                }
-                            }
-                            return true;
-                        };
+            window.validateFileSize = function(input, maxSizeMB) { // Función para validar tamaño de archivo
+                const file = input.files[0];
+                if (file) {
+                    const fileSizeMB = file.size / (1024 * 1024);
+                    if (fileSizeMB > maxSizeMB) {
+                        alert('El archivo es demasiado grande. El tamaño máximo permitido es ' + maxSizeMB +
+                            'MB.');
+                        input.value = '';
+                        return false;
+                    }
+                    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png']; // Validar tipo de archivo
+                    if (!allowedTypes.includes(file.type)) {
+                        alert('Solo se permiten archivos JPEG, JPG o PNG.');
+                        input.value = '';
+                        return false;
+                    }
+                }
+                return true;
+            };
             */
 
             $('form').on('submit', function() { // Loading spinner en el botón de envío

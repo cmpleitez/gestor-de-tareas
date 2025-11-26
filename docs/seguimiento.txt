@@ -15,14 +15,21 @@ CLIENTE:
         y pendiente de validar (<recepcion.validada_destino=false>) por el receptor (<recepcion.user_id_destino>)
         . Cliente: 
             . Entra al <formulario del carrito> y agrega o cambia los <kits y sus productos> y especifica si va enviar una <orden de compra> o una <reserva>
-            . Después de revisar <formulario del carrito>, da clic en <Enviar>
-                🪒 Editor del carrito 
-                    Cambiar el orden a: 1-elegir kit / 2-editar kit / 3-agregar kit / 4-revisar kit o borrarlo y volver a comenzar
+
+                🪒 Editor del carrito
+                    . Cambiar el orden a: 1-elegir kit / 2-editar kit / 3-agregar kit / 4-revisar kit o borrarlo y volver a comenzar
+                    .... Agregar foto al kit
+
+            . Da clic en <Enviar>
+            . maquetar movimiento.edit
+
                 🪒 enlace tienda gestor
                     . tarjeta en el tablero "En progreso" en el rol del Receptor
                     . paso "Revisión de la Orden/Reserva"
                 🪒 reportes: 
                     . historial de entradas y reversiones en stocks
+
+
 
         . Sistema: En atención a la orden (<Enviar>), del cliente: 
             . Crea a partir del <formulario del carrito> una <copia solicitud receptor>
