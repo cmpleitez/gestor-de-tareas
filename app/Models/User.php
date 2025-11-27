@@ -25,7 +25,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'email',
         'password',
         'role_id',
-        'profile_photo_path',
+        'image_path',
         'oficina_id',
     ];
     protected $hidden = [
@@ -46,6 +46,30 @@ class User extends Authenticatable implements MustVerifyEmail
     protected function defaultProfilePhotoUrl()
     {
         return asset('app-assets/images/pages/operador.png');
+    }
+
+    /**
+     * Sobrescribir el accessor de profile_photo_url para usar image_path
+     */
+    public function getProfilePhotoUrlAttribute()
+    {
+        return $this->image_path
+            ? \Illuminate\Support\Facades\Storage::url($this->image_path)
+            : $this->defaultProfilePhotoUrl();
+    }
+
+    /**
+     * Sobrescribir el método updateProfilePhoto del trait HasProfilePhoto para usar ImageWeightStabilizer
+     */
+    public function updateProfilePhoto(\Illuminate\Http\UploadedFile $photo): void
+    {
+        $imageStabilizer = new \App\Services\ImageWeightStabilizer();
+        $imageStabilizer->processProfilePhoto(
+            $photo,
+            storage_path('app/public/user-photos'),
+            'User',
+            $this->id
+        );
     }
 
     public function oficina()

@@ -6,14 +6,13 @@ use App\Models\Oficina;
 use App\Models\Recepcion;
 use App\Models\Solicitud;
 use App\Models\User;
+use App\Services\ImageWeightStabilizer;
 use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
-use Intervention\Image\Drivers\Gd\Driver;
-use Intervention\Image\ImageManager;
 use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
@@ -37,7 +36,7 @@ class UserController extends Controller
             'name'               => ['sometimes', 'required', 'string', 'min:3', 'max:255', 'regex:/^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$/'],
             'email'              => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
             'oficina_id'         => ['required', 'numeric', 'exists:oficinas,id'],
-            'profile_photo_path' => ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:5120'],
+            'image_path' => ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:5120'],
         ], [
             'name.required'            => 'Este campo es obligatorio.',
             'name.string'              => 'El nombre debe ser una cadena de texto.',
@@ -51,9 +50,9 @@ class UserController extends Controller
             'oficina_id.required'      => 'Este campo es obligatorio.',
             'oficina_id.numeric'       => 'La oficina debe ser un valor numérico.',
             'oficina_id.exists'        => 'La oficina seleccionada no es válida.',
-            'profile_photo_path.image' => 'El archivo debe ser una imagen válida.',
-            'profile_photo_path.mimes' => 'Solo se permiten imágenes en formato JPG, JPEG o PNG.',
-            'profile_photo_path.max'   => 'El archivo no debe exceder de 5 MB.',
+            'image_path.image' => 'El archivo debe ser una imagen válida.',
+            'image_path.mimes' => 'Solo se permiten imágenes en formato JPG, JPEG o PNG.',
+            'image_path.max'   => 'El archivo no debe exceder de 5 MB.',
         ]);
         // Restringir cambio de name si existen recepciones asociadas como destino
         $incomingName = $request->input('name');
@@ -77,22 +76,14 @@ class UserController extends Controller
             $user->update($validated); //Crear el registro en la base de datos
             ini_set('max_execution_time', 60);
             ini_set('memory_limit', '256M');
-            if (isset($request['profile_photo_path']) && $request['profile_photo_path']->isValid()) {
-                $imageFile                = $request['profile_photo_path'];
-                $imageName                = $user->id . '.' . $imageFile->getClientOriginalExtension();
-                $path                     = Storage::disk('public')->putFileAs('profile-photos', $request['profile_photo_path'], $imageName);
-                $user->profile_photo_path = $path;
-                $user->save(); //Actualizar el link en base de datos
-                try {
-                    $fullPath = Storage::disk('public')->path($path); //Adaptación de la imagen al perfil del usuario
-                    $manager  = new ImageManager(Driver::class);
-                    $image    = $manager->read($fullPath);
-                    $image->scale(width: 64, height: 96);
-                    $image->save($fullPath);
-                } catch (Exception $e) {
-                    Storage::disk('public')->delete($path);
-                    throw new Exception('Error al procesar la imagen: ' . $e->getMessage());
-                }
+            if (isset($request['image_path']) && $request['image_path']->isValid()) {
+                $imageStabilizer = new ImageWeightStabilizer();
+                $imageStabilizer->processProfilePhoto(
+                    $request['image_path'],
+                    storage_path('app/public/user-photos'),
+                    'User',
+                    $user->id
+                );
             }
             DB::commit();
             return redirect()->route('user')->with('success', $mensaje);
@@ -208,8 +199,8 @@ class UserController extends Controller
         try {
             DB::beginTransaction();
             $user->delete();
-            if ($user->profile_photo_path) {
-                Storage::disk('public')->delete($user->profile_photo_path);
+            if ($user->image_path) {
+                Storage::disk('public')->delete($user->image_path);
             }
             DB::commit();
         } catch (Exception $e) {

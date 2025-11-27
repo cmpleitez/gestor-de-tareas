@@ -12,7 +12,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id')->primary();
             $table->string('kit')->unique();
             $table->decimal('precio', 20, 4);
-            $table->string('imagen', 2048)->nullable();
+            $table->string('image_path', 2048)->nullable();
             $table->integer('descargas')->default(0);
             $table->boolean('activo')->default(true);
             $table->timestamps();

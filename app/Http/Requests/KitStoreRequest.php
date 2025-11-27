@@ -27,6 +27,7 @@ class KitStoreRequest extends FormRequest
         return [
             'kit' => 'required|unique:kits|min:3|max:128|regex:/^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ()]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ()]+)*$/',
             'precio' => 'required|numeric|min:0|regex:/^\d+(\.\d{1,2})?$/',
+            'image_path' => ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:10240'],
         ];
     }
 }

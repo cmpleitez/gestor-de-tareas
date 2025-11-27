@@ -300,15 +300,15 @@
                                     <div class="form-group">
                                         <label>Fotografia del Operador <small class="text-muted">(Máximo 10 MB, solo
                                                 JPEG/PNG)</small></label>
-                                        <input type="file" name="profile_photo_path" class="form-control"
+                                        <input type="file" name="image_path" class="form-control"
                                             style="padding-bottom: 35px;" accept="image/jpeg,image/jpg,image/png"
                                             onchange="validateFileSize(this, 10)">
                                         <small class="form-text text-muted">Formatos permitidos: JPEG, JPG, PNG. Tamaño
                                             máximo: 10 MB</small>
                                     </div>
-                                    @error('profile_photo_path')
+                                    @error('image_path')
                                         <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
-                                            {{ $errors->first('profile_photo_path') }}
+                                            {{ $errors->first('image_path') }}
                                         </div>
                                     @enderror
                                 </div>

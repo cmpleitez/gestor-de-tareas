@@ -17,6 +17,7 @@ class KitUpdateRequest extends FormRequest
             'kit' => ['required', 'min:3', 'max:128', 'regex:/^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ()]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ()]+)*$/', Rule::unique('kits')->ignore($kit->id)],
             'producto' => ['required', 'array'],
             'producto.*.unidades' => ['required', 'integer', 'min:1'],
+            'image_path' => ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:10240'],
         ];
     }
 }

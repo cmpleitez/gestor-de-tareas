@@ -19,9 +19,11 @@ CLIENTE:
                 🪒 Editor del carrito
                     . Cambiar el orden a: 1-elegir kit / 2-editar kit / 3-agregar kit / 4-revisar kit o borrarlo y volver a comenzar
                     .... Agregar foto al kit
+                    ✨. cambiar el nombre del campo {nombre_modelo}_photo_path a image_path en la tabla y luego en el frontend
+                    ✨. cambiar el servicio imageWeightStabilizer para que use tambien image_path
 
-            . Da clic en <Enviar>
-            . maquetar movimiento.edit
+                    . Da clic en <Enviar>
+                    . maquetar movimiento.edit
 
                 🪒 enlace tienda gestor
                     . tarjeta en el tablero "En progreso" en el rol del Receptor

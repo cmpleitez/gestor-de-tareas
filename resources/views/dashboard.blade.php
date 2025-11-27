@@ -147,7 +147,7 @@
                                 </div>
                                 <div class="avatar">
                                     @if (auth()->check())
-                                        @php $photoPath = auth()->user()->profile_photo_path; @endphp
+                                        @php $photoPath = auth()->user()->image_path; @endphp
                                         @if ($photoPath && Storage::disk('public')->exists($photoPath))
                                             <img src="{{ Storage::url($photoPath) }}" alt="avatar"
                                                 style="height: 45px; width: 45px; object-fit: cover;">

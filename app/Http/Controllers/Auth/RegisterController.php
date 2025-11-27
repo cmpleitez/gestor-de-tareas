@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 use App\Models\User;
 use App\Rules\ValidDui;
 use App\Services\CorrelativeIdGenerator;
+use App\Services\ImageWeightStabilizer;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -11,8 +12,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use Intervention\Image\Drivers\Gd\Driver;
-use Intervention\Image\ImageManager;
 use Laravel\Jetstream\Jetstream;
 
 class RegisterController extends Controller
@@ -37,11 +36,11 @@ class RegisterController extends Controller
             'dui'                => ['required', 'string', Rule::unique('users', 'dui'), new ValidDui],
             'password'           => ['required', 'string', 'min:8', 'confirmed'],
             'terms'              => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
-            'profile_photo_path' => ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:5120'],
+            'image_path' => ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:5120'],
         ], [
-            'profile_photo_path.mimes' => 'Solo se permiten imágenes en formato JPG, JPEG o PNG.',
-            'profile_photo_path.max'   => 'El archivo no debe exceder de 5 MB.',
-            'profile_photo_path.image' => 'El archivo debe ser una imagen válida.',
+            'image_path.mimes' => 'Solo se permiten imágenes en formato JPG, JPEG o PNG.',
+            'image_path.max'   => 'El archivo no debe exceder de 5 MB.',
+            'image_path.image' => 'El archivo debe ser una imagen válida.',
             'name.regex'               => 'Solo se permiten letras, sin espacios al inicio/final ni dobles espacios.',
             'name.required'            => 'Este campo es obligatorio.',
             'name.string'              => 'El nombre debe ser una cadena de texto.',
@@ -69,30 +68,14 @@ class RegisterController extends Controller
             $user->fill($validated);
             $user->id = $id;
             $user->save();
-            if (isset($request->profile_photo_path) && $request->profile_photo_path->isValid()) { // Procesar imagen de perfil si existe
-                try {
-                    $imageFile = $request->profile_photo_path;
-                    $imageName = $user->id . '.' . $imageFile->getClientOriginalExtension();
-
-                    // Procesar imagen ANTES de guardar para hacerlo más rápido
-                    $manager = new ImageManager(Driver::class);
-                    $image   = $manager->read($imageFile->getRealPath());
-                    $image->scale(width: 200); // Escalar a máximo 200px de ancho (mantiene proporción)
-
-                    // Guardar imagen ya optimizada
-                    $storagePath = storage_path('app/public/profile-photos');
-                    if (! file_exists($storagePath)) {
-                        mkdir($storagePath, 0775, true);
-                    }
-                    $fullPath = $storagePath . '/' . $imageName;
-                    $image->save($fullPath, quality: 75);
-
-                    // Actualizar path en BD
-                    $user->profile_photo_path = 'profile-photos/' . $imageName;
-                    $user->save();
-                } catch (Exception $e) {
-                    throw new Exception('Error al procesar la imagen: ' . $e->getMessage());
-                }
+            if (isset($request->image_path) && $request->image_path->isValid()) { // Procesar imagen de perfil si existe
+                $imageStabilizer = new ImageWeightStabilizer();
+                $imageStabilizer->stabilize(
+                    $request->image_path,
+                    storage_path('app/public/user-photos'),
+                    'User',
+                    $user->id
+                );
             }
             $user->assignRole('cliente'); // Asignar rol de Cliente
             $clienteRole = \Spatie\Permission\Models\Role::where('name', 'cliente')->first();
