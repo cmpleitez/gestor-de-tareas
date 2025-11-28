@@ -25,7 +25,7 @@
                 </div>
             </div>
             <!-- FORMULARIO -->
-            <form class="form-horizontal" action="{{ route('kit.update', $kit->id) }}" method="POST" novalidate>
+            <form class="form-horizontal" action="{{ route('kit.update', $kit->id) }}" method="POST" enctype="multipart/form-data" novalidate>
                 @csrf
                 @method('PUT')
                 <div class="card-content">
@@ -42,6 +42,19 @@
                                     </div>
                                     @enderror
                                 </div>
+                                <div class="form-group"> {{-- Ruta imagen --}}
+                                    <label>Fotografia del Kit <small class="text-muted">(Máximo 10 MB, solo
+                                            JPEG/PNG)</small></label>
+                                    <input type="file" name="image_path" class="form-control" style="padding-bottom: 35px;" accept="image/jpeg,image/jpg,image/png" onchange="validateFileSize(this, 10)">
+                                    <small class="form-text text-muted">Formatos permitidos: JPEG, JPG, PNG. Tamaño
+                                        máximo: 10 MB</small>
+                                    @error('image_path')
+                                    <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                        {{ $errors->first('image_path') }}
+                                    </div>
+                                    @enderror
+                                </div>
+
                             </div>
                             @foreach ($kit->productos as $producto)
                                 <div class="col-md-12">

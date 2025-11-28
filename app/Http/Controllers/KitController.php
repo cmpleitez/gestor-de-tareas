@@ -62,17 +62,36 @@ class KitController extends Controller
 
     public function update(KitUpdateRequest $request, Kit $kit)
     {
-        $data = $request->validated(); // Guardar Kit
-        $productos = $data['producto'] ?? [];
-        unset($data['producto']);
-        $kit->update($data);
-        $productosSync = []; // Guardar productos
-        foreach ($productos as $productoId => $productoData) {
-            if (isset($productoData['unidades'])) {
-                $productosSync[$productoId] = ['unidades' => $productoData['unidades']];
-            }
-        }
-        $kit->productos()->sync($productosSync);
+        try {
+            DB::beginTransaction();
+                $data = $request->validated(); // Guardar Kit
+                $productos = $data['producto'] ?? [];
+                unset($data['producto']);
+                $kit->update($data);
+                $productosSync = []; // Guardar productos
+                foreach ($productos as $productoId => $productoData) {
+                    if (isset($productoData['unidades'])) {
+                        $productosSync[$productoId] = ['unidades' => $productoData['unidades']];
+                    }
+                }
+                $kit->productos()->sync($productosSync);
+
+                if (isset($request->image_path) && $request->image_path->isValid()) { // Procesar imagen de perfil si existe
+                    $imageStabilizer = new ImageWeightStabilizer();
+                    $imageStabilizer->stabilize(
+                        $request->image_path,
+                        storage_path('app/public/kit-images'),
+                        'Kit',
+                        $kit->id
+                    );
+                }
+                
+            DB::commit();
+            return redirect()->route('kit')->with('success', 'Kit creado correctamente');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return back()->with('error', 'Ocurrió un error cuando se intentaba registrar el Kit: '.$e->getMessage());
+        }        
 
         return redirect()->route('kit')->with('success', 'Kit actualizado correctamente');
     }

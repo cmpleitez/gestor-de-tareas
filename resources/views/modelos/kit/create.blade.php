@@ -70,7 +70,7 @@
                         </div>
                     </div>
                 </div>
-                {{-- GUARDAR --}}
+                <!-- GUARDAR -->
                 <div class="card-footer d-flex justify-content-end">
                     <button type="submit" class="btn btn-primary">Guardar</button>
                 </div>

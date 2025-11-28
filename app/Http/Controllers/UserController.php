@@ -78,9 +78,9 @@ class UserController extends Controller
             ini_set('memory_limit', '256M');
             if (isset($request['image_path']) && $request['image_path']->isValid()) {
                 $imageStabilizer = new ImageWeightStabilizer();
-                $imageStabilizer->processProfilePhoto(
+                $imageStabilizer->stabilize(
                     $request['image_path'],
-                    storage_path('app/public/user-photos'),
+                    storage_path('app/public/user-images'),
                     'User',
                     $user->id
                 );

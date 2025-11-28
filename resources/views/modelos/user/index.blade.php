@@ -30,6 +30,7 @@
                             <table id="datatable" class="table zero-configuration table-hover">
                                 <thead>
                                     <tr>
+                                        <th class="text-center">ID</th>
                                         <th>Oficina</th>
                                         <th>Equipo</th>
                                         <th>DUI</th>
@@ -48,6 +49,7 @@
                                     @foreach ($users as $user)
                                         <tr>
                                             {{-- CAMPOS --}}
+                                            <td class="text-center">{{ $user->id }}</td>
                                             <td>{{ $user->oficina->oficina }}</td>
                                             <td>{{ $user->equipos->pluck('equipo')->first() }}</td>
                                             <td>{{ $user->dui }}</td>
@@ -148,12 +150,13 @@
                                 </tbody>
                                 <tfoot>
                                     <tr>
+                                        <th class="text-center">ID</th>
                                         <th>Oficina</th>
                                         <th>Equipo</th>
                                         <th>DUI</th>
                                         <th>Usuario</th>
                                         <th>Rol</th>
-                                        <th>correo</th>
+                                        <th>Correo</th>
                                         <th class="text-center">Creado</th>
                                         <th class="text-center">Actualizado</th>
                                         @can('autorizar')
