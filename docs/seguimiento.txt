@@ -17,10 +17,11 @@ CLIENTE:
             . Entra al <formulario del carrito> y agrega o cambia los <kits y sus productos> y especifica si va enviar una <orden de compra> o una <reserva>
 
                 🪒 Editor del carrito
-                    . Cambiar el orden a: 1-elegir kit / 2-editar kit / 3-agregar kit / 4-revisar kit o borrarlo y volver a comenzar
-                    .... Agregar foto al kit
-                    ✨. cambiar el nombre del campo {nombre_modelo}_photo_path a image_path en la tabla y luego en el frontend
-                    ✨. cambiar el servicio imageWeightStabilizer para que use tambien image_path
+                    . Cambiar el orden a: 1-elegir kit / 2-editar kit alternativas / 3-agregar kit / 4-Editar unidades o borrar kit y volver a comenzar
+                        . edición del kit: construir la funcionalidad para editar las <preferencias del cliente>
+                            . crear un producto alterno
+                                . crear un buscador y selector de productos
+                            . dibujar los productos alternos abajo de cada producto principal
 
                     . Da clic en <Enviar>
                     . maquetar movimiento.edit

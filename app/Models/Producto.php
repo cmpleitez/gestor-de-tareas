@@ -1,16 +1,20 @@
 <?php
+
 namespace App\Models;
+
 use Illuminate\Database\Eloquent\Model;
 
 class Producto extends Model
 {
     public $incrementing = false;
-    protected $keyType   = 'int';
-    protected $fillable  = ['producto', 'precio', 'modelo_id', 'tipo_id'];
+
+    protected $keyType = 'int';
+
+    protected $fillable = ['producto', 'precio', 'modelo_id', 'tipo_id'];
 
     protected $casts = [
         'accesorio' => 'boolean',
-        'activo'    => 'boolean',
+        'activo' => 'boolean',
     ];
 
     public function tipo()
@@ -43,4 +47,8 @@ class Producto extends Model
         return $this->hasMany(OficinaStock::class, 'producto_id', 'id');
     }
 
+    public function alternativas()
+    {
+        return $this->hasMany(Alternativa::class);
+    }
 }

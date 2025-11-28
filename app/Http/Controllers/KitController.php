@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Http\Requests\KitStoreRequest;
@@ -7,17 +8,16 @@ use App\Models\Kit;
 use App\Models\Parametro;
 use App\Models\Producto;
 use App\Services\CorrelativeIdGenerator;
+use App\Services\ImageWeightStabilizer;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
-use App\Services\ImageWeightStabilizer;
 
 class KitController extends Controller
 {
     public function index()
     {
         $kits = Kit::orderBy('id', 'desc')->paginate(10);
-
         return view('modelos.kit.index', compact('kits'));
     }
 
@@ -30,33 +30,34 @@ class KitController extends Controller
     {
         try {
             DB::beginTransaction();
-                $generator = new CorrelativeIdGenerator; // Registrar Kit
-                $id = $generator->generate('Kit');
-                $kit = new Kit;
-                $kit->fill($request->validated());
-                $kit->id = $id;
-                $kit->save();
-                if (isset($request->image_path) && $request->image_path->isValid()) { // Procesar imagen de perfil si existe
-                    $imageStabilizer = new ImageWeightStabilizer();
-                    $imageStabilizer->stabilize(
-                        $request->image_path,
-                        storage_path('app/public/kit-images'),
-                        'Kit',
-                        $kit->id
-                    );
-                }
+            $generator = new CorrelativeIdGenerator; // Registrar Kit
+            $id = $generator->generate('Kit');
+            $kit = new Kit;
+            $kit->fill($request->validated());
+            $kit->id = $id;
+            $kit->save();
+            if (isset($request->image_path) && $request->image_path->isValid()) { // Procesar imagen de perfil si existe
+                $imageStabilizer = new ImageWeightStabilizer;
+                $imageStabilizer->stabilize(
+                    $request->image_path,
+                    storage_path('app/public/kit-images'),
+                    'Kit',
+                    $kit->id
+                );
+            }
             DB::commit();
+
             return redirect()->route('kit')->with('success', 'Kit creado correctamente');
         } catch (\Exception $e) {
             DB::rollback();
+
             return back()->with('error', 'Ocurrió un error cuando se intentaba registrar el Kit: '.$e->getMessage());
         }
     }
 
     public function edit(Kit $kit)
     {
-        $kit->load('productos');
-
+        $kit->load('productos.alternativas');
         return view('modelos.kit.edit', compact('kit'));
     }
 
@@ -64,34 +65,36 @@ class KitController extends Controller
     {
         try {
             DB::beginTransaction();
-                $data = $request->validated(); // Guardar Kit
-                $productos = $data['producto'] ?? [];
-                unset($data['producto']);
-                $kit->update($data);
-                $productosSync = []; // Guardar productos
-                foreach ($productos as $productoId => $productoData) {
-                    if (isset($productoData['unidades'])) {
-                        $productosSync[$productoId] = ['unidades' => $productoData['unidades']];
-                    }
+            $data = $request->validated(); // Guardar Kit
+            $productos = $data['producto'] ?? [];
+            unset($data['producto']);
+            $kit->update($data);
+            $productosSync = []; // Guardar productos
+            foreach ($productos as $productoId => $productoData) {
+                if (isset($productoData['unidades'])) {
+                    $productosSync[$productoId] = ['unidades' => $productoData['unidades']];
                 }
-                $kit->productos()->sync($productosSync);
+            }
+            $kit->productos()->sync($productosSync);
 
-                if (isset($request->image_path) && $request->image_path->isValid()) { // Procesar imagen de perfil si existe
-                    $imageStabilizer = new ImageWeightStabilizer();
-                    $imageStabilizer->stabilize(
-                        $request->image_path,
-                        storage_path('app/public/kit-images'),
-                        'Kit',
-                        $kit->id
-                    );
-                }
-                
+            if (isset($request->image_path) && $request->image_path->isValid()) { // Procesar imagen de perfil si existe
+                $imageStabilizer = new ImageWeightStabilizer;
+                $imageStabilizer->stabilize(
+                    $request->image_path,
+                    storage_path('app/public/kit-images'),
+                    'Kit',
+                    $kit->id
+                );
+            }
+
             DB::commit();
+
             return redirect()->route('kit')->with('success', 'Kit creado correctamente');
         } catch (\Exception $e) {
             DB::rollback();
+
             return back()->with('error', 'Ocurrió un error cuando se intentaba registrar el Kit: '.$e->getMessage());
-        }        
+        }
 
         return redirect()->route('kit')->with('success', 'Kit actualizado correctamente');
     }

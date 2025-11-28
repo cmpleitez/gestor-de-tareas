@@ -198,7 +198,7 @@ Route::middleware([
             Route::get('movimiento', [TiendaController::class, 'createMovimiento'])->name('tienda.create-movimiento');
             Route::post('movimiento', [TiendaController::class, 'storeMovimiento'])->name('tienda.store-movimiento');
             Route::get('get-stocks-producto/{productoId}', [TiendaController::class, 'getStocksProducto'])->name('tienda.get-stocks-producto');
-            Route::get('agregar/{kit}', [TiendaController::class, 'agregar'])->name('tienda.agregar');
+            Route::get('agregar/{kit}', [TiendaController::class, 'agregar'])->name('tienda.agregar-kit');
             Route::get('retirar', [TiendaController::class, 'retirar'])->name('tienda.retirar');
             Route::get('cantidad', [TiendaController::class, 'cantidad'])->name('tienda.cantidad');
         });

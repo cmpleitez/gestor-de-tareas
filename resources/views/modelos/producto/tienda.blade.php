@@ -8,9 +8,7 @@
 <div class="d-flex flex-column h-100">
     <div class="row">
         <div class="col-lg-12">
-            
-            {{-- CATEGORIAS --}}
-            <div class="row mb-3">
+            <div class="row mb-3"> {{-- Categorías --}}
                 <div class="col-md-6">
                     <ul class="list-inline shop-top-menu pb-3 pt-1">
                         <li class="list-inline-item">
@@ -30,18 +28,7 @@
                     </div>
                 </div>
             </div>
-            
-            {{-- PREFERENCIAS DEL CLIENTE --}}
-            <div class="row mb-3">
-                <div class="col-12">
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalPreferencias">
-                        Preferencias del cliente
-                    </button>
-                </div>
-            </div>
-
-            {{-- GALERIA --}}
-            <div class="row">
+            <div class="row"> {{-- Galería --}}
                 @foreach ($kits as $kit)
                 <div class="col-md-3">
                     <div class="card mb-4 product-wap rounded-0">
@@ -50,9 +37,8 @@
                             <div class="card-img-overlay rounded-0 product-overlay d-flex align-items-center justify-content-center">
                                 <ul class="list-unstyled">
                                     <li><a class="btn btn-success text-white" href="#"><i class="far fa-heart"></i></a></li>
-                                    <li><a class="btn btn-success text-white mt-2" href="#"><i class="far fa-eye"></i></a>
-                                    </li>
-                                    <li><a class="btn btn-success text-white mt-2" href="{{ Route('tienda.agregar', $kit->id) }}"><i class="fas fa-cart-plus"></i></a></li>
+                                    <li><a class="btn btn-success text-white mt-2 btn-ver-kit" data-bs-toggle="modal" data-bs-target="#modalPreferencias" data-kit-id="{{ $kit->id }}" data-kit-name="{{ $kit->kit }}" data-kit-image-path="{{ $kit->image_path ? Storage::url($kit->image_path) : '' }}" href="#"><i class="far fa-eye"></i></a></li>
+                                    <li><a class="btn btn-success text-white mt-2" href="{{ Route('tienda.agregar-kit', $kit->id) }}"><i class="fas fa-cart-plus"></i></a></li>
                                 </ul>
                             </div>
                         </div>
@@ -98,7 +84,6 @@
         </ul>
     </div>
 </div>
-
 {{-- PREFERENCIAS DEL CLIENTE --}}
 <div class="modal fade" id="modalPreferencias" tabindex="-1" aria-labelledby="modalPreferenciasLabel" aria-hidden="true">
     <div class="modal-dialog modal-fullscreen">
@@ -108,19 +93,22 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-
                 <div class="container-fluid">
-
-                    <div class="row">
+                    <div class="row"> {{-- Imagen del Kit --}}
                         <div class="col-sm-6" style="background-color:rgb(255, 253, 160);">
-                            Foto del Kit
-                        </div>                        
+                            <div id="kit-image-container" class="d-flex align-items-center justify-content-center h-100">
+                                <img id="kit-image" src="" alt="Foto del Kit" class="img-fluid" style="display: none; max-height: 400px; object-fit: contain;">
+                                <p id="kit-image-placeholder" class="text-muted">Foto del Kit</p>
+                            </div>
+                        </div>
                         <div class="col-sm-6" style="background-color:rgb(110, 180, 104);">
-                            Detalles del Kit
-                        </div>                        
+                            <div id="kit-details-container"> {{-- DetallesGenrales del Kit --}}
+                                <h4 id="kit-name" class="mb-3"></h4>
+                                <p>Detalles del Kit</p>
+                            </div>
+                        </div>
                     </div>
-
-                    <div class="row">
+                    <div class="row"> {{-- Productos (Carrusel de alternativas) --}}
                         <div class="col-sm-12" style="background-color:rgb(253, 184, 184);">
                             <div class="row">
                                 <div class="col-12 col-sm-3" style="background-color: #e0e0e0;">
@@ -138,12 +126,10 @@
                                 <div class="col-12 col-sm-3" style="background-color: #e0e0e0;">
                                     Productos (Carrusel de alternativas)
                                 </div>
-
                             </div>
                         </div>
                     </div>
                 </div>
-
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -152,9 +138,51 @@
         </div>
     </div>
 </div>
-
-
 @endsection
-
+{{-- FUNCIONALIDADES DINÁMICAS --}}
 @push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const modalPreferencias = document.getElementById('modalPreferencias');
+        const kitImageContainer = document.getElementById('kit-image-container');
+        const kitImage = document.getElementById('kit-image');
+        const kitImagePlaceholder = document.getElementById('kit-image-placeholder');
+        modalPreferencias.addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            if (button && button.classList.contains('btn-ver-kit')) {
+                const kitId = button.getAttribute('data-kit-id');
+                const kitName = button.getAttribute('data-kit-name');
+                const kitImagePath = button.getAttribute('data-kit-image-path');
+                const kitNameElement = document.getElementById('kit-name');
+                if (kitNameElement) { // Actualizar nombre del kit
+                    kitNameElement.textContent = kitName || 'Nombre del Kit';
+                }
+                if (kitImagePath && kitImagePath.trim() !== '') { // Actualizar imagen del kit
+                    kitImage.src = kitImagePath;
+                    kitImage.style.display = 'block';
+                    kitImagePlaceholder.style.display = 'none';
+                    kitImage.onerror = function() {
+                        this.style.display = 'none';
+                        kitImagePlaceholder.style.display = 'block';
+                        kitImagePlaceholder.textContent = 'Foto del Kit (no disponible)';
+                    };
+                } else {
+                    kitImage.style.display = 'none';
+                    kitImagePlaceholder.style.display = 'block';
+                    kitImagePlaceholder.textContent = 'Foto del Kit (sin imagen)';
+                }
+            }
+        });
+        modalPreferencias.addEventListener('hidden.bs.modal', function() {
+            kitImage.src = '';
+            kitImage.style.display = 'none';
+            kitImagePlaceholder.style.display = 'block';
+            kitImagePlaceholder.textContent = 'Foto del Kit';
+            const kitNameElement = document.getElementById('kit-name');
+            if (kitNameElement) {
+                kitNameElement.textContent = '';
+            }
+        });
+    });
+</script>
 @endpush

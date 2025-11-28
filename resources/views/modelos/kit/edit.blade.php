@@ -5,7 +5,7 @@
 
 @section('contenedor')
 <div class="row justify-content-center">
-    <div class="col-md-6">
+    <div class="col-md-12">
         <div class="card">
             <!-- CABECERA -->
             <div class="card-header pt-1">
@@ -57,17 +57,38 @@
 
                             </div>
                             @foreach ($kit->productos as $producto)
-                                <div class="col-md-12">
-                                    <div class="form-group"> {{-- Unidades --}}
-                                        <label for="{{ $producto->id }}">{{ $producto->producto }}</label>
-                                        <input type="number" name="producto[{{ $producto->id }}][unidades]" id="producto_{{ $producto->id }}_unidades" class="form-control" value="{{ old('producto.' . $producto->id . '.unidades', $producto->pivot->unidades) }}" required>
-                                    </div>
-                                    @error('producto[' . $producto->id . '][unidades]')
-                                    <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
-                                        {{ $errors->first('producto[' . $producto->id . '][unidades]') }}
-                                    </div>
-                                    @enderror
+                            <div class="col-md-12">
+                                <div class="form-group"> {{-- Unidades --}}
+                                    <label for="{{ $producto->id }}">{{ $producto->producto }}</label>
+                                    <input type="number" name="producto[{{ $producto->id }}][unidades]" id="producto_{{ $producto->id }}_unidades" class="form-control" value="{{ old('producto.' . $producto->id . '.unidades', $producto->pivot->unidades) }}" required>
                                 </div>
+
+                                <div class="row"> {{-- Productos alternos --}}
+                                    @foreach ($producto->alternativas as $alternativa)
+                                    <div class="col-md-3 col-sm-6 mb-sm-1">
+                                        <div class="card">
+                                            <div class="card-content">
+                                                <img class="card-img-top img-fluid" src="{{ asset('app-assets/images/pages/operador.png') }}" alt="Producto alterno" />
+                                                <div class="card-body">
+                                                    <h4 class="card-title">{{ $alternativa->producto->producto }}</h4>
+                                                    <p class="card-text">
+                                                        This card has supporting text below as a natural lead-in to
+                                                        additional content.
+                                                    </p>
+                                                    <small class="text-muted">Last updated 3 mins ago</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                </div>
+
+                                @error('producto[' . $producto->id . '][unidades]')
+                                <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                    {{ $errors->first('producto[' . $producto->id . '][unidades]') }}
+                                </div>
+                                @enderror
+                            </div>
                             @endforeach
                         </div>
                     </div>
@@ -77,10 +98,76 @@
                     <button type="submit" class="btn btn-warning">Guardar</button>
                 </div>
             </form>
+
+            <!-- Button trigger for BorderLess Modal -->
+            <button type="button" class="btn btn-outline-primary block" data-toggle="modal" data-target="#border-less">
+                +
+            </button>
+
+            <!--BorderLess Modal Modal -->
+            <div class="modal fade text-left modal-borderless" id="border-less" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-scrollable" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title">Agregar producto alterno</h3>
+                            <button type="button" class="close rounded-pill" data-dismiss="modal" aria-label="Close">
+                                <i class="bx bx-x"></i>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+
+
+
+
+                            <div class="row"> {{-- Producto --}}
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+
+                                        <label for="producto_id">Producto</label>
+                                        <select name="producto_id" id="producto_id" class="select2 form-control {{ $errors->has('producto_id') ? 'is-invalid' : '' }}" data-placeholder="Seleccione un producto" data-validation-required-message="Este campo es obligatorio" required>
+                                            <option value=""></option>
+                                            @foreach($kit->productos as $producto)
+                                            <option value="{{ $producto->id }}" {{ old('producto_id', $producto->id) == $producto->id ? 'selected' : '' }}>
+                                                {{ $producto->producto }}
+                                            </option>
+                                            @endforeach
+                                        </select>
+                                        <div class="help-block"></div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-light-primary" data-dismiss="modal">
+                                <i class="bx bx-x d-block d-sm-none"></i>
+                                <span class="d-none d-sm-block">Close</span>
+                            </button>
+                            <button type="button" class="btn btn-primary ml-1" data-dismiss="modal">
+                                <i class="bx bx-check d-block d-sm-none"></i>
+                                <span class="d-none d-sm-block">Accept</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
 @stop
 
 @section('js')
+<script>
+    $(document).ready(function() {
+        $('#producto_id').select2({
+            placeholder: 'Seleccione un producto',
+            allowClear: true
+        });
+    });
+</script>
 @stop
