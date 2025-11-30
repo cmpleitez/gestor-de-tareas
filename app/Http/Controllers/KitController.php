@@ -122,7 +122,7 @@ class KitController extends Controller
             if ($nombre_automatico == '1') {
                 $nombre_creado = $this->sugerirNombreKit($kit, $request);
                 if ($nombre_creado) {
-                    $existe = \App\Models\Kit::where('kit', $nombre_creado)
+                    $existe = Kit::where('kit', $nombre_creado)
                         ->where('id', '<>', $kit->id)
                         ->exists();
                     if ($existe) {
@@ -134,7 +134,7 @@ class KitController extends Controller
                     $kit->save();
                 }
             }
-            $kit->productos()->sync($request->productos);
+            $kit->productos()->sync($request->productos); //esto va cambiar a la manera antigua porque se le agregó una llave primaria: id
 
             return redirect()->route('kit')->with('success', 'Kit actualizado correctamente');
         } catch (\Exception $e) {
@@ -191,7 +191,7 @@ class KitController extends Controller
     }
 
 
-    public function storeAlterno(Kit $kit, Request $request)
+    public function storeEquivalente(Kit $kit, Request $request)
     {
         try {
             DB::beginTransaction();

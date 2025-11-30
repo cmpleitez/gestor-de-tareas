@@ -151,7 +151,7 @@ Route::middleware([
             Route::put('update/{kit}', [KitController::class, 'update'])->name('kit.update');
             Route::get('asignar-productos/{kit}', [KitController::class, 'asignarProductos'])->name('kit.asignar-productos');
             Route::put('actualizar-productos/{kit}', [KitController::class, 'actualizarProductos'])->name('kit.actualizar-productos');
-            Route::put('store-alterno/{kit}', [KitController::class, 'storeAlterno'])->name('kit.store-alterno');
+            Route::put('store-equivalente/{kit}', [KitController::class, 'storeEquivalente'])->name('kit.store-equivalente');
             Route::get('destroy/{kit}', [KitController::class, 'destroy'])->name('kit.destroy');
             Route::post('activate/{kit}', [KitController::class, 'activate'])->name('kit.activate');
         });

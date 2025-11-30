@@ -8,10 +8,11 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('alternativas', function (Blueprint $table) {
+        Schema::create('equivalentes', function (Blueprint $table) {
             $table->foreignId('producto_id')->constrained('productos');
             $table->foreignId('kit_id')->constrained('kits');
-            $table->primary(['producto_id', 'kit_id']);
+            $table->foreignId('kit_producto_id')->constrained('kit_producto');  
+            $table->primary(['producto_id', 'kit_id', 'kit_producto_id']);
             $table->timestamps();
         });
     }
