@@ -14,7 +14,7 @@ class TipoUpdateRequest extends FormRequest
     {
         $tipo = $this->route('tipo');
         return [
-            'tipo' => ['required', 'min:3', 'max:128', 'regex:/^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ()]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ()]+)*$/', Rule::unique('tipos')->ignore($tipo->id)],
+            'tipo' => ['required', 'min:3', 'max:255', 'regex:/^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ()]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ()]+)*$/', Rule::unique('tipos')->ignore($tipo->id)],
         ];
     }
 }

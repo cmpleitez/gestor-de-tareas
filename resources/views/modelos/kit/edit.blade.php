@@ -58,9 +58,20 @@
                             </div>
                             @foreach ($kit->productos as $producto)
                             <div class="col-md-12">
-                                <div class="form-group"> {{-- Unidades --}}
-                                    <label for="{{ $producto->id }}">{{ $producto->producto }}</label>
-                                    <input type="number" name="producto[{{ $producto->id }}][unidades]" id="producto_{{ $producto->id }}_unidades" class="form-control" value="{{ old('producto.' . $producto->id . '.unidades', $producto->pivot->unidades) }}" required>
+                                <div class="row">
+                                    <div class="col-md-11">
+                                        <div class="form-group"> {{-- Unidades --}}
+                                            <label for="{{ $producto->id }}">{{ $producto->producto }}</label>
+                                            <input type="number" name="producto[{{ $producto->id }}][unidades]" id="producto_{{ $producto->id }}_unidades" class="form-control" value="{{ old('producto.' . $producto->id . '.unidades', $producto->pivot->unidades) }}" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <div class="form-group"> {{-- Agregar un producto alterno --}}
+                                            <button type="button" class="btn btn-outline-primary block" data-toggle="modal" data-target="#border-less" data-producto-id="{{ $producto->id }}">
+                                                +
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div class="row"> {{-- Productos alternos --}}
@@ -99,10 +110,7 @@
                 </div>
             </form>
 
-            <!-- Button trigger for BorderLess Modal -->
-            <button type="button" class="btn btn-outline-primary block" data-toggle="modal" data-target="#border-less">
-                +
-            </button>
+
 
             <!--BorderLess Modal Modal -->
             <div class="modal fade text-left modal-borderless" id="border-less" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true">
@@ -114,44 +122,42 @@
                                 <i class="bx bx-x"></i>
                             </button>
                         </div>
-                        <div class="modal-body">
 
+                        <form class="form-horizontal" action="{{ route('kit.store-alterno', $kit->id) }}" method="POST" enctype="multipart/form-data" novalidate>
+                            @csrf
+                            @method('PUT')
 
-
-
-                            <div class="row"> {{-- Producto --}}
-                                <div class="col-sm-12">
-                                    <div class="form-group">
-
-                                        <label for="producto_id">Producto</label>
-                                        <select name="producto_id" id="producto_id" class="select2 form-control {{ $errors->has('producto_id') ? 'is-invalid' : '' }}" data-placeholder="Seleccione un producto" data-validation-required-message="Este campo es obligatorio" required>
-                                            <option value=""></option>
-                                            @foreach($kit->productos as $producto)
-                                            <option value="{{ $producto->id }}" {{ old('producto_id', $producto->id) == $producto->id ? 'selected' : '' }}>
-                                                {{ $producto->producto }}
-                                            </option>
-                                            @endforeach
-                                        </select>
-                                        <div class="help-block"></div>
-
+                            <div class="modal-body">
+                                <div class="row"> {{-- Producto --}}
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <input type="hidden" name="kit_id" value="{{ $kit->id }}">
+                                            <input type="hidden" name="producto_base_id" id="producto_base_id" value="">
+                                            <label for="producto_id">Producto</label>
+                                            <select name="producto_id" id="producto_id" class="select2 form-control {{ $errors->has('producto_id') ? 'is-invalid' : '' }}" data-placeholder="Seleccione un producto" data-validation-required-message="Este campo es obligatorio" required>
+                                                <option value=""></option>
+                                                @foreach($productos as $producto)
+                                                <option value="{{ $producto->id }}" {{ old('producto_id', $producto->id) == $producto->id ? 'selected' : '' }}>
+                                                    {{ $producto->producto }}
+                                                </option>
+                                                @endforeach
+                                            </select>
+                                            <div class="help-block"></div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-
-
-
-
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-light-primary" data-dismiss="modal">
-                                <i class="bx bx-x d-block d-sm-none"></i>
-                                <span class="d-none d-sm-block">Close</span>
-                            </button>
-                            <button type="button" class="btn btn-primary ml-1" data-dismiss="modal">
-                                <i class="bx bx-check d-block d-sm-none"></i>
-                                <span class="d-none d-sm-block">Accept</span>
-                            </button>
-                        </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-light-primary" data-dismiss="modal">
+                                    <i class="bx bx-x d-block d-sm-none"></i>
+                                    <span class="d-none d-sm-block">Close</span>
+                                </button>
+                                <button type="submit" class="btn btn-primary ml-1">
+                                    <i class="bx bx-check d-block d-sm-none"></i>
+                                    <span class="d-none d-sm-block">Accept</span>
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -165,9 +171,18 @@
 <script>
     $(document).ready(function() {
         $('#producto_id').select2({
-            placeholder: 'Seleccione un producto',
-            allowClear: true
+            placeholder: 'Seleccione un producto'
+            , allowClear: true
+        });
+
+        // Capturar el producto_id cuando se abre la modal
+        $('#border-less').on('show.bs.modal', function(event) {
+            var button = $(event.relatedTarget); // Botón que activó la modal
+            var productoId = button.data('producto-id'); // Extraer el valor del atributo data-producto-id
+            var modal = $(this);
+            modal.find('#producto_base_id').val(productoId); // Asignar el valor al input hidden
         });
     });
+
 </script>
 @stop

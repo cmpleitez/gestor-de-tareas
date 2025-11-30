@@ -2,16 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
+
 use App\Http\Requests\KitStoreRequest;
 use App\Http\Requests\KitUpdateRequest;
 use App\Models\Kit;
 use App\Models\Parametro;
 use App\Models\Producto;
+use App\Models\Alternativa;
 use App\Services\CorrelativeIdGenerator;
 use App\Services\ImageWeightStabilizer;
-use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\DB;
 
 class KitController extends Controller
 {
@@ -51,14 +53,15 @@ class KitController extends Controller
         } catch (\Exception $e) {
             DB::rollback();
 
-            return back()->with('error', 'Ocurrió un error cuando se intentaba registrar el Kit: '.$e->getMessage());
+            return back()->with('error', 'Ocurrió un error cuando se intentaba registrar el Kit: ' . $e->getMessage());
         }
     }
 
     public function edit(Kit $kit)
     {
         $kit->load('productos.alternativas');
-        return view('modelos.kit.edit', compact('kit'));
+        $productos = Producto::where('activo', true)->get();
+        return view('modelos.kit.edit', compact('kit', 'productos'));
     }
 
     public function update(KitUpdateRequest $request, Kit $kit)
@@ -93,7 +96,7 @@ class KitController extends Controller
         } catch (\Exception $e) {
             DB::rollback();
 
-            return back()->with('error', 'Ocurrió un error cuando se intentaba registrar el Kit: '.$e->getMessage());
+            return back()->with('error', 'Ocurrió un error cuando se intentaba registrar el Kit: ' . $e->getMessage());
         }
 
         return redirect()->route('kit')->with('success', 'Kit actualizado correctamente');
@@ -135,7 +138,7 @@ class KitController extends Controller
 
             return redirect()->route('kit')->with('success', 'Kit actualizado correctamente');
         } catch (\Exception $e) {
-            return redirect()->back()->with('info', 'Ocurrió un error al intentar actualizar el Kit: '.$e->getMessage());
+            return redirect()->back()->with('info', 'Ocurrió un error al intentar actualizar el Kit: ' . $e->getMessage());
         }
     }
 
@@ -172,20 +175,40 @@ class KitController extends Controller
         }
         $nuevo_nombre = ''; // Construir el nombre solo con las partes que tienen valor
         if (! empty($producto_promedio) && ! empty($modelo_promedio)) {
-            $nuevo_nombre = $producto_promedio.' de '.$modelo_promedio;
+            $nuevo_nombre = $producto_promedio . ' de ' . $modelo_promedio;
         } elseif (! empty($producto_promedio)) {
             $nuevo_nombre = $producto_promedio;
         } elseif (! empty($modelo_promedio)) {
             $nuevo_nombre = $modelo_promedio;
         }
         if (! empty($nuevo_nombre) && mb_strlen($nuevo_nombre) > 0) { // Verificar que el $nuevo_nombre comience con inicial mayuscula, si comienza con minuscula se la cambia a mayuscula
-            $nuevo_nombre = mb_strtoupper(mb_substr($nuevo_nombre, 0, 1)).mb_substr($nuevo_nombre, 1);
+            $nuevo_nombre = mb_strtoupper(mb_substr($nuevo_nombre, 0, 1)) . mb_substr($nuevo_nombre, 1);
         }
         if (empty(trim($nuevo_nombre))) { // Validar que el nombre generado no sea solo espacios o esté vacío
             return false;
         }
-
         return $nuevo_nombre;
+    }
+
+
+    public function storeAlterno(Kit $kit, Request $request)
+    {
+        try {
+            DB::beginTransaction();
+            $alternativa = Alternativa::where('kit_id', $kit->id)->where('producto_id', $request->producto_id)->first();
+            if ($alternativa) {
+                return redirect()->back()->with('warning', 'Este producto ya está asignado');
+            }
+            $alternativa = new Alternativa;
+            $alternativa->kit_id = $kit->id;
+            $alternativa->producto_id = $request->producto_id;
+            $alternativa->save();
+            DB::commit();
+            return redirect()->route('kit.asignar-productos', $kit->id)->with('success', 'El producto se agrego correctamente');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->with('error', 'Ocurrió un error cuando se intentaba actualizar el alterno: ' . $e->getMessage());
+        }
     }
 
     public function destroy(Kit $kit)
@@ -193,7 +216,7 @@ class KitController extends Controller
         if ($kit->productos()->exists()) {
             $firstProducto = $kit->productos()->select('producto')->first();
 
-            return back()->with('error', 'El kit no puede ser eliminado porque está asignado al producto: '.($firstProducto->producto ?? ''));
+            return back()->with('error', 'El kit no puede ser eliminado porque está asignado al producto: ' . ($firstProducto->producto ?? ''));
         }
         if ($kit->atencionDetalles()->exists()) {
             $firstAtencionDetalle = $kit->atencionDetalles()->first();
@@ -205,7 +228,7 @@ class KitController extends Controller
 
             return redirect()->route('kit')->with('success', 'Kit eliminado correctamente');
         } catch (\Exception $e) {
-            return back()->with('error', 'Ocurrió un error cuando se intentaba eliminar el kit: '.$e->getMessage());
+            return back()->with('error', 'Ocurrió un error cuando se intentaba eliminar el kit: ' . $e->getMessage());
         }
     }
 
@@ -214,6 +237,6 @@ class KitController extends Controller
         $kit->activo = ! $kit->activo;
         $kit->save();
 
-        return redirect()->route('kit')->with('success', 'El kit "'.$kit->kit.'" ha sido '.($kit->activo ? 'activado' : 'desactivado').' correctamente');
+        return redirect()->route('kit')->with('success', 'El kit "' . $kit->kit . '" ha sido ' . ($kit->activo ? 'activado' : 'desactivado') . ' correctamente');
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EquipoController;
@@ -69,7 +70,7 @@ Route::middleware([
 
     //ADMINISTRACIÓN
     Route::group(['middleware' => ['role:admin|superadmin']], function () {
-        
+
         Route::group(['prefix' => 'user'], function () { //Usuarios
             Route::get('/', [userController::class, 'index'])->name('user');
             Route::get('edit/{user}', [userController::class, 'edit'])->name('user.edit');
@@ -150,6 +151,7 @@ Route::middleware([
             Route::put('update/{kit}', [KitController::class, 'update'])->name('kit.update');
             Route::get('asignar-productos/{kit}', [KitController::class, 'asignarProductos'])->name('kit.asignar-productos');
             Route::put('actualizar-productos/{kit}', [KitController::class, 'actualizarProductos'])->name('kit.actualizar-productos');
+            Route::put('store-alterno/{kit}', [KitController::class, 'storeAlterno'])->name('kit.store-alterno');
             Route::get('destroy/{kit}', [KitController::class, 'destroy'])->name('kit.destroy');
             Route::post('activate/{kit}', [KitController::class, 'activate'])->name('kit.activate');
         });
@@ -165,7 +167,6 @@ Route::middleware([
             Route::get('destroy/{solicitud}', [solicitudController::class, 'destroy'])->name('solicitud.destroy');
             Route::post('activate/{solicitud}', [solicitudController::class, 'activate'])->name('solicitud.activate');
         });
-
     });
 
     //GESTIÓN
@@ -186,7 +187,7 @@ Route::middleware([
             Route::post('reportar-tarea/{actividad_id}', [RecepcionController::class, 'reportarTarea'])->name('recepcion.reportar-tarea');
         });
     });
-    
+
     //TIENDA
     Route::group(['middleware' => ['role:cliente|superadmin|admin']], function () {
         Route::group(['prefix' => 'recepcion'], function () {
@@ -203,5 +204,4 @@ Route::middleware([
             Route::get('cantidad', [TiendaController::class, 'cantidad'])->name('tienda.cantidad');
         });
     });
-
 });

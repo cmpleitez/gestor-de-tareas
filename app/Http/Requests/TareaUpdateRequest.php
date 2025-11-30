@@ -15,7 +15,7 @@ class TareaUpdateRequest extends FormRequest
     {
         $tarea = $this->route('tarea');
         return [
-            'tarea' => ['required', 'min:3', 'max:128', 'regex:/^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ()]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ()]+)*$/', Rule::unique('tareas')->ignore($tarea->id)],
+            'tarea' => ['required', 'min:3', 'max:255', 'regex:/^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ()]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ()]+)*$/', Rule::unique('tareas')->ignore($tarea->id)],
         ];
     }
 }

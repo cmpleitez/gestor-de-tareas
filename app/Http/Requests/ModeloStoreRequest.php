@@ -12,7 +12,7 @@ class ModeloStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'modelo' => 'required|unique:modelos|min:3|max:128|regex:/^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ()]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ()]+)*$/',
+            'modelo' => 'required|unique:modelos|min:3|max:255|regex:/^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ()]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ()]+)*$/',
             'marca_id' => 'required|exists:marcas,id',
         ];
     }

@@ -14,7 +14,7 @@ class SolicitudUpdateRequest extends FormRequest
     {
         $solicitud = $this->route('solicitud');
         return [
-            'solicitud' => ['required', 'min:3', 'max:128', 'regex:/^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ()]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ()]+)*$/', Rule::unique('solicitudes')->ignore($solicitud->id)],
+            'solicitud' => ['required', 'min:3', 'max:255', 'regex:/^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ()]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ()]+)*$/', Rule::unique('solicitudes')->ignore($solicitud->id)],
         ];
     }
 }

@@ -27,7 +27,7 @@ class ProductoStoreRequest extends FormRequest
         return [
             'tipo_id' => 'required|exists:tipos,id',
             'modelo_id' => 'required|exists:modelos,id',
-            'producto' => 'required|unique:productos|min:3|max:128|regex:/^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ()]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ()]+)*$/',
+            'producto' => 'required|unique:productos|min:3|max:255|regex:/^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ()]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ()]+)*$/',
             'precio' => 'required|numeric|min:0|regex:/^\d+(\.\d{1,2})?$/',
         ];
     }
