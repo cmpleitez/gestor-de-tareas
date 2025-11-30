@@ -22,6 +22,7 @@ CLIENTE:
                             . crear un producto alterno
                                 . crear un buscador y selector de productos
                             . dibujar los productos alternos abajo de cada producto principal
+                                ... se debe agregar a la tabla kit_producto un llave unica id, para asignarle los productos alternos
 
                     . Da clic en <Enviar>
                     . maquetar movimiento.edit
