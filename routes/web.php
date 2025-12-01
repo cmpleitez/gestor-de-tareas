@@ -150,7 +150,7 @@ Route::middleware([
             Route::get('edit/{kit}', [KitController::class, 'edit'])->name('kit.edit');
             Route::put('update/{kit}', [KitController::class, 'update'])->name('kit.update');
             Route::get('asignar-productos/{kit}', [KitController::class, 'asignarProductos'])->name('kit.asignar-productos');
-            Route::put('actualizar-productos/{kit}', [KitController::class, 'actualizarProductos'])->name('kit.actualizar-productos');
+            Route::put('sincronizar-productos/{kit}', [KitController::class, 'sincronizarProductos'])->name('kit.sincronizar-productos');
             Route::put('store-equivalente/{kit}', [KitController::class, 'storeEquivalente'])->name('kit.store-equivalente');
             Route::get('destroy/{kit}', [KitController::class, 'destroy'])->name('kit.destroy');
             Route::post('activate/{kit}', [KitController::class, 'activate'])->name('kit.activate');

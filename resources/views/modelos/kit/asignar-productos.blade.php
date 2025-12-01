@@ -131,7 +131,7 @@
     <i class="bx bx-save"></i> Guardar
 </button>
 
-<form id="assignProductsForm" action="{{ route('kit.actualizar-productos', $kit->id) }}" method="POST" style="display: none;">
+<form id="assignProductsForm" action="{{ route('kit.sincronizar-productos', $kit->id) }}" method="POST" style="display: none;">
     @csrf
     @method('PUT')
     <div id="selectedProductsContainer"></div>

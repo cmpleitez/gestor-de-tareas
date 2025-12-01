@@ -9,9 +9,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('equivalentes', function (Blueprint $table) {
+            $table->foreignId('kit_producto_id')->constrained('kit_producto');  
             $table->foreignId('producto_id')->constrained('productos');
             $table->foreignId('kit_id')->constrained('kits');
-            $table->foreignId('kit_producto_id')->constrained('kit_producto');  
             $table->primary(['producto_id', 'kit_id', 'kit_producto_id']);
             $table->timestamps();
         });

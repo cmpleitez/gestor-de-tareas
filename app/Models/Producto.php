@@ -29,7 +29,7 @@ class Producto extends Model
 
     public function kits()
     {
-        return $this->belongsToMany(Kit::class);
+        return $this->belongsToMany(Kit::class)->withPivot('unidades', 'producto_id');
     }
 
     public function movimientos()
@@ -47,8 +47,8 @@ class Producto extends Model
         return $this->hasMany(OficinaStock::class, 'producto_id', 'id');
     }
 
-    public function alternativas()
+    public function equivalentes()
     {
-        return $this->hasMany(Alternativa::class);
+        return $this->hasMany(Equivalente::class, 'kit_producto_id', 'id');
     }
 }

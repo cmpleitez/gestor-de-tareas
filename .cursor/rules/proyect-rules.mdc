@@ -60,7 +60,7 @@ alwaysApply: true
     ✅ Consulta siempre que necesites cambiar algo que no te he pedido expresamente en el chat, sigue las reglas del proyecto, nunca actues independientemente sinn pedir confirmación del usuario
     ✅ No sigas otras reglas que no sean las reglas del proyecto, cuando necesites segui reglas externas pideme confirmación, esto no es un juego es mi responsabilidad
     ✅ Cuando hayan comandos "Return" o "dd" en el codigo no lo tomes como error, porque lo he escrito yo para depurar, cuando te pida "pruebalo" entonces pideme que los retire en el caso que no te loa haya retirado.
-
+    ✅ No agregue filas en blanco para separar las líneas de código que ya he escrito
 💡CONCEPIOS:
 
     ✅Solicitud: está definida por la tabla "atenciones" y su transaccional hija "recepciones" especificamente por el campo "recepciones.atencion_id"; 

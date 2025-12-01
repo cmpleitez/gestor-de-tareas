@@ -54,34 +54,34 @@
                                     </div>
                                     @enderror
                                 </div>
-
                             </div>
                             @foreach ($kit->productos as $producto)
                             <div class="col-md-12">
                                 <div class="row">
                                     <div class="col-md-11">
-                                        <div class="form-group"> {{-- Unidades --}}
-                                            <label for="{{ $producto->id }}">{{ $producto->producto }}</label>
-                                            <input type="number" name="producto[{{ $producto->id }}][unidades]" id="producto_{{ $producto->id }}_unidades" class="form-control" value="{{ old('producto.' . $producto->id . '.unidades', $producto->pivot->unidades) }}" required>
+                                        <div class="form-group"> {{-- Datos de kit_producto --}}
+                                            <label for="producto_{{ $producto->pivot->id }}_unidades">
+                                                {{ $producto->id }} - {{ $producto->producto }}
+                                            </label>
+                                            <input type="number" name="producto[{{ $producto->pivot->id }}][unidades]" id="producto_{{ $producto->pivot->id }}_unidades" class="form-control" value="{{ old('producto.' . $producto->pivot->id . '.unidades', $producto->pivot->unidades) }}" required>
                                         </div>
                                     </div>
                                     <div class="col-md-1">
-                                        <div class="form-group"> {{-- Agregar un producto alterno --}}
-                                            <button type="button" class="btn btn-outline-primary block" data-toggle="modal" data-target="#border-less" data-producto-id="{{ $producto->id }}">
+                                        <div class="form-group"> {{-- Abrir modal de producto equivalente --}}
+                                            <button type="button" class="btn btn-outline-primary block" data-toggle="modal" data-target="#modal-nuevo-equivalente" data-kit-producto-id="{{ $producto->id }}" data-producto-id="{{ $producto->id }}" data-unidades="{{ $producto->pivot->unidades }}">
                                                 +
                                             </button>
                                         </div>
                                     </div>
                                 </div>
-
-                                <div class="row"> {{-- Productos alternos --}}
-                                    @foreach ($producto->alternativas as $alternativa)
+                                <div class="row"> {{-- Productos equivalentes --}}
+                                    @foreach ($producto->equivalentes as $equivalente)
                                     <div class="col-md-3 col-sm-6 mb-sm-1">
                                         <div class="card">
                                             <div class="card-content">
                                                 <img class="card-img-top img-fluid" src="{{ asset('app-assets/images/pages/operador.png') }}" alt="Producto alterno" />
                                                 <div class="card-body">
-                                                    <h4 class="card-title">{{ $alternativa->producto->producto }}</h4>
+                                                    <h4 class="card-title">{{ $equivalente->producto->producto }}</h4>
                                                     <p class="card-text">
                                                         This card has supporting text below as a natural lead-in to
                                                         additional content.
@@ -93,7 +93,6 @@
                                     </div>
                                     @endforeach
                                 </div>
-
                                 @error('producto[' . $producto->id . '][unidades]')
                                 <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
                                     {{ $errors->first('producto[' . $producto->id . '][unidades]') }}
@@ -109,30 +108,25 @@
                     <button type="submit" class="btn btn-warning">Guardar</button>
                 </div>
             </form>
-
-
-
-            <!--BorderLess Modal Modal -->
-            <div class="modal fade text-left modal-borderless" id="border-less" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true">
+            <!-- MODAL DE NUEVO PRODUCTO EQUIVALENTE -->
+            <div class="modal fade text-left modal-borderless" id="modal-nuevo-equivalente" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-scrollable" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h3 class="modal-title">Agregar producto alterno</h3>
+                            <h3 class="modal-title">Nuevo producto equivalente</h3>
                             <button type="button" class="close rounded-pill" data-dismiss="modal" aria-label="Close">
                                 <i class="bx bx-x"></i>
                             </button>
                         </div>
-
-                        <form class="form-horizontal" action="{{ route('kit.store-alterno', $kit->id) }}" method="POST" enctype="multipart/form-data" novalidate>
+                        <form class="form-horizontal" action="{{ route('kit.store-equivalente', $kit->id) }}" method="POST" enctype="multipart/form-data" novalidate>
                             @csrf
                             @method('PUT')
-
                             <div class="modal-body">
                                 <div class="row"> {{-- Producto --}}
                                     <div class="col-sm-12">
                                         <div class="form-group">
                                             <input type="hidden" name="kit_id" value="{{ $kit->id }}">
-                                            <input type="hidden" name="producto_base_id" id="producto_base_id" value="">
+                                            <input type="hidden" name="kit_producto_id" id="kit_producto_id" value="">
                                             <label for="producto_id">Producto</label>
                                             <select name="producto_id" id="producto_id" class="select2 form-control {{ $errors->has('producto_id') ? 'is-invalid' : '' }}" data-placeholder="Seleccione un producto" data-validation-required-message="Este campo es obligatorio" required>
                                                 <option value=""></option>
@@ -170,17 +164,23 @@
 @section('js')
 <script>
     $(document).ready(function() {
+        // SELECT2 CATALOGO DE PRODUCTOS
         $('#producto_id').select2({
             placeholder: 'Seleccione un producto'
             , allowClear: true
         });
-
-        // Capturar el producto_id cuando se abre la modal
-        $('#border-less').on('show.bs.modal', function(event) {
+        // CAPTURA DEL ID CUANDO SE HABRE LA MODAL DE NUEVO EQUIVALENTE
+        $('#modal-nuevo-equivalente').on('show.bs.modal', function(event) {
             var button = $(event.relatedTarget); // Botón que activó la modal
-            var productoId = button.data('producto-id'); // Extraer el valor del atributo data-producto-id
+            // Usar .attr() para leer directamente los atributos HTML (más confiable)
+            var kitProductoId = button.attr('data-kit-producto-id');
+            var productoId = button.attr('data-producto-id');
+            var unidades = button.attr('data-unidades');
             var modal = $(this);
-            modal.find('#producto_base_id').val(productoId); // Asignar el valor al input hidden
+            // Asignar los valores a los inputs hidden
+            modal.find('#kit_producto_id').val(kitProductoId);
+            // Debug: verificar que los valores se capturaron
+            console.log('Valores capturados - kit_producto_id:', kitProductoId, 'producto_id:', productoId, 'unidades:', unidades);
         });
     });
 
