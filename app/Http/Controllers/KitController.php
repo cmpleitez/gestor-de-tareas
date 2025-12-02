@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\KitStoreRequest;
@@ -19,7 +18,6 @@ class KitController extends Controller
     public function index()
     {
         $kits = Kit::orderBy('id', 'desc')->paginate(10);
-
         return view('modelos.kit.index', compact('kits'));
     }
 
@@ -48,20 +46,19 @@ class KitController extends Controller
                 );
             }
             DB::commit();
-
             return redirect()->route('kit')->with('success', 'Kit creado correctamente');
         } catch (\Exception $e) {
             DB::rollback();
-
             return back()->with('error', 'Ocurrió un error cuando se intentaba registrar el Kit: '.$e->getMessage());
         }
     }
 
     public function edit(Kit $kit)
     {
-        $kit->load('productos.equivalentes');
+        $kit->load(['productos.kitProductos.equivalentes' => function ($query) use ($kit) {
+            $query->where('kit_id', $kit->id);
+        }]);
         $productos = Producto::where('activo', true)->get();
-
         return view('modelos.kit.edit', compact('kit', 'productos'));
     }
 
@@ -84,14 +81,11 @@ class KitController extends Controller
             }
             $this->sincronizarProductosConIds($kit, $productos);
             DB::commit();
-
             return redirect()->route('kit')->with('success', 'Kit creado correctamente');
         } catch (\Exception $e) {
             DB::rollback();
-
             return back()->with('error', 'Ocurrió un error cuando se intentaba registrar el Kit: '.$e->getMessage());
         }
-
         return redirect()->route('kit')->with('success', 'Kit actualizado correctamente');
     }
 
@@ -104,7 +98,6 @@ class KitController extends Controller
             ->get();
         $kitProductosIds = $kit->productos->pluck('id')->toArray();
         $productosChunks = $productos->chunk(2);
-
         return view('modelos.kit.asignar-productos', compact('kit', 'productos', 'kitProductosIds', 'productosChunks'));
     }
 
@@ -121,7 +114,6 @@ class KitController extends Controller
                         ->exists();
                     if ($existe) {
                         DB::rollback();
-
                         return redirect()->back()->with('info', 'El nombre sugerido para el kit ya existe, por favor revise los productos seleccionados.');
                     }
                 }
@@ -132,14 +124,82 @@ class KitController extends Controller
             }
             $this->sincronizarProductosConIds($kit, $request->productos ?? []); // Sincronizar productos del Kit
             DB::commit();
-
             return redirect()->route('kit')->with('success', 'Kit actualizado correctamente');
         } catch (\Exception $e) {
             DB::rollback();
-
             return redirect()->back()->with('info', 'Ocurrió un error al intentar actualizar el Kit: '.$e->getMessage());
         }
     }
+
+    public function storeEquivalente(Kit $kit, Request $request)
+    {
+
+        \Log::info(['ID llave entidad' =>$request->kit_producto_id, 'ID producto' => $request->producto_id, 'ID kit' => $kit->id]);
+
+        $request->validate([
+            'producto_id' => 'required|exists:productos,id',
+        ]);
+        try {
+            $equivalente = Equivalente::where('kit_id', $kit->id) //aqui hay que analizar una matematica para ver como deberian funcionar su kit_producto_id y su llave principal en kit_producto
+                ->where('kit_producto_id', $request->kit_producto_id)
+                ->where('producto_id', $request->producto_id)
+                ->first();
+            if ($equivalente) {
+                return redirect()->back()->with('warning', 'Este producto ya está asignado como equivalente');
+            }
+            DB::beginTransaction();
+                $equivalente = new Equivalente;
+                $equivalente->kit_id = $kit->id; // Usar $kit->id del route model binding, no $request->kit_id
+                $equivalente->kit_producto_id = $request->kit_producto_id;
+                $equivalente->producto_id = $request->producto_id;
+                $equivalente->save();
+            DB::commit();
+
+
+            \Log::info(['ID llave entidad' =>$equivalente->kit_producto_id, 'ID producto' => $equivalente->producto_id, 'ID kit' => $equivalente->kit_id]);
+            
+            return redirect()->back()->with('success', 'El producto se agregó como equivalente');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->with('error', 'Ocurrió un error cuando se intentaba actualizar el producto equivalente: '.$e->getMessage());
+        }
+    }
+
+    public function destroyEquivalente(Kit $kit, Equivalente $equivalente)
+    {
+        try {
+            $equivalente->delete();
+            return redirect()->route('kit.asignar-productos', $kit->id)->with('success', 'El producto se elimino correctamente');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Ocurrió un error cuando se intentaba eliminar el producto equivalente: '.$e->getMessage());
+        }
+    }
+
+    public function destroy(Kit $kit)
+    {
+        if ($kit->productos()->exists()) {
+            $firstProducto = $kit->productos()->select('producto')->first();
+            return back()->with('error', 'El kit no puede ser eliminado porque está asignado al producto: '.($firstProducto->producto ?? ''));
+        }
+        if ($kit->atencionDetalles()->exists()) {
+            $firstAtencionDetalle = $kit->atencionDetalles()->first();
+            return back()->with('error', 'El kit no puede ser eliminado tiene historial de ordenes de compra');
+        }
+        try {
+            $kit->delete();
+            return redirect()->route('kit')->with('success', 'Kit eliminado correctamente');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Ocurrió un error cuando se intentaba eliminar el kit: '.$e->getMessage());
+        }
+    }
+
+    public function activate(Kit $kit)
+    {
+        $kit->activo = ! $kit->activo;
+        $kit->save();
+        return redirect()->route('kit')->with('success', 'El kit "'.$kit->kit.'" ha sido '.($kit->activo ? 'activado' : 'desactivado').' correctamente');
+    }
+
 
     private function sincronizarProductosConIds(Kit $kit, array $productosNuevos)
     {
@@ -147,35 +207,22 @@ class KitController extends Controller
             ->where('kit_id', $kit->id)
             ->pluck('producto_id')
             ->toArray();
-        $productosNuevosIds = []; // Puede ser array simple [1, 2, 3] o asociativo [1 => ['unidades' => 5], 2 => ['unidades' => 3]]
-        $productosConUnidades = [];
-        $primerElemento = ! empty($productosNuevos) ? reset($productosNuevos) : null; // Verificar si es array asociativo (primer elemento es array con 'unidades')
-        $esArrayAsociativo = ! empty($productosNuevos) && is_array($primerElemento) && isset($primerElemento['unidades']);
-        if ($esArrayAsociativo) {
-            foreach ($productosNuevos as $productoId => $productoData) {
-                if (is_numeric($productoId) && is_array($productoData) && isset($productoData['unidades'])) {
-                    $productosNuevosIds[] = (int) $productoId;
-                    $productosConUnidades[(int) $productoId] = (int) $productoData['unidades'];
-                }
-            }
-        } else {
-            foreach ($productosNuevos as $productoId) {
-                if (is_numeric($productoId)) {
-                    $productosNuevosIds[] = (int) $productoId;
-                }
+        $productosNuevosIds = [];
+        foreach ($productosNuevos as $productoId) {
+            if (is_numeric($productoId)) {
+                $productosNuevosIds[] = (int) $productoId;
             }
         }
         $productosNuevosIds = array_unique($productosNuevosIds);
-        $productosAAgregar = array_diff($productosNuevosIds, $productosActuales); // Detectar diferencias
+        $productosAAgregar = array_diff($productosNuevosIds, $productosActuales);
         $productosAEliminar = array_diff($productosActuales, $productosNuevosIds);
-        $productosAMantener = array_intersect($productosActuales, $productosNuevosIds);
         $generator = new CorrelativeIdGenerator;
         foreach ($productosAAgregar as $productoId) { // Agregar productos nuevos
             if (! Producto::find($productoId)) {
                 continue;
             }
             $kitProductoId = $generator->generate('KitProducto');
-            $unidades = $productosConUnidades[$productoId] ?? 1;
+            $unidades = 1;
             DB::table('kit_producto')->insert([
                 'id' => $kitProductoId,
                 'kit_id' => $kit->id,
@@ -190,18 +237,6 @@ class KitController extends Controller
                 ->where('kit_id', $kit->id)
                 ->whereIn('producto_id', $productosAEliminar)
                 ->delete();
-        }
-        foreach ($productosAMantener as $productoId) { // Actualizar unidades de productos que se mantienen (solo si cambió)
-            if (isset($productosConUnidades[$productoId])) {
-                $nuevasUnidades = $productosConUnidades[$productoId];
-                DB::table('kit_producto')
-                    ->where('kit_id', $kit->id)
-                    ->where('producto_id', $productoId)
-                    ->update([
-                        'unidades' => $nuevasUnidades,
-                        'updated_at' => now(),
-                    ]);
-            }
         }
     }
 
@@ -253,64 +288,4 @@ class KitController extends Controller
         return $nuevo_nombre;
     }
 
-    public function storeEquivalente(Kit $kit, Request $request)
-    {
-        try {
-            DB::beginTransaction();
-            $equivalente = Equivalente::where('kit_id', $kit->id)
-                ->where('kit_producto_id', $request->kit_producto_id)
-                ->where('producto_id', $request->producto_id)
-                ->first();
-            if ($equivalente) {
-                DB::rollback();
-
-                return redirect()->back()->with('warning', 'Este producto ya está asignado como equivalente');
-            }
-            $equivalente = new Equivalente;
-            $equivalente->kit_id = $kit->id; // Usar $kit->id del route model binding, no $request->kit_id
-            $equivalente->producto_id = $request->producto_id;
-            $equivalente->kit_producto_id = $request->kit_producto_id;
-            $equivalente->save();
-            DB::commit();
-            return redirect()->back()->with('success', 'El producto se agregó como equivalente');
-        } catch (\Exception $e) {
-            DB::rollback();
-            return redirect()->back()->with('error', 'Ocurrió un error cuando se intentaba actualizar el producto equivalente: '.$e->getMessage());
-        }
-    }
-
-    public function destroyEquivalente(Kit $kit, Equivalente $equivalente)
-    {
-        try {
-            $equivalente->delete();
-            return redirect()->route('kit.asignar-productos', $kit->id)->with('success', 'El producto se elimino correctamente');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Ocurrió un error cuando se intentaba eliminar el producto equivalente: '.$e->getMessage());
-        }
-    }
-
-    public function destroy(Kit $kit)
-    {
-        if ($kit->productos()->exists()) {
-            $firstProducto = $kit->productos()->select('producto')->first();
-            return back()->with('error', 'El kit no puede ser eliminado porque está asignado al producto: '.($firstProducto->producto ?? ''));
-        }
-        if ($kit->atencionDetalles()->exists()) {
-            $firstAtencionDetalle = $kit->atencionDetalles()->first();
-            return back()->with('error', 'El kit no puede ser eliminado tiene historial de ordenes de compra');
-        }
-        try {
-            $kit->delete();
-            return redirect()->route('kit')->with('success', 'Kit eliminado correctamente');
-        } catch (\Exception $e) {
-            return back()->with('error', 'Ocurrió un error cuando se intentaba eliminar el kit: '.$e->getMessage());
-        }
-    }
-
-    public function activate(Kit $kit)
-    {
-        $kit->activo = ! $kit->activo;
-        $kit->save();
-        return redirect()->route('kit')->with('success', 'El kit "'.$kit->kit.'" ha sido '.($kit->activo ? 'activado' : 'desactivado').' correctamente');
-    }
 }

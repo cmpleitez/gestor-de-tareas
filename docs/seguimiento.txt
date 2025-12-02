@@ -26,6 +26,7 @@ CLIENTE:
 
                     . Da clic en <Enviar>
                     . maquetar movimiento.edit
+                    . Verificar en http://127.0.0.1/kit/asignar-productos/1: la eliminación de las asignaciones de productos a los kits
 
                 🪒 enlace tienda gestor
                     . tarjeta en el tablero "En progreso" en el rol del Receptor

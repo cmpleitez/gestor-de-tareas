@@ -60,37 +60,35 @@
                                 <div class="row">
                                     <div class="col-md-11">
                                         <div class="form-group"> {{-- Datos de kit_producto --}}
-                                            <label for="producto_{{ $producto->pivot->id }}_unidades">
-                                                {{ $producto->id }} - {{ $producto->producto }}
-                                            </label>
+                                            <label for="producto_{{ $producto->pivot->id }}_unidades">ID:{{ $producto->pivot->id }} - Producto_id:{{ $producto->id }} - nombre:{{ $producto->producto }}</label>
                                             <input type="number" name="producto[{{ $producto->pivot->id }}][unidades]" id="producto_{{ $producto->pivot->id }}_unidades" class="form-control" value="{{ old('producto.' . $producto->pivot->id . '.unidades', $producto->pivot->unidades) }}" required>
                                         </div>
                                     </div>
                                     <div class="col-md-1">
                                         <div class="form-group"> {{-- Abrir modal de producto equivalente --}}
-                                            <button type="button" class="btn btn-outline-primary block" data-toggle="modal" data-target="#modal-nuevo-equivalente" data-kit-producto-id="{{ $producto->id }}" data-producto-id="{{ $producto->id }}" data-unidades="{{ $producto->pivot->unidades }}">
+                                            <button type="button" class="btn btn-outline-primary block" data-toggle="modal" data-target="#modal-nuevo-equivalente" data-kit-producto-id="{{ $producto->pivot->id }}">
                                                 +
                                             </button>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row"> {{-- Productos equivalentes --}}
-                                    @foreach ($producto->equivalentes as $equivalente)
-                                    <div class="col-md-3 col-sm-6 mb-sm-1">
-                                        <div class="card">
-                                            <div class="card-content">
-                                                <img class="card-img-top img-fluid" src="{{ asset('app-assets/images/pages/operador.png') }}" alt="Producto alterno" />
-                                                <div class="card-body">
-                                                    <h4 class="card-title">{{ $equivalente->producto->producto }}</h4>
-                                                    <p class="card-text">
-                                                        This card has supporting text below as a natural lead-in to
-                                                        additional content.
-                                                    </p>
-                                                    <small class="text-muted">Last updated 3 mins ago</small>
+                                    @foreach ($kit->productos as $equivalente)
+                                        <div class="col-md-3 col-sm-6 mb-sm-1">
+                                            <div class="card">
+                                                <div class="card-content">
+                                                    <img class="card-img-top img-fluid" src="{{ asset('app-assets/images/pages/operador.png') }}" alt="Producto alterno" />
+                                                    <div class="card-body">
+                                                        <h4 class="card-title">ID:{{ $equivalente->kit_producto_id }} - Producto_id:{{ $equivalente->producto_id }} - nombre:{{ $equivalente->producto }}</h4>
+                                                        <p class="card-text">
+                                                            This card has supporting text below as a natural lead-in to
+                                                            additional content.
+                                                        </p>
+                                                        <small class="text-muted">Last updated 3 mins ago</small>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
                                     @endforeach
                                 </div>
                                 @error('producto[' . $producto->id . '][unidades]')
@@ -122,21 +120,26 @@
                             @csrf
                             @method('PUT')
                             <div class="modal-body">
-                                <div class="row"> {{-- Producto --}}
+                                <div class="row">
                                     <div class="col-sm-12">
-                                        <div class="form-group">
+                                        <div class="form-group"> {{-- Producto --}}
                                             <input type="hidden" name="kit_id" value="{{ $kit->id }}">
                                             <input type="hidden" name="kit_producto_id" id="kit_producto_id" value="">
                                             <label for="producto_id">Producto</label>
                                             <select name="producto_id" id="producto_id" class="select2 form-control {{ $errors->has('producto_id') ? 'is-invalid' : '' }}" data-placeholder="Seleccione un producto" data-validation-required-message="Este campo es obligatorio" required>
                                                 <option value=""></option>
                                                 @foreach($productos as $producto)
-                                                <option value="{{ $producto->id }}" {{ old('producto_id', $producto->id) == $producto->id ? 'selected' : '' }}>
-                                                    {{ $producto->producto }}
-                                                </option>
+                                                    <option value="{{ $producto->id }}" {{ old('producto_id') == $producto->id ? 'selected' : '' }}>
+                                                        {{ $producto->producto }}
+                                                    </option>
                                                 @endforeach
                                             </select>
                                             <div class="help-block"></div>
+                                            @error('producto_id')
+                                                <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                                    {{ $errors->first('producto_id') }}
+                                                </div>
+                                            @enderror
                                         </div>
                                     </div>
                                 </div>
@@ -164,23 +167,35 @@
 @section('js')
 <script>
     $(document).ready(function() {
-        // SELECT2 CATALOGO DE PRODUCTOS
-        $('#producto_id').select2({
-            placeholder: 'Seleccione un producto'
-            , allowClear: true
-        });
-        // CAPTURA DEL ID CUANDO SE HABRE LA MODAL DE NUEVO EQUIVALENTE
+        // ASIGNA EL ID DE KIT_PRODUCTO A LA MODAL
         $('#modal-nuevo-equivalente').on('show.bs.modal', function(event) {
-            var button = $(event.relatedTarget); // Botón que activó la modal
-            // Usar .attr() para leer directamente los atributos HTML (más confiable)
+            var button = $(event.relatedTarget);
             var kitProductoId = button.attr('data-kit-producto-id');
-            var productoId = button.attr('data-producto-id');
-            var unidades = button.attr('data-unidades');
             var modal = $(this);
-            // Asignar los valores a los inputs hidden
             modal.find('#kit_producto_id').val(kitProductoId);
-            // Debug: verificar que los valores se capturaron
-            console.log('Valores capturados - kit_producto_id:', kitProductoId, 'producto_id:', productoId, 'unidades:', unidades);
+        });
+        // INICIALIZA SELECT2
+        $('#modal-nuevo-equivalente').on('shown.bs.modal', function() {
+            var modal = $(this);
+            var selectProducto = modal.find('#producto_id');
+            if (selectProducto.hasClass('select2-hidden-accessible')) { // Si ya está inicializado, lo destruimos primero
+                selectProducto.select2('destroy');
+            }
+            selectProducto.select2({ // Inicializamos Select2
+                placeholder: 'Seleccione un producto'
+                , allowClear: true
+                , dropdownParent: modal // Importante: establece el contenedor padre
+            });
+        });
+        // DESTRUYE SELECT2 CUANDO LA MODAL SE OCULTA
+        $('#modal-nuevo-equivalente').on('hidden.bs.modal', function() {
+            var modal = $(this); // Destruyendo select2
+            var selectProducto = modal.find('#producto_id');
+            if (selectProducto.hasClass('select2-hidden-accessible')) {
+                selectProducto.select2('destroy');
+            }
+            selectProducto.val('').trigger('change'); // Limpiar valores
+            modal.find('#kit_producto_id').val('');
         });
     });
 

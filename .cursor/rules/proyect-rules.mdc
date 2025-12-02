@@ -2,36 +2,36 @@
 alwaysApply: true
 ---
 ⛑️REGLAS:
-    ✅ Cuando diga "nivel 1", debes elegir en orden de prioridad uno de los siguientes modelos IA:
+    1. Cuando diga "nivel 1", debes elegir en orden de prioridad uno de los siguientes modelos IA:
         1°. Opus 4.5
         2°. Opus 4.1
-    ✅ Cuando diga "nivel 2", debes elegir en orden de prioridad uno de los siguientes modelos IA:
+    2. Cuando diga "nivel 2", debes elegir en orden de prioridad uno de los siguientes modelos IA:
         1°. Gpt-4o
         2°. Sonnet 4.5
         3°. Gpt-5.1 Codex High
         4°. Gemini 3 pro
-    ✅ Cuando diga "nivel 3", debes elegir en orden de prioridad uno de los siguientes modelos IA:
+    3. Cuando diga "nivel 3", debes elegir en orden de prioridad uno de los siguientes modelos IA:
         1º. Gpt-5-fast
         2º. Grok 4 Fast
-    ✅ Cuando diga "baja modelo" dependiendo en que nivel te encuentres debes cambiar al proximo modelo segun correlativo
-    ✅ Cuando diga "eleva modelo" dependiendo en que nivel te encuentres debes cambiar al anterior modelo segun correlativo
-    ✅ Cuando diga "pruebalo" debes probar en el explorador especificamente en la pestaña activa (en la cual ya me he logueado), seteado lo que acabas de construir, ajustar o revisar
-    ✅ Debes mencionar al principio y al final de cada respuesta tuya el modelo que estas usando para la misma.
-    ✅ Cuando diga: esta línea o lineas me refiero a que ya hice referencia dichas líneas con CTRL+L o he hecho referencia a un archivo en especifico
-    ✅ Ante cualquier peticion de mi parte: busca primero en la pestaña activa y luego en las demás. 
-    ✅ Cuando el modelo IA que se está consultando agregue a cola la pregunta porque esta saturado, cambiar al siguiente modelo según el orden que he dado anteriormente en esta regla
-    ✅ Cuando comentes una línea o una serie de líneas hazlo a la derecha de la línea o de la primera línea de bloque, el bloque comienza con un titulo y finaliza una linea antes de comenzar el siguiente titulo, pues los únicos comentarios que van arriba son titulos generales de bloques de lineas y de esos me encargo yo.
-    ✅ código limpio y estándar
-    ✅ No uso de artificios, no hardcorear el codigo fuente
-    ✅ Compactar servicios y reutilizar estilos existentes
-    ✅ Respondeme con las 2 mejores opciones cuando sea necessario mientras solo muestra la opcion recomendada
-    ✅ Trabajemos paso a paso: no me des todo el procedimiento, sino únicamente tres pasos a la vez para no perder el hilo, luego los trabajamos correlativa y detalladamente hasta resolverlos, no avances de paso hasta que terminemos, dime los nombres completos y exactos de las opciones, su consecutividad y su ubicacion en pantalla o el el sofware respectivo.
-    ✅ Cuando yo te diga la frase clave "Iniciemos una configuración", preguntame en que idioma necesito los nombres de las opciones, las distintas herramientas que se configuran a veces están en español y la mayoria de veces en inglés.
-    ✅ nunca agregues datos hardcoreados en el frontend, los datos de pueba tendrán origen en los seeders, lo cual indica que los datos se leerán siempre de las tablas de la base de datos.
-    ✅ cuando vayas a crear un archivo, metodo, funcion o similar nuevo(a) o eliminar uno existente debes pedirme confirmación
-    ✅ Cuando te diga "Has una Prueba basica", lo que tu debes hacer es pedirme que vacie el log de laravel y que corra la pagina, luego trabaja tu: verifica que la ruta existe y funciona, verifica que el controlador este enviando los datos, verifica que la vista esta recibiendo los datos, verifica que se esten dibujando bien los datos, verifica el laravel.log para ver los errores que tenemos
+    4. Cuando diga "baja modelo" dependiendo en que nivel te encuentres debes cambiar al proximo modelo segun correlativo
+    5. Cuando diga "eleva modelo" dependiendo en que nivel te encuentres debes cambiar al anterior modelo segun correlativo
+    6. Cuando diga "pruebalo" debes probar en el explorador especificamente en la pestaña activa (en la cual ya me he logueado), seteado lo que acabas de construir, ajustar o revisar
+    7. Debes mencionar al principio y al final de cada respuesta tuya el modelo que estas usando para la misma.
+    8. Cuando diga: esta línea o lineas me refiero a que ya hice referencia dichas líneas con CTRL+L o he hecho referencia a un archivo en especifico
+    9. Ante cualquier peticion de mi parte: busca primero en la pestaña activa y luego en las demás. 
+    10. Cuando el modelo IA que se está consultando agregue a cola la pregunta porque esta saturado, cambiar al siguiente modelo según el orden que he dado anteriormente en esta regla
+    11. Cuando comentes una línea o una serie de líneas hazlo a la derecha de la línea o de la primera línea de bloque, el bloque comienza con un titulo y finaliza una linea antes de comenzar el siguiente titulo, pues los únicos comentarios que van arriba son titulos generales de bloques de lineas y de esos me encargo yo.
+    12. código limpio y estándar
+    13. No uso de artificios, no hardcorear el codigo fuente
+    14. Compactar servicios y reutilizar estilos existentes
+    15. Respondeme con las 2 mejores opciones cuando sea necessario mientras solo muestra la opcion recomendada
+    16. Trabajemos paso a paso: no me des todo el procedimiento, sino únicamente tres pasos a la vez para no perder el hilo, luego los trabajamos correlativa y detalladamente hasta resolverlos, no avances de paso hasta que terminemos, dime los nombres completos y exactos de las opciones, su consecutividad y su ubicacion en pantalla o el el sofware respectivo.
+    17. Cuando yo te diga la frase clave "Iniciemos una configuración", preguntame en que idioma necesito los nombres de las opciones, las distintas herramientas que se configuran a veces están en español y la mayoria de veces en inglés.
+    18. nunca agregues datos hardcoreados en el frontend, los datos de pueba tendrán origen en los seeders, lo cual indica que los datos se leerán siempre de las tablas de la base de datos.
+    19. cuando vayas a crear un archivo, metodo, funcion o similar nuevo(a) o eliminar uno existente debes pedirme confirmación
+    20. Cuando te diga "Has una Prueba basica", lo que tu debes hacer es pedirme que vacie el log de laravel y que corra la pagina, luego trabaja tu: verifica que la ruta existe y funciona, verifica que el controlador este enviando los datos, verifica que la vista esta recibiendo los datos, verifica que se esten dibujando bien los datos, verifica el laravel.log para ver los errores que tenemos
 
-    ✅Los modelos IA han tenido exito usando estas herramientas para aplicar los cambios cuando tengas problemas para aplicar los cambios lee esta regla, claro que puedes usar otras pero si no te funcionan aqui tienes las que si funcionan:
+    21. Los modelos IA han tenido exito usando estas herramientas para aplicar los cambios cuando tengas problemas para aplicar los cambios lee esta regla, claro que puedes usar otras pero si no te funcionan aqui tienes las que si funcionan:
         1. list_dir - Para explorar la estructura
         Propósito: Identificar todas las vistas de seguridad existentes
         Resultado: Encontré 6 vistas: index.blade.php, events.blade.php, threats.blade.php, ip-reputation.blade.php, threat-intelligence.blade.php, logs.blade.php
@@ -55,12 +55,14 @@ alwaysApply: true
             Aplicar cambios uno por uno con confirmación
             Verificar que cada cambio se aplicó correctamente   
     
-    ✅ Ejecuto dos tipos de seeders el seeder de usuarios y el seeder de seguridad, este último no se incluye en el DatabaseSeeder, porque se ejecuta aparte de forma independiente, porque los modelos has estado hardcoreando datos y esta es la manera de depurar ese tipo de conducta que poseen los modelos IA
-    ✅ Evita mostrar el texto de tu pensamiento o procesamiento razonamiento, puedes mostrar el "to-dos" es muy util
-    ✅ Consulta siempre que necesites cambiar algo que no te he pedido expresamente en el chat, sigue las reglas del proyecto, nunca actues independientemente sinn pedir confirmación del usuario
-    ✅ No sigas otras reglas que no sean las reglas del proyecto, cuando necesites segui reglas externas pideme confirmación, esto no es un juego es mi responsabilidad
-    ✅ Cuando hayan comandos "Return" o "dd" en el codigo no lo tomes como error, porque lo he escrito yo para depurar, cuando te pida "pruebalo" entonces pideme que los retire en el caso que no te loa haya retirado.
-    ✅ No agregue filas en blanco para separar las líneas de código que ya he escrito
+    22. Ejecuto dos tipos de seeders el seeder de usuarios y el seeder de seguridad, este último no se incluye en el DatabaseSeeder, porque se ejecuta aparte de forma independiente, porque los modelos has estado hardcoreando datos y esta es la manera de depurar ese tipo de conducta que poseen los modelos IA
+    23. Evita mostrar el texto de tu pensamiento o procesamiento razonamiento, puedes mostrar el "to-dos" es muy util
+    24. Consulta siempre que necesites cambiar algo que no te he pedido expresamente en el chat, sigue las reglas del proyecto, nunca actues independientemente sinn pedir confirmación del usuario
+    25. No sigas otras reglas que no sean las reglas del proyecto, cuando necesites segui reglas externas pideme confirmación, esto no es un juego es mi responsabilidad
+    26. Cuando hayan comandos "Return" o "dd" en el codigo no lo tomes como error, porque lo he escrito yo para depurar, cuando te pida "pruebalo" entonces pideme que los retire en el caso que no te loa haya retirado.
+    27. No agregue filas en blanco para separar las líneas de código que ya he escrito
+    28. No modifiques código cuando no te lo he pedido directamente
+    
 💡CONCEPIOS:
 
     ✅Solicitud: está definida por la tabla "atenciones" y su transaccional hija "recepciones" especificamente por el campo "recepciones.atencion_id"; 

@@ -20,6 +20,6 @@ class Equivalente extends Model
     }
     
     public function kitProducto() {
-        return $this->belongsTo(KitProducto::class, 'kit_producto_id');
+        return $this->belongsTo(KitProducto::class, 'kit_producto_id', 'id');
     }
 }

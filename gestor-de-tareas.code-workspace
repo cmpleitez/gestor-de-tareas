@@ -23,7 +23,12 @@
         },
         "php.validate.enable": true,
         "php.suggest.basic": false,
-        "blade.format.enable": true
+        "blade.format.enable": true,
+        "[php]": {
+            "editor.formatOnSave": false,
+            "editor.insertSpaces": true,
+            "editor.tabSize": 4
+        }
     },
     "extensions": {
         "recommendations": [
