@@ -12,6 +12,7 @@ use App\Services\ImageWeightStabilizer;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class KitController extends Controller
 {
@@ -55,9 +56,12 @@ class KitController extends Controller
 
     public function edit(Kit $kit)
     {
-        $kit->load(['productos.kitProductos.equivalentes' => function ($query) use ($kit) {
-            $query->where('kit_id', $kit->id);
-        }]);
+        $kit->load([
+            'productos.kitProductos.equivalentes' => function ($query) use ($kit) {
+                $query->where('kit_id', $kit->id);
+            },
+            'productos.kitProductos.equivalentes.producto'
+        ]);
         $productos = Producto::where('activo', true)->get();
         return view('modelos.kit.edit', compact('kit', 'productos'));
     }
@@ -66,9 +70,10 @@ class KitController extends Controller
     {
         try {
             DB::beginTransaction();
-            $data = $request->validated(); // Actualizar Kit
+            $data = $request->validated();
             $productos = $data['producto'] ?? [];
             unset($data['producto']);
+
             $kit->update($data);
             if (isset($request->image_path) && $request->image_path->isValid()) {
                 $imageStabilizer = new ImageWeightStabilizer;
@@ -200,42 +205,35 @@ class KitController extends Controller
         return redirect()->route('kit')->with('success', 'El kit "'.$kit->kit.'" ha sido '.($kit->activo ? 'activado' : 'desactivado').' correctamente');
     }
 
-
-    private function sincronizarProductosConIds(Kit $kit, array $productosNuevos)
+    private function sincronizarProductosConIds(Kit $kit, array $productos)
     {
-        $productosActuales = DB::table('kit_producto') // Obtener productos actuales del kit
+        $kitProductosActuales = DB::table('kit_producto')
             ->where('kit_id', $kit->id)
-            ->pluck('producto_id')
+            ->get()
+            ->keyBy('id')
             ->toArray();
-        $productosNuevosIds = [];
-        foreach ($productosNuevos as $productoId) {
-            if (is_numeric($productoId)) {
-                $productosNuevosIds[] = (int) $productoId;
-            }
-        }
-        $productosNuevosIds = array_unique($productosNuevosIds);
-        $productosAAgregar = array_diff($productosNuevosIds, $productosActuales);
-        $productosAEliminar = array_diff($productosActuales, $productosNuevosIds);
+        $kitProductosNuevosIds = [];
         $generator = new CorrelativeIdGenerator;
-        foreach ($productosAAgregar as $productoId) { // Agregar productos nuevos
-            if (! Producto::find($productoId)) {
-                continue;
+        foreach ($productos as $kitProductoIdStr => $datos) {
+            $kitProductoId = (int) $kitProductoIdStr;
+            $productoId = (int) $datos['producto_id'];
+            $unidades = (int) $datos['unidades'];
+            $kitProductosNuevosIds[] = $kitProductoId;
+            if (isset($kitProductosActuales[$kitProductoId])) { // Actualizar producto existente
+                DB::table('kit_producto')
+                    ->where('id', $kitProductoId)
+                    ->where('kit_id', $kit->id)
+                    ->update([
+                        'unidades' => $unidades,
+                        'updated_at' => now(),
+                    ]);
             }
-            $kitProductoId = $generator->generate('KitProducto');
-            $unidades = 1;
-            DB::table('kit_producto')->insert([
-                'id' => $kitProductoId,
-                'kit_id' => $kit->id,
-                'producto_id' => $productoId,
-                'unidades' => $unidades,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
         }
-        if (! empty($productosAEliminar)) { // Eliminar productos que ya no están
+        $productosAEliminar = array_diff(array_keys($kitProductosActuales), $kitProductosNuevosIds);
+        if (!empty($productosAEliminar)) {
             DB::table('kit_producto')
                 ->where('kit_id', $kit->id)
-                ->whereIn('producto_id', $productosAEliminar)
+                ->whereIn('id', $productosAEliminar)
                 ->delete();
         }
     }

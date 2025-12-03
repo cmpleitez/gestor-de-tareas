@@ -23,6 +23,9 @@ CLIENTE:
                                 . crear un buscador y selector de productos
                             . dibujar los productos alternos abajo de cada producto principal
                                 ... se debe agregar a la tabla kit_producto un llave unica id, para asignarle los productos alternos
+                                .. agregar esto:    "git.autofetch": true,
+                                                    "git.autofetchPeriod": 180, 
+                                                    en gestor-de-tareas.code-workspace (archivo principal del proyecto)
 
                     . Da clic en <Enviar>
                     . maquetar movimiento.edit
@@ -141,6 +144,7 @@ PLATAFORMA:
     🟢 Vacíar seeders de prueba
     🟢 Estandarizar tamaño y tipo de letra
     🟢 al parecer las librarías de los data tables se estan inicializando dos veces: dashboard y el index respectivo
+    🟢 hacer que el boton guardar y el boton retroceder se muestren flotantes, mejorando la experiencia del usuario
 SERVICIOS:
     ...🟢 Crear inventario de servicios a construir y la lista debe estar en orden "consecuencial", es decir en secuencia causal o causa y efecto, 
     sería según procedimiento establecido
