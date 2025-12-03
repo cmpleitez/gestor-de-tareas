@@ -56,53 +56,55 @@
                                 </div>
                             </div>
                             @foreach ($kit->productos as $producto)
-                            <div class="col-md-12">
-                                <div class="row">
-                                    <div class="col-md-11">
-                                        <div class="form-group"> {{-- Datos de kit_producto --}}
-                                            <label for="producto_{{ $producto->pivot->id }}_unidades">ID:{{ $producto->pivot->id }} - Producto_id:{{ $producto->id }} - nombre:{{ $producto->producto }}</label>
-                                            <input type="number" name="producto[{{ $producto->pivot->id }}][unidades]" id="producto_{{ $producto->pivot->id }}_unidades" class="form-control" value="{{ old('producto.' . $producto->pivot->id . '.unidades', $producto->pivot->unidades) }}" required>
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="col-md-11">
+                                            <div class="form-group"> {{-- Datos de kit_producto --}}
+                                                @php 
+                                                    $kitProducto_id = $producto->kitProductos->first()->id;
+                                                @endphp
+                                                <label for="producto_{{ $kitProducto_id }}_unidades">ID:{{ $kitProducto_id }} - Producto_id:{{ $producto->id }} - nombre:{{ $producto->producto }}</label>
+                                                <input type="number" name="producto[{{ $kitProducto_id }}][unidades]" id="producto_{{ $kitProducto_id }}_unidades" class="form-control" value="{{ old('producto.' . $kitProducto_id . '.unidades', $producto->kitProductos->first()->unidades) }}" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-1">
+                                            <div class="form-group"> {{-- Abrir modal de producto equivalente --}}
+                                                <button type="button" class="btn btn-outline-primary block" data-toggle="modal" data-target="#modal-nuevo-equivalente" data-kit-producto-id="{{ $kitProducto_id }}">
+                                                    +
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-1">
-                                        <div class="form-group"> {{-- Abrir modal de producto equivalente --}}
-                                            <button type="button" class="btn btn-outline-primary block" data-toggle="modal" data-target="#modal-nuevo-equivalente" data-kit-producto-id="{{ $producto->pivot->id }}">
-                                                +
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row"> {{-- Productos equivalentes --}}
-                                    @foreach ($kit->productos as $equivalente)
-                                        <div class="col-md-3 col-sm-6 mb-sm-1">
-                                            <div class="card">
-                                                <div class="card-content">
-                                                    <img class="card-img-top img-fluid" src="{{ asset('app-assets/images/pages/operador.png') }}" alt="Producto alterno" />
-                                                    <div class="card-body">
-                                                        <h4 class="card-title">ID:{{ $equivalente->kit_producto_id }} - Producto_id:{{ $equivalente->producto_id }} - nombre:{{ $equivalente->producto }}</h4>
-                                                        <p class="card-text">
-                                                            This card has supporting text below as a natural lead-in to
-                                                            additional content.
-                                                        </p>
-                                                        <small class="text-muted">Last updated 3 mins ago</small>
+                                    <div class="row"> {{-- Productos equivalentes --}}
+                                        @foreach ($producto->kitProductos->first()->equivalentes as $equivalente)
+                                            <div class="col-md-3 col-sm-6 mb-sm-1">
+                                                <div class="card">
+                                                    <div class="card-content">
+                                                        <img class="card-img-top img-fluid" src="{{ asset('app-assets/images/pages/operador.png') }}" alt="Producto alterno" />
+                                                        <div class="card-body">
+                                                            <h4 class="card-title">ID:{{ $equivalente->kit_producto_id }} - Producto_id:{{ $equivalente->producto_id }} - nombre:{{ $equivalente->producto }}</h4>
+                                                            <p class="card-text">
+                                                                This card has supporting text below as a natural lead-in to
+                                                                additional content.
+                                                            </p>
+                                                            <small class="text-muted">Last updated 3 mins ago</small>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    @endforeach
+                                        @endforeach
+                                    </div>
+                                    @error('producto[' . $producto->id . '][unidades]')
+                                    <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                        {{ $errors->first('producto[' . $producto->id . '][unidades]') }}
+                                    </div>
+                                    @enderror
                                 </div>
-                                @error('producto[' . $producto->id . '][unidades]')
-                                <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
-                                    {{ $errors->first('producto[' . $producto->id . '][unidades]') }}
-                                </div>
-                                @enderror
-                            </div>
                             @endforeach
                         </div>
                     </div>
                 </div>
-                {{-- GUARDAR --}}
-                <div class="card-footer d-flex justify-content-end">
+                <div class="card-footer d-flex justify-content-end"> {{-- Botón guardar --}}
                     <button type="submit" class="btn btn-warning">Guardar</button>
                 </div>
             </form>
