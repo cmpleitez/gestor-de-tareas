@@ -10,11 +10,8 @@
     "settings": {
         "files.autoSave": "afterDelay",
         "files.autoSaveDelay": 1000,
-        "editor.formatOnSave": true,
-        "editor.codeActionsOnSave": {
-            "source.fixAll": "explicit",
-            "source.organizeImports": "explicit"
-        },
+        "editor.formatOnSave": false,
+        "editor.codeActionsOnSave": {},
         "emmet.includeLanguages": {
             "blade": "html"
         },
@@ -23,8 +20,13 @@
         },
         "php.validate.enable": true,
         "php.suggest.basic": false,
-        "blade.format.enable": true,
+        "blade.format.enable": false,
         "[php]": {
+            "editor.formatOnSave": false,
+            "editor.insertSpaces": true,
+            "editor.tabSize": 4
+        },
+        "[blade]": {
             "editor.formatOnSave": false,
             "editor.insertSpaces": true,
             "editor.tabSize": 4

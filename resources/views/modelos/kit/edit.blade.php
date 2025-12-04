@@ -1,6 +1,22 @@
 @extends('dashboard')
 
 @section('css')
+
+<style>
+    .acordion-header {
+        background-color: rgb(255, 255, 255) !important;
+        min-height: 2em;
+        font-size: 1.2em !important;
+        padding-right: 3rem !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+</style>
+
 @stop
 
 @section('contenedor')
@@ -31,7 +47,7 @@
                 <div class="card-content">
                     <div class="card-body">
 
-                        <div class="row no-gutters"> {{-- Kit --}}
+                        <div class="row mb-2"> {{-- Kit --}}
                             <div class="col-12 col-md-6 d-flex align-items-center justify-content-center">
                                 @if ($kit->image_path && Storage::disk('public')->exists($kit->image_path))
                                 <img src="{{ Storage::url($kit->image_path) }}" alt="avatar" style="height: 22em; width: 35em; object-fit: cover;">
@@ -43,7 +59,7 @@
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <div class="form-group"> 
+                                            <div class="form-group">
                                                 <label for="kit">Kit</label>
                                                 <input type="text" name="kit" id="kit" class="form-control {{ $errors->has('kit') ? 'is-invalid' : '' }}" data-validation-required-message="Este campo es obligatorio" data-validation-containsnumber-regex="^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ()]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ()]+)*$" data-validation-containsnumber-message="Solo se permiten letras y paréntesis, sin espacios al inicio/final ni dobles espacios" data-validation-minlength-message="El nombre debe tener al menos 3 caracteres" data-clear="true" minlength="3" placeholder="Nombre del kit" value="{{ old('kit', $kit->kit) }}" required>
                                                 <div class="help-block"></div>
@@ -78,67 +94,53 @@
                                     $headingId = 'heading' . $kitProducto_id;
                                     $accordionId = 'accordion' . $kitProducto_id;
                                 @endphp
-                                <div class="col-12 col-md-10"> {{-- Equivalentes --}}
-                                    <div class="accordion collapse-icon accordion-icon-rotate" id="accordionProductos">
-                                        <div class="card collapse-header">
-                                            <div id="{{ $headingId }}" class="card-header" data-toggle="collapse" data-target="#{{ $accordionId }}" aria-expanded="false" aria-controls="{{ $accordionId }}" role="tablist">
-                                                <span class="collapse-title">
-                                                    <div class="row">
-                                                        <div class="col-md-8">
-                                                            <label for="producto_{{ $kitProducto_id }}_unidades">ID:{{ $kitProducto_id }} - Producto_id:{{ $producto->id }} - nombre:{{ $producto->producto }}</label>
-                                                        </div>
-                                                    </div>
-                                                </span>
-                                            </div>
-                                            <div id="{{ $accordionId }}" role="tabpanel" data-parent="#accordionProductos" aria-labelledby="{{ $headingId }}" class="collapse">
-                                                <div class="card-content">
-                                                    <div class="card-body">
-                                                        
-                                                        <div class="row">
-                                                            @foreach ($producto->kitProductos->first()->equivalentes as $equivalente)
-                                                            <div class="col-md-3 col-sm-6 mb-sm-1">
-                                                                <div class="card">
-                                                                    <div class="card-content">
-                                                                        <img class="card-img-top img-fluid" src="{{ asset('app-assets/images/pages/operador.png') }}" alt="Producto alterno" />
-                                                                        <div class="card-body">
-                                                                            <h4 class="card-title">ID:{{ $equivalente->kit_producto_id }} - Producto_id:{{ $equivalente->producto_id }} - nombre:{{ optional($equivalente->producto)->producto ?? 'N/A' }}</h4>
-                                                                            <p class="card-text">
-                                                                                This card has supporting text below as a natural lead-in to
-                                                                                additional content.
-                                                                            </p>
-                                                                            <small class="text-muted">Last updated 3 mins ago</small>
-                                                                        </div>
+                                <div class="row" style="margin-bottom: 0.5em">
+                                    <div class="col-12 col-md-1 text-center"> {{-- Unidades --}}
+                                        <input type="hidden" name="producto[{{ $kitProducto_id }}][producto_id]" value="{{ $producto->id }}">
+                                        <input style="text-align: center;" type="number" name="producto[{{ $kitProducto_id }}][unidades]" id="producto_{{ $kitProducto_id }}_unidades" class="form-control" value="{{ old('producto.' . $kitProducto_id . '.unidades', $producto->kitProductos->first()->unidades) }}" required>
+                                    </div>
+                                    <div class="col-12 col-md-1 text-center"> {{-- Botón de nuevo equivalente --}}
+                                        <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#modal-nuevo-equivalente" data-kit-producto-id="{{ $kitProducto_id }}" style="width: 100%; max-width: 100%; box-sizing: border-box;">
+                                            <i class="bx bx-plus" style="top:0.1em !important; left:-0.6em !important;">e</i>
+                                        </button>
+                                    </div>
+                                    <div class="col-12 col-md-10"> {{-- Titulo del producto --}}
+                                        <div class="accordion collapse-icon accordion-icon-rotate">
+                                            <div class="collapse-header" style="background-color: #f8f9fa !important; min-height: 2em;">
+                                                <div id="{{ $headingId }}" class="acordion-header" data-toggle="collapse" data-target="#{{ $accordionId }}" aria-expanded="false" aria-controls="{{ $accordionId }}" role="tablist">
+                                                    ID:{{ $kitProducto_id }} - Producto_id:{{ $producto->id }} - nombre:{{ $producto->producto }}
+                                                </div>
+                                                <div id="{{ $accordionId }}" role="tabpanel" aria-labelledby="{{ $headingId }}" class="collapse">
+                                                    <div class="row"> {{-- Equivalentes --}}
+                                                        @foreach ($producto->kitProductos->first()->equivalentes as $equivalente)
+                                                        <div class="col-md-3 col-sm-6 mb-sm-1">
+                                                            <div class="card">
+                                                                <div class="card-content">
+                                                                    <img class="card-img-top img-fluid" src="{{ asset('app-assets/images/pages/operador.png') }}" alt="Producto alterno" />
+                                                                    <div class="card-body">
+                                                                        <h4 class="card-title">ID:{{ $equivalente->kit_producto_id }} - Producto_id:{{ $equivalente->producto_id }} - nombre:{{ optional($equivalente->producto)->producto ?? 'N/A' }}</h4>
+                                                                        <p class="card-text">
+                                                                            This card has supporting text below as a natural lead-in to
+                                                                            additional content.
+                                                                        </p>
+                                                                        <small class="text-muted">Last updated 3 mins ago</small>
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            @endforeach
                                                         </div>
-                                                        @error('producto[' . $producto->id . '][unidades]')
-                                                        <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
-                                                            {{ $errors->first('producto[' . $producto->id . '][unidades]') }}
-                                                        </div>
-                                                        @enderror
-
+                                                        @endforeach
                                                     </div>
+                                                    @error('producto[' . $producto->id . '][unidades]')
+                                                    <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                                        {{ $errors->first('producto[' . $producto->id . '][unidades]') }}
+                                                    </div>
+                                                    @enderror
                                                 </div>
                                             </div>
-                                        </div>                            
-                                    
-                                    </div>                                    
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="col-12 col-md-1">
-                                    <input type="hidden" name="producto[{{ $kitProducto_id }}][producto_id]" value="{{ $producto->id }}">
-                                    <input type="number" name="producto[{{ $kitProducto_id }}][unidades]" id="producto_{{ $kitProducto_id }}_unidades" class="form-control" value="{{ old('producto.' . $kitProducto_id . '.unidades', $producto->kitProductos->first()->unidades) }}" required>
-                                </div>
-                                
-                                <div class="col-12 col-md-1">
-                                    <button type="button" class="btn btn-outline-primary block" data-toggle="modal" data-target="#modal-nuevo-equivalente" data-kit-producto-id="{{ $kitProducto_id }}">
-                                        <i class="bx bx-plus"></i>
-                                    </button>
-                                </div>
-
                             @endforeach
-
                         </div>
                     </div>
 
@@ -147,7 +149,7 @@
                     <button type="submit" class="btn btn-warning">Guardar</button>
                 </div>
             </form>
-            
+
             <!-- MODAL DE NUEVO PRODUCTO EQUIVALENTE -->
             <div class="modal fade text-left modal-borderless" id="modal-nuevo-equivalente" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-scrollable" role="document">

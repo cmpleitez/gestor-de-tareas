@@ -34,9 +34,9 @@ class KitController extends Controller
             $generator = new CorrelativeIdGenerator; // Registrar Kit
             $id = $generator->generate('Kit');
             $kit = new Kit;
-            $kit->fill($request->validated());
-            $kit->id = $id;
-            $kit->save();
+        $kit->fill($request->validated());
+        $kit->id = $id;
+        $kit->save();
             if (isset($request->image_path) && $request->image_path->isValid()) { // Procesar imagen de perfil si existe
                 $imageStabilizer = new ImageWeightStabilizer;
                 $imageStabilizer->stabilize(
@@ -47,7 +47,7 @@ class KitController extends Controller
                 );
             }
             DB::commit();
-            return redirect()->route('kit')->with('success', 'Kit creado correctamente');
+        return redirect()->route('kit')->with('success', 'Kit creado correctamente');    
         } catch (\Exception $e) {
             DB::rollback();
             return back()->with('error', 'Ocurrió un error cuando se intentaba registrar el Kit: '.$e->getMessage());
@@ -108,7 +108,7 @@ class KitController extends Controller
 
     public function sincronizarProductos(Kit $kit, Request $request)
     {
-        try {
+        try { 
             DB::beginTransaction();
             $nombre_automatico = Parametro::findOrFail(2)->valor; // Nombre automático del Kit
             if ($nombre_automatico == '1') {
@@ -268,7 +268,7 @@ class KitController extends Controller
         $modelo_promedio = ! empty($conteo_palabras) ? array_search(max($conteo_palabras), $conteo_palabras) : '';
         if (empty($producto_promedio) && empty($modelo_promedio)) { // Validar que al menos uno de los promedios no esté vacío para generar un nombre válido
             return false;
-        }
+    }
         $nuevo_nombre = ''; // Construir el nombre solo con las partes que tienen valor
         if (! empty($producto_promedio) && ! empty($modelo_promedio)) {
             $nuevo_nombre = $producto_promedio.' de '.$modelo_promedio;
