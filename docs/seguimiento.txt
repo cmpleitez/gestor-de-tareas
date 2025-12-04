@@ -17,18 +17,13 @@ CLIENTE:
             . Entra al <formulario del carrito> y agrega o cambia los <kits y sus productos> y especifica si va enviar una <orden de compra> o una <reserva>
 
                 🪒 Editor del carrito
-                    . Cambiar el orden a: 1-elegir kit / 2-editar kit alternativas / 3-agregar kit / 4-Editar unidades o borrar kit y volver a comenzar
-                        . edición del kit: construir la funcionalidad para editar las <preferencias del cliente>
-                            . crear un producto alterno
-                                . crear un buscador y selector de productos
-                            . dibujar los productos alternos abajo de cada producto principal
-                                ... se debe agregar a la tabla kit_producto un llave unica id, para asignarle los productos alternos
-                                .. agregar esto:    "git.autofetch": true,
-                                                    "git.autofetchPeriod": 180, 
-                                                    en gestor-de-tareas.code-workspace (archivo principal del proyecto)
+                    ... Para el operador: editor del kit, sus producto y sus equivalente de forma preparatoria para su uso en versión cliente en el carrito
 
+                    . Cambiar el orden a: 1-elegir kit / 2-editar kit alternativas / 3-agregar kit / 4-Editar unidades o borrar kit y volver a comenzar
+                        . para el cliente: crear el editor de los kits en el carrito
+                            . para el cliente: edición del kit: construir la funcionalidad para editar las <preferencias del cliente>
                     . Da clic en <Enviar>
-                    . maquetar movimiento.edit
+                    . Maquetar movimiento.edit
                     . Verificar en http://127.0.0.1/kit/asignar-productos/1: la eliminación de las asignaciones de productos a los kits
 
                 🪒 enlace tienda gestor
@@ -36,6 +31,9 @@ CLIENTE:
                     . paso "Revisión de la Orden/Reserva"
                 🪒 reportes: 
                     . historial de entradas y reversiones en stocks
+                🪒 maquetacion final:
+                    . Revisión de clases en desuso
+                    . Etiquetado de bloques de clases
 
         . Sistema: En atención a la orden (<Enviar>), del cliente: 
             . Crea a partir del <formulario del carrito> una <copia solicitud receptor>
