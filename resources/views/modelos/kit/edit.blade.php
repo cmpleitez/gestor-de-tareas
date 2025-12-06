@@ -120,7 +120,7 @@
                                         @enderror
                                     </div>
                                     <div class="col-6 col-md-1 col-lg-1 col-xl-1text-center"> {{-- Botón de nuevo equivalente --}}
-                                        <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#modal-nuevo-equivalente" data-kit-producto-id="{{ $kitProducto_id }}" style="width: 100%; max-width: 100%; box-sizing: border-box;">
+                                        <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#modal-nuevo-equivalente" data-kit-producto-id="{{ $kitProducto_id }}" data-producto-id="{{ $producto->id }}" style="width: 100%; max-width: 100%; box-sizing: border-box;">
                                             <i class="bx bx-plus" style="top:0.1em !important; left:-0.6em !important;">e</i>
                                         </button>
                                     </div>
@@ -183,6 +183,7 @@
                                             <label for="producto_id">Producto</label>
                                             <select name="producto_id" id="producto_id" class="select2 form-control {{ $errors->has('producto_id') ? 'is-invalid' : '' }}" data-placeholder="Seleccione un producto" data-validation-required-message="Este campo es obligatorio" required>
                                                 <option value=""></option>
+                                                
                                                 @foreach($productos as $producto)
                                                 <option value="{{ $producto->id }}" {{ old('producto_id') == $producto->id ? 'selected' : '' }}>
                                                     {{ $producto->producto }}
@@ -222,36 +223,75 @@
 @section('js')
 <script>
     $(document).ready(function() {
-        // ASIGNA EL ID DE KIT_PRODUCTO A LA MODAL
+        // ASIGNA EL ID DE KIT_PRODUCTO Y PRODUCTO_ID A LA MODAL
         $('#modal-nuevo-equivalente').on('show.bs.modal', function(event) {
             var button = $(event.relatedTarget);
             var kitProductoId = button.attr('data-kit-producto-id');
+            var productoId = button.attr('data-producto-id');
             var modal = $(this);
             modal.find('#kit_producto_id').val(kitProductoId);
+            modal.data('producto-id-excluir', productoId);
         });
-        // INICIALIZA SELECT2
+        // INICIALIZA SELECT2 Y FILTRA EL PRODUCTO
         $('#modal-nuevo-equivalente').on('shown.bs.modal', function() {
             var modal = $(this);
             var selectProducto = modal.find('#producto_id');
-            if (selectProducto.hasClass('select2-hidden-accessible')) { // Si ya está inicializado, lo destruimos primero
-                selectProducto.select2('destroy');
-            }
-            selectProducto.select2({ // Inicializamos Select2
-                placeholder: 'Seleccione un producto'
-                , allowClear: true
-                , dropdownParent: modal // Importante: establece el contenedor padre
-            });
-        });
-        // DESTRUYE SELECT2 CUANDO LA MODAL SE OCULTA
-        $('#modal-nuevo-equivalente').on('hidden.bs.modal', function() {
-            var modal = $(this); // Destruyendo select2
-            var selectProducto = modal.find('#producto_id');
+            var productoIdExcluir = modal.data('producto-id-excluir');
             if (selectProducto.hasClass('select2-hidden-accessible')) {
                 selectProducto.select2('destroy');
             }
-            selectProducto.val('').trigger('change'); // Limpiar valores
-            modal.find('#kit_producto_id').val('');
+            if (productoIdExcluir) {
+                selectProducto.find('option[value="' + productoIdExcluir + '"]').prop('disabled', true).hide();
+            }
+            selectProducto.select2({
+                placeholder: 'Seleccione un producto'
+                , allowClear: true
+                , dropdownParent: modal
+            });
         });
+        // DESTRUYE SELECT2 Y RESTAURA EL PRODUCTO CUANDO LA MODAL SE OCULTA
+        $('#modal-nuevo-equivalente').on('hidden.bs.modal', function() {
+            var modal = $(this);
+            var selectProducto = modal.find('#producto_id');
+            var productoIdExcluir = modal.data('producto-id-excluir');
+            if (selectProducto.hasClass('select2-hidden-accessible')) {
+                selectProducto.select2('destroy');
+            }
+            if (productoIdExcluir) {
+                selectProducto.find('option[value="' + productoIdExcluir + '"]').prop('disabled', false).show();
+            }
+            selectProducto.val('').trigger('change');
+            modal.find('#kit_producto_id').val('');
+            modal.removeData('producto-id-excluir');
+        });
+        // GUARDA EL KIT_PRODUCTO_ID ANTES DE ENVIAR EL FORMULARIO
+        $('#modal-nuevo-equivalente form').on('submit', function() {
+            var kitProductoId = $('#kit_producto_id').val();
+            if (kitProductoId) {
+                sessionStorage.setItem('openAccordion', kitProductoId);
+            }
+        });
+        // ABRE EL ACCORDION AL CARGAR LA PÁGINA SI HAY UNO GUARDADO
+        var accordionToOpen = sessionStorage.getItem('openAccordion');
+        if (accordionToOpen) {
+            sessionStorage.removeItem('openAccordion');
+            setTimeout(function() {
+                var headingId = '#heading' + accordionToOpen;
+                var headingElement = $(headingId);
+                if (headingElement.length) {
+                    headingElement.trigger('click');
+                    setTimeout(function() {
+                        var accordionId = '#accordion' + accordionToOpen;
+                        var accordionElement = $(accordionId);
+                        if (accordionElement.length) {
+                            $('html, body').animate({
+                                scrollTop: accordionElement.offset().top - 100
+                            }, 500);
+                        }
+                    }, 300);
+                }
+            }, 300);
+        }
     });
 
 </script>

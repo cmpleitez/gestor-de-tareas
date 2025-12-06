@@ -18,6 +18,7 @@ CLIENTE:
 
                 🪒 Editor del carrito
                     ... Para el operador: editor del kit, sus producto y sus equivalente de forma preparatoria para su uso en versión cliente en el carrito
+                        ... ajustar los labels de documentacion en kit.edit especificamente en los javascript
 
                     . validar las unidades de los productos asignados al kit
                     . Cambiar el orden a: 1-elegir kit / 2-editar kit alternativas / 3-agregar kit / 4-Editar unidades o borrar kit y volver a comenzar
