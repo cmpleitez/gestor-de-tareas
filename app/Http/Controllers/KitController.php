@@ -84,7 +84,25 @@ class KitController extends Controller
                     $kit->id
                 );
             }
-            $this->sincronizarProductosConIds($kit, $productos);
+            $kitProductosActuales = DB::table('kit_producto')
+                ->where('kit_id', $kit->id)
+                ->get()
+                ->keyBy('id')
+                ->toArray();
+            $productosIds = [];
+            foreach ($productos as $kitProductoId => $datos) {
+                $productosIds[] = $datos['producto_id'];
+                if (isset($kitProductosActuales[$kitProductoId])) {
+                    DB::table('kit_producto')
+                        ->where('id', $kitProductoId)
+                        ->where('kit_id', $kit->id)
+                        ->update([
+                            'unidades' => $datos['unidades'],
+                            'updated_at' => now(),
+                        ]);
+                }
+            }
+            $this->sincronizarProductosConIds($kit, $productosIds);
             DB::commit();
             return redirect()->route('kit')->with('success', 'Kit creado correctamente');
         } catch (\Exception $e) {
@@ -214,19 +232,24 @@ class KitController extends Controller
             ->toArray();
         $kitProductosNuevosIds = [];
         $generator = new CorrelativeIdGenerator;
-        foreach ($productos as $kitProductoIdStr => $datos) {
-            $kitProductoId = (int) $kitProductoIdStr;
-            $productoId = (int) $datos['producto_id'];
-            $unidades = (int) $datos['unidades'];
-            $kitProductosNuevosIds[] = $kitProductoId;
-            if (isset($kitProductosActuales[$kitProductoId])) { // Actualizar producto existente
-                DB::table('kit_producto')
-                    ->where('id', $kitProductoId)
-                    ->where('kit_id', $kit->id)
-                    ->update([
-                        'unidades' => $unidades,
-                        'updated_at' => now(),
-                    ]);
+        foreach ($productos as $productoId) {
+            $kitProductoExistente = DB::table('kit_producto')
+                ->where('kit_id', $kit->id)
+                ->where('producto_id', $productoId)
+                ->first();
+            if ($kitProductoExistente) {
+                $kitProductosNuevosIds[] = $kitProductoExistente->id;
+            } else {
+                $id = $generator->generate('KitProducto');
+                DB::table('kit_producto')->insert([
+                    'id' => $id,
+                    'kit_id' => $kit->id,
+                    'producto_id' => $productoId,
+                    'unidades' => 1,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+                $kitProductosNuevosIds[] = $id;
             }
         }
         $productosAEliminar = array_diff(array_keys($kitProductosActuales), $kitProductosNuevosIds);

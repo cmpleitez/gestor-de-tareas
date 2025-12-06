@@ -149,7 +149,7 @@
                                     @if (auth()->check())
                                         @php $photoPath = auth()->user()->image_path; @endphp
                                         @if ($photoPath && Storage::disk('public')->exists($photoPath))
-                                            <img src="{{ Storage::url($photoPath) }}" alt="avatar"
+                                            <img src="{{ Storage::disk('public')->url($photoPath) }}" alt="avatar"
                                                 style="height: 45px; width: 45px; object-fit: cover;">
                                         @else
                                             <img src="{{ asset('app-assets/images/pages/operador.png') }}"

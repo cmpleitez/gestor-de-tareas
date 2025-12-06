@@ -68,7 +68,7 @@
                         <div class="row mb-2"> {{-- Kit --}}
                             <div class="col-12 col-md-6 d-flex align-items-center justify-content-center">
                                 @if ($kit->image_path && Storage::disk('public')->exists($kit->image_path))
-                                    <img src="{{ Storage::url($kit->image_path) }}" alt="avatar" style="height: 22em; width: 54em; object-fit: cover;">
+                                    <img src="{{ Storage::disk('public')->url($kit->image_path) }}" alt="avatar" style="height: 22em; width: 54em; object-fit: cover;">
                                 @else
                                     <img src="{{ asset('app-assets/images/pages/operador.png') }}" alt="avatar" style="height: 22em; width: 19em; object-fit: contain;">
                                 @endif
