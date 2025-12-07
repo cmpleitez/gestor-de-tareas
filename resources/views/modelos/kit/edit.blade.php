@@ -64,7 +64,6 @@
                 @method('PUT')
                 <div class="card-content">
                     <div class="card-body">
-
                         <div class="row mb-2"> {{-- Kit --}}
                             <div class="col-12 col-md-6 d-flex align-items-center justify-content-center">
                                 @if ($kit->image_path && Storage::disk('public')->exists($kit->image_path))
@@ -128,17 +127,17 @@
                                         <div class="accordion collapse-icon accordion-icon-rotate">
                                             <div class="collapse-header" style="background-color:rgb(255, 255, 255) !important; min-height: 2em;">
                                                 <div id="{{ $headingId }}" class="acordion-header" data-toggle="collapse" data-target="#{{ $accordionId }}" aria-expanded="false" aria-controls="{{ $accordionId }}" role="tablist">
-                                                    ID:{{ $kitProducto_id }} - Producto_id:{{ $producto->id }} - nombre:{{ $producto->producto }}
+                                                    {{ $producto->producto }}
                                                 </div>
                                                 <div id="{{ $accordionId }}" role="tabpanel" aria-labelledby="{{ $headingId }}" class="collapse">
                                                     <div class="row row-equivalentes"> {{-- Equivalentes --}}
                                                         @foreach ($producto->kitProductos->first()->equivalentes as $equivalente)
-                                                            <div class="col-sm-6 col-md-4 col-lg-3" style="padding-top: 0.5em;">
-                                                                <div class="card">
+                                                            <div class="col-sm-6 col-md-2 col-lg-2" style="padding-top: 0.5em;">
+                                                                <div class="card" style="border: none !important;">
                                                                     <div class="card-content">
                                                                         <img class="card-img-top img-fluid" src="{{ asset('app-assets/images/pages/operador.png') }}" alt="Producto alterno" />
-                                                                        <div class="card-body" style="padding: 1em;">
-                                                                            <small class="text-muted">ID:{{ $equivalente->kit_producto_id }} - Producto_id:{{ $equivalente->producto_id }} - nombre:{{ $equivalente->producto->producto }}</small>
+                                                                        <div class="card-body" style="padding: 0.5em; text-align: justify;">
+                                                                            <small class="text-muted">{{ $equivalente->producto->producto }}</small>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -223,8 +222,7 @@
 @section('js')
 <script>
     $(document).ready(function() {
-        // ASIGNA EL ID DE KIT_PRODUCTO Y PRODUCTO_ID A LA MODAL
-        $('#modal-nuevo-equivalente').on('show.bs.modal', function(event) {
+        $('#modal-nuevo-equivalente').on('show.bs.modal', function(event) { //Asigna valores a los campos de la modal
             var button = $(event.relatedTarget);
             var kitProductoId = button.attr('data-kit-producto-id');
             var productoId = button.attr('data-producto-id');
@@ -232,8 +230,7 @@
             modal.find('#kit_producto_id').val(kitProductoId);
             modal.data('producto-id-excluir', productoId);
         });
-        // INICIALIZA SELECT2 Y FILTRA EL PRODUCTO
-        $('#modal-nuevo-equivalente').on('shown.bs.modal', function() {
+        $('#modal-nuevo-equivalente').on('shown.bs.modal', function() { //Inicializa select2 y filtra el producto base
             var modal = $(this);
             var selectProducto = modal.find('#producto_id');
             var productoIdExcluir = modal.data('producto-id-excluir');
@@ -249,8 +246,7 @@
                 , dropdownParent: modal
             });
         });
-        // DESTRUYE SELECT2 Y RESTAURA EL PRODUCTO CUANDO LA MODAL SE OCULTA
-        $('#modal-nuevo-equivalente').on('hidden.bs.modal', function() {
+        $('#modal-nuevo-equivalente').on('hidden.bs.modal', function() { //Destruye select2 y restaura el producto base
             var modal = $(this);
             var selectProducto = modal.find('#producto_id');
             var productoIdExcluir = modal.data('producto-id-excluir');
@@ -264,15 +260,13 @@
             modal.find('#kit_producto_id').val('');
             modal.removeData('producto-id-excluir');
         });
-        // GUARDA EL KIT_PRODUCTO_ID ANTES DE ENVIAR EL FORMULARIO
-        $('#modal-nuevo-equivalente form').on('submit', function() {
+        $('#modal-nuevo-equivalente form').on('submit', function() { //Memoriza el kit_producto_id antes de enviar el formulario
             var kitProductoId = $('#kit_producto_id').val();
             if (kitProductoId) {
                 sessionStorage.setItem('openAccordion', kitProductoId);
             }
         });
-        // ABRE EL ACCORDION AL CARGAR LA PÁGINA SI HAY UNO GUARDADO
-        var accordionToOpen = sessionStorage.getItem('openAccordion');
+        var accordionToOpen = sessionStorage.getItem('openAccordion'); //Abre el acordión del producto equivalente recien agregado
         if (accordionToOpen) {
             sessionStorage.removeItem('openAccordion');
             setTimeout(function() {
@@ -293,6 +287,5 @@
             }, 300);
         }
     });
-
 </script>
 @stop
