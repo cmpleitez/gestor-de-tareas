@@ -34,6 +34,9 @@
     .row-equivalentes .card-body {
         flex: 1;
     }
+    .row-equivalentes .equivalente-card.equivalente-nuevo {
+        border-radius: 4px !important;
+    }
 </style>
 @stop
 
@@ -133,7 +136,7 @@
                                                     <div class="row row-equivalentes"> {{-- Equivalentes --}}
                                                         @foreach ($producto->kitProductos->first()->equivalentes as $equivalente)
                                                             <div class="col-sm-6 col-md-2 col-lg-2" style="padding-top: 0.5em;">
-                                                                <div class="card" style="border: none !important;">
+                                                                <div class="card equivalente-card" data-producto-id="{{ $equivalente->producto_id }}" style="border: none !important;">
                                                                     <div class="card-content">
                                                                         <img class="card-img-top img-fluid" src="{{ asset('app-assets/images/pages/operador.png') }}" alt="Producto alterno" />
                                                                         <div class="card-body" style="padding: 0.5em; text-align: justify;">
@@ -260,32 +263,84 @@
             modal.find('#kit_producto_id').val('');
             modal.removeData('producto-id-excluir');
         });
-        $('#modal-nuevo-equivalente form').on('submit', function() { //Memoriza el kit_producto_id antes de enviar el formulario
+        $('#modal-nuevo-equivalente form').on('submit', function() { //Memoriza el kit_producto_id y producto_id antes de enviar el formulario
             var kitProductoId = $('#kit_producto_id').val();
+            var productoId = $('#producto_id').val();
             if (kitProductoId) {
                 sessionStorage.setItem('openAccordion', kitProductoId);
             }
+            if (productoId) {
+                sessionStorage.setItem('nuevoEquivalenteProductoId', productoId);
+            }
         });
         var accordionToOpen = sessionStorage.getItem('openAccordion'); //Abre el acordión del producto equivalente recien agregado
-        if (accordionToOpen) {
+        var nuevoEquivalenteProductoId = sessionStorage.getItem('nuevoEquivalenteProductoId');
+        if (accordionToOpen && nuevoEquivalenteProductoId) {
             sessionStorage.removeItem('openAccordion');
             setTimeout(function() {
                 var headingId = '#heading' + accordionToOpen;
                 var headingElement = $(headingId);
                 if (headingElement.length) {
-                    headingElement.trigger('click');
-                    setTimeout(function() {
-                        var accordionId = '#accordion' + accordionToOpen;
-                        var accordionElement = $(accordionId);
-                        if (accordionElement.length) {
-                            $('html, body').animate({
-                                scrollTop: accordionElement.offset().top - 100
-                            }, 500);
+                    var accordionId = '#accordion' + accordionToOpen;
+                    var accordionElement = $(accordionId);
+                    var intentos = 0;
+                    var maxIntentos = 20;
+                    var aplicarEfecto = function() {
+                        intentos++;
+                        if (nuevoEquivalenteProductoId) {
+                            var equivalenteCard = accordionElement.find('.equivalente-card[data-producto-id="' + nuevoEquivalenteProductoId + '"]');
+                            if (equivalenteCard.length) {
+                                equivalenteCard.addClass('equivalente-nuevo');
+                                equivalenteCard[0].style.removeProperty('border');
+                                equivalenteCard[0].style.setProperty('border-width', '2px', 'important');
+                                equivalenteCard[0].style.setProperty('border-style', 'solid', 'important');
+                                equivalenteCard[0].style.setProperty('border-radius', '4px', 'important');
+                                var isBright = false;
+                                var glowInterval = setInterval(function() {
+                                    if (isBright) {
+                                        equivalenteCard[0].style.setProperty('border-color', '#1d7949', 'important');
+                                        equivalenteCard[0].style.setProperty('box-shadow', '0 0 8px rgba(29, 121, 73, 0.5), 0 0 15px rgba(29, 121, 73, 0.3)', 'important');
+                                    } else {
+                                        equivalenteCard[0].style.setProperty('border-color', '#4ade80', 'important');
+                                        equivalenteCard[0].style.setProperty('box-shadow', '0 0 20px rgba(74, 222, 128, 0.9), 0 0 35px rgba(74, 222, 128, 0.6), 0 0 50px rgba(74, 222, 128, 0.4)', 'important');
+                                    }
+                                    isBright = !isBright;
+                                }, 750);
+                                equivalenteCard.data('glow-interval', glowInterval);
+                                sessionStorage.removeItem('nuevoEquivalenteProductoId');
+                                $('html, body').animate({
+                                    scrollTop: equivalenteCard.offset().top - 100
+                                }, 500);
+                            } else if (intentos < maxIntentos) {
+                                setTimeout(aplicarEfecto, 200);
+                            }
                         }
-                    }, 300);
+                    };
+                    if (accordionElement.hasClass('show') || accordionElement.hasClass('in')) {
+                        aplicarEfecto();
+                    } else {
+                        accordionElement.one('shown.bs.collapse', function() {
+                            setTimeout(aplicarEfecto, 100);
+                        });
+                        headingElement.trigger('click');
+                    }
                 }
-            }, 300);
+            }, 500);
         }
+        $(document).on('hidden.bs.collapse', '.collapse', function() { //Remueve el efecto de incandescencia cuando se cierra el acordión
+            $(this).find('.equivalente-card.equivalente-nuevo').each(function() {
+                var glowInterval = $(this).data('glow-interval');
+                if (glowInterval) {
+                    clearInterval(glowInterval);
+                    $(this).removeData('glow-interval');
+                }
+                $(this).removeClass('equivalente-nuevo').css({
+                    'border': 'none',
+                    'border-radius': '',
+                    'box-shadow': ''
+                }).attr('style', 'border: none !important;');
+            });
+        });
     });
 </script>
 @stop
