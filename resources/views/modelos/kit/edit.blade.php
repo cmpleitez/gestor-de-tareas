@@ -72,7 +72,7 @@
                                 @if ($kit->image_path && Storage::disk('public')->exists($kit->image_path))
                                     <img src="{{ Storage::disk('public')->url($kit->image_path) }}" alt="avatar" style="height: 22em; width: 54em; object-fit: cover;">
                                 @else
-                                    <img src="{{ asset('app-assets/images/pages/operador.png') }}" alt="avatar" style="height: 22em; width: 19em; object-fit: contain;">
+                                    <img src="{{ asset('app-assets/images/pages/mercaderia.png') }}" alt="avatar" style="height: 22em; width: 19em; object-fit: contain;">
                                 @endif
                             </div>
                             <div class="col-12 col-md-6">
@@ -146,7 +146,7 @@
                                                             <div class="col-sm-6 col-md-2 col-lg-2" style="padding-top: 0.5em;">
                                                                 <div class="card equivalente-card" data-producto-id="{{ $equivalente->producto_id }}" style="border: none !important;">
                                                                     <div class="card-content">
-                                                                        <img class="card-img-top img-fluid" src="{{ asset('app-assets/images/pages/operador.png') }}" alt="Producto alterno" />
+                                                                        <img class="card-img-top img-fluid" src="{{ asset('app-assets/images/pages/mercaderia.png') }}" alt="Producto alterno" />
                                                                         <div class="card-body" style="padding: 0.5em; text-align: justify;">
                                                                             <small class="text-muted">{{ $equivalente->producto->producto }}</small>
                                                                         </div>
