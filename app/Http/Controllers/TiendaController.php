@@ -288,4 +288,19 @@ class TiendaController extends Controller
         
         return response()->json(['cantidad' => $kitsUnicos]);
     }
+
+    public function getKitProductos(Request $request)
+    {
+        $kitId = $request->input('kit_id');
+        $kit = Kit::with('productos')->find($kitId);
+        
+        if (!$kit) {
+            return response()->json(['error' => 'Kit no encontrado'], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'productos' => $kit->productos
+        ]);
+    }
 }

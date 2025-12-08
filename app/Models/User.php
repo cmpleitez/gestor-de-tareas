@@ -66,7 +66,7 @@ class User extends Authenticatable implements MustVerifyEmail
         $imageStabilizer = new \App\Services\ImageWeightStabilizer();
         $imageStabilizer->processProfilePhoto(
             $photo,
-            storage_path('app/public/user-photos'),
+            storage_path('app/public/user-images'),
             'User',
             $this->id
         );

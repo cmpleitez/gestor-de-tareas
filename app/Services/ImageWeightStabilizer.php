@@ -11,7 +11,7 @@ class ImageWeightStabilizer
      * Procesa y optimiza una imagen, guardándola y actualizando el modelo
      *
      * @param \Illuminate\Http\UploadedFile $file Archivo de imagen subido
-     * @param string $destinationPath Ruta completa de destino (ej: storage_path('app/public/user-photos'))
+     * @param string $destinationPath Ruta completa de destino (ej: storage_path('app/public/user-images'))
      * @param string $modelName Nombre del modelo (ej: 'User')
      * @param int $modelId ID del registro del modelo
      * @return void

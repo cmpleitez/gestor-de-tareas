@@ -31,19 +31,22 @@
             <div class="row"> {{-- Galería --}}
                 @foreach ($kits as $kit)
                 <div class="col-md-3">
-                    <div class="card mb-4 product-wap rounded-0">
-                        <div class="card rounded-0">
-                            <img class="card-img rounded-0 img-fluid" src="{{ asset('app-assets/images/pages/operador.png') }}">
-                            <div class="card-img-overlay rounded-0 product-overlay d-flex align-items-center justify-content-center">
+                    <div class="card mb-4" style="border: 0;">
+                        <div class="card">
+                            <a href="#" class="d-block btn-ver-kit text-decoration-none" data-bs-toggle="modal" data-bs-target="#modalPreferencias" data-kit-id="{{ $kit->id }}" data-kit-name="{{ $kit->kit }}" data-kit-image-path="{{ $kit->image_path ? Storage::url($kit->image_path) : '' }}" style="pointer-events: auto;">
+                                <img class="card-img img-fluid" src="{{ Storage::disk('public')->url($kit->image_path) ? Storage::disk('public')->url($kit->image_path) : asset('app-assets/images/pages/mercaderia.png') }}">
+                            </a>
+
+                            <div class="card-img-overlay product-overlay d-flex align-items-center justify-content-center" style="pointer-events: none;">
                                 <ul class="list-unstyled">
-                                    <li><a class="btn btn-success text-white" href="#"><i class="far fa-heart"></i></a></li>
-                                    <li><a class="btn btn-success text-white mt-2 btn-ver-kit" data-bs-toggle="modal" data-bs-target="#modalPreferencias" data-kit-id="{{ $kit->id }}" data-kit-name="{{ $kit->kit }}" data-kit-image-path="{{ $kit->image_path ? Storage::url($kit->image_path) : '' }}" href="#"><i class="far fa-eye"></i></a></li>
-                                    <li><a class="btn btn-success text-white mt-2" href="{{ Route('tienda.agregar-kit', $kit->id) }}"><i class="fas fa-cart-plus"></i></a></li>
+                                    <li><a class="btn btn-success text-white" href="#" style="pointer-events: auto;"><i class="far fa-heart"></i></a></li>
+                                    <li><a class="btn btn-success text-white mt-2 btn-ver-kit" data-bs-toggle="modal" data-bs-target="#modalPreferencias" data-kit-id="{{ $kit->id }}" data-kit-name="{{ $kit->kit }}" data-kit-image-path="{{ $kit->image_path ? Storage::url($kit->image_path) : '' }}" href="#" style="pointer-events: auto;"><i class="far fa-eye"></i></a></li>
+                                    <li><a class="btn btn-success text-white mt-2" href="{{ Route('tienda.agregar-kit', $kit->id) }}" style="pointer-events: auto;"><i class="fas fa-cart-plus"></i></a></li>
                                 </ul>
                             </div>
                         </div>
-                        <div class="card-body">
-                            <a href="#" class="text-decoration-none">{{ $kit->kit }}</a>
+                        <div class="card-body ">
+                            <a href="{{ Route('tienda.agregar-kit', $kit->id) }}" class="text-decoration-none d-flex justify-content-center">{{ $kit->kit }}</a>
                             <ul class="w-100 list-unstyled d-flex justify-content-between mb-0">
                                 <li class="pt-2">
                                     <span class="product-color-dot color-dot-red float-left rounded-circle ml-1"></span>
@@ -110,22 +113,8 @@
                     </div>
                     <div class="row"> {{-- Productos (Carrusel de alternativas) --}}
                         <div class="col-sm-12" style="background-color:rgb(253, 184, 184);">
-                            <div class="row">
-                                <div class="col-12 col-sm-3" style="background-color: #e0e0e0;">
-                                    Productos (Carrusel de alternativas)
-                                </div>
-                                <div class="col-12 col-sm-3" style="background-color:rgb(199, 184, 184);">
-                                    Productos (Carrusel de alternativas)
-                                </div>
-                                <div class="col-12 col-sm-3" style="background-color: #e0e0e0;">
-                                    Productos (Carrusel de alternativas)
-                                </div>
-                                <div class="col-12 col-sm-3" style="background-color:rgb(199, 184, 184);">
-                                    Productos (Carrusel de alternativas)
-                                </div>
-                                <div class="col-12 col-sm-3" style="background-color: #e0e0e0;">
-                                    Productos (Carrusel de alternativas)
-                                </div>
+                            <div class="row" id="kit_productos">
+                                {{-- dibujar aqui los productos del kit clicado --}}
                             </div>
                         </div>
                     </div>
@@ -171,6 +160,33 @@
                     kitImagePlaceholder.style.display = 'block';
                     kitImagePlaceholder.textContent = 'Foto del Kit (sin imagen)';
                 }
+                fetch('{{ route("tienda.get-kit-productos") }}', { // Cargar productos del kit via AJAX
+                    method: 'POST'
+                    , headers: {
+                        'Content-Type': 'application/json'
+                        , 'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                    , body: JSON.stringify({
+                        kit_id: kitId
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const kitProductosContainer = document.getElementById('kit_productos');
+                    if (data.success) {
+                        let html = '';
+                        data.productos.forEach(producto => {
+                            html += `<div class="col-12 col-sm-3 p-2"><p class="mb-0">${producto.producto}</p></div>`;
+                        });
+                        kitProductosContainer.innerHTML = html;
+                    } else {
+                        kitProductosContainer.innerHTML = '<p class="text-danger">Error al cargar productos</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('kit_productos').innerHTML = '<p class="text-danger">Error al cargar productos</p>';
+                });
             }
         });
         modalPreferencias.addEventListener('hidden.bs.modal', function() {
@@ -184,5 +200,6 @@
             }
         });
     });
+
 </script>
 @endpush

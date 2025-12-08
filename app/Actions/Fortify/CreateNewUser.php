@@ -43,7 +43,7 @@ class CreateNewUser implements CreatesNewUsers
                 $imageStabilizer = new ImageWeightStabilizer();
                 $imageStabilizer->processProfilePhoto(
                     $input['image_path'],
-                    storage_path('app/public/user-photos'),
+                    storage_path('app/public/user-images'),
                     'User',
                     $user->id
                 );
