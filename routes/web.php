@@ -152,6 +152,7 @@ Route::middleware([
             Route::get('asignar-productos/{kit}', [KitController::class, 'asignarProductos'])->name('kit.asignar-productos');
             Route::put('sincronizar-productos/{kit}', [KitController::class, 'sincronizarProductos'])->name('kit.sincronizar-productos');
             Route::put('store-equivalente/{kit}', [KitController::class, 'storeEquivalente'])->name('kit.store-equivalente');
+            Route::get('destroy-equivalente/{kit_producto_id}/{producto_id}/{kit_id}', [KitController::class, 'destroyEquivalente'])->name('kit.destroy-equivalente');
             Route::get('destroy/{kit}', [KitController::class, 'destroy'])->name('kit.destroy');
             Route::post('activate/{kit}', [KitController::class, 'activate'])->name('kit.activate');
         });

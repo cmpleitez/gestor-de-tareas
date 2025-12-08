@@ -1,5 +1,9 @@
 <?php
 namespace App\Http\Controllers;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
+use Exception;
 
 use App\Http\Requests\KitStoreRequest;
 use App\Http\Requests\KitUpdateRequest;
@@ -9,10 +13,6 @@ use App\Models\Parametro;
 use App\Models\Producto;
 use App\Services\CorrelativeIdGenerator;
 use App\Services\ImageWeightStabilizer;
-use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class KitController extends Controller
 {
@@ -34,9 +34,9 @@ class KitController extends Controller
             $generator = new CorrelativeIdGenerator; // Registrar Kit
             $id = $generator->generate('Kit');
             $kit = new Kit;
-        $kit->fill($request->validated());
-        $kit->id = $id;
-        $kit->save();
+            $kit->fill($request->validated());
+            $kit->id = $id;
+            $kit->save();
             if (isset($request->image_path) && $request->image_path->isValid()) { // Procesar imagen de perfil si existe
                 $imageStabilizer = new ImageWeightStabilizer;
                 $imageStabilizer->stabilize(
@@ -48,7 +48,7 @@ class KitController extends Controller
             }
             DB::commit();
         return redirect()->route('kit')->with('success', 'Kit creado correctamente');    
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollback();
             return back()->with('error', 'Ocurrió un error cuando se intentaba registrar el Kit: '.$e->getMessage());
         }
@@ -73,7 +73,6 @@ class KitController extends Controller
             $data = $request->validated();
             $productos = $data['producto'] ?? [];
             unset($data['producto']);
-
             $kit->update($data);
             if (isset($request->image_path) && $request->image_path->isValid()) {
                 $imageStabilizer = new ImageWeightStabilizer;
@@ -104,12 +103,11 @@ class KitController extends Controller
             }
             $this->sincronizarProductosConIds($kit, $productosIds);
             DB::commit();
-            return redirect()->route('kit')->with('success', 'Kit creado correctamente');
-        } catch (\Exception $e) {
+            return redirect()->route('kit')->with('success', 'Kit actualizado correctamente');
+        } catch (Exception $e) {
             DB::rollback();
-            return back()->with('error', 'Ocurrió un error cuando se intentaba registrar el Kit: '.$e->getMessage());
+            return back()->with('error', 'Ocurrió un error cuando se intentaba actualizar el Kit: '.$e->getMessage());
         }
-        return redirect()->route('kit')->with('success', 'Kit actualizado correctamente');
     }
 
     public function asignarProductos(Kit $kit)
@@ -156,14 +154,11 @@ class KitController extends Controller
 
     public function storeEquivalente(Kit $kit, Request $request)
     {
-
-        \Log::info(['ID llave entidad' =>$request->kit_producto_id, 'ID producto' => $request->producto_id, 'ID kit' => $kit->id]);
-
         $request->validate([
             'producto_id' => 'required|exists:productos,id',
         ]);
         try {
-            $equivalente = Equivalente::where('kit_id', $kit->id) //aqui hay que analizar una matematica para ver como deberian funcionar su kit_producto_id y su llave principal en kit_producto
+            $equivalente = Equivalente::where('kit_id', $kit->id)
                 ->where('kit_producto_id', $request->kit_producto_id)
                 ->where('producto_id', $request->producto_id)
                 ->first();
@@ -172,15 +167,11 @@ class KitController extends Controller
             }
             DB::beginTransaction();
                 $equivalente = new Equivalente;
-                $equivalente->kit_id = $kit->id; // Usar $kit->id del route model binding, no $request->kit_id
+                $equivalente->kit_id = $kit->id;
                 $equivalente->kit_producto_id = $request->kit_producto_id;
                 $equivalente->producto_id = $request->producto_id;
                 $equivalente->save();
             DB::commit();
-
-
-            \Log::info(['ID llave entidad' =>$equivalente->kit_producto_id, 'ID producto' => $equivalente->producto_id, 'ID kit' => $equivalente->kit_id]);
-            
             return redirect()->back()->with('success', 'El producto se agregó como equivalente');
         } catch (\Exception $e) {
             DB::rollback();
@@ -188,13 +179,17 @@ class KitController extends Controller
         }
     }
 
-    public function destroyEquivalente(Kit $kit, Equivalente $equivalente)
+    public function destroyEquivalente($kit_producto_id, $producto_id, $kit_id)
     {
         try {
+            $equivalente = Equivalente::where('kit_producto_id', $kit_producto_id)
+                ->where('producto_id', $producto_id)
+                ->where('kit_id', $kit_id)
+                ->first();
             $equivalente->delete();
-            return redirect()->route('kit.asignar-productos', $kit->id)->with('success', 'El producto se elimino correctamente');
+            return back()->with('success', 'El producto equivalente <'.$equivalente->producto->producto.'> se eliminó correctamente');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Ocurrió un error cuando se intentaba eliminar el producto equivalente: '.$e->getMessage());
+            return back()->with('error', 'Ocurrió un error cuando se intentaba eliminar el producto equivalente: '.$e->getMessage());
         }
     }
 
@@ -205,13 +200,12 @@ class KitController extends Controller
             return back()->with('error', 'El kit no puede ser eliminado porque está asignado al producto: '.($firstProducto->producto ?? ''));
         }
         if ($kit->atencionDetalles()->exists()) {
-            $firstAtencionDetalle = $kit->atencionDetalles()->first();
             return back()->with('error', 'El kit no puede ser eliminado tiene historial de ordenes de compra');
         }
         try {
             $kit->delete();
             return redirect()->route('kit')->with('success', 'Kit eliminado correctamente');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return back()->with('error', 'Ocurrió un error cuando se intentaba eliminar el kit: '.$e->getMessage());
         }
     }

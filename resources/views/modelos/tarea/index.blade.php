@@ -80,13 +80,13 @@
                                             @endcan
                                             {{-- ELIMINAR --}}
                                             @can('eliminar')
-                                            <a href="{{ route('tarea.destroy', $tarea->id) }}" role="button"
-                                                data-toggle="tooltip" data-popup="tooltip-custom" data-html="true"
-                                                data-placement="bottom"
-                                                title="<i class='bx bxs-eraser'></i> Eliminar {{ $tarea->tarea }}"
-                                                class="button_delete align-center border border-danger-dark text-danger-dark bg-danger-light">
-                                                <i class="bx bxs-eraser"></i>
-                                            </a>
+                                                <a href="{{ route('tarea.destroy', $tarea->id) }}" role="button"
+                                                    data-toggle="tooltip" data-popup="tooltip-custom" data-html="true"
+                                                    data-placement="bottom"
+                                                    title="<i class='bx bxs-eraser'></i> Eliminar {{ $tarea->tarea }}"
+                                                    class="button_delete align-center border border-danger-dark text-danger-dark bg-danger-light">
+                                                    <i class="bx bxs-eraser"></i>
+                                                </a>
                                             @endcan
                                         </div>
                                     </td>

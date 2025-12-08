@@ -151,11 +151,15 @@
                                                                             <small class="text-muted">{{ $equivalente->producto->producto }}</small>
                                                                         </div>
                                                                     </div>
+                                                                    <div class="card-footer" style="background-color: #ffffffff !important; border-top: 0.5px solid rgb(233, 236, 240) !important; padding: 0 !important; text-align: center;">
+                                                                        <a href="{{ Route('kit.destroy-equivalente', ['kit_producto_id' => $equivalente->kit_producto_id, 'producto_id' => $equivalente->producto_id, 'kit_id' => $equivalente->kit_id]) }}" class="btn btn-icon btn-sm">
+                                                                            <i class="fa fa-trash text-warning-dark"></i>
+                                                                        </a>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         @endforeach
                                                     </div>
-
                                                 </div>
                                             </div>
                                         </div>
@@ -187,13 +191,12 @@
                             <div class="modal-body">
                                 <div class="row">
                                     <div class="col-sm-12">
-                                        <div class="form-group"> {{-- Producto --}}
+                                        <div class="form-group"> {{-- Catálogo de selección de productos --}}
                                             <input type="hidden" name="kit_id" value="{{ $kit->id }}">
                                             <input type="hidden" name="kit_producto_id" id="kit_producto_id" value="">
                                             <label for="producto_id">Producto</label>
                                             <select name="producto_id" id="producto_id" class="select2 form-control {{ $errors->has('producto_id') ? 'is-invalid' : '' }}" data-placeholder="Seleccione un producto" data-validation-required-message="Este campo es obligatorio" required>
                                                 <option value=""></option>
-                                                
                                                 @foreach($productos as $producto)
                                                 <option value="{{ $producto->id }}" {{ old('producto_id') == $producto->id ? 'selected' : '' }}>
                                                     {{ $producto->producto }}
@@ -202,9 +205,9 @@
                                             </select>
                                             <div class="help-block"></div>
                                             @error('producto_id')
-                                            <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
-                                                {{ $errors->first('producto_id') }}
-                                            </div>
+                                                <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                                    {{ $errors->first('producto_id') }}
+                                                </div>
                                             @enderror
                                         </div>
                                     </div>
