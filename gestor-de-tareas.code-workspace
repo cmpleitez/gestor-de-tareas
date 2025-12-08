@@ -36,7 +36,6 @@
     },
     "extensions": {
         "recommendations": [
-            "bmewburn.vscode-intelephense-client",
             "ms-vscode.vscode-json"
         ]
     }

@@ -83,9 +83,9 @@
                                             <input type="text" name="kit" id="kit" class="form-control {{ $errors->has('kit') ? 'is-invalid' : '' }}" data-validation-required-message="Este campo es obligatorio" data-validation-containsnumber-regex="^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ()]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ()]+)*$" data-validation-containsnumber-message="Solo se permiten letras y paréntesis, sin espacios al inicio/final ni dobles espacios" data-validation-minlength-message="El nombre debe tener al menos 3 caracteres" data-clear="true" minlength="3" placeholder="Nombre del kit" value="{{ old('kit', $kit->kit) }}" required>
                                             <div class="help-block"></div>
                                             @error('kit')
-                                            <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
-                                                {{ $errors->first('kit') }}
-                                            </div>
+                                                <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                                    {{ $errors->first('kit') }}
+                                                </div>
                                             @enderror
                                         </div>
                                         <div class="form-group">
@@ -95,9 +95,9 @@
                                             <small class="form-text text-muted">Formatos permitidos: JPEG, JPG, PNG. Tamaño
                                                 máximo: 10 MB</small>
                                             @error('image_path')
-                                            <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
-                                                {{ $errors->first('image_path') }}
-                                            </div>
+                                                <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                                    {{ $errors->first('image_path') }}
+                                                </div>
                                             @enderror
                                         </div>
                                     </div>
@@ -112,20 +112,28 @@
                                     $accordionId = 'accordion' . $kitProducto_id;
                                 @endphp
                                 <div class="row" style="margin-bottom: 0.5em; width: 1920px; max-width: 100%;">
-                                    <div class="col-6 col-md-1 col-lg-1 col-xl-1 items-center justify-content-center"> {{-- Unidades --}}
-                                        <input type="hidden" name="producto[{{ $kitProducto_id }}][producto_id]" value="{{ $producto->id }}">
-                                        <input style="text-align: center;" type="number" name="producto[{{ $kitProducto_id }}][unidades]" id="producto_{{ $kitProducto_id }}_unidades" class="form-control" value="{{ old('producto.' . $kitProducto_id . '.unidades', $producto->kitProductos->first()->unidades) }}" required>
-                                        @error('producto[{{ $kitProducto_id }}][producto_id]')
-                                            <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
-                                                {{ $errors->first('producto[' . $producto->id . '][unidades]') }}
+                                    <div class="col-12 col-md-2 col-lg-2 col-xl-2">
+                                        <div class="row">
+                                            <div class="col-6"> {{-- Unidades --}}
+                                                <div class="form-group">
+                                                    <input type="hidden" name="producto[{{ $kitProducto_id }}][producto_id]" value="{{ $producto->id }}">
+                                                    <input style="text-align: center;" type="text" name="producto[{{ $kitProducto_id }}][unidades]" id="producto_{{ $kitProducto_id }}_unidades" class="form-control {{ $errors->has('producto.' . $kitProducto_id . '.unidades') ? 'is-invalid' : '' }}" value="{{ old('producto.' . $kitProducto_id . '.unidades', $producto->kitProductos->first()->unidades) }}" data-validation-required-message="Este campo es obligatorio" data-validation-containsnumber-regex="^[1-9]\d*$" data-validation-containsnumber-message="Solo números positivos (mínimo 1)" required>
+                                                    <div class="help-block"></div>
+                                                    @error('producto.' . $kitProducto_id . '.unidades')
+                                                        <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                                            {{ $message }}
+                                                        </div>
+                                                    @enderror
+                                                </div>
                                             </div>
-                                        @enderror
+                                            <div class="col-6 text-center"> {{-- Botón de nuevo equivalente --}}
+                                                <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#modal-nuevo-equivalente" data-kit-producto-id="{{ $kitProducto_id }}" data-producto-id="{{ $producto->id }}" style="width: 100%; max-width: 100%; box-sizing: border-box;">
+                                                    <i class="bx bx-plus" style="top:0.1em !important; left:-0.6em !important;">e</i>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="col-6 col-md-1 col-lg-1 col-xl-1text-center"> {{-- Botón de nuevo equivalente --}}
-                                        <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#modal-nuevo-equivalente" data-kit-producto-id="{{ $kitProducto_id }}" data-producto-id="{{ $producto->id }}" style="width: 100%; max-width: 100%; box-sizing: border-box;">
-                                            <i class="bx bx-plus" style="top:0.1em !important; left:-0.6em !important;">e</i>
-                                        </button>
-                                    </div>
+
                                     <div class="col-12 col-md-10 col-lg-10 col-xl-10"> {{-- Titulo del producto --}}
                                         <div class="accordion collapse-icon accordion-icon-rotate">
                                             <div class="collapse-header" style="background-color:rgb(255, 255, 255) !important; min-height: 2em;">
@@ -225,6 +233,8 @@
 @section('js')
 <script>
     $(document).ready(function() {
+        $("input,select,textarea").not("[type=submit]").jqBootstrapValidation();
+        
         $('#modal-nuevo-equivalente').on('show.bs.modal', function(event) { //Asigna valores a los campos de la modal
             var button = $(event.relatedTarget);
             var kitProductoId = button.attr('data-kit-producto-id');
