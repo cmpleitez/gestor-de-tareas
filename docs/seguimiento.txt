@@ -16,12 +16,16 @@ CLIENTE:
         . Cliente: 
             . Entra al <formulario del carrito> y agrega o cambia los <kits y sus productos> y especifica si va enviar una <orden de compra> o una <orden de reserva>
 
-                🪒 Editor del carrito
+                🪒 Visualizador del Kit y Editor del carrito
                     . Cambiar el orden a: 
                         1-agregar kit si ya existe en el carrito se mostrará mensaje informativo
                             (Esta forma es debido a que es compra al por mayor y no se pueden estar duplicando las unidades de los productos cada vez que se oprima el boton agregar)
-                        2-editar las unidades que se solicitan de cada producto y los productos en si pueden ser sustituidos por sus equivalentes
-                            <li><a class="btn btn-success text-white mt-2 btn-ver-kit" data-bs-toggle="modal" data-bs-target="#modalPreferencias" data-kit-id="{{ $kit->id }}" data-kit-name="{{ $kit->kit }}" data-kit-image-path="{{ $kit->image_path ? Storage::url($kit->image_path) : '' }}" href="#" style="pointer-events: auto;"><i class="far fa-eye"></i></a></li>
+                
+                        ...2-editar las unidades que se solicitan de cada producto y sustituir equivalentes se es necesario
+                            ... acordiones con los nombres de los kits + columna precio + icono eliminar
+                                los kits se subdividen en productos + columna unidades
+                                    los productos se subdividen en sus productos equivalentes (al dar clic en uno se sustituye sobre el producto padre )
+                
                         3-enviar la orden de compra, o borrar kit y volver a comenzar
 
                     . Da clic en <Enviar>
