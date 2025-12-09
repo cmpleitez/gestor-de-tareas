@@ -66,6 +66,7 @@
             display: none !important;
         }
     </style>
+    
 
     @stack('css')
 </head>
@@ -118,6 +119,7 @@
     <script src="{{ asset('app-assets/js/templatemo-zay.js') }}"></script>
     <script src="{{ asset('app-assets/js/custom-zay.js') }}"></script>
     <script src="{{ asset('app-assets/vendors/js/extensions/toastr.min.js') }}"></script>
+    <script src="{{ asset('app-assets/js/helpers.js') }}"></script>
     <script>
         if (typeof toastr !== 'undefined') { // Configuración global de toastr para todo el proyecto
             toastr.options = {

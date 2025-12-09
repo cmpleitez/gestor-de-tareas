@@ -33,11 +33,8 @@
                 <div class="col-md-3">
                     <div class="card mb-4" style="border: 0;">
                         <div class="card">
-                            <a href="#" class="d-block btn-ver-kit text-decoration-none" data-bs-toggle="modal" data-bs-target="#modalPreferencias" data-kit-id="{{ $kit->id }}" data-kit-name="{{ $kit->kit }}" data-kit-image-path="{{ $kit->image_path ? Storage::url($kit->image_path) : '' }}" style="pointer-events: auto;">
-                                <img class="card-img img-fluid" src="{{ Storage::disk('public')->url($kit->image_path) ? Storage::disk('public')->url($kit->image_path) : asset('app-assets/images/pages/mercaderia.png') }}">
-                            </a>
-
-                            <div class="card-img-overlay product-overlay d-flex align-items-center justify-content-center" style="pointer-events: none;">
+                            <img class="card-img img-fluid" src="{{ Storage::disk('public')->url($kit->image_path) ? Storage::disk('public')->url($kit->image_path) : asset('app-assets/images/pages/mercaderia.png') }}">
+                            <div class="card-img-overlay product-overlay d-flex align-items-start justify-content-end" style="pointer-events: none;">
                                 <ul class="list-unstyled">
                                     <li><a class="btn btn-success text-white" href="#" style="pointer-events: auto;"><i class="far fa-heart"></i></a></li>
                                     <li><a class="btn btn-success text-white mt-2 btn-ver-kit" data-bs-toggle="modal" data-bs-target="#modalPreferencias" data-kit-id="{{ $kit->id }}" data-kit-name="{{ $kit->kit }}" data-kit-image-path="{{ $kit->image_path ? Storage::url($kit->image_path) : '' }}" href="#" style="pointer-events: auto;"><i class="far fa-eye"></i></a></li>
@@ -89,30 +86,30 @@
 </div>
 {{-- PREFERENCIAS DEL CLIENTE --}}
 <div class="modal fade" id="modalPreferencias" tabindex="-1" aria-labelledby="modalPreferenciasLabel" aria-hidden="true">
-    <div class="modal-dialog modal-fullscreen">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalPreferenciasLabel">Título de la Modal</h5>
+                <h5 class="modal-title" id="modalPreferenciasLabel">Estandares del Kit</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
-                    <div class="row"> {{-- Imagen del Kit --}}
-                        <div class="col-sm-6" style="background-color:rgb(255, 253, 160);">
+                    <div class="row"> 
+                        <div class="col-sm-6"> {{-- Imagen del Kit --}}
                             <div id="kit-image-container" class="d-flex align-items-center justify-content-center h-100">
                                 <img id="kit-image" src="" alt="Foto del Kit" class="img-fluid" style="display: none; max-height: 400px; object-fit: contain;">
                                 <p id="kit-image-placeholder" class="text-muted">Foto del Kit</p>
                             </div>
                         </div>
-                        <div class="col-sm-6" style="background-color:rgb(110, 180, 104);">
-                            <div id="kit-details-container"> {{-- DetallesGenrales del Kit --}}
+                        <div class="col-sm-6"> {{-- Detalles Generales del Kit --}}
+                            <div id="kit-details-container"> 
                                 <h4 id="kit-name" class="mb-3"></h4>
                                 <p>Detalles del Kit</p>
                             </div>
                         </div>
                     </div>
                     <div class="row"> {{-- Productos (Carrusel de alternativas) --}}
-                        <div class="col-sm-12" style="background-color:rgb(253, 184, 184);">
+                        <div class="col-sm-12">
                             <div class="row" id="kit_productos">
                                 {{-- dibujar aqui los productos del kit clicado --}}
                             </div>
@@ -122,7 +119,6 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-primary">Guardar cambios</button>
             </div>
         </div>
     </div>
@@ -161,39 +157,40 @@
                     kitImagePlaceholder.textContent = 'Foto del Kit (sin imagen)';
                 }
                 fetch('{{ route("tienda.get-kit-productos") }}', { // Cargar productos del kit via AJAX
-                    method: 'POST'
-                    , headers: {
-                        'Content-Type': 'application/json'
-                        , 'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    }
-                    , body: JSON.stringify({
-                        kit_id: kitId
+                        method: 'POST'
+                        , headers: {
+                            'Content-Type': 'application/json'
+                            , 'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        }
+                        , body: JSON.stringify({
+                            kit_id: kitId
+                        })
                     })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    const kitProductosContainer = document.getElementById('kit_productos');
-                    if (data.success) {
-                        let html = '';
-                        data.productos.forEach(producto => {
-                            html += `<div class="col-12 col-sm-3 p-2"><p class="mb-0">${producto.producto}</p></div>`;
-                            html += `<div class="col-12 col-sm-3 p-2"><input style="text-align: center;" type="text" 
-                            name="unidades[${producto.id}]" id="unidades_${producto.id}" class="form-control" value="${producto.unidades}" 
-                            data-validation-required-message="Este campo es obligatorio" 
-                            data-validation-containsnumber-regex="^[1-9]\\d*$" 
-                            data-validation-containsnumber-message="Solo números positivos (mínimo 1)" 
-                            required></div>`;
-                            html += `<div class="col-12 col-sm-3 p-2"><div class="help-block"></div></div>`;
-                        });
-                        kitProductosContainer.innerHTML = html;
-                    } else {
-                        kitProductosContainer.innerHTML = '<p class="text-danger">Error al cargar productos</p>';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    document.getElementById('kit_productos').innerHTML = '<p class="text-danger">Error al cargar productos</p>';
-                });
+                    .then(response => response.json())
+                    .then(data => {
+                        const kitProductosContainer = document.getElementById('kit_productos');
+                        if (data.success) {
+                            let html = '';
+                            data.kit.productos.forEach(producto => {
+                                html += `<div class="col-12 col-sm-3 p-2">
+                                    <p class="text-center mb-0">${producto.producto}</p>
+                                    <p class="text-center">${producto.pivot.unidades} Unidad(es)</p>
+                                </div>`;
+                            });
+                            kitProductosContainer.innerHTML = html;
+                        } else {
+                            kitProductosContainer.innerHTML = '<p class="text-danger">Error al cargar productos</p>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        document.getElementById('kit_productos').innerHTML = '<p class="text-danger">Error al cargar productos</p>';
+                    });
+            }
+        });
+        modalPreferencias.addEventListener('hide.bs.modal', function() {
+            if (document.activeElement) {
+                document.activeElement.blur();
             }
         });
         modalPreferencias.addEventListener('hidden.bs.modal', function() {

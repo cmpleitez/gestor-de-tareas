@@ -64,7 +64,7 @@ class TiendaController extends Controller
         return back()->with('error', 'La operación de retirada no está disponible en este momento');
     }
 
-    public function agregar(Kit $kit)
+    public function agregarKit(Kit $kit)
     {
         $user      = auth()->user(); //Seleccionando el receptor
         $receptors = User::whereHas('roles', function ($query) {
@@ -77,7 +77,7 @@ class TiendaController extends Controller
         }
         try {
             DB::beginTransaction();
-            $kit->load('productos'); //Verificando si ya existe el Kit
+            $kit->load('productos'); //Verificando si ya existe el kit en la orden de compra
             $receptor = $receptors->random();
             $atencionDetalles = AtencionDetalle::where('kit_id', $kit->id) 
             ->whereHas('atencion', function ($query1) {
@@ -87,27 +87,17 @@ class TiendaController extends Controller
                 })->where('oficina_id', auth()->user()->oficina_id)
                 ->where('activo', false);
             })->get();
-            if ($atencionDetalles->isNotEmpty()) { //Actualizando las unidades de todo el Kit
-                foreach ($atencionDetalles as $atencionDetalle) {
-                    $productoPivot = $kit->productos
-                    ->where('id', $atencionDetalle->producto_id)
-                    ->first();
-                    if ($productoPivot && $productoPivot->pivot) {
-                        $unidadesNuevas = (int) $productoPivot->pivot->unidades;
-                        $unidadesActuales = (int) $atencionDetalle->unidades;
-                        $atencionDetalle->unidades = $unidadesActuales + $unidadesNuevas;
-                        $atencionDetalle->save();
-                    }
-                }
+            if ($atencionDetalles->isNotEmpty()) { //Verificando si el kit ya se encuentra en el carrito
+                return back()->with('info', 'El kit ya se encuentra en el carrito');
             } else {
-                $atencion             = new Atencion(); //Creando el registro de atención al cliente
+                $atencion             = new Atencion(); //Creando el registro de atención al cliente (Encabezado de la orden de compra)
                 $atencion->id         = (new KeyMaker())->generate('Atencion', Solicitud::where('solicitud', 'Orden de compra')->first()->id);
                 $atencion->oficina_id = auth()->user()->oficina_id;
                 $atencion->estado_id  = Estado::where('estado', 'Recibida')->first()->id;
                 $atencion->avance     = 0.00;
                 $atencion->activo     = false;
                 $atencion->save();
-                foreach ($kit->productos as $producto) { //Creando el detalle del registro de Atención
+                foreach ($kit->productos as $producto) { //Creando el detalle del registro de Atención (Detalle de la orden de compra)
                     $atencionDetalle = new AtencionDetalle();
                     $atencionDetalle->atencion_id = $atencion->id;
                     $atencionDetalle->kit_id = $kit->id;
@@ -116,7 +106,7 @@ class TiendaController extends Controller
                     $atencionDetalle->precio = $producto->precio;
                     $atencionDetalle->save();
                 }
-                $recepcion                  = new Recepcion(); //Creando la copia <Receptor> 
+                $recepcion                  = new Recepcion(); //Creando la copia de la orden de compra para el <Receptor>
                 $recepcion->id              = (new KeyMaker())->generate('Recepcion', Solicitud::where('solicitud', 'Orden de compra')->first()->id);
                 $recepcion->atencion_id     = $atencion->id;
                 $recepcion->solicitud_id    = Solicitud::where('solicitud', 'Orden de compra')->first()->id;
@@ -300,7 +290,7 @@ class TiendaController extends Controller
 
         return response()->json([
             'success' => true,
-            'productos' => $kit->productos
+            'kit' => $kit
         ]);
     }
 }

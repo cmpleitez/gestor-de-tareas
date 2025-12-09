@@ -57,7 +57,7 @@ class UserController extends Controller
         // Restringir cambio de name si existen recepciones asociadas como destino
         $incomingName = $request->input('name');
         if ($incomingName !== null && $incomingName !== $user->name) {
-            if (Recepcion::where('user_id_destino', $user->id)->exists()) {
+            if (Recepcion::where('destino_user_id', $user->id)->exists()) {
                 return back()->with('error', 'No se puede cambiar el nombre porque el usuario tiene recepciones asignadas.');
             }
             $validated['name'] = $incomingName;

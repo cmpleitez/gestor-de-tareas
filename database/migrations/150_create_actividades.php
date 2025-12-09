@@ -12,9 +12,9 @@ return new class extends Migration
             $table->string('id', 12)->primary();
             $table->string('recepcion_id', 12)->constrained('recepciones');
             $table->foreignId('tarea_id');
-            $table->foreignId('role_id');
-            $table->foreignId('user_id_origen');
-            $table->foreignId('user_id_destino');
+            $table->foreignId('user_destino_role_id');
+            $table->foreignId('origen_user_id');
+            $table->foreignId('destino_user_id');
             $table->foreignId('estado_id');
             $table->string('observacion')->nullable();
             $table->boolean('activo')->default(true);
@@ -22,9 +22,9 @@ return new class extends Migration
             
             $table->foreign('recepcion_id')->references('id')->on('recepciones');
             $table->foreign('tarea_id')->references('id')->on('tareas');
-            $table->foreign('role_id')->references('id')->on('roles');
-            $table->foreign('user_id_origen')->references('id')->on('users');
-            $table->foreign('user_id_destino')->references('id')->on('users');
+            $table->foreign('user_destino_role_id')->references('id')->on('roles');
+            $table->foreign('origen_user_id')->references('id')->on('users');
+            $table->foreign('destino_user_id')->references('id')->on('users');
             $table->foreign('estado_id')->references('id')->on('estados');
         });
     }

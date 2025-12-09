@@ -707,9 +707,10 @@
  * Formato: $1,499.99 (USD con separador de miles y 2 decimales)
  * El valor se envía sin formato al servidor (solo números)
  */
-    .input-currency {
-        /* Los estilos visuales se manejan mediante Inputmask */
-        /* Esta clase es principalmente un selector para JavaScript */
+
+    .custom-switch .custom-control-input:checked~.custom-control-label::before {
+        background-color: var(--text-secondary-dark) !important;
+        border-color: var(--text-secondary-dark) !important;
     }
 
     /* ===== TARJETAS DE PRODUCTOS ===== */

@@ -25,17 +25,17 @@ class Recepcion extends Model
 
     public function role()
     {
-        return $this->belongsTo(Role::class);
+        return $this->belongsTo(Role::class, 'user_destino_role_id');
     }
 
     public function usuarioOrigen()
     {
-        return $this->belongsTo(User::class, 'user_id_origen');
+        return $this->belongsTo(User::class, 'origen_user_id');
     }
 
     public function usuarioDestino()
     {
-        return $this->belongsTo(User::class, 'user_id_destino');
+        return $this->belongsTo(User::class, 'destino_user_id');
     }
 
     public function estado()

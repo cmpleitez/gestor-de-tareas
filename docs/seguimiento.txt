@@ -17,9 +17,13 @@ CLIENTE:
             . Entra al <formulario del carrito> y agrega o cambia los <kits y sus productos> y especifica si va enviar una <orden de compra> o una <orden de reserva>
 
                 🪒 Editor del carrito
-                    . Cambiar el orden a: 1-elegir kit / 2-editar kit alternativas / 3-agregar kit / 4-Editar unidades o borrar kit y volver a comenzar
-                        . para el cliente: crear el editor de los kits en el carrito
-                            . para el cliente: edición del kit: construir la funcionalidad para editar las <preferencias del cliente>
+                    . Cambiar el orden a: 
+                        1-agregar kit si ya existe en el carrito se mostrará mensaje informativo
+                            (Esta forma es debido a que es compra al por mayor y no se pueden estar duplicando las unidades de los productos cada vez que se oprima el boton agregar)
+                        2-editar las unidades que se solicitan de cada producto y los productos en si pueden ser sustituidos por sus equivalentes
+                            <li><a class="btn btn-success text-white mt-2 btn-ver-kit" data-bs-toggle="modal" data-bs-target="#modalPreferencias" data-kit-id="{{ $kit->id }}" data-kit-name="{{ $kit->kit }}" data-kit-image-path="{{ $kit->image_path ? Storage::url($kit->image_path) : '' }}" href="#" style="pointer-events: auto;"><i class="far fa-eye"></i></a></li>
+                        3-enviar la orden de compra, o borrar kit y volver a comenzar
+
                     . Da clic en <Enviar>
                     . Maquetar movimiento.edit
                     . https://chat.z.ai/ nueva IA
@@ -33,7 +37,9 @@ CLIENTE:
                     . Revisión de clases en desuso
                     . Etiquetado de bloques de clases
 
-                🪒 Boton eliminacion del modelo Tareas no funciona
+                🪒 errores pendientes de reparar:
+                    . Boton eliminacion del modelo Tareas no funciona
+                    . la edición del kit debería incluir su precio
 
         . Sistema: En atención a la orden (<Enviar>), del cliente: 
             . Crea a partir del <formulario del carrito> una <copia solicitud receptor>

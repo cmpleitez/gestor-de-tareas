@@ -104,9 +104,9 @@ class RecepcionController extends Controller
             $user        = auth()->user();
             $recepciones = Recepcion::where(function ($query) use ($user) {
                 if ($user->mainRole->name == 'Cliente') {
-                    $query->where('user_id_origen', $user->id);
+                    $query->where('origen_user_id', $user->id);
                 } else {
-                    $query->where('user_id_destino', $user->id);
+                    $query->where('destino_user_id', $user->id);
                 }
             })
                 ->with(['solicitud.tareas', 'usuarioDestino', 'usuarioOrigen', 'atencion.oficina', 'atencion.estado', 'role', 'actividades.tarea'])
@@ -114,10 +114,11 @@ class RecepcionController extends Controller
                     $query->where('id', $user->oficina_id);
                 })
                 ->where('estado_id', '<>', Estado::where('estado', 'Resuelta')->first()->id)
+                ->where('activo', true)
                 ->orderBy('atencion_id', 'asc')
                 ->take(5)
                 ->get();
-            $atencionIds           = $recepciones->pluck('atencion_id')->unique();
+            $atencionIds = $recepciones->pluck('atencion_id')->unique();
             $usuariosParticipantes = $this->obtenerUsuariosParticipantes($atencionIds); //Obtener usuarios participantes
             $tarjetas              = $recepciones->map(function ($tarjeta) use ($usuariosParticipantes) {
                 $usuariosParticipantesAtencion = $usuariosParticipantes->get($tarjeta->atencion_id, collect());
@@ -168,9 +169,9 @@ class RecepcionController extends Controller
             $atencionesIdsEnFrontend = $request->input('atencion_ids', []);
             $recepciones             = Recepcion::where(function ($query) use ($user) {
                 if ($user->mainRole->name == 'Cliente') {
-                    $query->where('user_id_origen', $user->id);
+                    $query->where('origen_user_id', $user->id);
                 } else {
-                    $query->where('user_id_destino', $user->id);
+                    $query->where('destino_user_id', $user->id);
                 }
             })
                 ->with(['solicitud.tareas', 'usuarioDestino', 'usuarioOrigen', 'atencion.oficina', 'atencion.estado', 'role', 'actividades.tarea'])
@@ -178,10 +179,11 @@ class RecepcionController extends Controller
                     $query->where('id', $user->oficina_id);
                 })
                 ->where('estado_id', Estado::where('estado', 'Recibida')->first()->id)
+                ->where('activo', true)
                 ->orderBy('atencion_id')
                 ->take(5)
                 ->get();
-            $atencionIds           = $recepciones->pluck('atencion_id')->unique();
+            $atencionIds = $recepciones->pluck('atencion_id')->unique();
             $usuariosParticipantes = $this->obtenerUsuariosParticipantes($atencionIds); //Obtener usuarios participantes
             if (! empty($atencionesIdsEnFrontend)) {
                 $recepciones = $recepciones->whereNotIn('atencion_id', $atencionesIdsEnFrontend);
@@ -231,8 +233,8 @@ class RecepcionController extends Controller
             $new_recepcion->atencion_id     = $recepcion->atencion_id;
             $new_recepcion->solicitud_id    = $recepcion->solicitud_id;
             $new_recepcion->role_id         = Role::where('name', 'Operador')->first()->id;
-            $new_recepcion->user_id_origen  = auth()->user()->id;
-            $new_recepcion->user_id_destino = $operador->id;
+            $new_recepcion->origen_user_id  = auth()->user()->id;
+            $new_recepcion->destino_user_id = $operador->id;
             $new_recepcion->estado_id       = Estado::where('estado', 'Recibida')->first()->id;
             $new_recepcion->detalle         = $recepcion->detalle;
             $new_recepcion->activo          = false;
@@ -267,12 +269,12 @@ class RecepcionController extends Controller
                 ->whereIn('atencion_id', $tarjetasIds)
                 ->where(function ($query) use ($user) {
                     if ($user->mainRole && $user->mainRole->name === 'Cliente') {
-                        $query->where('user_id_origen', $user->id);
+                        $query->where('origen_user_id', $user->id);
                     } else {
-                        $query->where('user_id_destino', $user->id);
+                        $query->where('destino_user_id', $user->id);
                     }
                 })
-                ->select('atencion_id', 'estado_id', 'user_id_origen', 'user_id_destino')
+                ->select('atencion_id', 'estado_id', 'origen_user_id', 'destino_user_id')
                 ->get();
             $usuariosParticipantes = $this->obtenerUsuariosParticipantes($tarjetas->pluck('atencion_id')->unique()); //Obtener usuarios participantes
             $resultado             = $tarjetas->map(function ($tarjeta) use ($usuariosParticipantes) {
@@ -376,8 +378,8 @@ class RecepcionController extends Controller
             $recepcion->atencion_id     = $atencion_id;
             $recepcion->role_id         = Role::where('name', 'Receptor')->first()->id;
             $recepcion->solicitud_id    = $request->solicitud_id;
-            $recepcion->user_id_origen  = auth()->user()->id;
-            $recepcion->user_id_destino = $Receptor->id;
+            $recepcion->origen_user_id  = auth()->user()->id;
+            $recepcion->destino_user_id = $Receptor->id;
             $recepcion->estado_id       = Estado::where('estado', 'Recibida')->first()->id;
             $recepcion->detalle         = $request->detalle;
             $recepcion->activo          = false; //Por defecto invalidada, se valida al ejemplo: procesar el carrito originando una orden de compra válida, luego una tarea programada borra cada cieto tiempo todos los registros con condicion nula en este campo
@@ -392,7 +394,7 @@ class RecepcionController extends Controller
 
     public function iniciarTareas(string $recepcion_id)
     {
-                                                     //VALIDANDO
+        //VALIDANDO
         $recepcion = Recepcion::find($recepcion_id); //Id de recepcion
         if (! $recepcion) {
             return response()->json(['success' => false, 'message' => 'No se encontró la recepción solicitada'], 404);
@@ -410,8 +412,8 @@ class RecepcionController extends Controller
                 $actividad->recepcion_id    = $recepcion->id;
                 $actividad->tarea_id        = $tarea->id;
                 $actividad->role_id         = Role::where('name', 'Operador')->first()->id;
-                $actividad->user_id_origen  = auth()->user()->id;
-                $actividad->user_id_destino = $recepcion->user_id_destino;
+                $actividad->origen_user_id  = auth()->user()->id;
+                $actividad->destino_user_id = $recepcion->destino_user_id;
                 $actividad->estado_id       = Estado::where('estado', 'En progreso')->first()->id;
                 if ($tarea->id == 1) { //La primer tarea se resuelve en automático
                     $actividad->estado_id = Estado::where('estado', 'Resuelta')->first()->id;
