@@ -177,6 +177,13 @@
                         let html = '';
                         data.productos.forEach(producto => {
                             html += `<div class="col-12 col-sm-3 p-2"><p class="mb-0">${producto.producto}</p></div>`;
+                            html += `<div class="col-12 col-sm-3 p-2"><input style="text-align: center;" type="text" 
+                            name="unidades[${producto.id}]" id="unidades_${producto.id}" class="form-control" value="${producto.unidades}" 
+                            data-validation-required-message="Este campo es obligatorio" 
+                            data-validation-containsnumber-regex="^[1-9]\\d*$" 
+                            data-validation-containsnumber-message="Solo números positivos (mínimo 1)" 
+                            required></div>`;
+                            html += `<div class="col-12 col-sm-3 p-2"><div class="help-block"></div></div>`;
                         });
                         kitProductosContainer.innerHTML = html;
                     } else {
