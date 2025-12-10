@@ -94,7 +94,7 @@
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
-                    <div class="row"> 
+                    <div class="row">
                         <div class="col-sm-6"> {{-- Imagen del Kit --}}
                             <div id="kit-image-container" class="d-flex align-items-center justify-content-center h-100">
                                 <img id="kit-image" src="" alt="Foto del Kit" class="img-fluid" style="display: none; max-height: 400px; object-fit: contain;">
@@ -102,7 +102,7 @@
                             </div>
                         </div>
                         <div class="col-sm-6"> {{-- Detalles Generales del Kit --}}
-                            <div id="kit-details-container"> 
+                            <div id="kit-details-container">
                                 <h4 id="kit-name" class="mb-3"></h4>
                                 <p>Detalles del Kit</p>
                             </div>
@@ -117,8 +117,8 @@
                     </div>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            <div class="modal-footer" id="modal-footer">
+                {{-- Dibujar aqui el tablero de control --}}
             </div>
         </div>
     </div>
@@ -169,14 +169,26 @@
                     .then(response => response.json())
                     .then(data => {
                         const kitProductosContainer = document.getElementById('kit_productos');
+                        const modalFooter = document.getElementById('modal-footer');
                         if (data.success) {
+                            let agregarKitUrl = "{{ Route('tienda.agregar-kit', ':id') }}";
+                            agregarKitUrl = agregarKitUrl.replace(':id', kitId);
+
                             let html = '';
                             data.kit.productos.forEach(producto => {
-                                html += `<div class="col-12 col-sm-3 p-2">
-                                    <p class="text-center mb-0">${producto.producto}</p>
-                                    <p class="text-center">${producto.pivot.unidades} Unidad(es)</p>
-                                </div>`;
+                                html += `
+                                <div class="col-12 col-sm-3 p-2 d-flex flex-column align-items-center mb-2">
+                                    <p class="text-center mb-2">${producto.producto}</p>
+                                    <p class="badge bg-success mb-0">${producto.pivot.unidades}</p> <span class="text-muted small">Unidad(es)</span>
+                                </div>
+                            `;
                             });
+                            modalFooter.innerHTML = `
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            <a class="btn btn-secondary" href="${agregarKitUrl}">
+                                Agregar <i class="fas fa-cart-plus"></i>
+                            </a>
+                        `;
                             kitProductosContainer.innerHTML = html;
                         } else {
                             kitProductosContainer.innerHTML = '<p class="text-danger">Error al cargar productos</p>';

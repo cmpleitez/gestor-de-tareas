@@ -24,28 +24,34 @@
             margin: 0;
             padding: 0;
         }
+
         body {
             display: flex;
             flex-direction: column;
         }
+
         main {
             flex: 1;
             display: flex;
             flex-direction: column;
         }
+
         main .container {
             flex: 1;
             display: flex;
             flex-direction: column;
             min-height: 0;
         }
+
         main .container>* {
             flex-shrink: 0;
         }
+
         main .container>.d-flex {
             flex: 1;
             min-height: 0;
         }
+
         .badge-carrito-count {
             position: absolute;
             top: -10px;
@@ -62,12 +68,36 @@
             font-weight: bold;
             line-height: 1;
         }
+
         .badge-carrito-count.d-none {
             display: none !important;
         }
-    </style>
-    
 
+        @media (max-width: 768px) {
+            #modalPreferencias {
+                padding-right: 0 !important;
+            }
+
+            #modalPreferencias .modal-dialog {
+                margin: 0;
+                max-width: 100%;
+                width: 100%;
+                height: 100%;
+                min-height: 100%;
+            }
+
+            #modalPreferencias .modal-content {
+                border-radius: 0;
+                min-height: 100%;
+                height: 100%;
+            }
+
+            #modalPreferencias .modal-body {
+                overflow-y: auto;
+            }
+        }
+
+    </style>
     @stack('css')
 </head>
 
@@ -85,7 +115,7 @@
                     <h1 class="h3 mb-0 text-truncate">CATÁLOGO</h1>
                 </div>
                 <div class="col-auto d-flex justify-content-end">
-                    <a href="{{ route('dashboard') }}" class="btn btn-primary position-relative" id="btn-carrito">
+                    <a href="{{ route('tienda.carrito') }}" class="btn btn-primary position-relative" id="btn-carrito">
                         <i class="fas fa-cart-plus"></i>
                         <span id="badge-carrito" class="badge-carrito-count d-none">0</span>
                     </a>

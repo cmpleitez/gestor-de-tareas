@@ -26,8 +26,14 @@ class TiendaController extends Controller
     public function index()
     {
         $kits = Kit::where('activo', true)->get();
-        return view('modelos.producto.tienda', compact('kits'));
+        return view('modelos.kit.tienda', compact('kits'));
     }
+
+    public function carritoIndex()
+    {
+        return view('modelos.kit.carrito');
+    }
+
 
     public function create()
     {

@@ -8,7 +8,6 @@ use App\Models\Tipo;
 use App\Services\CorrelativeIdGenerator;
 use App\Http\Requests\ProductoStoreRequest;
 use App\Http\Requests\ProductoUpdateRequest;
-use Illuminate\Support\Facades\DB;
 
 class ProductoController extends Controller
 {

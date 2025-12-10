@@ -21,12 +21,12 @@ CLIENTE:
                         1-agregar kit si ya existe en el carrito se mostrará mensaje informativo
                             (Esta forma es debido a que es compra al por mayor y no se pueden estar duplicando las unidades de los productos cada vez que se oprima el boton agregar)
                 
-                        ...2-editar las unidades que se solicitan de cada producto y sustituir equivalentes se es necesario
+                        ...2-editar los equivalentes de cada producto
                             ... acordiones con los nombres de los kits + columna precio + icono eliminar
                                 los kits se subdividen en productos + columna unidades
                                     los productos se subdividen en sus productos equivalentes (al dar clic en uno se sustituye sobre el producto padre )
                 
-                        3-enviar la orden de compra, o borrar kit y volver a comenzar
+                        3-enviar la orden de compra
 
                     . Da clic en <Enviar>
                     . Maquetar movimiento.edit
