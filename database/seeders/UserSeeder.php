@@ -179,6 +179,13 @@ class UserSeeder extends Seeder
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
+        DB::table('estados')->insert([
+            'id'         => 7,
+            'estado'     => 'Solicitada',
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+
 
         //CREACION DE PARAMETROS
         DB::table('parametros')->insert([

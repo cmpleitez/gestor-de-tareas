@@ -27,4 +27,9 @@ class Atencion extends Model
         return $this->belongsTo(Estado::class);
     }
 
+    public function atencionDetalles()
+    {
+        return $this->hasMany(AtencionDetalle::class);
+    }
+
 }

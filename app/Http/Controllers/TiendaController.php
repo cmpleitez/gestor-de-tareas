@@ -21,6 +21,7 @@ use App\Models\Role;
 use App\Models\Solicitud;
 use App\Models\AtencionDetalle;
 
+
 class TiendaController extends Controller
 {
     public function index()
@@ -31,7 +32,14 @@ class TiendaController extends Controller
 
     public function carritoIndex()
     {
-        return view('modelos.kit.carrito');
+        $atencion = Atencion::where('activo', false)
+        ->whereHas('recepciones', function ($query) {
+            $query->where('origen_user_id', auth()->user()->id);
+        })
+        ->with(['atencionDetalles.kit', 'atencionDetalles.producto'])
+        ->get();
+
+        return view('modelos.kit.carrito', compact('atencion'));
     }
 
 
@@ -119,7 +127,7 @@ class TiendaController extends Controller
                 $recepcion->origen_user_id  = auth()->user()->id;
                 $recepcion->destino_user_id = $receptor->id;
                 $recepcion->user_destino_role_id = Role::where('name', 'Receptor')->first()->id;
-                $recepcion->estado_id       = Estado::where('estado', 'Recibida')->first()->id;
+                $recepcion->estado_id       = Estado::where('estado', 'Solicitada')->first()->id;
                 $recepcion->activo          = false;
                 $recepcion->save();
             }
