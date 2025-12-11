@@ -36,7 +36,10 @@ class TiendaController extends Controller
         ->whereHas('recepciones', function ($query) {
             $query->where('origen_user_id', auth()->user()->id);
         })
-        ->with(['atencionDetalles.kit', 'atencionDetalles.producto'])
+        ->with([
+            'atencionDetalles.kit', 
+            'atencionDetalles.producto.kitProductos.equivalentes.producto'
+        ])
         ->get();
 
         return view('modelos.kit.carrito', compact('atencion'));
@@ -86,7 +89,7 @@ class TiendaController extends Controller
         })->whereHas('oficina', function ($query) use ($user) {
             $query->where('id', $user->oficina_id);
         })->get();
-        if ($receptors->isEmpty()) {
+        if ($receptors->isEmpty()) {    
             return back()->with('error', 'No hay personal <Receptor> disponible para atender la solicitud');
         }
         try {

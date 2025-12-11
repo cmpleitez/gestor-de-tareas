@@ -59,9 +59,6 @@ Thumbs.db
 !.gitignore
 !.env.example
 
-# Directorio de documentación
-docs/
-
 # Archivos de Laravel
 storage/logs/
 storage/framework/cache/

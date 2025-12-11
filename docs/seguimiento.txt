@@ -22,9 +22,10 @@ CLIENTE:
                             (Esta forma es debido a que es compra al por mayor y no se pueden estar duplicando las unidades de los productos cada vez que se oprima el boton agregar)
                 
                         ...2-editar los equivalentes de cada producto
-                            ... acordiones con los nombres de los kits + columna precio + icono eliminar
+                            ... acordiones con los nombres de los kits + columna precio + cantidad de kits o (campo unidades del kit), aqui cambia el precio del kit al doble o triple dependiendo de la cantidad de kits + icono eliminar
                                 los kits se subdividen en productos + columna unidades
-                                    los productos se subdividen en sus productos equivalentes (al dar clic en uno se sustituye sobre el producto padre )
+                                    los productos se subdividen en sus productos equivalentes (al dar clic en uno se sustituye sobre el producto padre y podría cambiar el precio del kit )
+                                        
                 
                         3-enviar la orden de compra
 

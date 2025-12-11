@@ -20,12 +20,12 @@
         "blade.format.enable": false,
         "[php]": {
             "editor.formatOnSave": false,
-            "editor.insertSpaces": true,
+            "editor.insertSpaces": false,
             "editor.tabSize": 4
         },
         "[blade]": {
             "editor.formatOnSave": false,
-            "editor.insertSpaces": true,
+            "editor.insertSpaces": false,
             "editor.tabSize": 4
         },
         "git.autofetch": true,
