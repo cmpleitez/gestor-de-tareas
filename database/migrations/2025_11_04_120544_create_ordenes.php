@@ -8,19 +8,18 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('atencion_detalles', function (Blueprint $table) {
+        Schema::create('orden', function (Blueprint $table) {
+            $table->string('id', 12)->primary();
             $table->string('atencion_id', 12)->constrained('atenciones');
-            $table->foreignId('kit_id')->constrained('kits');
-            $table->foreignId('producto_id')->constrained('productos');
+            $table->integer('kit_id')->constrained('kits');
             $table->integer('unidades');
             $table->decimal('precio', 20, 4);
-            $table->primary(['atencion_id', 'kit_id', 'producto_id']);
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('atencion_detalles');
+        Schema::dropIfExists('orden');
     }
 };
