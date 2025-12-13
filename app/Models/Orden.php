@@ -4,6 +4,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Orden extends Model
 {
+    public $table = 'ordenes';
     public $incrementing = false;
     protected $keyType   = 'string';
     protected $casts = [

@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('orden', function (Blueprint $table) {
+        Schema::create('ordenes', function (Blueprint $table) {
             $table->string('id', 12)->primary();
             $table->string('atencion_id', 12)->constrained('atenciones');
             $table->integer('kit_id')->constrained('kits');

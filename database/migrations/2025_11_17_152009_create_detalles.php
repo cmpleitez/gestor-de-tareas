@@ -8,11 +8,12 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('detalle', function (Blueprint $table) {
-            $table->string('orden_id', 12)->primary();
+        Schema::create('detalles', function (Blueprint $table) {
+            $table->string('orden_id', 12)->constrained('ordenes');
             $table->integer('producto_id')->constrained('productos');
             $table->integer('kit_id')->constrained('kits');
             $table->integer('unidades');
+            $table->decimal('precio', 20, 4);
             $table->timestamps();
         });
     }
