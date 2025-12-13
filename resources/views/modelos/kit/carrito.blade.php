@@ -33,13 +33,13 @@
         <!--GRID DE DATOS-->
         <div class="row">
             <div class="col-12 col-md-9">
-                <h5>NOMBRE DEL KIT</h5>
+                <h6>NOMBRE DEL KIT</h6>
             </div>
             <div class="col-12 col-md-1">
-                <h5>UNIDADES</h5>
+                <h6>UNIDADES</h6>
             </div>
             <div class="col-12 col-md-1">
-                <h5>PRECIO</h5>
+                <h6>PRECIO</h6>
             </div>
             <div class="col-12 col-md-1">
                 <h5>ACCIONES</h5>
