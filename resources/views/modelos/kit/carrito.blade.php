@@ -30,7 +30,6 @@
                 <h1>NUMERO DE ATENCIÓN {{ $atencion_id_ripped }}</h1>
             </div>
         </div>
-
         <!--GRID DE DATOS-->
         <div class="row">
             <div class="col-12 col-md-9">
@@ -131,10 +130,10 @@
                         </div>
                     </div>
                     <div class="col-12 col-md-1">
-                        ${{ $orden->unidades }}
+                        {{ $orden->unidades }}
                     </div>
                     <div class="col-12 col-md-1">
-                        ${{ number_format($orden->precio, 2) }}
+                        {{ number_format($orden->precio, 2) }}
                     </div>
                     <div class="col-12 col-md-1">
                         <button type="button" class="btn btn-primary">Retirar</button>
