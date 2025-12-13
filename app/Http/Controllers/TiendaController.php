@@ -19,6 +19,7 @@ use App\Models\Role;
 use App\Models\Solicitud;
 use App\Models\Orden;
 use App\Models\Detalle;
+use App\Services\KeyRipper;
 
 class TiendaController extends Controller
 {
@@ -40,7 +41,8 @@ class TiendaController extends Controller
                 'ordenes.detalle.producto.kitProductos.equivalentes.producto'
             ])
             ->get();
-        return view('modelos.kit.carrito', compact('atencion'));
+        $atencion_id_ripped = KeyRipper::rip($atencion->first()->id);
+        return view('modelos.kit.carrito', compact('atencion', 'atencion_id_ripped'));
     }
 
 
