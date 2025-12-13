@@ -21,7 +21,6 @@ use App\Models\Role;
 use App\Models\Solicitud;
 use App\Models\Orden;
 use App\Models\Detalle;
-use Illuminate\Support\Facades\Log;
 
 class TiendaController extends Controller
 {
@@ -34,15 +33,15 @@ class TiendaController extends Controller
     public function carritoIndex()
     {
         $atencion = Atencion::where('activo', false)
+            ->where('oficina_id', auth()->user()->oficina_id)
             ->whereHas('recepciones', function ($query) {
                 $query->where('origen_user_id', auth()->user()->id);
             })
             ->with([
-                'atencionDetalles.kit',
-                'atencionDetalles.producto.kitProductos.equivalentes.producto'
+                'ordenes.kit',
+                'ordenes.detalle.producto.kitProductos.equivalentes.producto'
             ])
             ->get();
-
         return view('modelos.kit.carrito', compact('atencion'));
     }
 

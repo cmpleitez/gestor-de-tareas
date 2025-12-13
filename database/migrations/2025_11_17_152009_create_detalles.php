@@ -15,6 +15,9 @@ return new class extends Migration
             $table->integer('unidades');
             $table->decimal('precio', 20, 4);
             $table->timestamps();
+
+            // Clave primaria compuesta
+            $table->primary(['orden_id', 'producto_id']);
         });
     }
 

@@ -1,14 +1,17 @@
 <?php
+
 namespace App\Models;
+
 use Illuminate\Database\Eloquent\Model;
 
 class Detalle extends Model
 {
+    protected $primaryKey = ['orden_id', 'producto_id'];
     public $incrementing = false;
-    protected $keyType   = 'string';
+    protected $keyType = 'string';
     protected $casts = [
         'activo' => 'boolean',
-    ];    
+    ];
 
     public function orden()
     {
@@ -24,7 +27,4 @@ class Detalle extends Model
     {
         return $this->belongsTo(Producto::class);
     }
-
-
-
 }
