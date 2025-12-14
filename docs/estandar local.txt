@@ -1,3 +1,12 @@
+🟠 Inicializar la validación frontend en las vistas
+@section('js')
+<script>
+$("input,select,textarea").not("[type=submit]").jqBootstrapValidation(); //Cuando la seccion js no está vacía se requiere pues cuando está vacía toma la inicialización global en dashboard
+
+... (resto del contenido js)...
+
+<script>
+
 🟠 Uso de formato de moneda: public/app-assets/js/helpers.js
 <p class="form-control-plaintext mb-0">${formatCurrency(producto.precio)}</p>
 
