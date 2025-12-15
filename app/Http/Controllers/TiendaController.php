@@ -1,6 +1,6 @@
 <?php
 namespace App\Http\Controllers;
-    use Illuminate\Http\Request;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\QueryException;
 use Exception;
@@ -100,6 +100,8 @@ class TiendaController extends Controller
                     $query->where('id', $user->oficina_id);
                 })->get();
                 if ($receptors->isEmpty()) {
+                    Log::warning('No hay receptores disponibles', ['oficina_id' => $user->oficina_id, 'user_id' => $user->id]);
+                    DB::rollBack();
                     return back()->with('error', 'No hay personal <Receptor> disponible para atender la solicitud');
                 }
                 $receptor = $receptors->random();
@@ -125,6 +127,7 @@ class TiendaController extends Controller
                 ->where('kit_id', $kit->id)
                 ->first();
             if ($orden) {
+                DB::rollBack();
                 return back()->with('info', 'El kit ya se encuentra en el carrito');
             }
             $orden = new Orden(); //Agregando Kit (Orden de compra)
@@ -145,7 +148,7 @@ class TiendaController extends Controller
             }
             DB::commit();
             return back()->with('success', 'Kit agregado a la tienda correctamente');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Ocurrió un error cuando se intentaba agregar el kit a la tienda: ' . $e->getMessage());
         }
