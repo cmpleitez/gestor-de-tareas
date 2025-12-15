@@ -1,3 +1,8 @@
+🟠 Para ver en una vista el contendo de arrays, o cualquier otro valor
+@php
+\Illuminate\Support\Facades\Log::info($equivalente);
+@endphp
+
 🟠 Inicializar la validación frontend en las vistas
 @section('js')
 <script>
