@@ -35,14 +35,6 @@
   --color-warning: #f78b64;
   --color-danger: #f36262;
 
-  /* Colores secundarios */
-  --color-primary-light: rgba(90, 141, 238, 0.01);
-  --color-secondary-light: rgba(71, 95, 123, 0.01);
-  --color-success-light: rgba(42, 197, 117, 0.01);
-  --color-info-light: rgba(0, 198, 211, 0.01);
-  --color-warning-light: rgba(247, 139, 100, 0.01);
-  --color-danger-light: rgba(243, 98, 98, 0.01);
-
   /* Variaciones de colores - dark */
   --color-primary-dark: #2453ad;
   --color-secondary-dark: #2c5381;
@@ -75,6 +67,14 @@
   --text-warning-light: #fac5b2;
   --text-danger-light: #d69999;
 
+  /* Colores base light para backgrounds y borders */
+  --color-primary-light: #c0dbfa;
+  --color-secondary-light: #8ab1f8;
+  --color-success-light: #9cf7c8;
+  --color-info-light: #aff0f5;
+  --color-warning-light: #fac5b2;
+  --color-danger-light: #d69999;
+
   /* Colores específicos para botones btn */
   --btn-primary: #3b7fff;
   --btn-secondary: #2e4f8b;
@@ -90,6 +90,15 @@
   --btn-info-dark: #125a5f;
   --btn-warning-dark: #d55122;
   --btn-danger-dark: #d73e3e;
+
+  /* Botones light */
+  --btn-primary-light: #2453ad;
+  --btn-secondary-light: #2c5381;
+  --btn-success-light: #1d7949;
+  --btn-info-light: #125a5f;
+  --btn-warning-light: #d55122;
+  --btn-danger-light: #fdf8f8;
+
 }
 
 /* Clases personalizadas para variaciones dark */
@@ -192,7 +201,7 @@
 
 /* Clases personalizadas para variaciones light */
 .text-primary-light {
-  color: var(--color-primary-light) !important;
+  color: var(--text-primary-light) !important;
 }
 
 .bg-primary-light {
@@ -204,7 +213,7 @@
 }
 
 .text-secondary-light {
-  color: var(--color-secondary-light) !important;
+  color: var(--text-secondary-light) !important;
 }
 
 .bg-secondary-light {
@@ -216,7 +225,7 @@
 }
 
 .text-success-light {
-  color: var(--color-success-light) !important;
+  color: var(--text-success-light) !important;
 }
 
 .bg-success-light {
@@ -228,7 +237,7 @@
 }
 
 .text-info-light {
-  color: var(--color-info-light) !important;
+  color: var(--text-info-light) !important;
 }
 
 .bg-info-light {
@@ -240,7 +249,7 @@
 }
 
 .text-warning-light {
-  color: var(--color-warning-light) !important;
+  color: var(--text-warning-light) !important;
 }
 
 .bg-warning-light {
@@ -252,7 +261,7 @@
 }
 
 .text-danger-light {
-  color: var(--color-danger-light) !important;
+  color: var(--text-danger-light) !important;
 }
 
 .bg-danger-light {
@@ -6454,4 +6463,29 @@ input:focus~.bg-danger {
 .btn-danger-dark {
   background-color: var(--btn-danger-dark) !important;
   color: white !important;
+}
+
+/* Clases personalizadas para botones light */
+.btn-primary-light {
+  background-color: var(--btn-primary-light) !important;
+}
+
+.btn-secondary-light {
+  background-color: var(--btn-secondary-light) !important;
+}
+
+.btn-success-light {
+  background-color: var(--btn-success-light) !important;
+}
+
+.btn-info-light {
+  background-color: var(--btn-info-light) !important;
+}
+
+.btn-warning-light {
+  background-color: var(--btn-warning-light) !important;
+}
+
+.btn-danger-light {
+  background-color: var(--btn-danger-light) !important;
 }

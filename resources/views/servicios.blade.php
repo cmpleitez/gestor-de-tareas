@@ -18,6 +18,13 @@
     <link rel="stylesheet" href="{{ asset('app-assets/css/plugins/extensions/toastr.css') }}">
 
     <style>
+        .button_delete {
+            font-size: 1.1rem !important;
+            border-radius: 0.2rem !important;
+            padding: 0.3em 0.3em 0.2em 0.3em;
+            margin-right: 0.1rem;
+        }
+
         html,
         body {
             height: 100%;
