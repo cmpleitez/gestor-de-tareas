@@ -1,5 +1,24 @@
 @extends('servicios')
 
+@section('header')
+    <div class="row align-items-center flex-nowrap">
+        <div class="col-auto d-flex justify-content-start">
+            <a href="{{ route('dashboard') }}" class="btn btn-primary">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+        </div>
+        <div class="col d-flex justify-content-center">
+            <h1 class="h3 mb-0 text-truncate">TIENDA</h1>
+        </div>
+        <div class="col-auto d-flex justify-content-end">
+            <a href="{{ route('tienda.carrito') }}" class="btn btn-primary position-relative" id="btn-carrito">
+                <i class="fas fa-cart-plus"></i>
+                <span id="badge-carrito" class="badge-carrito-count d-none">0</span>
+            </a>
+        </div>
+    </div>
+@endsection
+
 @push('css')
 @endpush
 

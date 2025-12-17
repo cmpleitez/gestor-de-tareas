@@ -35,8 +35,8 @@ label,
 input,
 div {
     font-family: 'Roboto', sans-serif;
-    font-size: 15px !important;
-    font-weight: 300 !important;
+    font-size: 12px !important;
+    font-weight: 100 !important;
 }
 
 .h1 {

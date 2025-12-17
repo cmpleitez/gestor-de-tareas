@@ -21,7 +21,7 @@
         .button_delete {
             font-size: 1.1rem !important;
             border-radius: 0.2rem !important;
-            padding: 0.3em 0.3em 0.2em 0.3em;
+            padding: 0.01em 0.3em 0.01em 0.3em;
             margin-right: 0.1rem;
         }
 
@@ -112,22 +112,7 @@
     <!-- Header Section -->
     <header class="bg-primary-dark text-white py-3">
         <div class="container">
-            <div class="row align-items-center flex-nowrap">
-                <div class="col-auto d-flex justify-content-start">
-                    <a href="{{ route('dashboard') }}" class="btn btn-primary">
-                        <i class="fas fa-arrow-left"></i>
-                    </a>
-                </div>
-                <div class="col d-flex justify-content-center">
-                    <h1 class="h3 mb-0 text-truncate">CATÁLOGO</h1>
-                </div>
-                <div class="col-auto d-flex justify-content-end">
-                    <a href="{{ route('tienda.carrito') }}" class="btn btn-primary position-relative" id="btn-carrito">
-                        <i class="fas fa-cart-plus"></i>
-                        <span id="badge-carrito" class="badge-carrito-count d-none">0</span>
-                    </a>
-                </div>
-            </div>
+            @yield('header')
         </div>
     </header>
     <!-- Main Content -->

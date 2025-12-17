@@ -1,3 +1,6 @@
+🟠 La librería que domina el tamaño de letra en el modulo de ventas es:
+app-assets/css/custom-zay.css (Línea 38)
+
 🟠 Para ver en una vista el contendo de arrays, o cualquier otro valor
 @php
 \Illuminate\Support\Facades\Log::info($equivalente);
