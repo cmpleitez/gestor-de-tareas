@@ -38,6 +38,8 @@ CLIENTE:
 
                         ...8-mejoramiento y estandarización de los colores
 
+                        ...9-faltan las unidades de cada producto en el kit
+
                     . Da clic en <Enviar>
                     . Maquetar movimiento.edit
                     . https://chat.z.ai/ nueva IA

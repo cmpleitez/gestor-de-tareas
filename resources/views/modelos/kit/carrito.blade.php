@@ -93,20 +93,6 @@
         Aún no ha agregado artículos al carrito
     </div>
 @else
-    <div class="row mb-2">
-        <div class="col-12 col-md-9">
-            <span>NOMBRE DEL KIT</span>
-        </div>
-        <div class="col-12 col-md-1 text-center">
-            <span>UNIDADES</span>
-        </div>
-        <div class="col-12 col-md-1 text-center">
-            <span>PRECIO</span>
-        </div>
-        <div class="col-12 col-md-1 text-center">
-            <span>ACCIONES</span>
-        </div>
-    </div>
     @php $currentAtencion = $atencion->first(); @endphp <!--Kits-->
     @if($currentAtencion && $currentAtencion->ordenes)
         @foreach($currentAtencion->ordenes as $orden)
@@ -131,7 +117,7 @@
                                         <div class="accordion accordion-flush" id="{{ $detAccordionId }}">
                                             <div class="accordion-item">
                                                 <h2 class="accordion-header" id="{{ $detHeadingId }}">
-                                                    <button class="accordion-button collapsed" style="padding: 0.5em; font-size: 0.8rem;" type="button" data-bs-toggle="collapse" data-bs-target="#{{ $detCollapseId }}" aria-expanded="false" aria-controls="{{ $detCollapseId }}">
+                                                    <button class="accordion-button collapsed d-flex justify-content-start text-start" style="padding: 0.5em; font-size: 0.8rem;" type="button" data-bs-toggle="collapse" data-bs-target="#{{ $detCollapseId }}" aria-expanded="false" aria-controls="{{ $detCollapseId }}">
                                                         {{ $detalle->producto->id }} - {{ $detalle->producto->producto }}
                                                     </button>
                                                 </h2>
