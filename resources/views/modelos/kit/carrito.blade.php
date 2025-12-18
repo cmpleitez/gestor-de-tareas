@@ -1,6 +1,15 @@
 @extends('servicios')
 
-@section('header')
+@section('header') 
+    @php //Calculo Temporal
+        $total = 0;
+        $atencionActual = $atencion->first();
+        if ($atencionActual && $atencionActual->ordenes) {
+            $total = $atencionActual->ordenes->sum(function($orden) {
+                return $orden->precio * $orden->unidades;
+            });
+        }
+    @endphp
     <div class="row align-items-center flex-nowrap">
         <div class="col-auto d-flex justify-content-start">
             <a href="{{ route('tienda') }}" class="btn btn-primary">
@@ -8,10 +17,10 @@
             </a>
         </div>
         <div class="col d-flex justify-content-center">
-            <span style="font-size: 1.2em;">ORDEN # {{ $atencion_id_ripped }}</span>
+            <span style="font-size: 1.5em;">ORDEN # {{ $atencion_id_ripped }}</span>
         </div>
         <div class="col-auto d-flex justify-content-end">
-            <span style="font-size: 1.5em;">TOTAL: $ 9,999.99</span>
+            <span style="font-size: 1.5em;">TOTAL: ${{ number_format($total, 2) }}</span>
         </div>
     </div>
 @endsection
@@ -64,6 +73,15 @@
         background-repeat: no-repeat;
         background-size: 0.9em;
         transition: transform .2s ease-in-out;
+    }
+
+    .button_delete {
+        transition: all 0.2s ease-in-out;
+    }
+
+    .button_delete:hover {
+        transform: scale(1.15);
+        filter: drop-shadow(0 0 5px rgba(220, 53, 69, 0.3));
     }
 
 </style>
@@ -124,17 +142,19 @@
                                                         @endphp
                                                         @if($kitProducto)
                                                             <div class="d-flex flex-wrap">
-                                                                <label class="card rounded border mb-2 shadow-none" style="width: 150px; margin-right: 10px; cursor: pointer;">
-                                                                    <div class="card-body p-2 d-flex flex-column align-items-center">
-                                                                        <div class="mb-2">
-                                                                            <input type="radio" name="radio_{{ $detAccordionId }}" value="{{ $kitProducto->producto->id }}" data-name-target="#productName_{{ $detAccordionId }}" data-product-name="{{ $kitProducto->producto->id }} - {{ $kitProducto->producto->producto }}" {{ $detalle->producto_id == $kitProducto->producto->id ? 'checked' : '' }} onchange="updateProductName(this)">
+                                                                @if ($kitProducto->equivalentes->count() > 1)
+                                                                    <label class="card rounded border mb-2 shadow-none" style="width: 150px; margin-right: 10px; cursor: pointer;">
+                                                                        <div class="card-body p-2 d-flex flex-column align-items-center">
+                                                                            <div class="mb-2">
+                                                                                <input type="radio" name="radio_{{ $detAccordionId }}" value="{{ $kitProducto->producto->id }}" data-name-target="#productName_{{ $detAccordionId }}" data-product-name="{{ $kitProducto->producto->id }} - {{ $kitProducto->producto->producto }}" {{ $detalle->producto_id == $kitProducto->producto->id ? 'checked' : '' }} onchange="updateProductName(this)">
+                                                                            </div>
+                                                                            <div class="text-center d-flex flex-column justify-content-center flex-grow-1">
+                                                                                <span class="d-block">{{ $kitProducto->producto->id }} {{ $kitProducto->producto->producto }}</span>
+                                                                                <span class="badge badge-primary badge-pill mt-1 mx-auto">Estándar</span>
+                                                                            </div>
                                                                         </div>
-                                                                        <div class="text-center d-flex flex-column justify-content-center flex-grow-1">
-                                                                            <span class="d-block">{{ $kitProducto->producto->id }} {{ $kitProducto->producto->producto }}</span>
-                                                                            <span class="badge badge-info badge-pill mt-1">Estándar</span>
-                                                                        </div>
-                                                                    </div>
-                                                                </label>
+                                                                    </label>
+                                                                @endif
                                                                 @foreach($kitProducto->equivalentes as $equivalente) 
                                                                     <label class="card rounded border mb-2 shadow-none" style="width: 150px; margin-right: 10px; cursor: pointer;">
                                                                         <div class="card-body p-2 d-flex flex-column align-items-center">
@@ -168,13 +188,13 @@
                     {{ $orden->unidades }}
                 </div>
                 <div class="col-12 col-md-1 text-center d-flex align-items-center justify-content-center">
-                    {{ $orden->precio }}
+                    ${{ number_format($orden->precio, 2) }}
                 </div>
                 <div class="col-12 col-md-1 text-center d-flex align-items-center justify-content-center">
                     <a href="#" role="button"
                         data-html="true"
                         data-placement="bottom"
-                        class="button_delete align-center border border-danger-dark text-danger-dark btn-danger-light">
+                        class="button_delete align-center text-danger-dark">
                         <i class="fas fa-trash"></i>
                     </a>                
                 </div>
