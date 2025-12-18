@@ -28,7 +28,7 @@
    ======================================== */
 :root {
   /* Colores principales del sistema */
-  --color-primary: #3b7fff;
+  --color-primary: #3676ed;
   --color-secondary: #4d72a0;
   --color-success: #2ac575;
   --color-info: #00c6d3;
@@ -36,68 +36,68 @@
   --color-danger: #f36262;
 
   /* Variaciones de colores - dark */
-  --color-primary-dark: #2453ad;
+  --color-primary-dark: #164191;
   --color-secondary-dark: #2c5381;
   --color-success-dark: #0d7941;
   --color-info-dark: #125a5f;
   --color-warning-dark: #b7451c;
   --color-danger-dark: #d73e3e;
 
-  /* Colores específicos para bordes dark */
-  --border-primary-dark: #2c5381;
-  --border-secondary-dark: #111e36;
-  --border-success-dark: #1d7949;
-  --border-info-dark: #125a5f;
-  --border-warning-dark: #d55122;
-  --border-danger-dark: #d73e3e;
-
-  /* Colores específicos para texto dark */
-  --text-primary-dark: #2c5381;
-  --text-secondary-dark: #2453ad;
-  --text-success-dark: #1d7949;
-  --text-info-dark: #125a5f;
-  --text-warning-dark: #d55122;
-  --text-danger-dark: #d73e3e;
-
-  /* Colores específicos para texto light */
-  --text-primary-light: #c0dbfa;
-  --text-secondary-light: #8ab1f8;
-  --text-success-light: #9cf7c8;
-  --text-info-light: #aff0f5;
-  --text-warning-light: #fac5b2;
-  --text-danger-light: #d69999;
-
-  /* Colores base light para backgrounds y borders */
-  --color-primary-light: #c0dbfa;
+  /* Variaciones de colores - light */
+  --color-primary-light: #dfeaf8;
   --color-secondary-light: #8ab1f8;
   --color-success-light: #9cf7c8;
   --color-info-light: #aff0f5;
   --color-warning-light: #fac5b2;
   --color-danger-light: #d69999;
 
-  /* Colores específicos para botones btn */
-  --btn-primary: #3b7fff;
-  --btn-secondary: #2e4f8b;
-  --btn-success: #2ac575;
-  --btn-info: #00c6d3;
-  --btn-warning: #f78b64;
-  --btn-danger: #f36262;
+  /* Colores específicos para bordes dark (Centralizados) */
+  --border-primary-dark: var(--color-primary-dark);
+  --border-secondary-dark: var(--color-secondary-dark);
+  --border-success-dark: var(--color-success-dark);
+  --border-info-dark: var(--color-info-dark);
+  --border-warning-dark: var(--color-warning-dark);
+  --border-danger-dark: var(--color-danger-dark);
 
-  /* Botones dark */
-  --btn-primary-dark: #2453ad;
-  --btn-secondary-dark: #2c5381;
-  --btn-success-dark: #1d7949;
-  --btn-info-dark: #125a5f;
-  --btn-warning-dark: #d55122;
-  --btn-danger-dark: #d73e3e;
+  /* Colores específicos para texto dark (Centralizados y corregidos) */
+  --text-primary-dark: var(--color-primary-dark);
+  --text-secondary-dark: var(--color-secondary-dark);
+  --text-success-dark: var(--color-success-dark);
+  --text-info-dark: var(--color-info-dark);
+  --text-warning-dark: var(--color-warning-dark);
+  --text-danger-dark: var(--color-danger-dark);
 
-  /* Botones light */
-  --btn-primary-light: #2453ad;
-  --btn-secondary-light: #2c5381;
-  --btn-success-light: #1d7949;
-  --btn-info-light: #125a5f;
-  --btn-warning-light: #d55122;
-  --btn-danger-light: #fdf8f8;
+  /* Colores específicos para texto light (Centralizados) */
+  --text-primary-light: var(--color-primary-light);
+  --text-secondary-light: var(--color-secondary-light);
+  --text-success-light: var(--color-success-light);
+  --text-info-light: var(--color-info-light);
+  --text-warning-light: var(--color-warning-light);
+  --text-danger-light: var(--color-danger-light);
+
+  /* Colores específicos para botones btn (Centralizados) */
+  --btn-primary: var(--color-primary);
+  --btn-secondary: var(--color-secondary);
+  --btn-success: var(--color-success);
+  --btn-info: var(--color-info);
+  --btn-warning: var(--color-warning);
+  --btn-danger: var(--color-danger);
+
+  /* Botones dark (Centralizados) */
+  --btn-primary-dark: var(--color-primary-dark);
+  --btn-secondary-dark: var(--color-secondary-dark);
+  --btn-success-dark: var(--color-success-dark);
+  --btn-info-dark: var(--color-info-dark);
+  --btn-warning-dark: var(--color-warning-dark);
+  --btn-danger-dark: var(--color-danger-dark);
+
+  /* Botones light (Centralizados) */
+  --btn-primary-light: var(--color-primary-light);
+  --btn-secondary-light: var(--color-secondary-light);
+  --btn-success-light: var(--color-success-light);
+  --btn-info-light: var(--color-info-light);
+  --btn-warning-light: var(--color-warning-light);
+  --btn-danger-light: var(--color-danger-light);
 
 }
 

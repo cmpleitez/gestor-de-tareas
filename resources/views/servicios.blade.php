@@ -66,8 +66,8 @@
             background-color: #ffc107;
             color: #000;
             border-radius: 50%;
-            width: 18px;
-            height: 18px;
+            width: 17px;
+            height: 17px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -110,7 +110,7 @@
 
 <body>
     <!-- Header Section -->
-    <header class="bg-primary-dark text-white py-3">
+    <header class="bg-primary text-white py-3">
         <div class="container">
             @yield('header')
         </div>
@@ -122,7 +122,7 @@
         </div>
     </main>
     <!-- Footer Section -->
-    <footer class="bg-primary-dark text-white py-4 mt-auto">
+    <footer class="bg-primary text-white py-4 mt-auto">
         <div class="container">
             <div class="row">
                 <div class="col-12 col-md-6 text-center text-md-start">

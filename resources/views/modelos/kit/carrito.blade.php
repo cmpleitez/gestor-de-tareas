@@ -12,7 +12,7 @@
     @endphp
     <div class="row align-items-center flex-nowrap">
         <div class="col-auto d-flex justify-content-start">
-            <a href="{{ route('tienda') }}" class="btn btn-primary">
+            <a href="{{ route('tienda') }}" class="btn btn-primary-light">
                 <i class="fas fa-arrow-left"></i>
             </a>
         </div>
@@ -20,7 +20,7 @@
             <span style="font-size: 1.5em;">ORDEN # {{ $atencion_id_ripped }}</span>
         </div>
         <div class="col-auto d-flex justify-content-end">
-            <span style="font-size: 1.5em;">TOTAL: ${{ number_format($total, 2) }}</span>
+            <span style="font-size: 1.5em;"><i class="fas fa-cart-plus" style="padding-right: 0.5em;"></i>${{ number_format($total, 2) }}</span>
         </div>
     </div>
 @endsection
@@ -141,31 +141,35 @@
                                                             $kitProducto = $detalle->producto->kitProductos->where('kit_id', $orden->kit_id)->first();
                                                         @endphp
                                                         @if($kitProducto)
-                                                            <div class="d-flex flex-wrap">
+                                                            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-2">
                                                                 @if ($kitProducto->equivalentes->count() > 1)
-                                                                    <label class="card rounded border mb-2 shadow-none" style="width: 150px; margin-right: 10px; cursor: pointer;">
-                                                                        <div class="card-body p-2 d-flex flex-column align-items-center">
-                                                                            <div class="mb-2">
-                                                                                <input type="radio" name="radio_{{ $detAccordionId }}" value="{{ $kitProducto->producto->id }}" data-name-target="#productName_{{ $detAccordionId }}" data-product-name="{{ $kitProducto->producto->id }} - {{ $kitProducto->producto->producto }}" {{ $detalle->producto_id == $kitProducto->producto->id ? 'checked' : '' }} onchange="updateProductName(this)">
+                                                                    <div class="col">
+                                                                        <label class="card rounded border m-0 shadow-none h-100" style="cursor: pointer;">
+                                                                            <div class="card-body p-2 d-flex flex-column align-items-center">
+                                                                                <div class="mb-2">
+                                                                                    <input type="radio" name="radio_{{ $detAccordionId }}" value="{{ $kitProducto->producto->id }}" data-name-target="#productName_{{ $detAccordionId }}" data-product-name="{{ $kitProducto->producto->id }} - {{ $kitProducto->producto->producto }}" {{ $detalle->producto_id == $kitProducto->producto->id ? 'checked' : '' }} onchange="updateProductName(this)">
+                                                                                </div>
+                                                                                <div class="text-center d-flex flex-column justify-content-center flex-grow-1">
+                                                                                    <span class="d-block">{{ $kitProducto->producto->id }} {{ $kitProducto->producto->producto }}</span>
+                                                                                    <span class="badge badge-primary badge-pill mt-1 mx-auto">Estándar</span>
+                                                                                </div>
                                                                             </div>
-                                                                            <div class="text-center d-flex flex-column justify-content-center flex-grow-1">
-                                                                                <span class="d-block">{{ $kitProducto->producto->id }} {{ $kitProducto->producto->producto }}</span>
-                                                                                <span class="badge badge-primary badge-pill mt-1 mx-auto">Estándar</span>
-                                                                            </div>
-                                                                        </div>
-                                                                    </label>
+                                                                        </label>
+                                                                    </div>
                                                                 @endif
                                                                 @foreach($kitProducto->equivalentes as $equivalente) 
-                                                                    <label class="card rounded border mb-2 shadow-none" style="width: 150px; margin-right: 10px; cursor: pointer;">
-                                                                        <div class="card-body p-2 d-flex flex-column align-items-center">
-                                                                            <div class="mb-2">
-                                                                                <input type="radio" name="radio_{{ $detAccordionId }}" value="{{ $equivalente->producto->id }}" data-name-target="#productName_{{ $detAccordionId }}" data-product-name="{{ $equivalente->producto->id }} - {{ $equivalente->producto->producto }}" {{ $detalle->producto_id == $equivalente->producto->id ? 'checked' : '' }} onchange="updateProductName(this)">
+                                                                    <div class="col">
+                                                                        <label class="card rounded border m-0 shadow-none h-100" style="cursor: pointer;">
+                                                                            <div class="card-body p-2 d-flex flex-column align-items-center">
+                                                                                <div class="mb-2">
+                                                                                    <input type="radio" name="radio_{{ $detAccordionId }}" value="{{ $equivalente->producto->id }}" data-name-target="#productName_{{ $detAccordionId }}" data-product-name="{{ $equivalente->producto->id }} - {{ $equivalente->producto->producto }}" {{ $detalle->producto_id == $equivalente->producto->id ? 'checked' : '' }} onchange="updateProductName(this)">
+                                                                                </div>
+                                                                                <div class="text-center d-flex flex-column justify-content-center flex-grow-1">
+                                                                                    {{ $equivalente->producto->id }} - {{ $equivalente->producto->producto }}
+                                                                                </div>
                                                                             </div>
-                                                                            <div class="text-center d-flex flex-column justify-content-center flex-grow-1">
-                                                                                {{ $equivalente->producto->id }} - {{ $equivalente->producto->producto }}
-                                                                            </div>
-                                                                        </div>
-                                                                    </label>
+                                                                        </label>
+                                                                    </div>
                                                                 @endforeach
                                                             </div>
                                                         @else

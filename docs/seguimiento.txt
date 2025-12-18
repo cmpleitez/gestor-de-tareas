@@ -16,7 +16,7 @@ CLIENTE:
         . Cliente: 
             . Entra al <formulario del carrito> y agrega o cambia los <kits y sus productos> y especifica si va enviar una <orden de compra> o una <orden de reserva>
 
-                🪒 Visualizador del Kit y Editor del carrito
+                🪒 Visualizador del carrito y editor del kit
                     . Cambiar el orden a: 
                         1-agregar kit si ya existe en el carrito se mostrará mensaje informativo
                             (Esta forma es debido a que es compra al por mayor y no se pueden estar duplicando las unidades de los productos cada vez que se oprima el boton agregar)
@@ -26,7 +26,17 @@ CLIENTE:
                                 los kits se subdividen en productos + columna unidades
                                     los productos se subdividen en sus productos equivalentes (al dar clic en uno se sustituye sobre el producto padre y podría cambiar el precio del kit )
                         
-                        3-enviar la orden de compra
+                        ...3-enviar la orden de compra
+
+                        ...4-enviar la orden de reserva
+
+                        ...5-eliminación de un kit
+
+                        ...6-intercambio de un producto equivalente
+
+                        ...7-maquetacion para celular
+
+                        ...8-mejoramiento y estandarización de los colores
 
                     . Da clic en <Enviar>
                     . Maquetar movimiento.edit

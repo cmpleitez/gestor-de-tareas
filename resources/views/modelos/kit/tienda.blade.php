@@ -3,7 +3,7 @@
 @section('header')
     <div class="row align-items-center flex-nowrap">
         <div class="col-auto d-flex justify-content-start">
-            <a href="{{ route('dashboard') }}" class="btn btn-primary">
+            <a href="{{ route('dashboard') }}" class="btn btn-primary-light text-primary-dark">
                 <i class="fas fa-arrow-left"></i>
             </a>
         </div>
@@ -11,8 +11,8 @@
             <h1 class="h3 mb-0 text-truncate">TIENDA</h1>
         </div>
         <div class="col-auto d-flex justify-content-end">
-            <a href="{{ route('tienda.carrito') }}" class="btn btn-primary position-relative" id="btn-carrito">
-                <i class="fas fa-cart-plus"></i>
+            <a href="{{ route('tienda.carrito') }}" class="text-primary-light position-relative" id="btn-carrito">
+                <i class="fas fa-cart-plus fa-2x"></i>
                 <span id="badge-carrito" class="badge-carrito-count d-none">0</span>
             </a>
         </div>
