@@ -20,7 +20,7 @@
             <span style="font-size: 1.5em;">ORDEN # {{ $atencion_id_ripped }}</span>
         </div>
         <div class="col-auto d-flex justify-content-end">
-            <span style="font-size: 1.5em;"><i class="fas fa-cart-plus" style="padding-right: 0.5em;"></i>${{ number_format($total, 2) }}</span>
+            <span style="font-size: 1.9em;"><i class="fas fa-cart-plus" style="padding-right: 0.5em;"></i>${{ number_format($total, 2) }}</span>
         </div>
     </div>
 @endsection
@@ -28,11 +28,11 @@
 @push('css')
 <style>
     .marcador_fila_par {
-        border-right: 0.3em solid #a6c6f5ff;
+        border-right: 0.3em solid #3676ed;
     }
 
     .marcador_fila_impar {
-        border-right: 0.2em solid #d8dadbff;
+        border-right: 0.2em solid #babbbbff;
     }
 
     .acordion-header {
@@ -166,7 +166,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>                             
+                                        </div>
                                     @endforeach
 
                                 </div>

@@ -38,7 +38,7 @@ CLIENTE:
 
                         ...8-mejoramiento y estandarización de los colores
 
-                        ...9-faltan las unidades de cada producto en el kit
+                        ...9-faltan las unidades de cada producto en el kit2
 
                     . Da clic en <Enviar>
                     . Maquetar movimiento.edit
