@@ -143,6 +143,18 @@
     </div>
 </div>
 @endsection
+
+@section('footer')
+<div class="row">
+    <div class="col-12 col-md-6 text-center text-md-start">
+        Texto a la izquierda del pie de página
+    </div>
+    <div class="col-12 col-md-6 text-center text-md-end">
+        Texto a la derecha del pie de página
+    </div>
+</div>
+@endsection
+
 {{-- FUNCIONALIDADES DINÁMICAS --}}
 @push('scripts')
 <script>

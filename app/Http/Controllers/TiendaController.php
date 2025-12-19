@@ -46,6 +46,24 @@ class TiendaController extends Controller
     }
 
 
+    public function carritoEnviar(Request $request)
+    {
+
+        return $request;
+
+        try {
+            DB::beginTransaction();
+
+
+
+            DB::commit();
+            return back()->with('success', 'Carrito enviado correctamente');
+        } catch (Exception $e) {
+            DB::rollBack();
+            return back()->with('error', $e->getMessage());
+        }
+    }   
+
     public function create()
     {
         //

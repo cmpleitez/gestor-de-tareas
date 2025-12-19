@@ -88,6 +88,11 @@
 @endpush
 
 @section('content')
+
+
+
+
+
 @if($atencion->isEmpty())
     <div class="alert alert-info">
         Aún no ha agregado artículos al carrito
@@ -95,6 +100,8 @@
 @else
     @php $currentAtencion = $atencion->first(); @endphp <!--Kits-->
     @if($currentAtencion && $currentAtencion->ordenes)
+    <form action="{{ route('tienda.carrito-enviar') }}" method="post">
+        @csrf
         @foreach($currentAtencion->ordenes as $orden)
             @php $headingId = 'heading' . $orden->id; $accordionId = 'accordion' . $orden->id; @endphp
             <div class="row mb-1">
@@ -168,14 +175,15 @@
                                             </div>
                                         </div>
                                     @endforeach
-
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-12 col-md-1 text-center d-flex align-items-center justify-content-center">
-                    {{ $orden->unidades }}
+                    <i class="fas fa-minus text-danger" style="cursor: pointer; margin-right: 0.5rem;"></i>
+                        <input id="unidades_{{ $orden->id }}" type="number" class="form-control text-center" name="unidades" aria-label="unidades" value="{{ old('unidades', $orden->unidades) }}">
+                    <i class="fas fa-plus text-success" style="cursor: pointer; margin-left: 0.5rem;"></i>
                 </div>
                 <div class="col-12 col-md-1 text-center d-flex align-items-center justify-content-center">
                     ${{ number_format($orden->precio, 2) }}
@@ -192,6 +200,18 @@
         @endforeach
     @endif
 @endif
+@endsection
+
+
+@section('footer')
+<div class="row">
+    <div class="col-12 col-md-6 text-center text-md-start">
+        Texto a la izquierda del pie de página
+    </div>
+    <div class="col-12 col-md-6 text-center text-md-end">
+        Texto a la derecha del pie de página
+    </div>
+</div>
 @endsection
 
 @push('scripts')
