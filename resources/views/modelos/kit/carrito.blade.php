@@ -190,12 +190,21 @@
                         style="width: 1.5rem; height: 1.5rem; cursor: pointer;">
                         <i class="fas fa-minus text-danger" style="font-size: 0.9rem;"></i>
                     </button>
-                    <div class="d-flex align-items-center justify-content-center mx-2">
-                        <input id="unidades_{{ $orden->id }}" type="number" 
-                            class="form-control text-center no-spinners input-unidades" 
+                    <div class="d-flex flex-column align-items-center justify-content-center mx-2" style="width: 4.5rem;">
+                        <input id="unidades_{{ $orden->id }}" type="number" min="1" step="1"
+                            class="form-control text-center no-spinners input-unidades {{ $errors->has('ordenes.' . $orden->id) ? 'is-invalid' : '' }}" 
                             name="unidades" data-orden-id="{{ $orden->id }}"
-                            aria-label="unidades" value="{{ old('unidades', $orden->unidades) }}" 
-                            style="width: 4.5rem;">
+                            aria-label="unidades" value="{{ old('ordenes.' . $orden->id, $orden->unidades) }}" 
+                            required
+                            style="width: 100%;">
+                        <div class="invalid-feedback">
+                            Solo números positivos (mínimo 1)
+                        </div>
+                        @error('ordenes.' . $orden->id)
+                            <div class="badge bg-danger text-wrap" style="margin-top: 0.2rem; font-size: 0.7rem;">
+                                {{ $message }}
+                            </div>
+                        @enderror
                     </div>
                     <button type="button" class="btn btn-primary-light shadow-sm rounded-circle d-flex align-items-center justify-content-center p-0 btn-scale-hover btn-spinner" 
                         data-type="plus" data-target="#unidades_{{ $orden->id }}" data-step="1"
@@ -242,46 +251,30 @@
 
 @push('scripts')
 <script>
-    $(document).ready(function() { // Toggle align-items-stretch on main accordion open/close to sync row height
-        $('.main-kit-collapse').on('show.bs.collapse', function (e) {
+    $(document).ready(function() { 
+        $('.main-kit-collapse').on('show.bs.collapse hidden.bs.collapse', function (e) { // 1. Accordion Logic (Sync row height)
             if (e.target === this) {
-                $(this).closest('.row').removeClass('align-items-center').addClass('align-items-stretch');
+                const isShowing = e.type === 'show';
+                $(this).closest('.row')
+                    .toggleClass('align-items-center', !isShowing)
+                    .toggleClass('align-items-stretch', isShowing);
             }
         });
-        $('.main-kit-collapse').on('hidden.bs.collapse', function (e) {
-            if (e.target === this) {
-                $(this).closest('.row').removeClass('align-items-stretch').addClass('align-items-center');
-            }
-        });
-        $(document).on('click', '.btn-spinner', function() { // Spinner functionality
-            const type = $(this).data('type');
-            const targetSelector = $(this).data('target');
-            const step = parseInt($(this).data('step')) || 1;
-            const $input = $(targetSelector);
-
-            if ($input.length) {
-                let currentValue = parseInt($input.val()) || 0;
-                if (type === 'plus') {
-                    $input.val(currentValue + step);
-                } else if (type === 'minus') {
-                    $input.val(Math.max(1, currentValue - step));
-                }
-                $input.trigger('change');
-            }
-        });
-
-        $('#btnEnviarCarrito').on('click', function() {
-            const $btn = $(this);
-            
-            // Recolectar cantidades de todos los inputs
-            let quantities = {};
+        const validate = ($el) => $el.toggleClass('is-invalid', !$el[0].checkValidity()); // 2. Frontend Validation (Compact Standard)
+        $(document).on('input blur', '.input-unidades', function() { validate($(this)); });
+        $('#btnEnviarCarrito').on('click', function(e) { // 3. Submit Handler
+            let isValid = true;
             $('.input-unidades').each(function() {
-                const ordenId = $(this).data('orden-id');
-                quantities[ordenId] = $(this).val();
+                validate($(this));
+                if (!$(this)[0].checkValidity()) isValid = false;
             });
-
+            if (!isValid) return false; // Stop if invalid (HTML5 valid msg is shown below input)
+            const $btn = $(this); // Proceed with AJAX
+            let quantities = {}; 
+            $('.input-unidades').each(function() {
+                quantities[$(this).data('orden-id')] = $(this).val();
+            });
             $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Enviando...');
-
             $.ajax({
                 url: '{{ route('tienda.carrito-enviar') }}',
                 method: 'POST',
@@ -290,7 +283,13 @@
                     ordenes: quantities
                 },
                 success: function(response) {
+                    
                     location.reload();
+
+                    toastr.success('Orden enviada correctamente.');
+                    
+
+
                 },
                 error: function(xhr) {
                     console.error('Error al enviar carrito:', xhr);
@@ -298,6 +297,11 @@
                     $btn.prop('disabled', false).text('Enviar');
                 }
             });
+        });
+        $(document).on('click', '.btn-spinner', function() { // 4. Spinner Logic
+            const $btn = $(this), $input = $($btn.data('target'));
+            let val = parseInt($input.val()) || 0;
+            $input.val(Math.max(1, val + ($btn.data('type') === 'plus' ? 1 : -1))).trigger('change');
         });
     });
     function updateProductName(radio) { // Update product name in accordion header

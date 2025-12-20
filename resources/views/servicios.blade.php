@@ -121,17 +121,10 @@
             @yield('content')
         </div>
     </main>
-
-
-
-    
     <!-- Footer Section -->
     <footer class="bg-primary text-white py-4 mt-auto">
         <div class="container">
-
             @yield('footer')
-
-
         </div>
     </footer>
     <!-- JavaScript Files -->
@@ -142,6 +135,7 @@
     <script src="{{ asset('app-assets/js/custom-zay.js') }}"></script>
     <script src="{{ asset('app-assets/vendors/js/extensions/toastr.min.js') }}"></script>
     <script src="{{ asset('app-assets/js/helpers.js') }}"></script>
+    <script src="{{ asset('app-assets/vendors/js/forms/validation/jqBootstrapValidation.js') }}"></script>
     <script>
         if (typeof toastr !== 'undefined') { // Configuración global de toastr para todo el proyecto
             toastr.options = {
@@ -167,20 +161,20 @@
             toastr.success("{{ Session::get('success') }}");
             @endif
             @if(Session::has('error'))
-            toastr.error("{{ Session::get('error') }}", '', {
-                timeOut: 0
-                , extendedTimeOut: 0
-                , closeButton: true
-            });
+                toastr.error("{{ Session::get('error') }}", '', {
+                    timeOut: 0
+                    , extendedTimeOut: 0
+                    , closeButton: true
+                });
             @endif
             @if(Session::has('warning'))
-            toastr.warning("{{ Session::get('warning') }}");
+                toastr.warning("{{ Session::get('warning') }}");
             @endif
             @if(Session::has('info'))
-            toastr.info("{{ Session::get('info') }}");
+                toastr.info("{{ Session::get('info') }}");
             @endif
             @if(Session::has('danger'))
-            toastr.error("{{ Session::get('danger') }}");
+                toastr.error("{{ Session::get('danger') }}");
             @endif
             $.ajax({
                 url: '{{ route("tienda.cantidad") }}'

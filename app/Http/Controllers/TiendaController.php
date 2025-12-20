@@ -48,8 +48,8 @@ class TiendaController extends Controller
 
     public function carritoEnviar(Request $request)
     {
-        Log::info('Request', $request->all());
         
+        return back()->with('success', 'Orden enviada correctamente');
 
         try {
             DB::beginTransaction();
@@ -57,7 +57,7 @@ class TiendaController extends Controller
 
 
             DB::commit();
-            return back()->with('success', 'Carrito enviado correctamente');
+            return back()->with('success', 'Orden enviada correctamente');
         } catch (Exception $e) {
             DB::rollBack();
             return back()->with('error', $e->getMessage());
