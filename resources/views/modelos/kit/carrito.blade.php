@@ -185,19 +185,23 @@
                     </div>
                 </div>
                 <div class="col-12 col-md-2 d-flex align-items-center justify-content-center">
-                    
-                    <button type="button" class="btn btn-primary-light shadow-sm rounded-circle d-flex align-items-center justify-content-center p-0 btn-scale-hover" style="width: 1.5rem; height: 1.5rem; cursor: pointer;">
+                    <button type="button" class="btn btn-primary-light shadow-sm rounded-circle d-flex align-items-center justify-content-center p-0 btn-scale-hover btn-spinner" 
+                        data-type="minus" data-target="#unidades_{{ $orden->id }}" data-step="1"
+                        style="width: 1.5rem; height: 1.5rem; cursor: pointer;">
                         <i class="fas fa-minus text-danger" style="font-size: 0.9rem;"></i>
                     </button>
-                    
                     <div class="d-flex align-items-center justify-content-center mx-2">
-                        <input id="unidades_{{ $orden->id }}" type="number" class="form-control text-center no-spinners" name="unidades" aria-label="unidades" value="{{ old('unidades', $orden->unidades) }}" style="width: 4.5rem;">
+                        <input id="unidades_{{ $orden->id }}" type="number" 
+                            class="form-control text-center no-spinners input-unidades" 
+                            name="unidades" data-orden-id="{{ $orden->id }}"
+                            aria-label="unidades" value="{{ old('unidades', $orden->unidades) }}" 
+                            style="width: 4.5rem;">
                     </div>
-                    
-                    <button type="button" class="btn btn-primary-light shadow-sm rounded-circle d-flex align-items-center justify-content-center p-0 btn-scale-hover" style="width: 1.5rem; height: 1.5rem; cursor: pointer;">
+                    <button type="button" class="btn btn-primary-light shadow-sm rounded-circle d-flex align-items-center justify-content-center p-0 btn-scale-hover btn-spinner" 
+                        data-type="plus" data-target="#unidades_{{ $orden->id }}" data-step="1"
+                        style="width: 1.5rem; height: 1.5rem; cursor: pointer;">
                         <i class="fas fa-plus text-success" style="font-size: 0.9rem;"></i>
                     </button>
-
                 </div>
                 <div class="col-12 col-md-1 text-center d-flex align-items-center justify-content-center">
                     ${{ number_format($orden->precio, 2) }}
@@ -212,6 +216,15 @@
                 </div>
             </div>
         @endforeach
+
+        <div class="row mt-4">
+            <div class="col-12 col-md-12 text-center text-md-end">
+                <button type="button" id="btnEnviarCarrito" class="btn btn-primary">
+                    Enviar
+                </button>
+            </div>
+        </div>
+
     @endif
 @endif
 @endsection
@@ -240,11 +253,56 @@
                 $(this).closest('.row').removeClass('align-items-stretch').addClass('align-items-center');
             }
         });
+        $(document).on('click', '.btn-spinner', function() { // Spinner functionality
+            const type = $(this).data('type');
+            const targetSelector = $(this).data('target');
+            const step = parseInt($(this).data('step')) || 1;
+            const $input = $(targetSelector);
+
+            if ($input.length) {
+                let currentValue = parseInt($input.val()) || 0;
+                if (type === 'plus') {
+                    $input.val(currentValue + step);
+                } else if (type === 'minus') {
+                    $input.val(Math.max(1, currentValue - step));
+                }
+                $input.trigger('change');
+            }
+        });
+
+        $('#btnEnviarCarrito').on('click', function() {
+            const $btn = $(this);
+            
+            // Recolectar cantidades de todos los inputs
+            let quantities = {};
+            $('.input-unidades').each(function() {
+                const ordenId = $(this).data('orden-id');
+                quantities[ordenId] = $(this).val();
+            });
+
+            $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Enviando...');
+
+            $.ajax({
+                url: '{{ route('tienda.carrito-enviar') }}',
+                method: 'POST',
+                data: { 
+                    _token: '{{ csrf_token() }}',
+                    ordenes: quantities
+                },
+                success: function(response) {
+                    location.reload();
+                },
+                error: function(xhr) {
+                    console.error('Error al enviar carrito:', xhr);
+                    alert('Error al enviar el carrito. Revisa la consola o el log.');
+                    $btn.prop('disabled', false).text('Enviar');
+                }
+            });
+        });
     });
     function updateProductName(radio) { // Update product name in accordion header
         const productName = radio.getAttribute('data-product-name');
         const accordionItem = radio.closest('.accordion-item');
-
         if (accordionItem && productName) {
             const targetElement = accordionItem.querySelector('.accordion-button');
             if (targetElement) {

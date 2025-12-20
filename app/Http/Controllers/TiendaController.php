@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Database\QueryException;
 use Exception;
 
@@ -45,11 +46,10 @@ class TiendaController extends Controller
         return view('modelos.kit.carrito', compact('atencion', 'atencion_id_ripped'));
     }
 
-
     public function carritoEnviar(Request $request)
     {
-
-        return $request;
+        Log::info('Request', $request->all());
+        
 
         try {
             DB::beginTransaction();
