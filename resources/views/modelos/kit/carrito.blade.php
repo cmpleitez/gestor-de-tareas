@@ -75,24 +75,30 @@
         transition: transform .2s ease-in-out;
     }
 
-    .button_delete {
-        transition: all 0.2s ease-in-out;
+    .no-spinners::-webkit-outer-spin-button, /* Chrome, Safari, Edge, Opera */
+    .no-spinners::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
     }
 
-    .button_delete:hover {
-        transform: scale(1.15);
-        filter: drop-shadow(0 0 5px rgba(220, 53, 69, 0.3));
+    .no-spinners { /* Firefox */
+      -moz-appearance: textfield;
+    }
+
+    .btn-scale-hover {
+        transition: transform 0.2s ease;
+    }
+    .btn-scale-hover:hover {
+        transform: scale(1.2);
+    }
+    .btn-scale-hover:active {
+        transform: scale(0.9);
     }
 
 </style>
 @endpush
 
 @section('content')
-
-
-
-
-
 @if($atencion->isEmpty())
     <div class="alert alert-info">
         Aún no ha agregado artículos al carrito
@@ -100,12 +106,10 @@
 @else
     @php $currentAtencion = $atencion->first(); @endphp <!--Kits-->
     @if($currentAtencion && $currentAtencion->ordenes)
-    <form action="{{ route('tienda.carrito-enviar') }}" method="post">
-        @csrf
         @foreach($currentAtencion->ordenes as $orden)
             @php $headingId = 'heading' . $orden->id; $accordionId = 'accordion' . $orden->id; @endphp
-            <div class="row mb-1">
-                <div class="col-12 col-md-9 {{ $loop->index % 2 == 0 ? 'marcador_fila_par' : 'marcador_fila_impar' }}">
+            <div class="row mb-1 py-2 align-items-center">
+                <div class="col-12 col-md-8 {{ $loop->index % 2 == 0 ? 'marcador_fila_par' : 'marcador_fila_impar' }}">
                     <div class="accordion" id="{{ $accordionId }}">
                         <div class="accordion-item">
                             <span class="accordion-header" id="{{ $headingId }}">
@@ -180,10 +184,20 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-12 col-md-1 text-center d-flex align-items-center justify-content-center">
-                    <i class="fas fa-minus text-danger" style="cursor: pointer; margin-right: 0.5rem;"></i>
-                        <input id="unidades_{{ $orden->id }}" type="number" class="form-control text-center" name="unidades" aria-label="unidades" value="{{ old('unidades', $orden->unidades) }}">
-                    <i class="fas fa-plus text-success" style="cursor: pointer; margin-left: 0.5rem;"></i>
+                <div class="col-12 col-md-2 d-flex align-items-center justify-content-center">
+                    
+                    <button type="button" class="btn btn-primary-light shadow-sm rounded-circle d-flex align-items-center justify-content-center p-0 btn-scale-hover" style="width: 1.5rem; height: 1.5rem; cursor: pointer;">
+                        <i class="fas fa-minus text-danger" style="font-size: 0.9rem;"></i>
+                    </button>
+                    
+                    <div class="d-flex align-items-center justify-content-center mx-2">
+                        <input id="unidades_{{ $orden->id }}" type="number" class="form-control text-center no-spinners" name="unidades" aria-label="unidades" value="{{ old('unidades', $orden->unidades) }}" style="width: 4.5rem;">
+                    </div>
+                    
+                    <button type="button" class="btn btn-primary-light shadow-sm rounded-circle d-flex align-items-center justify-content-center p-0 btn-scale-hover" style="width: 1.5rem; height: 1.5rem; cursor: pointer;">
+                        <i class="fas fa-plus text-success" style="font-size: 0.9rem;"></i>
+                    </button>
+
                 </div>
                 <div class="col-12 col-md-1 text-center d-flex align-items-center justify-content-center">
                     ${{ number_format($orden->precio, 2) }}
@@ -192,8 +206,8 @@
                     <a href="#" role="button"
                         data-html="true"
                         data-placement="bottom"
-                        class="button_delete align-center text-danger-dark">
-                        <i class="fas fa-trash"></i>
+                        class="btn btn-scale-hover align-center text-danger-dark">
+                        <i class="fas fa-trash" style="font-size: 1rem;"></i>
                     </a>                
                 </div>
             </div>
@@ -201,7 +215,6 @@
     @endif
 @endif
 @endsection
-
 
 @section('footer')
 <div class="row">
