@@ -48,19 +48,52 @@ class TiendaController extends Controller
 
     public function carritoEnviar(Request $request)
     {
-        
-        return back()->with('success', 'Orden enviada correctamente');
-
         try {
             DB::beginTransaction();
 
+            $cart = $request->input('cart');
+            
+            if (isset($cart['ordenes'])) {
+                foreach ($cart['ordenes'] as $ordenData) {
+                    $ordenId = $ordenData['orden_id'];
+                    $unidades = $ordenData['unidades'];
+                    
+                    // Buscar la orden y sus detalles
+                    $orden = Orden::with('detalle')->find($ordenId);
+                    
+                    if ($orden) {
+                        // 1. Actualizar unidades de la orden
+                        $orden->unidades = $unidades;
+                        $orden->save();
 
+                        // 2. Actualizar productos de los detalles (por posición/orden)
+                        if (isset($ordenData['detalles']) && is_array($ordenData['detalles'])) {
+                            // Al ser un array estandar [0,1,2] desde JS, array_values asegura consistencia
+                            $nuevosProductos = array_values($ordenData['detalles']); 
+                            
+                            foreach ($orden->detalle as $index => $detalle) {
+                                // Si existe un producto correspondiente en la misma posición enviada por el frontend
+                                if (isset($nuevosProductos[$index]['producto_id'])) {
+                                    $productoId = $nuevosProductos[$index]['producto_id'];
+                                    
+                                    // Solo actualizar si es diferente para optimizar
+                                    if ($detalle->producto_id != $productoId) {
+                                        $detalle->producto_id = $productoId;
+                                        $detalle->save();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
             DB::commit();
-            return back()->with('success', 'Orden enviada correctamente');
+            return response()->json(['success' => true, 'message' => 'Orden recibida y actualizada correctamente']);
+            
         } catch (Exception $e) {
             DB::rollBack();
-            return back()->with('error', $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Error al procesar la orden: ' . $e->getMessage()], 500);
         }
     }   
 

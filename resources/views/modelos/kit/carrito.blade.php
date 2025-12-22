@@ -131,6 +131,7 @@
                                                     <button class="accordion-button collapsed d-flex justify-content-start text-start" style="padding: 0.5em; font-size: 0.8rem;" type="button" data-bs-toggle="collapse" data-bs-target="#{{ $detCollapseId }}" aria-expanded="false" aria-controls="{{ $detCollapseId }}">
                                                         {{ $detalle->producto->id }} - {{ $detalle->producto->producto }}
                                                     </button>
+
                                                 </h2>
                                                 <div id="{{ $detCollapseId }}" class="accordion-collapse collapse" aria-labelledby="{{ $detHeadingId }}" data-bs-parent="#{{ $detAccordionId }}">
                                                     <div class="accordion-body"> {{-- Equivalentes --}}
@@ -144,7 +145,7 @@
                                                                         <label class="card rounded border m-0 shadow-none h-100" style="cursor: pointer;">
                                                                             <div class="card-body p-2 d-flex flex-column align-items-center">
                                                                                 <div class="mb-2">
-                                                                                    <input type="radio" name="radio_{{ $detAccordionId }}" value="{{ $kitProducto->producto->id }}" data-name-target="#productName_{{ $detAccordionId }}" data-product-name="{{ $kitProducto->producto->id }} - {{ $kitProducto->producto->producto }}" {{ $detalle->producto_id == $kitProducto->producto->id ? 'checked' : '' }} onchange="updateProductName(this)">
+                                                                                    <input type="radio" name="radio_{{ $detAccordionId }}" value="{{ $kitProducto->producto->id }}" data-name-target="#productName_{{ $detAccordionId }}" data-product-name="{{ $kitProducto->producto->id }} - {{ $kitProducto->producto->producto }}" {{ $detalle->producto_id == $kitProducto->producto->id ? 'checked' : '' }} onchange="updateProductName(this, {{ $loop->parent->parent->parent->index }}, {{ $index }})">
                                                                                 </div>
                                                                                 <div class="text-center d-flex flex-column justify-content-center flex-grow-1">
                                                                                     <span class="d-block">{{ $kitProducto->producto->id }} {{ $kitProducto->producto->producto }}</span>
@@ -159,7 +160,7 @@
                                                                         <label class="card rounded border m-0 shadow-none h-100" style="cursor: pointer;">
                                                                             <div class="card-body p-2 d-flex flex-column align-items-center">
                                                                                 <div class="mb-2">
-                                                                                    <input type="radio" name="radio_{{ $detAccordionId }}" value="{{ $equivalente->producto->id }}" data-name-target="#productName_{{ $detAccordionId }}" data-product-name="{{ $equivalente->producto->id }} - {{ $equivalente->producto->producto }}" {{ $detalle->producto_id == $equivalente->producto->id ? 'checked' : '' }} onchange="updateProductName(this)">
+                                                                                    <input type="radio" name="radio_{{ $detAccordionId }}" value="{{ $equivalente->producto->id }}" data-name-target="#productName_{{ $detAccordionId }}" data-product-name="{{ $equivalente->producto->id }} - {{ $equivalente->producto->producto }}" {{ $detalle->producto_id == $equivalente->producto->id ? 'checked' : '' }} onchange="updateProductName(this, {{ $loop->parent->parent->parent->index }}, {{ $index }})">
                                                                                 </div>
                                                                                 <div class="text-center d-flex flex-column justify-content-center flex-grow-1">
                                                                                     {{ $equivalente->producto->id }} - {{ $equivalente->producto->producto }}
@@ -251,6 +252,22 @@
 
 @push('scripts')
 <script>
+    window.cartDetails = { ordenes: [] };
+    @if(isset($atencion) && !$atencion->isEmpty() && $atencion->first()->ordenes)
+        @foreach($atencion->first()->ordenes as $orden)
+            window.cartDetails.ordenes[{{ $loop->index }}] = {
+                orden_id: '{{ $orden->id }}',
+                unidades: {{ $orden->unidades }},
+                detalles: [
+                    @foreach($orden->detalle as $detalle)
+                        {
+                            producto_id: '{{ $detalle->producto_id }}'
+                        }{{ !$loop->last ? ',' : '' }}
+                    @endforeach
+                ]
+            };
+        @endforeach
+    @endif
     $(document).ready(function() { 
         $('.main-kit-collapse').on('show.bs.collapse hidden.bs.collapse', function (e) { // 1. Accordion Logic (Sync row height)
             if (e.target === this) {
@@ -270,31 +287,41 @@
             });
             if (!isValid) return false; // Stop if invalid (HTML5 valid msg is shown below input)
             const $btn = $(this); // Proceed with AJAX
-            let quantities = {}; 
+            
+            // Actualizar unidades en la estructura jerárquica
             $('.input-unidades').each(function() {
-                quantities[$(this).data('orden-id')] = $(this).val();
+                const ordenId = String($(this).data('orden-id'));
+                // Buscar la orden correspondiente por orden_id
+                for (let key in window.cartDetails.ordenes) {
+                    // La key ahora es 'orden[0]', accedemos a .orden_id
+                    if (window.cartDetails.ordenes[key].orden_id && String(window.cartDetails.ordenes[key].orden_id) === ordenId) {
+                        window.cartDetails.ordenes[key].unidades = parseInt($(this).val());
+                        break;
+                    }
+                }
             });
-            $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Enviando...');
+
+            $btn.prop('disabled', true);
             $.ajax({
                 url: '{{ route('tienda.carrito-enviar') }}',
                 method: 'POST',
-                data: { 
+                contentType: 'application/json',
+                data: JSON.stringify({ 
                     _token: '{{ csrf_token() }}',
-                    ordenes: quantities
-                },
+                    cart: window.cartDetails
+                }),
                 success: function(response) {
                     
-                    location.reload();
-
-                    toastr.success('Orden enviada correctamente.');
+                    toastr.success('Orden enviada correctamente.', null, { "progressBar": false, "timeOut": 0, "extendedTimeOut": 0 });
                     
-
+                    setTimeout(function() { //esto lo cambiaremos por el proceso de actualizaciònde la orden de compra  y automaticamente se vaciará el carrito
+                        // location.reload();
+                    }, 2000);
 
                 },
                 error: function(xhr) {
-                    console.error('Error al enviar carrito:', xhr);
                     alert('Error al enviar el carrito. Revisa la consola o el log.');
-                    $btn.prop('disabled', false).text('Enviar');
+                    $btn.prop('disabled', false);
                 }
             });
         });
@@ -304,14 +331,27 @@
             $input.val(Math.max(1, val + ($btn.data('type') === 'plus' ? 1 : -1))).trigger('change');
         });
     });
-    function updateProductName(radio) { // Update product name in accordion header
+    function updateProductName(radio, detalleId) { // Update product name in accordion header
         const productName = radio.getAttribute('data-product-name');
+        const productId = radio.value;
         const accordionItem = radio.closest('.accordion-item');
-        if (accordionItem && productName) {
-            const targetElement = accordionItem.querySelector('.accordion-button');
-            if (targetElement) {
-                targetElement.textContent = productName;
+        
+        if (accordionItem) {
+            if (productName) { 
+                const targetElement = accordionItem.querySelector('.accordion-button');
+                if (targetElement) {
+                    targetElement.textContent = productName;
+                }
             }
+        }
+        
+        // Update Global State using indices
+        if(productId !== undefined && ordenIndex !== undefined && detalleIndex !== undefined) {
+             if (window.cartDetails.ordenes[ordenIndex] && 
+                 window.cartDetails.ordenes[ordenIndex].detalles[detalleIndex]) {
+                 
+                 window.cartDetails.ordenes[ordenIndex].detalles[detalleIndex].producto_id = productId;
+             }
         }
     }
 </script>

@@ -1,3 +1,16 @@
+🟠 Para controlas las sugerencias de la IA
+.vscode/settings.json
+{
+    "git.autofetch": true,
+    "editor.quickSuggestionsDelay": 3000,
+    "editor.suggest.showWords": true,
+    "editor.suggest.filterGraceful": false,
+    "antigravity.suggestionFrequency": 5,
+    "antigravity.suggestionThrottle": 5000,
+}
+
+🟠 https://chat.z.ai/ nueva IA
+
 🟠 Antigravity Quota (AGQ)
     Monitoreo de Uso (No es el oficial pero no existe el oficial actualmente) : Utilizar las extensiones disponibles (como Antigravity Usage Plugin) para tener visibilidad sobre el porcentaje de cuota restante y el tiempo hasta el próximo refresco, eliminando la incertidumbre operativa durante jornadas de trabajo intensas.
     Mi pregunta: ok confirmame en una respuesta cerrada si el "Google AI Pro" se aplica el "entorno de desarrollo integrado (IDE) basado en agentes, opera bajo un sistema de cuotas de uso de alta frecuencia que se reinician cada cinco horas" o solo se aplica para el "Google AI Ultra" ?

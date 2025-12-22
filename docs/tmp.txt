@@ -1,12 +1,27 @@
-Debug Info
-
-{
-  "os": "win32",
-  "arch": "x64",
-  "php_version": "8.2.29",
-  "laravel_version": "10.48.29",
-  "php_command": "php"
-}
-
-----------------------------------------
-
+genera esta estructura: 
+array (
+  'cart' => 
+  array (
+    'ordenes' => 
+    array (
+      orden[0] => 
+      array (
+        'orden_id' => '202500100001',
+        'unidades' => '1',
+        'detalles' => 
+        array (
+          detalle[0] => '8',
+        ),
+      ),
+      orden[1] => 
+      array (
+        'orden_id' => '202500100002',
+        'unidades' => '1',
+        'detalles' => 
+        array (
+          detalle[0] => '4',
+        ),
+      ),
+    ),
+  ),
+)  , 

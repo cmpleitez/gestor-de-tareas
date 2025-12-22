@@ -20,29 +20,32 @@ CLIENTE:
                     . Cambiar el orden a: 
                         1-agregar kit si ya existe en el carrito se mostrará mensaje informativo
                             (Esta forma es debido a que es compra al por mayor y no se pueden estar duplicando las unidades de los productos cada vez que se oprima el boton agregar)
-                
-                        ...2-editar los equivalentes de cada producto
-                            ... acordiones con los nombres de los kits + columna precio + unidades, aqui cambia el precio del kit al doble o triple dependiendo de la cantidad de kits + icono eliminar
-                                los kits se subdividen en productos + columna unidades
-                                    los productos se subdividen en sus productos equivalentes (al dar clic en uno se sustituye sobre el producto padre y podría cambiar el precio del kit )
-                        
-                        ...3-enviar la orden de compra
 
-                        ...4-enviar la orden de reserva
+                        2. ya en el contrlador hay que validar si los productos o sus equivalentes existen en el kit
+                            para evitar inyección de códigos que no existen fueron manipulados en el frontend
+                            . actualizar las unidades de la orden en tabla <ordenes>
+                            . activar la atención al cliente en tabla <atenciones>, columna activo = true
+                            . activar la solicitud enviada al receptor en tabla <recepciones>, columna activo = true
 
-                        ...5-eliminación de un kit
 
-                        ...6-intercambio de un producto equivalente
+                        3- agregar un control para que el usuario eliga entre orden de compra y orden de reserva
+                            
+                        5-eliminación de un kit
 
-                        ...7-maquetacion para celular
+                        6-intercambio de un producto equivalente
 
-                        ...8-mejoramiento y estandarización de los colores
+                        7-maquetacion para celular
 
-                        ...9-faltan las unidades de cada producto en el kit2
+                        8-mejoramiento y estandarización de los colores
+
+                        9 agregar el campo total a la tabla <ordenes>
+
+                        10 hay que analizar como se va manejar el sistema de errores que recibe el usuario porque 
+                        si los enviamos en los mensajes toastr como estamos haciendo actualmente es un tema de seguridad
 
                     . Da clic en <Enviar>
                     . Maquetar movimiento.edit
-                    . https://chat.z.ai/ nueva IA
+                    
 
                 🪒 enlace tienda gestor
                     . tarjeta en el tablero "En progreso" en el rol del Receptor
