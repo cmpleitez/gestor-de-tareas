@@ -51,11 +51,13 @@ class TiendaController extends Controller
         try {
             DB::beginTransaction();
 
+            //ACTUALIZACIÓN DE UNIDADES Y SELECCIÓN DE PRODUCTOS
+            $atencionId = null;
             $cart = $request->input('cart');
-            
             if (isset($cart['ordenes'])) {
                 foreach ($cart['ordenes'] as $ordenData) {
                     $ordenId = $ordenData['orden_id'];
+                    $atencionId = $ordenData['atencion_id']; //Extrayendo atencion_id
                     $unidades = $ordenData['unidades'];
                     
                     // Buscar la orden y sus detalles
@@ -76,6 +78,23 @@ class TiendaController extends Controller
                                 if (isset($nuevosProductos[$index]['producto_id'])) {
                                     $productoId = $nuevosProductos[$index]['producto_id'];
                                     
+                                    //Validar si el producto pertenece al kit o sus equivalentes
+                                    $esValido = DB::table('kit_producto')
+                                        ->where('kit_id', $orden->kit_id)
+                                        ->where('producto_id', $productoId)
+                                        ->exists();
+
+                                    if (!$esValido) {
+                                        $esValido = DB::table('equivalentes')
+                                            ->where('kit_id', $orden->kit_id)
+                                            ->where('producto_id', $productoId)
+                                            ->exists();
+                                    }
+
+                                    if (!$esValido) {
+                                        throw new Exception("El producto seleccionado no es válido para este kit.");
+                                    }
+                                    
                                     // Solo actualizar si es diferente para optimizar
                                     if ($detalle->producto_id != $productoId) {
                                         $detalle->producto_id = $productoId;
@@ -88,10 +107,27 @@ class TiendaController extends Controller
                 }
             }
 
+            //ACTIVACIÓN DE LA ORDEN DE COMPRAS
+            if ($atencionId) {
+                $atencion = Atencion::find($atencionId);
+                if ($atencion) {
+                    $atencion->activo = true;
+                    $atencion->save();
+                    $recepcion = Recepcion::where('atencion_id', $atencion->id) //Activar la copia del receptor
+                    ->where('user_destino_role_id', Role::where('name','Receptor')->first()->id)
+                    ->first(); 
+                                        
+                    if ($recepcion) {
+                        $recepcion->activo = true;
+                        $recepcion->save();
+                    }
+                }
+            }
+
             DB::commit();
-            return response()->json(['success' => true, 'message' => 'Orden recibida y actualizada correctamente']);
+            return response()->json(['success' => true, 'message' => 'Orden recibida y actualizada correctamente. Redireccionando a la Tienda']);
             
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
             return response()->json(['success' => false, 'message' => 'Error al procesar la orden: ' . $e->getMessage()], 500);
         }

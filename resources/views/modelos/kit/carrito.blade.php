@@ -256,7 +256,9 @@
     @if(isset($atencion) && !$atencion->isEmpty() && $atencion->first()->ordenes)
         @foreach($atencion->first()->ordenes as $orden)
             window.cartDetails.ordenes[{{ $loop->index }}] = {
+                atencion_id: '{{ $orden->atencion_id }}',
                 orden_id: '{{ $orden->id }}',
+                kit_id: '{{ $orden->kit_id }}',
                 unidades: {{ $orden->unidades }},
                 detalles: [
                     @foreach($orden->detalle as $detalle)
@@ -300,7 +302,6 @@
                     }
                 }
             });
-
             $btn.prop('disabled', true);
             $.ajax({
                 url: '{{ route('tienda.carrito-enviar') }}',
@@ -311,16 +312,14 @@
                     cart: window.cartDetails
                 }),
                 success: function(response) {
-                    
-                    toastr.success('Orden enviada correctamente.', null, { "progressBar": false, "timeOut": 0, "extendedTimeOut": 0 });
-                    
-                    setTimeout(function() { //esto lo cambiaremos por el proceso de actualizaciònde la orden de compra  y automaticamente se vaciará el carrito
-                        // location.reload();
+                    $btn.prop('disabled', false);
+                    toastr.success(response.message, null, { "progressBar": false, "timeOut": 0, "extendedTimeOut": 0 });
+                    setTimeout(function() {
+                        window.location.href = "{{ route('tienda') }}";
                     }, 2000);
-
                 },
                 error: function(xhr) {
-                    alert('Error al enviar el carrito. Revisa la consola o el log.');
+                    console.log(xhr);
                     $btn.prop('disabled', false);
                 }
             });
