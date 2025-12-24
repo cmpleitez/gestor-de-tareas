@@ -295,12 +295,12 @@
                     badgeColor = 'badge-secondary';
                     break;
                 case 'progreso':
-                    borderColor = 'badge-primary'; // Usar nombre estándar
+                    borderColor = 'badge-primary'; 
                     estadoColor = '#17a2b8';
                     badgeColor = 'badge-primary';
                     break;
                 case 'resueltas':
-                    borderColor = 'badge-success'; // Usar nombre estándar
+                    borderColor = 'badge-success'; 
                     estadoColor = '#28a745';
                     badgeColor = 'badge-success';
                     break;
@@ -312,29 +312,27 @@
             let usersHtml = generarHtmlUsuarios(tarjeta.users, tarjeta.estado_id,
                 tipo); // Generar HTML de usuarios usando la función auxiliar estándar
             return `
-        <div class="solicitud-card ${animar ? 'animar-llegada' : ''} border-${borderColor}" 
-        data-recepcion-id="${tarjeta.recepcion_id}"
-        data-atencion-id="${tarjeta.atencion_id}"
-        data-recepcion-estado-id="${tarjeta.estado_id}"
-        data-fecha="${tarjeta.created_at}">
-        <div class="d-flex justify-content-between align-items-start">
-            <div class="solicitud-titulo flex-grow-1">${titulo}</div>
-            <div class="text-right ml-2">
-                <div style="font-size: 0.9rem; font-weight: 600;">${tarjeta.atencion_id_ripped}</div>
-                <div style="font-size: 0.6rem; color: #6c757d;">${tarjeta.fecha_relativa}</div>
-            </div>
-        </div>
-        <div class="solicitud-estado" style="font-size: 11px; color: ${estadoColor}; margin-top: 5px;">
-            ${tarjeta.traza}
-        </div>
-        <div class="progress-divider" data-atencion-id="${tarjeta.atencion_id}" data-avance="${tarjeta.porcentaje_progreso}"></div>
-        <div class="users-container" style="display: flex; align-items: center; justify-content: end; margin-top: 8px; padding-top: 6px;">
-            ${usersHtml}
-        </div>
-    </div>
-`;
+                <div class="solicitud-card ${animar ? 'animar-llegada' : ''} border-${borderColor}" 
+                data-recepcion-id="${tarjeta.recepcion_id}"
+                data-atencion-id="${tarjeta.atencion_id}"
+                data-recepcion-estado-id="${tarjeta.estado_id}"
+                data-fecha="${tarjeta.created_at}">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="solicitud-titulo flex-grow-1">${titulo}</div>
+                    <div class="text-right ml-2">
+                        <div style="font-size: 0.9rem; font-weight: 600;">${tarjeta.atencion_id_ripped}</div>
+                        <div style="font-size: 0.6rem; color: #6c757d;">${tarjeta.fecha_relativa}</div>
+                    </div>
+                </div>
+                <div class="solicitud-estado" style="font-size: 11px; color: ${estadoColor}; margin-top: 5px;">
+                    ${tarjeta.traza}
+                </div>
+                <div class="progress-divider" data-atencion-id="${tarjeta.atencion_id}" data-avance="${tarjeta.porcentaje_progreso}"></div>
+                <div class="users-container" style="display: flex; align-items: center; justify-content: end; margin-top: 8px; padding-top: 6px;">
+                    ${usersHtml}
+                </div>
+            </div>`;
         }
-
         function obtenerAtencionIdsExistentes() {
             let ids = [];
             $('#columna-recibidas .solicitud-card').each(function() { // Solo obtener atencion_ids de la columna recibidas

@@ -236,8 +236,6 @@ class RecepcionController extends Controller
             $new_recepcion->origen_user_id  = auth()->user()->id;
             $new_recepcion->destino_user_id = $operador->id;
             $new_recepcion->estado_id       = Estado::where('estado', 'Recibida')->first()->id;
-            $new_recepcion->detalle         = $recepcion->detalle;
-            $new_recepcion->activo          = false;
             $new_recepcion->save();
             $recepcion->activo    = true; //Validar solicitud y actualizar estado - Copia Operador
             $recepcion->estado_id = $estado_en_progreso_id;
@@ -407,14 +405,14 @@ class RecepcionController extends Controller
         try {
             $estado_en_progreso_id = Estado::where('estado', 'En progreso')->first()->id;
             foreach ($recepcion->solicitud->tareas as $tarea) {
-                $actividad                  = new Actividad();
-                $actividad->id              = (new KeyMaker())->generate('Actividad', $recepcion->solicitud_id);
-                $actividad->recepcion_id    = $recepcion->id;
-                $actividad->tarea_id        = $tarea->id;
-                $actividad->role_id         = Role::where('name', 'Operador')->first()->id;
-                $actividad->origen_user_id  = auth()->user()->id;
-                $actividad->destino_user_id = $recepcion->destino_user_id;
-                $actividad->estado_id       = Estado::where('estado', 'En progreso')->first()->id;
+                $actividad                      = new Actividad();
+                $actividad->id                  = (new KeyMaker())->generate('Actividad', $recepcion->solicitud_id);
+                $actividad->recepcion_id        = $recepcion->id;
+                $actividad->tarea_id            = $tarea->id;
+                $actividad->user_destino_role_id= Role::where('name', 'Operador')->first()->id;
+                $actividad->origen_user_id      = auth()->user()->id;
+                $actividad->destino_user_id     = $recepcion->destino_user_id;
+                $actividad->estado_id           = Estado::where('estado', 'En progreso')->first()->id;
                 if ($tarea->id == 1) { //La primer tarea se resuelve en automático
                     $actividad->estado_id = Estado::where('estado', 'Resuelta')->first()->id;
                 } else {
