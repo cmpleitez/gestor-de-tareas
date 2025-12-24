@@ -109,15 +109,15 @@ class RecepcionController extends Controller
                     $query->where('destino_user_id', $user->id);
                 }
             })
-                ->with(['solicitud.tareas', 'usuarioDestino', 'usuarioOrigen', 'atencion.oficina', 'atencion.estado', 'role', 'actividades.tarea'])
-                ->whereHas('atencion.oficina', function ($query) use ($user) {
-                    $query->where('id', $user->oficina_id);
-                })
-                ->where('estado_id', '<>', Estado::where('estado', 'Resuelta')->first()->id)
-                ->where('activo', true)
-                ->orderBy('atencion_id', 'asc')
-                ->take(5)
-                ->get();
+            ->with(['solicitud.tareas', 'usuarioDestino', 'usuarioOrigen', 'atencion.oficina', 'atencion.estado', 'role', 'actividades.tarea'])
+            ->whereHas('atencion.oficina', function ($query) use ($user) {
+                $query->where('id', $user->oficina_id);
+            })
+            ->where('estado_id', '<>', Estado::where('estado', 'Resuelta')->first()->id)
+            ->where('activo', true)
+            ->orderBy('atencion_id', 'asc')
+            ->take(10)
+            ->get();
             $atencionIds = $recepciones->pluck('atencion_id')->unique();
             $usuariosParticipantes = $this->obtenerUsuariosParticipantes($atencionIds); //Obtener usuarios participantes
             $tarjetas              = $recepciones->map(function ($tarjeta) use ($usuariosParticipantes) {
@@ -142,9 +142,9 @@ class RecepcionController extends Controller
                     'oficina'             => $tarjeta->atencion->oficina->oficina,
                 ];
             });
-            $recibidas                = $tarjetas->where('estado_id', 1)->sortBy('created_at')->values()->toArray();
-            $progreso                 = $tarjetas->where('estado_id', 2)->sortBy('created_at')->values()->toArray();
-            $resueltas                = $tarjetas->where('estado_id', 3)->sortBy('created_at')->values()->toArray();
+            $recibidas                = $tarjetas->where('estado_id', Estado::where('estado', 'Recibida')->first()->id)->sortBy('created_at')->values()->toArray();
+            $progreso                 = $tarjetas->where('estado_id', Estado::where('estado', 'En progreso')->first()->id)->sortBy('created_at')->values()->toArray();
+            $resueltas                = $tarjetas->where('estado_id', Estado::where('estado', 'Resuelta')->first()->id)->sortBy('created_at')->values()->toArray();
             $parametro                = Parametro::where('parametro', 'Frecuencia de refresco')->first();
             $frecuencia_actualizacion = $parametro ? $parametro->valor : 30; // Valor por defecto: 30 segundos
             $data                     = [

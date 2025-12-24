@@ -118,6 +118,7 @@ class TiendaController extends Controller
                 $atencion = Atencion::find($atencionId);
                 if ($atencion) {
                     $atencion->activo = true;
+                    $atencion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
                     $atencion->save();
                     $recepcion = Recepcion::where('atencion_id', $atencion->id) //Activar la copia del receptor
                     ->where('user_destino_role_id', Role::where('name','Receptor')->first()->id)
@@ -125,6 +126,7 @@ class TiendaController extends Controller
                                         
                     if ($recepcion) {
                         $recepcion->activo = true;
+                        $recepcion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
                         $recepcion->save();
                     }
                 }
@@ -202,7 +204,7 @@ class TiendaController extends Controller
                 $atencion             = new Atencion(); //Creando número de atención
                 $atencion->id         = (new KeyMaker())->generate('Atencion', Solicitud::where('solicitud', 'Orden de compra')->first()->id);
                 $atencion->oficina_id = auth()->user()->oficina_id;
-                $atencion->estado_id  = Estado::where('estado', 'Recibida')->first()->id;
+                $atencion->estado_id  = Estado::where('estado', 'Solicitada')->first()->id;
                 $atencion->avance     = 0.00;
                 $atencion->activo     = false;
                 $atencion->save();

@@ -31,7 +31,7 @@ CLIENTE:
                             
                         5-eliminación de un kit
 
-                        6-intercambio de un producto equivalente
+                        ok.6-intercambio de un producto equivalente
 
                         7-maquetacion para celular
 
@@ -41,8 +41,10 @@ CLIENTE:
 
                         10 hay que analizar como se va manejar el sistema de errores que recibe el usuario porque 
                         si los enviamos en los mensajes toastr como estamos haciendo actualmente es un tema de seguridad
+                        tambien debe incluirse aquó el módulo gestor de tareas porque hay tambien unos popups que se usan
+                        para mostrar los errores
 
-                        11. revisar el codigo de la visa y del controlador:
+                        11. revisar el codigo de la vista y del controlador:
                             . reordenar etiquetas
                             . documentar
 
