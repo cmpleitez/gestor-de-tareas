@@ -107,7 +107,7 @@
     @php $currentAtencion = $atencion->first(); @endphp <!--Kits-->
     @if($currentAtencion && $currentAtencion->ordenes)
         @foreach($currentAtencion->ordenes as $orden)
-            @php $headingId = 'heading' . $orden->id; $accordionId = 'accordion' . $orden->id; @endphp
+            @php $headingId = 'heading' . $orden->id; $accordionId = 'accordion' . $orden->id; $ordenIndex = $loop->index; @endphp
             <div class="row mb-1 py-2 align-items-center">
                 <div class="col-12 col-md-8 {{ $loop->index % 2 == 0 ? 'marcador_fila_par' : 'marcador_fila_impar' }}">
                     <div class="accordion" id="{{ $accordionId }}">
@@ -145,7 +145,7 @@
                                                                         <label class="card rounded border m-0 shadow-none h-100" style="cursor: pointer;">
                                                                             <div class="card-body p-2 d-flex flex-column align-items-center">
                                                                                 <div class="mb-2">
-                                                                                    <input type="radio" name="radio_{{ $detAccordionId }}" value="{{ $kitProducto->producto->id }}" data-name-target="#productName_{{ $detAccordionId }}" data-product-name="{{ $kitProducto->producto->id }} - {{ $kitProducto->producto->producto }}" {{ $detalle->producto_id == $kitProducto->producto->id ? 'checked' : '' }} onchange="updateProductName(this, {{ $loop->parent->parent->parent->index }}, {{ $index }})">
+                                                                                    <input type="radio" name="radio_{{ $detAccordionId }}" value="{{ $kitProducto->producto->id }}" data-name-target="#productName_{{ $detAccordionId }}" data-product-name="{{ $kitProducto->producto->id }} - {{ $kitProducto->producto->producto }}" {{ $detalle->producto_id == $kitProducto->producto->id ? 'checked' : '' }} onchange="updateProductName(this, {{ $ordenIndex }}, {{ $index }})">
                                                                                 </div>
                                                                                 <div class="text-center d-flex flex-column justify-content-center flex-grow-1">
                                                                                     <span class="d-block">{{ $kitProducto->producto->id }} {{ $kitProducto->producto->producto }}</span>
@@ -160,7 +160,7 @@
                                                                         <label class="card rounded border m-0 shadow-none h-100" style="cursor: pointer;">
                                                                             <div class="card-body p-2 d-flex flex-column align-items-center">
                                                                                 <div class="mb-2">
-                                                                                    <input type="radio" name="radio_{{ $detAccordionId }}" value="{{ $equivalente->producto->id }}" data-name-target="#productName_{{ $detAccordionId }}" data-product-name="{{ $equivalente->producto->id }} - {{ $equivalente->producto->producto }}" {{ $detalle->producto_id == $equivalente->producto->id ? 'checked' : '' }} onchange="updateProductName(this, {{ $loop->parent->parent->parent->index }}, {{ $index }})">
+                                                                                    <input type="radio" name="radio_{{ $detAccordionId }}" value="{{ $equivalente->producto->id }}" data-name-target="#productName_{{ $detAccordionId }}" data-product-name="{{ $equivalente->producto->id }} - {{ $equivalente->producto->producto }}" {{ $detalle->producto_id == $equivalente->producto->id ? 'checked' : '' }} onchange="updateProductName(this, {{ $ordenIndex }}, {{ $index }})">
                                                                                 </div>
                                                                                 <div class="text-center d-flex flex-column justify-content-center flex-grow-1">
                                                                                     {{ $equivalente->producto->id }} - {{ $equivalente->producto->producto }}
@@ -319,7 +319,7 @@
                     }, 2000);
                 },
                 error: function(xhr) {
-                    console.log(xhr);
+                    console.log(xhr.responseJSON.message);
                     $btn.prop('disabled', false);
                 }
             });
@@ -330,7 +330,7 @@
             $input.val(Math.max(1, val + ($btn.data('type') === 'plus' ? 1 : -1))).trigger('change');
         });
     });
-    function updateProductName(radio, detalleId) { // Update product name in accordion header
+    function updateProductName(radio, ordenIndex, detalleIndex) { // Update product name in accordion header
         const productName = radio.getAttribute('data-product-name');
         const productId = radio.value;
         const accordionItem = radio.closest('.accordion-item');
@@ -348,7 +348,6 @@
         if(productId !== undefined && ordenIndex !== undefined && detalleIndex !== undefined) {
              if (window.cartDetails.ordenes[ordenIndex] && 
                  window.cartDetails.ordenes[ordenIndex].detalles[detalleIndex]) {
-                 
                  window.cartDetails.ordenes[ordenIndex].detalles[detalleIndex].producto_id = productId;
              }
         }

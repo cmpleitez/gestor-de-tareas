@@ -27,4 +27,12 @@ class Detalle extends Model
     {
         return $this->belongsTo(Producto::class);
     }
+
+    protected function setKeysForSaveQuery($query)
+    {
+        return $query->where('orden_id', $this->orden_id)
+        ->where('kit_id', $this->kit_id)
+        ->where('producto_id', $this->producto_id);
+    }
+
 }

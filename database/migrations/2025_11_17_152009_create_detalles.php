@@ -17,7 +17,7 @@ return new class extends Migration
             $table->timestamps();
 
             // Clave primaria compuesta
-            $table->primary(['orden_id', 'producto_id']);
+            $table->primary(['orden_id', 'kit_id', 'producto_id']);
         });
     }
 

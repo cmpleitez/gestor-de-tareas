@@ -97,8 +97,14 @@ class TiendaController extends Controller
                                     
                                     // Solo actualizar si es diferente para optimizar
                                     if ($detalle->producto_id != $productoId) {
-                                        $detalle->producto_id = $productoId;
-                                        $detalle->save();
+                                        DB::table('detalles')
+                                            ->where('orden_id', $orden->id)
+                                            ->where('kit_id', $orden->kit_id)
+                                            ->where('producto_id', $detalle->producto_id)
+                                            ->update([
+                                                'producto_id' => $productoId,
+                                                'updated_at' => now()
+                                            ]);
                                     }
                                 }
                             }
@@ -129,6 +135,7 @@ class TiendaController extends Controller
             
         } catch (\Throwable $e) {
             DB::rollBack();
+            Log::error('Error en carritoEnviar: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString());
             return response()->json(['success' => false, 'message' => 'Error al procesar la orden: ' . $e->getMessage()], 500);
         }
     }   

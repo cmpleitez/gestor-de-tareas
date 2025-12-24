@@ -62,7 +62,7 @@ class RecepcionController extends Controller
     {
         $actividades = Actividad::whereHas('recepcion', function ($query) use ($tarjeta) {
             $query->where('atencion_id', $tarjeta->atencion_id)
-                ->where('role_id', Role::where('name', 'Operador')->first()->id);
+                ->where('user_destino_role_id', Role::where('name', 'Operador')->first()->id);
         })
             ->with(['tarea', 'estado'])
             ->get()
@@ -232,7 +232,7 @@ class RecepcionController extends Controller
             $new_recepcion->id              = (new KeyMaker())->generate('Recepcion', $recepcion->solicitud_id);
             $new_recepcion->atencion_id     = $recepcion->atencion_id;
             $new_recepcion->solicitud_id    = $recepcion->solicitud_id;
-            $new_recepcion->role_id         = Role::where('name', 'Operador')->first()->id;
+            $new_recepcion->user_destino_role_id         = Role::where('name', 'Operador')->first()->id;
             $new_recepcion->origen_user_id  = auth()->user()->id;
             $new_recepcion->destino_user_id = $operador->id;
             $new_recepcion->estado_id       = Estado::where('estado', 'Recibida')->first()->id;
@@ -376,7 +376,7 @@ class RecepcionController extends Controller
             $recepcion                  = new Recepcion(); //Creando la recepción
             $recepcion->id              = (new KeyMaker())->generate('Recepcion', $request->solicitud_id);
             $recepcion->atencion_id     = $atencion_id;
-            $recepcion->role_id         = Role::where('name', 'Receptor')->first()->id;
+            $recepcion->user_destino_role_id         = Role::where('name', 'Receptor')->first()->id;
             $recepcion->solicitud_id    = $request->solicitud_id;
             $recepcion->origen_user_id  = auth()->user()->id;
             $recepcion->destino_user_id = $Receptor->id;
