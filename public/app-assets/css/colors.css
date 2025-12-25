@@ -45,11 +45,11 @@
 
   /* Variaciones de colores - light */
   --color-primary-light: #ffffff;
-  --color-secondary-light: #8ab1f8;
-  --color-success-light: #9cf7c8;
-  --color-info-light: #aff0f5;
-  --color-warning-light: #fac5b2;
-  --color-danger-light: #d69999;
+  --color-secondary-light: #f4f7fc;
+  --color-success-light: #f3fcf7;
+  --color-info-light: #f7feff;
+  --color-warning-light: #fff9f7;
+  --color-danger-light: #fff7f7;
 
   /* Colores específicos para bordes dark (Centralizados) */
   --border-primary-dark: var(--color-primary-dark);
