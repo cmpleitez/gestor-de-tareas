@@ -213,43 +213,15 @@
         <div class="main-menu-content mt-3">
             <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation"
                 data-icon-style="">
-                @role('superadmin')
-                    <li class=" nav-item"><a href="#"><i class="bx bxs-shield"></i><span class="menu-title"
-                                data-i18n="Menu Levels">Seguridad</span></a>
-                        <ul class="menu-content" style="display: block;">
-                            <li><a href="{{ Route('security.parametros') }}">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Configuración</span>
-                                </a></li>
-
-                            <li><a href="{{ Route('security.index') }}">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Dashboard</span>
-                                </a></li>
-                            <li><a href="{{ Route('security.events') }}">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Eventos</span>
-                                </a></li>
-                            <li><a href="{{ Route('security.threat-intelligence') }}">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Inteligencia de Amenazas</span>
-                                </a></li>
-                            <li><a href="{{ Route('security.ip-reputation') }}">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Reputación de IPs</span>
-                                </a></li>
-                            <li><a href="{{ Route('security.logs') }}">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Logs</span>
-                                </a></li>
-                        </ul>
-                    </li>
-                @endrole
 
                 @role('admin|superadmin')
                     <li class=" nav-item"><a href="#"><i class="bx bxs-cog"></i><span class="menu-title"
                                 data-i18n="Menu Levels">Administración</span></a>
                         <ul class="menu-content" style="display: block;">
+                            <li><a href="{{ Route('recepcion.parametros') }}">
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Configuración</span>
+                                </a></li>
                             <li><a href="{{ Route('user') }}">
                                     <i class="bx bx-right-arrow-alt"></i>
                                     <span class="menu-item" data-i18n="Second Level">Usuarios</span>
@@ -304,10 +276,6 @@
                         @endrole
 
                         @role('cliente|superadmin|admin')
-                        <li><a href="{{ Route('recepcion.create') }}">
-                                <i class="bx bx-right-arrow-alt"></i>
-                                <span class="menu-item" data-i18n="Second Level">Recepciones</span>
-                            </a></li>
                         <li><a href="{{ Route('tienda') }}">
                                 <i class="bx bx-right-arrow-alt"></i>
                                 <span class="menu-item" data-i18n="Second Level">Tienda</span>

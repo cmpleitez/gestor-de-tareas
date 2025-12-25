@@ -45,7 +45,7 @@
                                     {{-- ACTIVAR --}}
                                     @can('autorizar')
                                     <td class="text-center">
-                                        <form action="{{ route('security.parametros-activate', $parametro->id) }}" method="POST"
+                                        <form action="{{ route('recepcion.parametros-activate', $parametro->id) }}" method="POST"
                                             style="display: inline;">
                                             @csrf
                                             <div class="custom-control custom-switch"
@@ -66,7 +66,7 @@
                                         <div class="btn-group" role="group" aria-label="label">
                                             {{-- EDITAR --}}
                                             @can('editar')
-                                            <a href="{{ route('security.parametros-edit', $parametro->id) }}" role="button"
+                                            <a href="{{ route('recepcion.parametros-edit', $parametro->id) }}" role="button"
                                                 data-toggle="tooltip" data-popup="tooltip-custom" data-html="true"
                                                 data-placement="bottom"
                                                 title="<i class='bx bxs-edit-alt'></i> Editar datos de {{ $parametro->parametro }}"

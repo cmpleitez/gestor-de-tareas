@@ -129,35 +129,5 @@ return [
             'driver' => 'monolog',
             'handler' => NullHandler::class,
         ],
-
-        /*
-        |--------------------------------------------------------------------------
-        | Security Log Channels
-        |--------------------------------------------------------------------------
-        | Canales especializados para el sistema de seguridad
-        */
-
-        'security' => [
-            'driver' => 'single',
-            'path' => storage_path('logs/security.log'),
-            'level' => env('LOG_LEVEL', 'debug'),
-            'replace_placeholders' => true,
-        ],
-
-        'firewall' => [
-            'driver' => 'single',
-            'path' => storage_path('logs/firewall.log'),
-            'level' => env('LOG_LEVEL', 'debug'),
-            'replace_placeholders' => true,
-        ],
-
-        'ids' => [
-            'driver' => 'single',
-            'path' => storage_path('logs/ids.log'),
-            'level' => env('LOG_LEVEL', 'debug'),
-            'replace_placeholders' => true,
-        ],
-
     ],
-
 ];

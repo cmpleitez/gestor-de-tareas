@@ -18,6 +18,39 @@ use Spatie\Permission\Models\Role;
 
 class RecepcionController extends Controller
 {
+
+    public function parametros()
+    {
+        $parametros = Parametro::All();
+        return view('modelos.parametro.index', compact('parametros'));
+    }
+
+    public function parametrosEdit(Parametro $parametro)
+    {
+        return view('modelos.parametro.edit', compact('parametro'));
+    }
+
+    public function parametrosUpdate(Request $request, Parametro $parametro)
+    {
+        $validatedData = $request->validate([
+            'parametro'     => 'required|string|min:3|max:255|unique:parametros,parametro,' . $parametro->id,
+            'valor'         => 'required|string|min:1|max:255',
+            'unidad_medida' => 'required|string|min:3|max:255',
+        ]);
+        $parametro->parametro     = $validatedData['parametro']; 
+        $parametro->valor         = $validatedData['valor'];     
+        $parametro->unidad_medida = $validatedData['unidad_medida']; 
+        $parametro->save(); 
+        return redirect()->route('recepcion.parametros')->with('success', 'Parámetro actualizado correctamente');
+    }
+
+    public function parametrosActivate(Parametro $parametro)
+    {
+        $parametro->activo = ! $parametro->activo; // Guardado por unidad, no masivo
+        $parametro->save();
+        return redirect()->route('recepcion.parametros')->with('success', 'Parámetro actualizado correctamente');
+    }
+
     private function obtenerUsuariosParticipantes($atencionIds)
     {
         $usuariosDestino = Recepcion::with(['usuarioDestino', 'role']) // Consulta separada para usuarios destino
@@ -332,63 +365,7 @@ class RecepcionController extends Controller
         }
     }
 
-    public function create()
-    {
-        try {
-            $solicitudes = Solicitud::where('activo', true)->get();
-            return view('modelos.recepcion.create', compact('solicitudes'));
-        } catch (\Exception $e) {
-            return back()->with('error', 'Ocurrió un error al obtener las solicitudes: ' . $e->getMessage());
-        }
-    }
 
-    public function store(Request $request)
-    {
-        //VALIDACIÓN
-        $request->validate([
-            'solicitud_id' => 'required',
-            'detalle'      => 'required|min:9|max:255',
-        ]);
-        try {
-            DB::beginTransaction();
-            //SELECCIONANDO UN RECEPTOR
-            $user      = auth()->user();
-            $Receptors = User::whereHas('roles', function ($query) {
-                $query->where('name', 'Receptor');
-            })->whereHas('oficina', function ($query) use ($user) {
-                $query->where('id', $user->oficina_id);
-            })->get();
-            if ($Receptors->isEmpty()) {
-                return back()->with('error', 'La funcionalidad se encuentra inhabilitada, consulte con el administrador del sistema');
-            }
-            $Receptor = $Receptors->random();
-            //REGISTRANDO LA SOLICITUD
-            $atencion             = new Atencion(); //Creando el número de atención
-            $atencion->id         = (new KeyMaker())->generate('Atencion', $request->solicitud_id);
-            $atencion->oficina_id = $user->oficina_id;
-            $atencion->estado_id  = Estado::where('estado', 'Recibida')->first()->id;
-            $atencion->avance     = 0.00;
-            $atencion->activo     = false; //Por defecto invalidada, se valida al ejemplo: procesar el carrito originando una orden de compra válida, luego una tarea programada borra cada cieto tiempo todos los registros con condicion nula en este campo
-            $atencion_id          = $atencion->id;
-            $atencion->save();
-            $recepcion                  = new Recepcion(); //Creando la recepción
-            $recepcion->id              = (new KeyMaker())->generate('Recepcion', $request->solicitud_id);
-            $recepcion->atencion_id     = $atencion_id;
-            $recepcion->user_destino_role_id         = Role::where('name', 'Receptor')->first()->id;
-            $recepcion->solicitud_id    = $request->solicitud_id;
-            $recepcion->origen_user_id  = auth()->user()->id;
-            $recepcion->destino_user_id = $Receptor->id;
-            $recepcion->estado_id       = Estado::where('estado', 'Recibida')->first()->id;
-            $recepcion->detalle         = $request->detalle;
-            $recepcion->activo          = false; //Por defecto invalidada, se valida al ejemplo: procesar el carrito originando una orden de compra válida, luego una tarea programada borra cada cieto tiempo todos los registros con condicion nula en este campo
-            $recepcion->save();
-            DB::commit();
-            return redirect()->route('recepcion.create')->with('success', 'La solicitud número "' . KeyRipper::rip($atencion_id) . '" ha sido recibida en la oficina ' . $user->oficina->oficina);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->with('error', 'Ocurrió un error cuando se intentaba enviar la solicitud:' . $e->getMessage());
-        }
-    }
 
     public function iniciarTareas(string $recepcion_id)
     {

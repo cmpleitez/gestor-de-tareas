@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EquipoController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\RecepcionController;
-use App\Http\Controllers\SecurityController;
 use App\Http\Controllers\SolicitudController;
 use App\Http\Controllers\TareaController;
 use App\Http\Controllers\UserController;
@@ -51,24 +50,6 @@ Route::middleware([
         return view('dashboard');
     })->name('dashboard');
 
-    //SEGURIDAD
-    Route::group(['middleware' => ['role:superadmin']], function () {
-        Route::group(['prefix' => 'security'], function () {
-            Route::get('/', [SecurityController::class, 'index'])->name('security.index');
-            Route::get('parametros', [SecurityController::class, 'parametros'])->name('security.parametros');
-            Route::get('parametros/edit/{parametro}', [SecurityController::class, 'parametrosEdit'])->name('security.parametros-edit');
-            Route::put('parametros/update/{parametro}', [SecurityController::class, 'parametrosUpdate'])->name('security.parametros-update');
-            Route::post('parametros/activate/{parametro}', [SecurityController::class, 'parametrosActivate'])->name('security.parametros-activate');
-            Route::get('events', [SecurityController::class, 'events'])->name('security.events');
-            Route::get('threat-intelligence', [SecurityController::class, 'threatIntelligence'])->name('security.threat-intelligence');
-            Route::get('ip-reputation', [SecurityController::class, 'ipReputation'])->name('security.ip-reputation');
-            Route::get('logs', [SecurityController::class, 'logs'])->name('security.logs');
-            Route::post('whitelist-ip', [SecurityController::class, 'whitelistIP'])->name('security.whitelist-ip');
-            Route::get('dashboard-stats', [SecurityController::class, 'getDashboardStats'])->name('security.dashboard-stats');
-            Route::get('security-events', [SecurityController::class, 'getSecurityEvents'])->name('security.security-events');
-            Route::get('events/data', [SecurityController::class, 'getEventsData'])->name('security.events-data');
-        });
-    });
 
     //ADMINISTRACIÓN
     Route::group(['middleware' => ['role:admin|superadmin']], function () {
@@ -173,9 +154,13 @@ Route::middleware([
     });
 
     //GESTIÓN
+    Route::get('parametros', [RecepcionController::class, 'parametros'])->name('recepcion.parametros');
+    Route::get('parametros/edit/{parametro}', [RecepcionController::class, 'parametrosEdit'])->name('recepcion.parametros-edit');
+    Route::put('parametros/update/{parametro}', [RecepcionController::class, 'parametrosUpdate'])->name('recepcion.parametros-update');
+    Route::post('parametros/activate/{parametro}', [RecepcionController::class, 'parametrosActivate'])->name('recepcion.parametros-activate');
     Route::get('solicitudes', [RecepcionController::class, 'solicitudes'])->name('recepcion.solicitudes');
-    Route::get('equipos/{solicitud}', [recepcionController::class, 'equipos'])->name('recepcion.equipos');
-    Route::get('operadores/{solicitud}', [recepcionController::class, 'operadores'])->name('recepcion.operadores');
+    Route::get('equipos/{solicitud}', [RecepcionController::class, 'equipos'])->name('recepcion.equipos');
+    Route::get('operadores/{solicitud}', [RecepcionController::class, 'operadores'])->name('recepcion.operadores');
     Route::post('avance-tablero', [RecepcionController::class, 'consultarAvance'])->name('recepcion.consultar-avance');
     Route::post('nuevas-recibidas', [RecepcionController::class, 'nuevasRecibidas'])->name('recepcion.nuevas-recibidas');
     Route::group(['middleware' => ['role:receptor']], function () {
@@ -193,10 +178,6 @@ Route::middleware([
 
     //TIENDA
     Route::group(['middleware' => ['role:cliente|superadmin|admin']], function () {
-        Route::group(['prefix' => 'recepcion'], function () {
-            Route::get('create', [RecepcionController::class, 'create'])->name('recepcion.create');
-            Route::post('store', [RecepcionController::class, 'store'])->name('recepcion.store');
-        });
         Route::group(['prefix' => 'tienda'], function () {
             Route::get('/', [TiendaController::class, 'index'])->name('tienda');
             Route::get('carrito', [TiendaController::class, 'carritoIndex'])->name('tienda.carrito');

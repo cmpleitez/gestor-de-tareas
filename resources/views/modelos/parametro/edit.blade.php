@@ -15,7 +15,7 @@
                                 <p>EDITAR PARAMETRO</p>
                             </div>
                             <div class="col-md-2 d-flex justify-content-end" style="padding: 0.1rem;">
-                                <a href="{!! route('security.parametros') !!}">
+                                <a href="{!! route('recepcion.parametros') !!}">
                                     <div class="badge badge-pill badge-primary">
                                         <i class="bx bx-arrow-back font-medium-3"></i>
                                     </div>
@@ -25,7 +25,7 @@
                     </div>
                 </div>
                 <!-- FORMULARIO -->
-                <form class="form-horizontal" action="{{ route('security.parametros-update', $parametro->id) }}"
+                <form class="form-horizontal" action="{{ route('recepcion.parametros-update', $parametro->id) }}"
                     method="POST" novalidate>
                     @csrf
                     @method('PUT')
