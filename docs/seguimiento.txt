@@ -18,20 +18,10 @@ CLIENTE:
 
                 🪒 Visualizador del carrito y editor del kit
                     . Cambiar el orden a: 
-                        1-agregar kit si ya existe en el carrito se mostrará mensaje informativo
-                            (Esta forma es debido a que es compra al por mayor y no se pueden estar duplicando las unidades de los productos cada vez que se oprima el boton agregar)
-
-                        ok. ya en el contrlador hay que validar si los productos o sus equivalentes existen en el kit
-                            para evitar inyección de códigos que no existen fueron manipulados en el frontend
-                            ok. actualizar las unidades de la orden en tabla <ordenes>
-                            ok. activar la atención al cliente en tabla <atenciones>, columna activo = true
-                            ok. activar la solicitud enviada al receptor en tabla <recepciones>, columna activo = true
 
                         3- agregar un control para que el usuario eliga entre orden de compra y orden de reserva
                             
                         5-eliminación de un kit
-
-                        ok.6-intercambio de un producto equivalente
 
                         7-maquetacion para celular
 
@@ -49,6 +39,8 @@ CLIENTE:
                             . documentar
 
                         12. Ajustar en el módulo gestor de tareas los nuevos nombres de columnas
+
+                        13. tomar en cuenta caso: no hay kits en el carrito
 
                     . Da clic en <Enviar>
                     . Maquetar movimiento.edit

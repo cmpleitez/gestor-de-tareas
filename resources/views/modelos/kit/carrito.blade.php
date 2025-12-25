@@ -104,12 +104,12 @@
         Aún no ha agregado artículos al carrito
     </div>
 @else
-    @php $currentAtencion = $atencion->first(); @endphp <!--Kits-->
+    @php $currentAtencion = $atencion->first(); @endphp 
     @if($currentAtencion && $currentAtencion->ordenes)
         @foreach($currentAtencion->ordenes as $orden)
             @php $headingId = 'heading' . $orden->id; $accordionId = 'accordion' . $orden->id; $ordenIndex = $loop->index; @endphp
-            <div class="row mb-1 py-2 align-items-center">
-                <div class="col-12 col-md-8 {{ $loop->index % 2 == 0 ? 'marcador_fila_par' : 'marcador_fila_impar' }}">
+            <div class="row mb-1 py-2 align-items-center"> <!--Kits-->
+                <div class="col-12 col-md-8 mb-2 {{ $loop->index % 2 == 0 ? 'marcador_fila_par' : 'marcador_fila_impar' }}">
                     <div class="accordion" id="{{ $accordionId }}">
                         <div class="accordion-item">
                             <span class="accordion-header" id="{{ $headingId }}">
@@ -185,7 +185,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-12 col-md-2 d-flex align-items-center justify-content-center">
+                <div class="col-6 col-md-2 d-flex align-items-center justify-content-center">
                     <button type="button" class="btn btn-primary-light shadow-sm rounded-circle d-flex align-items-center justify-content-center p-0 btn-scale-hover btn-spinner" 
                         data-type="minus" data-target="#unidades_{{ $orden->id }}" data-step="1"
                         style="width: 1.5rem; height: 1.5rem; cursor: pointer;">
@@ -213,10 +213,10 @@
                         <i class="fas fa-plus text-success" style="font-size: 0.9rem;"></i>
                     </button>
                 </div>
-                <div class="col-12 col-md-1 text-center d-flex align-items-center justify-content-center">
+                <div class="col-3 col-md-1 text-center d-flex align-items-center justify-content-center">
                     ${{ number_format($orden->precio, 2) }}
                 </div>
-                <div class="col-12 col-md-1 text-center d-flex align-items-center justify-content-center">
+                <div class="col-3 col-md-1 text-center d-flex align-items-center justify-content-center">
                     <a href="#" role="button"
                         data-html="true"
                         data-placement="bottom"
@@ -228,7 +228,7 @@
         @endforeach
 
         <div class="row mt-4">
-            <div class="col-12 col-md-12 text-center text-md-end">
+            <div class="col-12 col-md-12 d-flex justify-content-end">
                 <button type="button" id="btnEnviarCarrito" class="btn btn-primary">
                     Enviar
                 </button>
