@@ -50,53 +50,37 @@ class TiendaController extends Controller
     {
         try {
             DB::beginTransaction();
-
-            //ACTUALIZACIÓN DE UNIDADES Y SELECCIÓN DE PRODUCTOS
+            //ACTUALIZACIÓN DE UNIDADES KITS Y VALIDACIÓN SUS PRODUCTOS
             $atencionId = null;
             $cart = $request->input('cart');
             if (isset($cart['ordenes'])) {
                 foreach ($cart['ordenes'] as $ordenData) {
                     $ordenId = $ordenData['orden_id'];
-                    $atencionId = $ordenData['atencion_id']; //Extrayendo atencion_id
+                    $atencionId = $ordenData['atencion_id'];
                     $unidades = $ordenData['unidades'];
-                    
-                    // Buscar la orden y sus detalles
                     $orden = Orden::with('detalle')->find($ordenId);
-                    
                     if ($orden) {
-                        // 1. Actualizar unidades de la orden
                         $orden->unidades = $unidades;
                         $orden->save();
-
-                        // 2. Actualizar productos de los detalles (por posición/orden)
-                        if (isset($ordenData['detalles']) && is_array($ordenData['detalles'])) {
-                            // Al ser un array estandar [0,1,2] desde JS, array_values asegura consistencia
+                        if (isset($ordenData['detalles']) && is_array($ordenData['detalles'])) { //Validar correspondencias Producto - Kit
                             $nuevosProductos = array_values($ordenData['detalles']); 
-                            
                             foreach ($orden->detalle as $index => $detalle) {
-                                // Si existe un producto correspondiente en la misma posición enviada por el frontend
                                 if (isset($nuevosProductos[$index]['producto_id'])) {
                                     $productoId = $nuevosProductos[$index]['producto_id'];
-                                    
-                                    //Validar si el producto pertenece al kit o sus equivalentes
                                     $esValido = DB::table('kit_producto')
                                         ->where('kit_id', $orden->kit_id)
                                         ->where('producto_id', $productoId)
                                         ->exists();
-
                                     if (!$esValido) {
                                         $esValido = DB::table('equivalentes')
                                             ->where('kit_id', $orden->kit_id)
                                             ->where('producto_id', $productoId)
                                             ->exists();
                                     }
-
                                     if (!$esValido) {
                                         throw new Exception("El producto seleccionado no es válido para este kit.");
                                     }
-                                    
-                                    // Solo actualizar si es diferente para optimizar
-                                    if ($detalle->producto_id != $productoId) {
+                                    if ($detalle->producto_id != $productoId) { // Solo actualizar la sustituciones
                                         DB::table('detalles')
                                             ->where('orden_id', $orden->id)
                                             ->where('kit_id', $orden->kit_id)
@@ -112,8 +96,7 @@ class TiendaController extends Controller
                     }
                 }
             }
-
-            //ACTIVACIÓN DE LA ORDEN DE COMPRAS
+            //ACTIVACIÓN DE LA ORDEN DE COMPRAS Y LA COPIA DEL RECEPTOR
             if ($atencionId) {
                 $atencion = Atencion::find($atencionId);
                 if ($atencion) {
@@ -131,16 +114,14 @@ class TiendaController extends Controller
                     }
                 }
             }
-
             DB::commit();
             return response()->json(['success' => true, 'message' => 'Orden recibida y actualizada correctamente. Redireccionando a la Tienda']);
-            
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Error en carritoEnviar: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString());
             return response()->json(['success' => false, 'message' => 'Error al procesar la orden: ' . $e->getMessage()], 500);
         }
-    }   
+    }
 
     public function create()
     {
@@ -294,11 +275,9 @@ class TiendaController extends Controller
             ->where('producto_id', $validated['producto_id'])
             ->with('stock')
             ->first();
-        // Cargar los stocks para obtener sus nombres
-        $stockOrigen = Stock::find($validated['origen_stock_id']);
+        $stockOrigen = Stock::find($validated['origen_stock_id']); // Cargar los stocks para obtener sus nombres
         $stockDestino = Stock::find($validated['destino_stock_id']);
-        // Verificar que los stocks existan (condición de carrera)
-        if (!$stockOrigen) {
+        if (!$stockOrigen) { // Verificar que los stocks existan (condición de carrera)
             return back()->with('error', 'El stock de origen seleccionado ya no existe. Por favor, recarga la página.');
         }
         if (!$stockDestino) {
@@ -321,8 +300,7 @@ class TiendaController extends Controller
                 $oficinaStockOrigen->producto_id = $validated['producto_id'];
                 $oficinaStockOrigen->unidades = $origenStockUnidades;
                 $oficinaStockOrigen->save();
-                // Cargar la relación stock después de guardar
-                $oficinaStockOrigen->load('stock');
+                $oficinaStockOrigen->load('stock'); // Cargar la relación stock después de guardar
             } else {
                 $oficinaStockOrigen->unidades -= $origenStockUnidades;
                 $oficinaStockOrigen->save();
@@ -334,8 +312,7 @@ class TiendaController extends Controller
                 $oficinaStockDestino->producto_id = $validated['producto_id'];
                 $oficinaStockDestino->unidades = $destinoStockUnidades;
                 $oficinaStockDestino->save();
-                // Cargar la relación stock después de guardar
-                $oficinaStockDestino->load('stock');
+                $oficinaStockDestino->load('stock'); // Cargar la relación stock después de guardar
             } else {
                 $oficinaStockDestino->unidades += $destinoStockUnidades;
                 $oficinaStockDestino->save();
@@ -348,8 +325,7 @@ class TiendaController extends Controller
             $movimiento->origen_stock_id = $validated['origen_stock_id'];
             $movimiento->destino_stock_id = $validated['destino_stock_id'];
             $movimiento->producto_id = $validated['producto_id'];
-            // Usar los stocks cargados directamente (verificados anteriormente)
-            $movimiento->movimiento = $stockOrigen->stock . ' -> ' . $stockDestino->stock;
+            $movimiento->movimiento = $stockOrigen->stock . ' -> ' . $stockDestino->stock; // Usar los stocks cargados directamente (verificados anteriormente)
             $movimiento->unidades = $validated['unidades'];
             $movimiento->save();
             DB::commit();

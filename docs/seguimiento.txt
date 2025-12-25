@@ -17,34 +17,18 @@ CLIENTE:
             . Entra al <formulario del carrito> y agrega o cambia los <kits y sus productos> y especifica si va enviar una <orden de compra> o una <orden de reserva>
 
                 🪒 Visualizador del carrito y editor del kit
-                    . Cambiar el orden a: 
+
+
 
                         3- agregar un control para que el usuario eliga entre orden de compra y orden de reserva
-                            
                         5-eliminación de un kit
-
-                        7-maquetacion para celular
-
                         8-mejoramiento y estandarización de los colores
-
                         9 agregar el campo total a la tabla <ordenes>
-
-                        10 hay que analizar como se va manejar el sistema de errores que recibe el usuario porque 
-                        si los enviamos en los mensajes toastr como estamos haciendo actualmente es un tema de seguridad
-                        tambien debe incluirse aquó el módulo gestor de tareas porque hay tambien unos popups que se usan
-                        para mostrar los errores
-
-                        11. revisar el codigo de la vista y del controlador:
-                            . reordenar etiquetas
-                            . documentar
-
-                        12. Ajustar en el módulo gestor de tareas los nuevos nombres de columnas
-
                         13. tomar en cuenta caso: no hay kits en el carrito
+                        14. validar las unidades de los kits
 
-                    . Da clic en <Enviar>
-                    . Maquetar movimiento.edit
-                    
+
+
 
                 🪒 enlace tienda gestor
                     . tarjeta en el tablero "En progreso" en el rol del Receptor
@@ -155,6 +139,12 @@ SEGURIDAD:
         .hay que revisar todos los controladores y otros procesos y corregirlos
 
     🔵 Retirar todos los servicios de seguridad que estan dentro de la App, solo dejar uno.
+
+    🔵 hay que analizar como se va manejar el sistema de errores que recibe el usuario porque 
+    si los enviamos en los mensajes toastr como estamos haciendo actualmente es un tema de seguridad
+    tambien debe incluirse aquó el módulo gestor de tareas porque hay tambien unos popups que se usan
+    para mostrar los errores
+
 
 PLATAFORMA:
     🟢 construir la funcionalidad para cambiar nombres a los registros de catálogos y aplicar la regla de las dependencias

@@ -46,16 +46,18 @@
         display: flex;
         align-items: center;
     }
+
     .accordion-button:not(.collapsed) {
         color: #0c63e4;
         background-color: transparent !important;
         box-shadow: none !important;
     }
+
     .accordion-button:focus {
         box-shadow: none !important;
         border-color: rgba(0,0,0,.125);
     }
-    
+
     .accordion-flush .accordion-item, /* Eliminar bordes y sombras de los acordeones internos (flush) */
     .accordion-flush .accordion-header,
     .accordion-flush .accordion-button,
@@ -88,13 +90,14 @@
     .btn-scale-hover {
         transition: transform 0.2s ease;
     }
+    
     .btn-scale-hover:hover {
         transform: scale(1.2);
     }
+    
     .btn-scale-hover:active {
         transform: scale(0.9);
     }
-
 </style>
 @endpush
 
@@ -131,7 +134,6 @@
                                                     <button class="accordion-button collapsed d-flex justify-content-start text-start" style="padding: 0.5em; font-size: 0.8rem;" type="button" data-bs-toggle="collapse" data-bs-target="#{{ $detCollapseId }}" aria-expanded="false" aria-controls="{{ $detCollapseId }}">
                                                         {{ $detalle->producto->id }} - {{ $detalle->producto->producto }}
                                                     </button>
-
                                                 </h2>
                                                 <div id="{{ $detCollapseId }}" class="accordion-collapse collapse" aria-labelledby="{{ $detHeadingId }}" data-bs-parent="#{{ $detAccordionId }}">
                                                     <div class="accordion-body"> {{-- Equivalentes --}}
@@ -271,7 +273,7 @@
         @endforeach
     @endif
     $(document).ready(function() { 
-        $('.main-kit-collapse').on('show.bs.collapse hidden.bs.collapse', function (e) { // 1. Accordion Logic (Sync row height)
+        $('.main-kit-collapse').on('show.bs.collapse hidden.bs.collapse', function (e) { // Accordion Logic (Sync row height)
             if (e.target === this) {
                 const isShowing = e.type === 'show';
                 $(this).closest('.row')
@@ -279,30 +281,26 @@
                     .toggleClass('align-items-stretch', isShowing);
             }
         });
-        const validate = ($el) => $el.toggleClass('is-invalid', !$el[0].checkValidity()); // 2. Frontend Validation (Compact Standard)
+        const validate = ($el) => $el.toggleClass('is-invalid', !$el[0].checkValidity()); // Frontend Validation (Compact Standard)
         $(document).on('input blur', '.input-unidades', function() { validate($(this)); });
-        $('#btnEnviarCarrito').on('click', function(e) { // 3. Submit Handler
+        $('#btnEnviarCarrito').on('click', function(e) { // Submit Handler
             let isValid = true;
             $('.input-unidades').each(function() {
                 validate($(this));
                 if (!$(this)[0].checkValidity()) isValid = false;
             });
             if (!isValid) return false; // Stop if invalid (HTML5 valid msg is shown below input)
-            const $btn = $(this); // Proceed with AJAX
-            
-            // Actualizar unidades en la estructura jerárquica
-            $('.input-unidades').each(function() {
+            const $btn = $(this);
+            $('.input-unidades').each(function() { // Actualizar unidades en la estructura jerárquica
                 const ordenId = String($(this).data('orden-id'));
-                // Buscar la orden correspondiente por orden_id
                 for (let key in window.cartDetails.ordenes) {
-                    // La key ahora es 'orden[0]', accedemos a .orden_id
                     if (window.cartDetails.ordenes[key].orden_id && String(window.cartDetails.ordenes[key].orden_id) === ordenId) {
                         window.cartDetails.ordenes[key].unidades = parseInt($(this).val());
                         break;
                     }
                 }
             });
-            $btn.prop('disabled', true);
+            $btn.prop('disabled', true); //Procesode envío de la orden de compras
             $.ajax({
                 url: '{{ route('tienda.carrito-enviar') }}',
                 method: 'POST',
@@ -324,7 +322,7 @@
                 }
             });
         });
-        $(document).on('click', '.btn-spinner', function() { // 4. Spinner Logic
+        $(document).on('click', '.btn-spinner', function() { // Spinner Logic
             const $btn = $(this), $input = $($btn.data('target'));
             let val = parseInt($input.val()) || 0;
             $input.val(Math.max(1, val + ($btn.data('type') === 'plus' ? 1 : -1))).trigger('change');
@@ -334,7 +332,6 @@
         const productName = radio.getAttribute('data-product-name');
         const productId = radio.value;
         const accordionItem = radio.closest('.accordion-item');
-        
         if (accordionItem) {
             if (productName) { 
                 const targetElement = accordionItem.querySelector('.accordion-button');
@@ -343,9 +340,7 @@
                 }
             }
         }
-        
-        // Update Global State using indices
-        if(productId !== undefined && ordenIndex !== undefined && detalleIndex !== undefined) {
+        if(productId !== undefined && ordenIndex !== undefined && detalleIndex !== undefined) { // Update Global State using indices
              if (window.cartDetails.ordenes[ordenIndex] && 
                  window.cartDetails.ordenes[ordenIndex].detalles[detalleIndex]) {
                  window.cartDetails.ordenes[ordenIndex].detalles[detalleIndex].producto_id = productId;
