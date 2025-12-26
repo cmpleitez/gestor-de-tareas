@@ -58,6 +58,9 @@ class TiendaController extends Controller
                     $ordenId = $ordenData['orden_id'];
                     $atencionId = $ordenData['atencion_id'];
                     $unidades = $ordenData['unidades'];
+                    if ($unidades < 1) {
+                        throw new Exception("Las unidades deben ser mayores a 0.");
+                    }
                     $orden = Orden::with('detalle')->find($ordenId);
                     if ($orden) {
                         $orden->unidades = $unidades;
@@ -158,7 +161,7 @@ class TiendaController extends Controller
         return back()->with('error', 'La operación de retirada no está disponible en este momento');
     }
 
-    public function agregarKit(Kit $kit)
+    public function agregarKit(Request $request, Kit $kit)
     {
         try {
             DB::beginTransaction(); //Lectura
@@ -179,7 +182,8 @@ class TiendaController extends Controller
                 if ($receptors->isEmpty()) {
                     Log::warning('No hay receptores disponibles', ['oficina_id' => $user->oficina_id, 'user_id' => $user->id]);
                     DB::rollBack();
-                    return back()->with('error', 'No hay personal <Receptor> disponible para atender la solicitud');
+                    $message = 'No hay personal <Receptor> disponible para atender la solicitud';
+                    return $request->ajax() ? response()->json(['success' => false, 'message' => $message, 'type' => 'error']) : back()->with('error', $message);
                 }
                 $receptor = $receptors->random();
                 $atencion             = new Atencion(); //Creando número de atención
@@ -205,7 +209,8 @@ class TiendaController extends Controller
                 ->first();
             if ($orden) {
                 DB::rollBack();
-                return back()->with('info', 'El kit ya se encuentra en el carrito');
+                $message = 'El kit ya se encuentra en el carrito';
+                return $request->ajax() ? response()->json(['success' => false, 'message' => $message, 'type' => 'info']) : back()->with('info', $message);
             }
             $orden = new Orden(); //Agregando Kit (Orden de compra)
             $orden->id = (new KeyMaker())->generate('Orden', Solicitud::where('solicitud', 'Orden de compra')->first()->id);
@@ -224,10 +229,12 @@ class TiendaController extends Controller
                 $detalle->save();
             }
             DB::commit();
-            return back()->with('success', 'Kit agregado a la tienda correctamente');
+            $message = 'Kit agregado a la tienda correctamente';
+            return $request->ajax() ? response()->json(['success' => true, 'message' => $message, 'type' => 'success']) : back()->with('success', $message);
         } catch (Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Ocurrió un error cuando se intentaba agregar el kit a la tienda: ' . $e->getMessage());
+            $message = 'Ocurrió un error cuando se intentaba agregar el kit a la tienda: ' . $e->getMessage();
+            return $request->ajax() ? response()->json(['success' => false, 'message' => $message, 'type' => 'error']) : back()->with('error', $message);
         }
     }
 

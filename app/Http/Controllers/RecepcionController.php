@@ -136,7 +136,7 @@ class RecepcionController extends Controller
             //PROCESO
             $user        = auth()->user();
             $recepciones = Recepcion::where(function ($query) use ($user) {
-                if ($user->mainRole->name == 'Cliente') {
+                if ($user->mainRole->name == 'cliente') {
                     $query->where('origen_user_id', $user->id);
                 } else {
                     $query->where('destino_user_id', $user->id);

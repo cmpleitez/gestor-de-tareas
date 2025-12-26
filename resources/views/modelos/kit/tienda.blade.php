@@ -47,7 +47,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row"> {{-- Galería --}}
+            <div class="row"> {{-- Tienda --}}
                 @foreach ($kits as $kit)
                 <div class="col-md-3">
                     <div class="card mb-4" style="border: 0;">
@@ -57,12 +57,12 @@
                                 <ul class="list-unstyled">
                                     <li><a class="btn btn-success text-white" href="#" style="pointer-events: auto;"><i class="far fa-heart"></i></a></li>
                                     <li><a class="btn btn-success text-white mt-2 btn-ver-kit" data-bs-toggle="modal" data-bs-target="#modalPreferencias" data-kit-id="{{ $kit->id }}" data-kit-name="{{ $kit->kit }}" data-kit-image-path="{{ $kit->image_path ? Storage::url($kit->image_path) : '' }}" href="#" style="pointer-events: auto;"><i class="far fa-eye"></i></a></li>
-                                    <li><a class="btn btn-success text-white mt-2" href="{{ Route('tienda.agregar-kit', $kit->id) }}" style="pointer-events: auto;"><i class="fas fa-cart-plus"></i></a></li>
+                                    <li><a class="btn btn-success text-white mt-2 btn-agregar-kit" href="{{ Route('tienda.agregar-kit', $kit->id) }}" style="pointer-events: auto;"><i class="fas fa-cart-plus"></i></a></li>
                                 </ul>
                             </div>
                         </div>
                         <div class="card-body ">
-                            <a href="{{ Route('tienda.agregar-kit', $kit->id) }}" class="text-decoration-none d-flex justify-content-center">{{ $kit->kit }}</a>
+                            <a href="{{ Route('tienda.agregar-kit', $kit->id) }}" class="text-decoration-none d-flex justify-content-center btn-agregar-kit">{{ $kit->kit }}</a>
                             <ul class="w-100 list-unstyled d-flex justify-content-between mb-0">
                                 <li class="pt-2">
                                     <span class="product-color-dot color-dot-red float-left rounded-circle ml-1"></span>
@@ -216,7 +216,7 @@
                             });
                             modalFooter.innerHTML = `
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                            <a class="btn btn-secondary" href="${agregarKitUrl}">
+                            <a class="btn btn-secondary btn-agregar-kit" href="${agregarKitUrl}">
                                 Agregar <i class="fas fa-cart-plus"></i>
                             </a>
                         `;
@@ -246,6 +246,37 @@
                 kitNameElement.textContent = '';
             }
         });
+        const updateCartBadge = () => { // Update Cart Badge Logic
+            fetch('{{ route("tienda.cantidad") }}')
+                .then(response => response.json())
+                .then(data => {
+                    const badge = document.getElementById('badge-carrito');
+                    if (badge) {
+                        badge.textContent = data.cantidad;
+                        badge.classList.toggle('d-none', data.cantidad === 0);
+                    }
+                });
+        };
+        updateCartBadge();
+        const handleAgregarKit = (e) => { // AJAX Add Kit Handler
+            const href = e.currentTarget.getAttribute('href');
+            if (href && href !== '#') {
+                e.preventDefault();
+                fetch(href, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    toastr[data.type || (data.success ? 'success' : 'error')](data.message);
+                    if (data.success) updateCartBadge();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    toastr.error('Error al procesar la solicitud');
+                });
+            }
+        };
+        $(document).on('click', '.btn-agregar-kit', handleAgregarKit); // Delegated for both gallery and modal
     });
 
 </script>

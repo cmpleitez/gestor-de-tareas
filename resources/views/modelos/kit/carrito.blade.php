@@ -142,7 +142,7 @@
                                                         @endphp
                                                         @if($kitProducto)
                                                             <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-2">
-                                                                @if ($kitProducto->equivalentes->count() > 1)
+                                                                @if ($kitProducto->equivalentes->count() > 0)
                                                                     <div class="col">
                                                                         <label class="card rounded border m-0 shadow-none h-100" style="cursor: pointer;">
                                                                             <div class="card-body p-2 d-flex flex-column align-items-center">
@@ -313,7 +313,7 @@
                     $btn.prop('disabled', false);
                     toastr.success(response.message, null, { "progressBar": false, "timeOut": 0, "extendedTimeOut": 0 });
                     setTimeout(function() {
-                        window.location.href = "{{ route('tienda') }}";
+                        window.location.href = "{{ route('recepcion.solicitudes') }}";
                     }, 2000);
                 },
                 error: function(xhr) {

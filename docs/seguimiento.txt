@@ -22,10 +22,12 @@ CLIENTE:
 
                         3- agregar un control para que el usuario eliga entre orden de compra y orden de reserva
                         5-eliminación de un kit
-                        8-mejoramiento y estandarización de los colores
-                        9 agregar el campo total a la tabla <ordenes>
+                        9 agregar el campo total a la tabla <ordenes> e implementar la forma de calculo de una orden de 
+                        compra de manera dinámica
                         13. tomar en cuenta caso: no hay kits en el carrito
-                        14. validar las unidades de los kits
+                        ...14. validar las unidades de los kits
+                        15. resolver el caso: aparece un producto equivalente pero no el producto estandar
+                        16. validar que los productos en el kit no se repitan: frontend y backend
 
 
 
