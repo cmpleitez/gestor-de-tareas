@@ -25,7 +25,6 @@ CLIENTE:
                         9 agregar el campo total a la tabla <ordenes> e implementar la forma de calculo de una orden de 
                         compra de manera dinámica
                         13. tomar en cuenta caso: no hay kits en el carrito
-                        15. resolver el caso: aparece un producto equivalente pero no el producto estandar
                         16. validar que los productos en el kit no se repitan: frontend y backend
 
 
