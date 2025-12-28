@@ -25,8 +25,9 @@ CLIENTE:
                         9 agregar el campo total a la tabla <ordenes> e implementar la forma de calculo de una orden de 
                         compra de manera dinámica
                         13. tomar en cuenta caso: no hay kits en el carrito
-                        16. validar que los productos en el kit no se repitan: frontend y backend
-
+                        16. validar que los productos en el kit no se repitan: frontend y backend, 
+                        pero en la construccion del kit
+                        17. en productivo http://104.248.50.101/kit/asignar-productos/1 fallan los estilos
 
 
 
