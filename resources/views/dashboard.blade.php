@@ -208,14 +208,12 @@
                             data-ticon="bx-disc"></i></a></li>
             </ul>
         </div>
-
         <div class="shadow-bottom"></div>
         <div class="main-menu-content mt-3">
             <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation"
                 data-icon-style="">
-
                 @role('admin|superadmin')
-                    <li class=" nav-item"><a href="#"><i class="bx bxs-cog"></i><span class="menu-title"
+                    <li class="nav-item has-sub open"><a href="#"><i class="bx bxs-cog"></i><span class="menu-title"
                                 data-i18n="Menu Levels">Administración</span></a>
                         <ul class="menu-content" style="display: block;">
                             <li><a href="{{ Route('recepcion.parametros') }}">
@@ -265,7 +263,7 @@
                     </li>
                 @endrole
 
-                <li class="nav-item"><a href="#"><i class="bx bx-list-ul"></i><span class="menu-title"
+                <li class="nav-item has-sub open"><a href="#"><i class="bx bx-list-ul"></i><span class="menu-title"
                             data-i18n="Menu Levels">Servicios</span></a>
                     <ul class="menu-content" style="display: block;">
                         @role('superadmin|admin')

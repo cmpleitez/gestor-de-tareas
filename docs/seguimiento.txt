@@ -28,7 +28,9 @@ CLIENTE:
                         20. tienda: construir la busqueda
                         21. tienda: construir la paginación
                         22. tienda: el visualizador modal del kit tiene los botones con letras disparejas
-                        23. las persianas del menu principal: cargar abiertas y cuando se les da clic para cerrarlas se vuelven abrir y con el siguiente clic si se cierran
+                        23. tienda: validar si hay existencias antes de agregar un kit al carrito
+                        24. tienda.carrito: agregar las unidades que lleva cada producto
+                        25. tienda.carrito: agregar un control <eliminar> para cada producto
 
                 🪒 enlace tienda gestor
                     . tarjeta en el tablero "Recibidas" en el rol del Receptor

@@ -103,7 +103,7 @@
         </ul>
     </div>
 </div>
-{{-- PREFERENCIAS DEL CLIENTE --}}
+{{-- MODAL KIT --}}
 <div class="modal fade" id="modalPreferencias" tabindex="-1" aria-labelledby="modalPreferenciasLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-lg">
         <div class="modal-content">
@@ -215,8 +215,8 @@
                             `;
                             });
                             modalFooter.innerHTML = `
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                            <a class="btn btn-secondary btn-agregar-kit" href="${agregarKitUrl}">
+                            <button type="button" class="btn btn-secondary" style="font-size: 0.8rem;" data-bs-dismiss="modal">Cerrar</button>
+                            <a class="btn btn-secondary btn-agregar-kit" style="font-size: 1rem;" href="${agregarKitUrl}">
                                 Agregar <i class="fas fa-cart-plus"></i>
                             </a>
                         `;
@@ -268,7 +268,15 @@
                 .then(response => response.json())
                 .then(data => {
                     toastr[data.type || (data.success ? 'success' : 'error')](data.message);
-                    if (data.success) updateCartBadge();
+                    if (data.success) {
+                        updateCartBadge();
+                        // Cerrar modal si está abierta
+                        const modalElement = document.getElementById('modalPreferencias');
+                        const modal = bootstrap.Modal.getInstance(modalElement);
+                        if (modal) {
+                            modal.hide();
+                        }
+                    }
                 })
                 .catch(error => {
                     console.error('Error:', error);
