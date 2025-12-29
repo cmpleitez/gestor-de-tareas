@@ -39,10 +39,17 @@ class TiendaController extends Controller
             })
             ->with([
                 'ordenes.kit',
+                'ordenes.detalle' => function ($query) {
+                    $query->orderBy('producto_id');
+                },
                 'ordenes.detalle.producto.kitProductos.equivalentes.producto'
             ])
             ->get();
-        $atencion_id_ripped = KeyRipper::rip($atencion->first()->id);
+        if($atencion->isNotEmpty()){
+            $atencion_id_ripped = KeyRipper::rip($atencion->first()->id);
+        }else{
+            $atencion_id_ripped = null;
+        }
         return view('modelos.kit.carrito', compact('atencion', 'atencion_id_ripped'));
     }
 
@@ -61,15 +68,22 @@ class TiendaController extends Controller
                     if ($unidades < 1) {
                         throw new Exception("Las unidades deben ser mayores a 0.");
                     }
-                    $orden = Orden::with('detalle')->find($ordenId);
+                    $orden = Orden::with(['detalle' => function ($query) {
+                        $query->orderBy('producto_id');
+                    }])->find($ordenId);
                     if ($orden) {
                         $orden->unidades = $unidades;
                         $orden->save();
-                        if (isset($ordenData['detalles']) && is_array($ordenData['detalles'])) { //Validar correspondencias Producto - Kit
-                            $nuevosProductos = array_values($ordenData['detalles']); 
+                        if (isset($ordenData['detalles']) && is_array($ordenData['detalles'])) {
+                            $nuevosProductos = array_values($ordenData['detalles']);
+                            
+                            // FASE 1: VALIDACIONES (sin modificar la base de datos)
+                            $productosIds = []; // Array para validar productos duplicados
                             foreach ($orden->detalle as $index => $detalle) {
                                 if (isset($nuevosProductos[$index]['producto_id'])) {
                                     $productoId = $nuevosProductos[$index]['producto_id'];
+                                    
+                                    // Validar que el producto pertenezca al kit o sea equivalente
                                     $esValido = DB::table('kit_producto')
                                         ->where('kit_id', $orden->kit_id)
                                         ->where('producto_id', $productoId)
@@ -83,17 +97,51 @@ class TiendaController extends Controller
                                     if (!$esValido) {
                                         throw new Exception("El producto seleccionado no es válido para este kit.");
                                     }
-                                    if ($detalle->producto_id != $productoId) { // Solo actualizar la sustituciones
-                                        DB::table('detalles')
-                                            ->where('orden_id', $orden->id)
-                                            ->where('kit_id', $orden->kit_id)
-                                            ->where('producto_id', $detalle->producto_id)
-                                            ->update([
-                                                'producto_id' => $productoId,
-                                                'updated_at' => now()
-                                            ]);
+                                    
+                                    // Validar que no haya productos duplicados
+                                    if (in_array($productoId, $productosIds)) {
+                                        throw new Exception("No puede haber productos repetidos en el kit. Por favor revise su selección.");
+                                    }
+                                    $productosIds[] = $productoId;
+                                }
+                            }
+                            
+                            // FASE 2: RECOLECCIÓN DE CAMBIOS
+                            $cambios = [];
+                            foreach ($orden->detalle as $index => $detalle) {
+                                if (isset($nuevosProductos[$index]['producto_id'])) {
+                                    $nuevoProductoId = $nuevosProductos[$index]['producto_id'];
+                                    
+                                    if ($detalle->producto_id != $nuevoProductoId) {
+                                        $cambios[] = [
+                                            'detalle_anterior' => $detalle, // Objeto Eloquent o stdClass
+                                            'nuevo_producto_id' => $nuevoProductoId
+                                        ];
                                     }
                                 }
+                            }
+
+                            // FASE 3: ELIMINACIÓN (Delete)
+                            foreach ($cambios as $cambio) {
+                                DB::table('detalles')
+                                    ->where('orden_id', $orden->id)
+                                    ->where('kit_id', $orden->kit_id)
+                                    ->where('producto_id', $cambio['detalle_anterior']->producto_id)
+                                    ->delete();
+                            }
+
+                            // FASE 4: INSERCIÓN (Insert)
+                            foreach ($cambios as $cambio) {
+                                $detalleAnterior = $cambio['detalle_anterior'];
+                                DB::table('detalles')->insert([
+                                    'orden_id' => $detalleAnterior->orden_id,
+                                    'producto_id' => $cambio['nuevo_producto_id'],
+                                    'kit_id' => $detalleAnterior->kit_id,
+                                    'unidades' => $detalleAnterior->unidades,
+                                    'precio' => $detalleAnterior->precio,
+                                    'created_at' => $detalleAnterior->created_at,
+                                    'updated_at' => now()
+                                ]);
                             }
                         }
                     }

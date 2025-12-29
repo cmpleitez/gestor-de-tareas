@@ -102,12 +102,25 @@
 @endpush
 
 @section('content')
-@if($atencion->isEmpty())
-    <div class="alert alert-info">
-        Aún no ha agregado artículos al carrito
+@php
+    $currentAtencion = $atencion->first();
+    $hasOrders = $currentAtencion && $currentAtencion->ordenes && $currentAtencion->ordenes->count() > 0;
+@endphp
+
+@if(!$hasOrders)
+    <div class="d-flex flex-column justify-content-center align-items-center" style="min-height: 60vh;">
+        <div class="text-center">
+            <div class="mb-4">
+                <i class="fas fa-shopping-basket text-light-primary" style="font-size: 5rem; opacity: 0.5;"></i>
+            </div>
+            <h3 class="text-muted fw-light">Aún no has agregado articulos al carrito</h3>
+            <p class="text-muted mb-4">Explora nuestros productos.</p>
+            <a href="{{ route('tienda') }}" class="btn btn-primary btn-lg px-4 shadow-sm">
+                <i class="fas fa-store me-2"></i> Ir a la tienda
+            </a>
+        </div>
     </div>
 @else
-    @php $currentAtencion = $atencion->first(); @endphp 
     @if($currentAtencion && $currentAtencion->ordenes)
         @foreach($currentAtencion->ordenes as $orden)
             @php $headingId = 'heading' . $orden->id; $accordionId = 'accordion' . $orden->id; $ordenIndex = $loop->index; @endphp
@@ -255,8 +268,8 @@
 @push('scripts')
 <script>
     window.cartDetails = { ordenes: [] };
-    @if(isset($atencion) && !$atencion->isEmpty() && $atencion->first()->ordenes)
-        @foreach($atencion->first()->ordenes as $orden)
+    @if($hasOrders)
+        @foreach($currentAtencion->ordenes as $orden)
             window.cartDetails.ordenes[{{ $loop->index }}] = {
                 atencion_id: '{{ $orden->atencion_id }}',
                 orden_id: '{{ $orden->id }}',
@@ -317,8 +330,11 @@
                     }, 2000);
                 },
                 error: function(xhr) {
-                    console.log(xhr.responseJSON.message);
                     $btn.prop('disabled', false);
+                    const errorMessage = xhr.responseJSON && xhr.responseJSON.message 
+                        ? xhr.responseJSON.message 
+                        : 'Error al procesar la orden';
+                    toastr.error(errorMessage, null, { "progressBar": true, "timeOut": 10000, "extendedTimeOut": 5000 });
                 }
             });
         });

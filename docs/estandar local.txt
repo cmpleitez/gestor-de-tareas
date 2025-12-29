@@ -1,13 +1,16 @@
-🟠 Para controlas las sugerencias de la IA
-.vscode/settings.json
+🟠 Para controlas las sugerencias de la IA en.vscode/settings.json:
 {
     "git.autofetch": true,
-    "editor.quickSuggestionsDelay": 3000,
-    "editor.suggest.showWords": true,
+    "editor.quickSuggestionsDelay": 30000,
+    "editor.suggest.showWords": false,
     "editor.suggest.filterGraceful": false,
-    "antigravity.suggestionFrequency": 5,
-    "antigravity.suggestionThrottle": 5000,
+    "editor.suggest.filterOnType": false,
+    "editor.suggest.showSnippets": false,
+    "editor.suggest.showStatusBar": false,
+    "antigravity.suggestionFrequency": 0,
+    "antigravity.suggestionThrottle": 30000
 }
+Además se revisó: preferences/editor settings/tab user/text editor/suggestions
 
 🟠 https://chat.z.ai/ nueva IA
 
