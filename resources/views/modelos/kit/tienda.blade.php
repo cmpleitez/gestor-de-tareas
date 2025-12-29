@@ -8,7 +8,7 @@
             </a>
         </div>
         <div class="col d-flex justify-content-center">
-            <h1 class="h3 mb-0 text-truncate">TIENDA</h1>
+            <spam style="font-size: 1rem;">DOBINSONS EL SALVADOR</spam>
         </div>
         <div class="col-auto d-flex justify-content-end">
             <a href="{{ route('tienda.carrito') }}" class="text-primary-light position-relative" id="btn-carrito">

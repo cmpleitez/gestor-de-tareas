@@ -110,7 +110,7 @@
 
 <body>
     <!-- Header Section -->
-    <header class="bg-primary text-white py-3">
+    <header class="bg-secondary-dark text-white py-3">
         <div class="container">
             @yield('header')
         </div>
@@ -122,7 +122,7 @@
         </div>
     </main>
     <!-- Footer Section -->
-    <footer class="bg-primary text-white py-4 mt-auto">
+    <footer class="bg-secondary-dark text-white py-4 mt-auto">
         <div class="container">
             @yield('footer')
         </div>
