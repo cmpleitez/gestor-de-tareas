@@ -16,8 +16,9 @@
                 <i class="fas fa-arrow-left"></i>
             </a>
         </div>
+
         <div class="col d-flex justify-content-center">
-            <span style="font-size: 1.5em;">ORDEN # {{ $atencion_id_ripped }}</span>
+            <span style="font-size: 1.5em;">ORDEN # {{ $atencion_id_ripped }} / {{ $atencion->first()->id }}</span>
         </div>
         <div class="col-auto d-flex justify-content-end">
             <span style="font-size: 1.9em;"><i class="fas fa-cart-plus" style="padding-right: 0.5em;"></i>${{ number_format($total, 2) }}</span>
@@ -145,7 +146,10 @@
                                             <div class="accordion-item">
                                                 <h2 class="accordion-header" id="{{ $detHeadingId }}">
                                                     <button class="accordion-button collapsed d-flex justify-content-start text-start" style="padding: 0.5em; font-size: 0.8rem;" type="button" data-bs-toggle="collapse" data-bs-target="#{{ $detCollapseId }}" aria-expanded="false" aria-controls="{{ $detCollapseId }}">
-                                                        {{ $detalle->producto->id }} - {{ $detalle->producto->producto }}
+                                                        <span class="badge bg-secondary me-2">{{ $detalle->unidades }}</span>
+                                                        <span id="badgeId_{{ $detAccordionId }}" class="badge bg-secondary-dark me-2">{{ $detalle->producto_id }}</span>
+                                                        <span id="productName_{{ $detAccordionId }}">{{ $detalle->producto->producto }}</span>
+                                                        <input type="hidden" id="productId_{{ $detAccordionId }}" value="{{ $detalle->producto_id }}">
                                                     </button>
                                                 </h2>
                                                 <div id="{{ $detCollapseId }}" class="accordion-collapse collapse" aria-labelledby="{{ $detHeadingId }}" data-bs-parent="#{{ $detAccordionId }}">
@@ -158,12 +162,15 @@
                                                                 @if ($kitProducto->equivalentes->count() > 0)
                                                                     <div class="col">
                                                                         <label class="card rounded border m-0 shadow-none h-100" style="cursor: pointer;">
+                                                                            <div class="card-header bg-secondary-dark text-white text-center p-1">
+                                                                                <small class="fw-bold">{{ $kitProducto->producto->id }}</small>
+                                                                            </div>
                                                                             <div class="card-body p-2 d-flex flex-column align-items-center">
                                                                                 <div class="mb-2">
-                                                                                    <input type="radio" name="radio_{{ $detAccordionId }}" value="{{ $kitProducto->producto->id }}" data-name-target="#productName_{{ $detAccordionId }}" data-product-name="{{ $kitProducto->producto->id }} - {{ $kitProducto->producto->producto }}" {{ $detalle->producto_id == $kitProducto->producto->id ? 'checked' : '' }} onchange="updateProductName(this, {{ $ordenIndex }}, {{ $index }})">
+                                                                                    <input type="radio" name="radio_{{ $detAccordionId }}" value="{{ $kitProducto->producto->id }}" data-name-target="#productName_{{ $detAccordionId }}" data-id-target="#productId_{{ $detAccordionId }}" data-badge-target="#badgeId_{{ $detAccordionId }}" data-product-name="{{ $kitProducto->producto->producto }}" {{ $detalle->producto_id == $kitProducto->producto->id ? 'checked' : '' }} onchange="updateProductName(this)">
                                                                                 </div>
                                                                                 <div class="text-center d-flex flex-column justify-content-center flex-grow-1">
-                                                                                    <span class="d-block">{{ $kitProducto->producto->id }} {{ $kitProducto->producto->producto }}</span>
+                                                                                    <span class="d-block">{{ $kitProducto->producto->producto }}</span>
                                                                                     <span class="badge badge-primary badge-pill mt-1 mx-auto">Estándar</span>
                                                                                 </div>
                                                                             </div>
@@ -173,12 +180,15 @@
                                                                 @foreach($kitProducto->equivalentes as $equivalente) 
                                                                     <div class="col">
                                                                         <label class="card rounded border m-0 shadow-none h-100" style="cursor: pointer;">
+                                                                            <div class="card-header bg-secondary-dark text-white text-center p-1">
+                                                                                <small class="fw-bold">{{ $equivalente->producto->id }}</small>
+                                                                            </div>
                                                                             <div class="card-body p-2 d-flex flex-column align-items-center">
                                                                                 <div class="mb-2">
-                                                                                    <input type="radio" name="radio_{{ $detAccordionId }}" value="{{ $equivalente->producto->id }}" data-name-target="#productName_{{ $detAccordionId }}" data-product-name="{{ $equivalente->producto->id }} - {{ $equivalente->producto->producto }}" {{ $detalle->producto_id == $equivalente->producto->id ? 'checked' : '' }} onchange="updateProductName(this, {{ $ordenIndex }}, {{ $index }})">
+                                                                                    <input type="radio" name="radio_{{ $detAccordionId }}" value="{{ $equivalente->producto->id }}" data-name-target="#productName_{{ $detAccordionId }}" data-id-target="#productId_{{ $detAccordionId }}" data-badge-target="#badgeId_{{ $detAccordionId }}" data-product-name="{{ $equivalente->producto->producto }}" {{ $detalle->producto_id == $equivalente->producto->id ? 'checked' : '' }} onchange="updateProductName(this)">
                                                                                 </div>
                                                                                 <div class="text-center d-flex flex-column justify-content-center flex-grow-1">
-                                                                                    {{ $equivalente->producto->id }} - {{ $equivalente->producto->producto }}
+                                                                                    {{ $equivalente->producto->producto }}
                                                                                 </div>
                                                                             </div>
                                                                         </label>
@@ -309,6 +319,15 @@
                 for (let key in window.cartDetails.ordenes) {
                     if (window.cartDetails.ordenes[key].orden_id && String(window.cartDetails.ordenes[key].orden_id) === ordenId) {
                         window.cartDetails.ordenes[key].unidades = parseInt($(this).val());
+                         if(window.cartDetails.ordenes[key].detalles) {
+                            window.cartDetails.ordenes[key].detalles.forEach((det, idx) => {
+                                const inputId = `#productId_accordion_det_${ordenId}_${idx}`;
+                                const val = $(inputId).val();
+                                if(val) {
+                                    det.producto_id = val;
+                                }
+                            });
+                        }
                         break;
                     }
                 }
@@ -344,23 +363,29 @@
             $input.val(Math.max(1, val + ($btn.data('type') === 'plus' ? 1 : -1))).trigger('change');
         });
     });
-    function updateProductName(radio, ordenIndex, detalleIndex) { // Update product name in accordion header
+    function updateProductName(radio) { // Update product name and ID in specific elements
         const productName = radio.getAttribute('data-product-name');
+        const targetSelector = radio.getAttribute('data-name-target');
+        const idSelector = radio.getAttribute('data-id-target');
+        const badgeSelector = radio.getAttribute('data-badge-target');
         const productId = radio.value;
-        const accordionItem = radio.closest('.accordion-item');
-        if (accordionItem) {
-            if (productName) { 
-                const targetElement = accordionItem.querySelector('.accordion-button');
-                if (targetElement) {
-                    targetElement.textContent = productName;
-                }
+        if (targetSelector && productName) {  // Actualizar Nombre Visual
+             const targetElement = document.querySelector(targetSelector);
+             if (targetElement) {
+                 targetElement.textContent = productName;
+             }
+        }
+        if (idSelector && productId) { // Actualizar ID en Hidden Input
+            const idElement = document.querySelector(idSelector);
+            if (idElement) {
+                idElement.value = productId;
             }
         }
-        if(productId !== undefined && ordenIndex !== undefined && detalleIndex !== undefined) { // Update Global State using indices
-             if (window.cartDetails.ordenes[ordenIndex] && 
-                 window.cartDetails.ordenes[ordenIndex].detalles[detalleIndex]) {
-                 window.cartDetails.ordenes[ordenIndex].detalles[detalleIndex].producto_id = productId;
-             }
+        if (badgeSelector && productId) { // Actualizar Badge Visual de ID
+            const badgeElement = document.querySelector(badgeSelector);
+            if (badgeElement) {
+                badgeElement.textContent = productId;
+            }
         }
     }
 </script>

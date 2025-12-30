@@ -23,14 +23,18 @@ CLIENTE:
                         9 agregar el campo total a la tabla <ordenes> e implementar la forma de calculo de una orden de 
                         compra de manera dinámica
                         17. el tablero del cliente no refresca al minuto.
-                        18. automatizar la seleccion del equipo de trabajo, ya que solo habrá un equipo de trabajo en todo el sistema
+                        18. automatizar la seleccion del equipo de trabajo, ya que solo habrá un equipo de trabajo 
+                        en todo el sistema
                         19. tienda: construir el filtro de las categorias
                         20. tienda: construir la busqueda
                         21. tienda: construir la paginación
-                        22. tienda: el visualizador modal del kit tiene los botones con letras disparejas
                         23. tienda: validar si hay existencias antes de agregar un kit al carrito
                         24. tienda.carrito: agregar las unidades que lleva cada producto
                         25. tienda.carrito: agregar un control <eliminar> para cada producto
+                        26. agregar el código local de cada producto y hacerlo visible en el carrito
+                            . agregarlo en el crud de productos
+                            . agregarlo en la asignacion de productos a kits
+                            . agregarlo en la asignacion de productos equivalentes
 
                 🪒 enlace tienda gestor
                     . tarjeta en el tablero "Recibidas" en el rol del Receptor
