@@ -201,7 +201,7 @@ class RecepcionController extends Controller
             $user                    = auth()->user();
             $atencionesIdsEnFrontend = $request->input('atencion_ids', []);
             $recepciones             = Recepcion::where(function ($query) use ($user) {
-                if ($user->mainRole->name == 'Cliente') {
+                if ($user->mainRole->name == 'cliente') {
                     $query->where('origen_user_id', $user->id);
                 } else {
                     $query->where('destino_user_id', $user->id);
@@ -299,7 +299,7 @@ class RecepcionController extends Controller
             $tarjetas = Recepcion::with(['usuarioOrigen', 'usuarioDestino', 'atencion', 'actividades.tarea']) //Consulta de las tarjetas recopiladas
                 ->whereIn('atencion_id', $tarjetasIds)
                 ->where(function ($query) use ($user) {
-                    if ($user->mainRole && $user->mainRole->name === 'Cliente') {
+                    if ($user->mainRole && $user->mainRole->name === 'cliente') {
                         $query->where('origen_user_id', $user->id);
                     } else {
                         $query->where('destino_user_id', $user->id);

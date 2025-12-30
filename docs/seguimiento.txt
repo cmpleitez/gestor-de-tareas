@@ -22,9 +22,6 @@ CLIENTE:
                         5. eliminación de un kit
                         9 agregar el campo total a la tabla <ordenes> e implementar la forma de calculo de una orden de 
                         compra de manera dinámica
-                        
-                        ...17. el tablero del cliente no refresca al minuto.
-
                         18. automatizar la seleccion del equipo de trabajo, ya que solo habrá un equipo de trabajo 
                         en todo el sistema
                         19. tienda: construir el filtro de las categorias
