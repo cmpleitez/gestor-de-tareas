@@ -19,34 +19,23 @@ CLIENTE:
                 🪒 Visualizador del carrito y editor del kit
 
                         3. agregar un control para que el usuario eliga entre orden de compra y orden de reserva
-                        5. eliminación de un kit
-                        9 agregar el campo total a la tabla <ordenes> e implementar la forma de calculo de una orden de 
-                        compra de manera dinámica
                         18. automatizar la seleccion del equipo de trabajo, ya que solo habrá un equipo de trabajo 
                         en todo el sistema
                         19. tienda: construir el filtro de las categorias
                         20. tienda: construir la busqueda
                         21. tienda: construir la paginación
                         23. tienda: validar si hay existencias antes de agregar un kit al carrito
-                        24. tienda.carrito: agregar las unidades que lleva cada producto
                         25. tienda.carrito: agregar un control <eliminar> para cada producto
                         26. agregar el código local de cada producto y hacerlo visible en el carrito
                             . agregarlo en el crud de productos
                             . agregarlo en la asignacion de productos a kits
                             . agregarlo en la asignacion de productos equivalentes
+                        27. la edición del kit debería incluir su precio
 
                 🪒 enlace tienda gestor
-                    . tarjeta en el tablero "Recibidas" en el rol del Receptor
-                    . paso "Revisión de la Orden/Reserva"
-                🪒 reportes: 
+                    . Construcción de la herramienta para poder realizar el paso "Revisión de la Orden/Reserva" por parte del receptor
+                🪒 consultas para el receptor y el administrador: 
                     . historial de entradas y reversiones en stocks
-                🪒 maquetacion final:
-                    . Revisión de clases en desuso
-                    . Etiquetado de bloques de clases
-
-                🪒 errores pendientes de reparar:
-                    . Boton eliminacion del modelo Tareas no funciona
-                    . la edición del kit debería incluir su precio
 
         . Sistema: En atención a la orden (<Enviar>), del cliente: 
             . Crea a partir del <formulario del carrito> una <copia solicitud receptor>
@@ -86,7 +75,7 @@ CLIENTE:
         . Sistema: Establece cada una de las <copias solicitud> y la <solicitud principal> al estado de <Resuelta>
         . Cliente: Traslada los productos a la zona de despacho y hace la entrega al cliente
 
-    🔵 procesos: Cada cierta cantidad de días se debe correr una tarea programada para borrar todas las solicitudes no validadas por el cliente        
+    🔵 procesos: Cada cierta cantidad de días se debe correr una tarea programada para borrar todas las solicitudes no validadas por el cliente
 
     🔵 Que el cliente brinde la información del dominio
         Pasos básicos para enlazar IP pública con dominio:
