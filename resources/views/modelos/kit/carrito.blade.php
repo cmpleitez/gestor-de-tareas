@@ -146,6 +146,17 @@
                                             <div class="accordion-item">
                                                 <h2 class="accordion-header" id="{{ $detHeadingId }}">
                                                     <button class="accordion-button collapsed d-flex justify-content-start text-start" style="padding: 0.5em; font-size: 0.8rem;" type="button" data-bs-toggle="collapse" data-bs-target="#{{ $detCollapseId }}" aria-expanded="false" aria-controls="{{ $detCollapseId }}">
+
+
+                                                        <a href="#" role="button"
+                                                            data-html="true"
+                                                            data-placement="bottom"
+                                                            class="btn btn-scale-hover align-center text-danger-dark">
+                                                            <i class="fas fa-trash" style="font-size: 0.85
+rem;"></i>
+                                                        </a>
+
+
                                                         <span class="badge bg-secondary me-2">{{ $detalle->unidades }}</span>
                                                         <span id="badgeId_{{ $detAccordionId }}" class="badge bg-secondary-dark me-2">{{ $detalle->producto_id }}</span>
                                                         <span id="productName_{{ $detAccordionId }}">{{ $detalle->producto->producto }}</span>
@@ -247,7 +258,7 @@
                         data-placement="bottom"
                         class="btn btn-scale-hover align-center text-danger-dark">
                         <i class="fas fa-trash" style="font-size: 1rem;"></i>
-                    </a>                
+                    </a>
                 </div>
             </div>
         @endforeach
