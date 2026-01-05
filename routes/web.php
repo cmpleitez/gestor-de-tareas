@@ -1,8 +1,6 @@
 <?php
-
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
-
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EquipoController;
 use App\Http\Controllers\ProductoController;
@@ -50,7 +48,6 @@ Route::middleware([
         return view('dashboard');
     })->name('dashboard');
 
-
     //ADMINISTRACIÓN
     Route::group(['middleware' => ['role:admin|superadmin']], function () {
 
@@ -67,6 +64,7 @@ Route::middleware([
             Route::get('destroy/{user}', [userController::class, 'destroy'])->name('user.destroy');
             Route::post('activate/{user}', [userController::class, 'activate'])->name('user.activate');
         });
+
         Route::group(['prefix' => 'equipo'], function () { //Equipos
             Route::get('/', [equipoController::class, 'index'])->name('equipo');
             Route::get('create', [equipoController::class, 'create'])->name('equipo.create');
@@ -76,6 +74,7 @@ Route::middleware([
             Route::get('destroy/{equipo}', [equipoController::class, 'destroy'])->name('equipo.destroy');
             Route::post('activate/{equipo}', [equipoController::class, 'activate'])->name('equipo.activate');
         });
+        
         Route::group(['prefix' => 'tarea'], function () { //Tareas
             Route::get('/', [tareaController::class, 'index'])->name('tarea');
             Route::get('create', [tareaController::class, 'create'])->name('tarea.create');
