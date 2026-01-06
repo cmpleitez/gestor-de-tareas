@@ -1,8 +1,6 @@
 {{-- Componente para hacer tablas responsive en dispositivos móviles --}}
 <style>
 
-
-    /* Estilos para tabla responsive en móviles */
     .table-responsive-mobile {
         overflow-x: auto;
     }
@@ -22,14 +20,28 @@
     /* En móviles, reorganizar tabla en formato vertical */
     @media screen and (max-width: 768px) {
 
-        /* Optimizar layout de columnas y cards en móviles */
+        html body.navbar-sticky .app-content .content-wrapper {
+            padding: 2.8rem 0;
+            margin-top: 3rem;
+        }
+
+        div.dataTables_wrapper div.dataTables_paginate, div.dataTables_wrapper div.dataTables_info {
+            text-align: right;
+        }
+        
+        div.dataTables_wrapper div.dataTables_paginate ul.pagination, div.dataTables_wrapper div.dataTables_info ul.pagination {
+            justify-content: right;
+        }
+
+        /* Optimizar layout de columnas y cards en móviles para ancho completo */
         .col-12 {
-            padding-left: 8px !important;
-            padding-right: 8px !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
         }
 
         .card {
             margin-bottom: 15px !important;
+            border-radius: 0 !important;
         }
 
         .card-header {
@@ -37,14 +49,17 @@
         }
 
         .card-body {
-            padding: 15px 12px !important;
+            padding: 0 !important;
         }
 
         .card-content {
             padding: 0 !important;
         }
 
-
+        .table-responsive {
+            padding: 0 !important;
+            margin: 0 !important;
+        }
 
         /* Tabla responsive */
         .table-responsive-mobile table,
@@ -94,7 +109,6 @@
             margin-bottom: 0;
         }
 
-        /* Forzar alineación a la izquierda para todas las celdas en móviles */
         .table-responsive-mobile td.text-center {
             text-align: left !important;
         }
@@ -103,7 +117,6 @@
             text-align: left !important;
         }
 
-        /* Ocultar footer de tabla en móviles */
         .table-responsive-mobile tfoot {
             display: none !important;
         }
@@ -111,13 +124,19 @@
 
     /* Optimizaciones adicionales para pantallas muy pequeñas */
     @media screen and (max-width: 576px) {
+        html body.navbar-sticky .app-content .content-wrapper {
+            margin-top: 3rem;
+            padding-top: 2.8rem;
+            padding-bottom: 0;
+        }
+
         .col-12 {
-            padding-left: 5px !important;
-            padding-right: 5px !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
         }
 
         .card-header {
-            padding: 12px 8px !important;
+            padding: 10px 5px !important;
         }
 
         .card-body {
@@ -133,13 +152,7 @@
             font-size: 14px !important;
             margin-bottom: 12px !important;
         }
-
-
     }
-
-
-
-
 </style>
 
 <script>
@@ -149,18 +162,11 @@
             this.init();
         }
 
-            init() {
-        // Solo ejecutar en dispositivos móviles
-        if (this.isMobileDevice()) {
-            this.setupTableResponsive();
-        }
+    init() {
+        this.setupTableResponsive();
     }
 
-            isMobileDevice() {
-        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    }
-
-        setupTableResponsive() {
+    setupTableResponsive() {
             const tables = document.querySelectorAll('table');
             tables.forEach(table => {
                 // Agregar clase responsive
@@ -183,8 +189,6 @@
                 });
             });
         }
-
-        
     }
 
     // Inicializar cuando el DOM esté listo

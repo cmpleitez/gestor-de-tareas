@@ -31,6 +31,7 @@ CLIENTE:
                             . agregarlo en la asignacion de productos a kits
                             . agregarlo en la asignacion de productos equivalentes
                         27. la edición del kit debería incluir su precio
+                        28. maquetar todo lo actualmente costruido para celular
 
                 🪒 enlace tienda gestor
                     . Construcción de la herramienta para poder realizar el paso "Revisión de la Orden/Reserva" por parte del receptor
