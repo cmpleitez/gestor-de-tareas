@@ -20,6 +20,12 @@
     /* En móviles, reorganizar tabla en formato vertical */
     @media screen and (max-width: 768px) {
 
+        div.dataTables_wrapper div.dataTables_length, div.dataTables_wrapper div.dataTables_filter, div.dataTables_wrapper div.dataTables_info, div.dataTables_wrapper div.dataTables_paginate {
+            margin-top: 10px !important;
+            font-size: 12px !important;
+            text-align: right !important;
+        }        
+
         html body.navbar-sticky .app-content .content-wrapper {
             padding: 2.8rem 0;
             margin-top: 3rem;
@@ -130,13 +136,19 @@
             padding-bottom: 0;
         }
 
-        .col-12 {
-            padding-left: 0 !important;
-            padding-right: 0 !important;
+        div.dataTables_wrapper div.dataTables_length, div.dataTables_wrapper div.dataTables_filter, div.dataTables_wrapper div.dataTables_info, div.dataTables_wrapper div.dataTables_paginate {
+            margin-top: 10px !important;
+            font-size: 12px !important;
+            text-align: right !important;
         }
 
         .card-header {
-            padding: 10px 5px !important;
+            padding: 15px 28px !important;
+        }
+
+        .col-12 {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
         }
 
         .card-body {

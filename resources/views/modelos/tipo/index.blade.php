@@ -117,8 +117,7 @@
     @include('components.orientation-manager') {{-- Componente de orientación para tablas --}}
     <script>
             $(document).ready(function() {
-                //INICIALIZACION DE DATATABLES
-                if ($.fn.DataTable) {
+                if ($.fn.DataTable) { // Inicializar DataTable
                     $('.zero-configuration').DataTable({
                         "language": { "url": "/app-assets/Spanish.json" },
                         "pageLength": 50,
@@ -130,8 +129,7 @@
                         ],                    
                     });
                 }
-                // INICIALIZAR TOOLTIPS
-                $('[data-toggle="tooltip"]').tooltip({
+                $('[data-toggle="tooltip"]').tooltip({ // Inicializar Tooltips
                     html: true,
                     placement: 'bottom'
                 });

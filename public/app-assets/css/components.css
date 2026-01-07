@@ -299,7 +299,6 @@ span.livicon-evo {
 }
 
 @media (max-width: 575.98px) {
-
   body.navbar-static .app-content .header-navbar .navbar-container,
   body.navbar-sticky .app-content .header-navbar .navbar-container {
     padding-left: 1rem;

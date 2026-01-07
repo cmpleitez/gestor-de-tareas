@@ -105,22 +105,17 @@
 @section('js')
     @include('components.orientation-manager') {{-- Componente de orientación para tablas --}}
     <script>
-        // ===== CONFIGURACIÓN MÍNIMA Y FUNCIONAL =====
-            $(document).ready(function() {
-                
-                // Inicializar DataTable de forma básica
-                if ($.fn.DataTable) {
-                    $('.zero-configuration').DataTable({
-                        "language": { "url": "/app-assets/Spanish.json" },
-                        "pageLength": 50
-                    });
-                }
-                
-                // Inicializar tooltips de Bootstrap 4 con HTML habilitado
-                $('[data-toggle="tooltip"]').tooltip({
-                    html: true,
-                    placement: 'bottom'
+        $(document).ready(function() {
+            if ($.fn.DataTable) { // Inicializar DataTable de forma básica
+                $('.zero-configuration').DataTable({
+                    "language": { "url": "/app-assets/Spanish.json" },
+                    "pageLength": 50
                 });
+            }
+            $('[data-toggle="tooltip"]').tooltip({ // Inicializar tooltips de Bootstrap 4 con HTML habilitado
+                html: true,
+                placement: 'bottom'
             });
+        });
     </script>
 @stop
