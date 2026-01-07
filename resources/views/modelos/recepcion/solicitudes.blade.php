@@ -313,6 +313,7 @@
                 tipo); // Generar HTML de usuarios usando la función auxiliar estándar
             return `
                 <div class="solicitud-card ${animar ? 'animar-llegada' : ''} border-${borderColor}" 
+                style="border-left-color: ${estadoColor};"
                 data-recepcion-id="${tarjeta.recepcion_id}"
                 data-atencion-id="${tarjeta.atencion_id}"
                 data-recepcion-estado-id="${tarjeta.estado_id}"
@@ -432,6 +433,7 @@
                                 'border-badge-secondary border-badge-primary border-badge-success border-badge-danger border-badge-warning'
                             );
                             tarjeta.addClass('border-' + colorBorde);
+                            tarjeta.css('border-left-color', estadoColor);
                             tarjeta.find('.solicitud-estado').text(response.traza || 'Recibida');
                             tarjeta.find('.solicitud-estado').css({
                                 'color': estadoColor,
