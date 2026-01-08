@@ -18,7 +18,7 @@
         </div>
 
         <div class="col d-flex justify-content-center">
-            <span style="font-size: 1.5em;">ORDEN # {{ $atencion_id_ripped }} / {{ $atencion->first()->id }}</span>
+            <span style="font-size: 1.5em;">ORDEN # {{ $atencion_id_ripped }}</span>
         </div>
         <div class="col-auto d-flex justify-content-end">
             <span style="font-size: 1.9em;"><i class="fas fa-cart-plus" style="padding-right: 0.5em;"></i>${{ number_format($total, 2) }}</span>

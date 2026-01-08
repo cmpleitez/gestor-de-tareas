@@ -52,7 +52,7 @@
                 <div class="col-md-3">
                     <div class="card mb-4" style="border: 0;">
                         <div class="card">
-                            <img class="card-img img-fluid" src="{{ Storage::disk('public')->url($kit->image_path) ? Storage::disk('public')->url($kit->image_path) : asset('app-assets/images/pages/mercaderia.png') }}">
+                            <img class="card-img img-fluid" src="{{ ($kit->image_path && Storage::disk('public')->exists($kit->image_path)) ? Storage::disk('public')->url($kit->image_path) : asset('app-assets/images/pages/mercaderia.png') }}">
                             <div class="card-img-overlay product-overlay d-flex align-items-start justify-content-end" style="pointer-events: none;">
                                 <ul class="list-unstyled">
                                     <li><a class="btn btn-success text-white" href="#" style="pointer-events: auto;"><i class="far fa-heart"></i></a></li>
