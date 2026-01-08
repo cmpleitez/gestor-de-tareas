@@ -52,16 +52,8 @@
                                 <div class="col-md-6 col-12 px-0">
                                     <div class="card disable-rounded-right m-0 d-flex justify-content-center">
                                         <div class="d-flex justify-content-center mt-3">
-                                            <svg viewBox="0 0 200 200" aria-label="Logo"
+                                            <img src="{{ asset('app-assets/images/logo/logo.svg') }}" alt="Logo"
                                                 style="height: 16vh; max-height: 400px; width: auto;">
-                                                <path fill="#e0e0e0"
-                                                    d="M100 25a75 75 0 1 1 0 150 75 75 0 0 1 0-150m0 20a55 55 0 0 0 0 110 55 55 0 1 0 0-110" />
-                                                <path fill="#2453ad"
-                                                    d="M25 100a75 75 0 0 1 75-75v20a55 55 0 0 0-55 55 55 55 0 0 0 55 55v20a75 75 0 0 1-75-75" />
-                                                <circle cx="100" cy="100" r="8" fill="#fff" />
-                                                <path fill="#ff8c00" d="M100 25a75 75 0 0 0 75 75 75 75 0 0 0-75 75z" />
-                                                <path fill="#ff8c00" d="M100 95h45v10h-45z" />
-                                            </svg>
                                         </div>
                                         <div class="card-header mb-3 mt-0 p-0">
                                             <div class="card-title">
