@@ -16,12 +16,11 @@
                 <i class="fas fa-arrow-left"></i>
             </a>
         </div>
-
         <div class="col d-flex justify-content-center">
             <span style="font-size: 1.5em;">ORDEN # {{ $atencion_id_ripped }}</span>
         </div>
         <div class="col-auto d-flex justify-content-end">
-            <span style="font-size: 1.9em;"><i class="fas fa-cart-plus" style="padding-right: 0.5em;"></i>${{ number_format($total, 2) }}</span>
+            <span style="font-size: 1.9em;"><i class="fas fa-cart-plus" style="padding-right: 0.5em;"></i><span id="total-global">${{ number_format($total, 2) }}</span></span>
         </div>
     </div>
 @endsection
@@ -225,7 +224,7 @@
                     <div class="d-flex flex-column align-items-center justify-content-center mx-2" style="width: 4.5rem;">
                         <input id="unidades_{{ $orden->id }}" type="number" min="1" step="1"
                             class="form-control text-center no-spinners input-unidades {{ $errors->has('ordenes.' . $orden->id) ? 'is-invalid' : '' }}" 
-                            name="unidades" data-orden-id="{{ $orden->id }}"
+                            name="unidades" data-orden-id="{{ $orden->id }}" data-precio="{{ $orden->precio }}"
                             aria-label="unidades" value="{{ old('ordenes.' . $orden->id, $orden->unidades) }}" 
                             required
                             style="width: 100%;">
@@ -245,7 +244,7 @@
                     </button>
                 </div>
                 <div class="col-3 col-md-1 text-center d-flex align-items-center justify-content-center">
-                    ${{ number_format($orden->precio, 2) }}
+                    <span id="subtotal_{{ $orden->id }}">${{ number_format($orden->precio * old('ordenes.' . $orden->id, $orden->unidades), 2) }}</span>
                 </div>
                 <div class="col-3 col-md-1 text-center d-flex align-items-center justify-content-center">
                     <a href="#" role="button"
@@ -368,6 +367,30 @@
             let val = parseInt($input.val()) || 0;
             $input.val(Math.max(1, val + ($btn.data('type') === 'plus' ? 1 : -1))).trigger('change');
         });
+        $(document).on('change keyup', '.input-unidades', function() { // Actualizar precio en tiempo real
+            const ordenId = $(this).data('orden-id');
+            const precio = parseFloat($(this).data('precio'));
+            const unidades = parseInt($(this).val()) || 0;
+            const subtotal = precio * unidades;
+            const formatted = new Intl.NumberFormat('en-US', { // Formatear a moneda (USD standard)
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 2
+            }).format(subtotal);
+            $('#subtotal_' + ordenId).text(formatted); // Intl.NumberFormat incluye el símbolo $, así que reemplazamos todo el contenido
+            let totalGlobal = 0; // Recalcular Total Global
+            $('.input-unidades').each(function() {
+                const p = parseFloat($(this).data('precio')) || 0;
+                const u = parseInt($(this).val()) || 0;
+                totalGlobal += p * u;
+            });
+            const formattedTotal = new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 2
+            }).format(totalGlobal);
+            $('#total-global').text(formattedTotal);
+        });
     });
     function updateProductName(radio) { // Update product name and ID in specific elements
         const productName = radio.getAttribute('data-product-name');
@@ -376,10 +399,10 @@
         const badgeSelector = radio.getAttribute('data-badge-target');
         const productId = radio.value;
         if (targetSelector && productName) {  // Actualizar Nombre Visual
-             const targetElement = document.querySelector(targetSelector);
-             if (targetElement) {
-                 targetElement.textContent = productName;
-             }
+            const targetElement = document.querySelector(targetSelector);
+            if (targetElement) {
+                targetElement.textContent = productName;
+            }
         }
         if (idSelector && productId) { // Actualizar ID en Hidden Input
             const idElement = document.querySelector(idSelector);

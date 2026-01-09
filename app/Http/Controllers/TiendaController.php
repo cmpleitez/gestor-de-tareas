@@ -21,13 +21,15 @@ use App\Models\Solicitud;
 use App\Models\Orden;
 use App\Models\Detalle;
 use App\Services\KeyRipper;
+use App\Models\Tipo;
 
 class TiendaController extends Controller
 {
     public function index()
     {
         $kits = Kit::where('activo', true)->get();
-        return view('modelos.kit.tienda', compact('kits'));
+        $tipos = Tipo::all();
+        return view('modelos.kit.tienda', compact('kits', 'tipos'));
     }
 
     public function carritoIndex()

@@ -8,7 +8,7 @@
             </a>
         </div>
         <div class="col d-flex justify-content-center">
-            <spam style="font-size: 1rem;">DOBINSONS EL SALVADOR</spam>
+            <spam style="font-size: 1rem;">... EL SALVADOR</spam>
         </div>
         <div class="col-auto d-flex justify-content-end">
             <a href="{{ route('tienda.carrito') }}" class="text-primary-light position-relative" id="btn-carrito">
@@ -28,25 +28,29 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="row mb-3"> {{-- Categorías --}}
-                <div class="col-md-6">
-                    <ul class="list-inline shop-top-menu pb-3 pt-1">
-                        <li class="list-inline-item">
-                            <a class="h5 text-dark text-decoration-none mr-3" href="#">Categoría 1</a>
-                        </li>
-                        <li class="list-inline-item">
-                            <a class="h5 text-dark text-decoration-none mr-3" href="#">Categoría 2</a>
-                        </li>
-                        <li class="list-inline-item">
-                            <a class="h5 text-dark text-decoration-none" href="#">Categoría 3</a>
-                        </li>
-                    </ul>
-                </div>
+
+                @foreach($tipos as $tipo)
+                    <div class="col-12 col-md-2 mb-1">
+                        <label class="card rounded m-0 shadow-none h-100" style="cursor: pointer; background-color: #f4f7fc">
+                            <div class="card-body p-2 d-flex flex-column align-items-center">
+                                <div class="mb-2">
+                                    <input type="radio" name="tipo_id" id="tipo_{{ $tipo->id }}" value="{{ $tipo->id }}" {{ $loop->first ? 'checked' : '' }}>
+                                </div>
+                                <div class="text-center d-flex flex-column justify-content-center flex-grow-1">
+                                    {{ $tipo->tipo }}
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                @endforeach
+
                 <div class="col-md-4 ms-auto">
                     <div class="d-flex justify-content-end">
                         <input class="form-control form-control-md" type="text" placeholder="Buscar producto" aria-label=".form-control-lg example">
                     </div>
                 </div>
             </div>
+
             <div class="row"> {{-- Tienda --}}
                 @foreach ($kits as $kit)
                 <div class="col-md-3">
