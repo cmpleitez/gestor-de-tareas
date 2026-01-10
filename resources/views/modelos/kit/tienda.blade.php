@@ -28,13 +28,12 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="row mb-3"> {{-- Categorías --}}
-
                 @foreach($tipos as $tipo)
                     <div class="col-12 col-md-2 mb-1">
                         <label class="card rounded m-0 shadow-none h-100" style="cursor: pointer; background-color: #f4f7fc">
                             <div class="card-body p-2 d-flex flex-column align-items-center">
                                 <div class="mb-2">
-                                    <input type="radio" name="tipo_id" id="tipo_{{ $tipo->id }}" value="{{ $tipo->id }}" {{ $loop->first ? 'checked' : '' }}>
+                                    <input type="radio" name="tipo_id" id="tipo_{{ $tipo->id }}" value="{{ $tipo->id }}">
                                 </div>
                                 <div class="text-center d-flex flex-column justify-content-center flex-grow-1">
                                     {{ $tipo->tipo }}
@@ -43,14 +42,12 @@
                         </label>
                     </div>
                 @endforeach
-
                 <div class="col-md-4 ms-auto">
                     <div class="d-flex justify-content-end">
                         <input class="form-control form-control-md" type="text" placeholder="Buscar producto" aria-label=".form-control-lg example">
                     </div>
                 </div>
             </div>
-
             <div class="row"> {{-- Tienda --}}
                 @foreach ($kits as $kit)
                 <div class="col-md-3">
@@ -289,7 +286,52 @@
             }
         };
         $(document).on('click', '.btn-agregar-kit', handleAgregarKit); // Delegated for both gallery and modal
+
+        // Event listener para aplicar color al tipo seleccionado
+        const tipoRadios = document.querySelectorAll('input[name="tipo_id"]');
+        tipoRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                // Remover el color de todos los labels
+                tipoRadios.forEach(r => {
+                    const label = r.closest('label');
+                    if (label) {
+                        label.style.backgroundColor = '#f4f7fc';
+                    }
+                });
+                // Aplicar color al label del radio seleccionado
+                const selectedLabel = this.closest('label');
+                if (selectedLabel) {
+                    selectedLabel.style.backgroundColor = '#bfecef';
+                }
+            });
+            
+            // Aplicar color al elemento inicialmente seleccionado (checked)
+            if (radio.checked) {
+                const selectedLabel = radio.closest('label');
+                if (selectedLabel) {
+                    selectedLabel.style.backgroundColor = '#bfecef';
+                }
+            }
+        });
     });
 
-</script>
+        // Event listener para limpiar selección al hacer clic en el buscador
+        const searchInput = document.querySelector('input[placeholder="Buscar producto"]');
+        if (searchInput) {
+            searchInput.addEventListener('click', function() {
+                const checkedRadio = document.querySelector('input[name="tipo_id"]:checked');
+                if (checkedRadio) {
+                    checkedRadio.checked = false;
+                    const label = checkedRadio.closest('label');
+                    if (label) {
+                        label.style.backgroundColor = '#f4f7fc';
+                    }
+                }
+            });
+        }
+        // Enfocar el campo de búsqueda al cargar la página
+        if (searchInput) {
+            searchInput.focus();
+        }
+    </script>
 @endpush
