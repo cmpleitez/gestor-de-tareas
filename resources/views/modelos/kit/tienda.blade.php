@@ -50,7 +50,7 @@
             </div>
             <div class="row"> {{-- Tienda --}}
                 @foreach ($kits as $kit)
-                <div class="col-md-3">
+                <div class="col-md-3 kit-item" data-kit-name="{{ strtolower($kit->kit) }}">
                     <div class="card mb-4" style="border: 0;">
                         <div class="card">
                             <img class="card-img img-fluid" src="{{ ($kit->image_path && Storage::disk('public')->exists($kit->image_path)) ? Storage::disk('public')->url($kit->image_path) : asset('app-assets/images/pages/mercaderia.png') }}">
@@ -287,26 +287,21 @@
         };
         $(document).on('click', '.btn-agregar-kit', handleAgregarKit); // Delegated for both gallery and modal
 
-        // Event listener para aplicar color al tipo seleccionado
-        const tipoRadios = document.querySelectorAll('input[name="tipo_id"]');
+        const tipoRadios = document.querySelectorAll('input[name="tipo_id"]'); // Event listener para aplicar color al tipo seleccionado
         tipoRadios.forEach(radio => {
             radio.addEventListener('change', function() {
-                // Remover el color de todos los labels
                 tipoRadios.forEach(r => {
                     const label = r.closest('label');
                     if (label) {
                         label.style.backgroundColor = '#f4f7fc';
                     }
                 });
-                // Aplicar color al label del radio seleccionado
                 const selectedLabel = this.closest('label');
                 if (selectedLabel) {
                     selectedLabel.style.backgroundColor = '#bfecef';
                 }
             });
-            
-            // Aplicar color al elemento inicialmente seleccionado (checked)
-            if (radio.checked) {
+            if (radio.checked) { // Aplicar color al elemento inicialmente seleccionado (checked)
                 const selectedLabel = radio.closest('label');
                 if (selectedLabel) {
                     selectedLabel.style.backgroundColor = '#bfecef';
@@ -314,24 +309,42 @@
             }
         });
     });
-
-        // Event listener para limpiar selección al hacer clic en el buscador
-        const searchInput = document.querySelector('input[placeholder="Buscar producto"]');
-        if (searchInput) {
-            searchInput.addEventListener('click', function() {
-                const checkedRadio = document.querySelector('input[name="tipo_id"]:checked');
-                if (checkedRadio) {
-                    checkedRadio.checked = false;
-                    const label = checkedRadio.closest('label');
-                    if (label) {
-                        label.style.backgroundColor = '#f4f7fc';
-                    }
+    const searchInput = document.querySelector('input[placeholder="Buscar producto"]');
+    if (searchInput) { // Event listener para limpiar selección al hacer clic en el buscador
+        searchInput.addEventListener('click', function() {
+            const checkedRadio = document.querySelector('input[name="tipo_id"]:checked');
+            if (checkedRadio) {
+                checkedRadio.checked = false;
+                const label = checkedRadio.closest('label');
+                if (label) {
+                    label.style.backgroundColor = '#f4f7fc';
                 }
-            });
-        }
-        // Enfocar el campo de búsqueda al cargar la página
-        if (searchInput) {
-            searchInput.focus();
-        }
-    </script>
+            }
+        });
+    }
+    if (searchInput) { // Filtrar kits en tiempo real
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase().trim();
+            const kitItems = document.querySelectorAll('.kit-item');
+            if (searchTerm.length >= 4) {
+                kitItems.forEach(kitItem => {
+                    const kitName = kitItem.getAttribute('data-kit-name');
+                    
+                    if (kitName.includes(searchTerm)) {
+                        kitItem.style.display = '';
+                    } else {
+                        kitItem.style.display = 'none';
+                    }
+                });
+            } else {
+                kitItems.forEach(kitItem => {
+                    kitItem.style.display = '';
+                });
+            }
+        });
+    }
+    if (searchInput) { // Enfocar el campo de búsqueda al cargar la página
+        searchInput.focus();
+    }
+</script>
 @endpush
