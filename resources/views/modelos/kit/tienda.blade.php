@@ -34,7 +34,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row"> {{-- Tienda --}}
+            <div class="row" id="contenedor-kits"> {{-- Tienda --}}
                 @foreach ($kits as $kit)
                 <div class="col-md-3 kit-item" data-kit-name="{{ strtolower($kit->kit) }}">
                     <div class="card mb-4" style="border: 0;">
@@ -77,8 +77,8 @@
         </div>
     </div>
     <div class="row mt-auto mb-3">
-        <div class="col-12">
-            {{ $kits->links('pagination.custom-paginado') }}
+        <div class="col-12" id="paginacion-container">
+            {{-- Paginación inyectada por JS --}}
         </div>
     </div>
 </div>
@@ -134,7 +134,7 @@
 </div>
 @endsection
 
-{{-- FUNCIONALIDADES DINÁMICAS --}}
+
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -265,29 +265,111 @@
         };
         $(document).on('click', '.btn-agregar-kit', handleAgregarKit); // Delegated for both gallery and modal
     });
+
+    // LÓGICA DE PAGINACIÓN Y BÚSQUEDA FRONTEND
+    const itemsPerPage = 2; // Ajusta este número según necesites
+    let currentPage = 1;
+    let allItems = [];
+    let filteredItems = [];
+    const initPagination = () => {
+        allItems = Array.from(document.querySelectorAll('.kit-item'));
+        filteredItems = [...allItems];
+        renderPage();
+    };
+    const renderPage = () => {
+        const totalItems = filteredItems.length;
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+        if (currentPage < 1) currentPage = 1; // Validar página actual
+        if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        allItems.forEach(item => { // Mostrar/Ocultar items
+            item.classList.add('d-none'); // Ocultar todos primero
+        });
+        filteredItems.slice(startIndex, endIndex).forEach(item => {
+            item.classList.remove('d-none'); // Mostrar solo los de la página actual
+        });
+        renderPaginationControls(totalItems, totalPages, startIndex, endIndex);
+    };
+    const renderPaginationControls = (totalItems, totalPages, startIndex, endIndex) => {
+        const container = document.getElementById('paginacion-container');
+        if (!container) return;
+        if (totalItems === 0) {
+            container.innerHTML = '';
+            return;
+        }
+        let html = `
+            <nav class="d-flex justify-content-between align-items-center w-100">
+                <div class="flex-grow-1">
+                    <p class="text-muted mb-0">
+                        Mostrando 
+                        <span class="fw-bold">${Math.min(startIndex + 1, totalItems)}</span>
+                        a
+                        <span class="fw-bold">${Math.min(endIndex, totalItems)}</span>
+                        de
+                        <span class="fw-bold">${totalItems}</span>
+                        resultados
+                    </p>
+                </div>
+                <ul class="pagination pagination-lg mb-0">
+        `;
+        const prevDisabled = currentPage === 1; // Botón Anterior
+        html += `
+            <li class="page-item ${prevDisabled ? 'disabled' : ''}">
+                <a class="page-link rounded-0 me-3 shadow-sm border-top-0 border-start-0" href="javascript:void(0)" ${!prevDisabled ? 'onclick="changePage(' + (currentPage - 1) + ')"' : ''}>&lsaquo;</a>
+            </li>
+        `;
+        const windowSize = 2; // Páginas a los lados
+        let range = [];
+        for (let i = 1; i <= totalPages; i++) {
+             if (i === 1 || i === totalPages || (i >= currentPage - windowSize && i <= currentPage + windowSize)) {
+                 range.push(i);
+             }
+        }
+        let prev = 0;
+        range.forEach(i => {
+            if (prev > 0 && i - prev !== 1) {
+                html += `<li class="page-item disabled"><a class="page-link rounded-0 me-3 shadow-sm border-top-0 border-start-0" href="javascript:void(0)">...</a></li>`;
+            }
+            const active = i === currentPage;
+            html += `
+                <li class="page-item ${active ? 'active' : ''}">
+                    <a class="page-link rounded-0 me-3 shadow-sm border-top-0 border-start-0 ${active ? '' : 'text-dark'}" href="javascript:void(0)" onclick="changePage(${i})">${i}</a>
+                </li>
+            `;
+            prev = i;
+        });
+        const nextDisabled = currentPage === totalPages; // Botón Siguiente
+        html += `
+            <li class="page-item ${nextDisabled ? 'disabled' : ''}">
+                <a class="page-link rounded-0 shadow-sm border-top-0 border-start-0 ${nextDisabled ? '' : 'text-dark'}" href="javascript:void(0)" ${!nextDisabled ? 'onclick="changePage(' + (currentPage + 1) + ')"' : ''}>&rsaquo;</a>
+            </li>
+        `;
+        html += `</ul></nav>`;
+        container.innerHTML = html;
+    };
+    window.changePage = (page) => { // Función global para los onclick
+        currentPage = page;
+        renderPage();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+    initPagination(); // Inicializar
     const searchInput = document.querySelector('input[placeholder="Buscar producto"]');
-    if (searchInput) { // Filtrar kits en tiempo real
+    if (searchInput) {
         searchInput.addEventListener('input', function() {
             const searchTerm = this.value.toLowerCase().trim();
-            const kitItems = document.querySelectorAll('.kit-item');
-            if (searchTerm.length >= 4) {
-                kitItems.forEach(kitItem => {
-                    const kitName = kitItem.getAttribute('data-kit-name');
-                    if (kitName.includes(searchTerm)) {
-                        kitItem.style.display = '';
-                    } else {
-                        kitItem.style.display = 'none';
-                    }
-                });
+            if (searchTerm === '') {
+                filteredItems = [...allItems];
             } else {
-                kitItems.forEach(kitItem => {
-                    kitItem.style.display = '';
+                filteredItems = allItems.filter(item => {
+                    const name = item.getAttribute('data-kit-name') || '';
+                    return name.includes(searchTerm);
                 });
             }
+            currentPage = 1; // Reset a primera página al buscar
+            renderPage();
         });
-    }
-    if (searchInput) { // Enfocar el campo de búsqueda al cargar la página
-        searchInput.focus();
+        searchInput.focus(); // Enfocar al cargar
     }
 </script>
 @endpush

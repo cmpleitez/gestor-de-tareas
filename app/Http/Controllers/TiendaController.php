@@ -27,7 +27,7 @@ class TiendaController extends Controller
 {
     public function index()
     {
-        $kits = Kit::where('activo', true)->paginate(2);
+        $kits = Kit::where('activo', true)->get();
         return view('modelos.kit.tienda', compact('kits'));
     }
 
