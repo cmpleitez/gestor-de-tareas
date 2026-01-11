@@ -28,20 +28,6 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="row mb-3"> {{-- Categorías --}}
-                @foreach($tipos as $tipo)
-                    <div class="col-12 col-md-2 mb-1">
-                        <label class="card rounded m-0 shadow-none h-100" style="cursor: pointer; background-color: #f4f7fc">
-                            <div class="card-body p-2 d-flex flex-column align-items-center">
-                                <div class="mb-2">
-                                    <input type="radio" name="tipo_id" id="tipo_{{ $tipo->id }}" value="{{ $tipo->id }}">
-                                </div>
-                                <div class="text-center d-flex flex-column justify-content-center flex-grow-1">
-                                    {{ $tipo->tipo }}
-                                </div>
-                            </div>
-                        </label>
-                    </div>
-                @endforeach
                 <div class="col-md-4 ms-auto">
                     <div class="d-flex justify-content-end">
                         <input class="form-control form-control-md" type="text" placeholder="Buscar producto" aria-label=".form-control-lg example">
@@ -91,17 +77,9 @@
         </div>
     </div>
     <div class="row mt-auto mb-3">
-        <ul class="pagination pagination-lg justify-content-end">
-            <li class="page-item disabled">
-                <a class="page-link active rounded-0 mr-3 shadow-sm border-top-0 border-left-0" href="#" tabindex="-1">1</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link rounded-0 mr-3 shadow-sm border-top-0 border-left-0 text-dark" href="#">2</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link rounded-0 shadow-sm border-top-0 border-left-0 text-dark" href="#">3</a>
-            </li>
-        </ul>
+        <div class="col-12">
+            {{ $kits->links('pagination.custom-paginado') }}
+        </div>
     </div>
 </div>
 {{-- MODAL KIT --}}
@@ -286,42 +264,8 @@
             }
         };
         $(document).on('click', '.btn-agregar-kit', handleAgregarKit); // Delegated for both gallery and modal
-
-        const tipoRadios = document.querySelectorAll('input[name="tipo_id"]'); // Event listener para aplicar color al tipo seleccionado
-        tipoRadios.forEach(radio => {
-            radio.addEventListener('change', function() {
-                tipoRadios.forEach(r => {
-                    const label = r.closest('label');
-                    if (label) {
-                        label.style.backgroundColor = '#f4f7fc';
-                    }
-                });
-                const selectedLabel = this.closest('label');
-                if (selectedLabel) {
-                    selectedLabel.style.backgroundColor = '#bfecef';
-                }
-            });
-            if (radio.checked) { // Aplicar color al elemento inicialmente seleccionado (checked)
-                const selectedLabel = radio.closest('label');
-                if (selectedLabel) {
-                    selectedLabel.style.backgroundColor = '#bfecef';
-                }
-            }
-        });
     });
     const searchInput = document.querySelector('input[placeholder="Buscar producto"]');
-    if (searchInput) { // Event listener para limpiar selección al hacer clic en el buscador
-        searchInput.addEventListener('click', function() {
-            const checkedRadio = document.querySelector('input[name="tipo_id"]:checked');
-            if (checkedRadio) {
-                checkedRadio.checked = false;
-                const label = checkedRadio.closest('label');
-                if (label) {
-                    label.style.backgroundColor = '#f4f7fc';
-                }
-            }
-        });
-    }
     if (searchInput) { // Filtrar kits en tiempo real
         searchInput.addEventListener('input', function() {
             const searchTerm = this.value.toLowerCase().trim();
@@ -329,7 +273,6 @@
             if (searchTerm.length >= 4) {
                 kitItems.forEach(kitItem => {
                     const kitName = kitItem.getAttribute('data-kit-name');
-                    
                     if (kitName.includes(searchTerm)) {
                         kitItem.style.display = '';
                     } else {
