@@ -261,7 +261,7 @@
                         @role('superadmin|admin')
                         <li><a href="{{ route('tienda.create-movimiento') }}">
                                 <i class="bx bx-right-arrow-alt"></i>
-                                <span class="menu-item" data-i18n="Second Level">Movimientos</span>
+                                <span class="menu-item" data-i18n="Second Level">Stocks</span>
                             </a></li>
                         @endrole
 

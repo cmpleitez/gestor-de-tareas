@@ -13,7 +13,7 @@
                 <div class="card-header">
                     <div class="col-md-12 d-flex justify-content-between" style="padding: 0;">
                         <div class="col-11 p-1">
-                            <h4 class="card-title">MOVIMIENTOS</h4>
+                            <h4 class="card-title">STOCKS</h4>
                             <p class="card-text">Registro de entradas y salidas de productos a los diferentes stocks</p>
                         </div>
                     </div>

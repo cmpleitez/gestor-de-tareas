@@ -8,6 +8,8 @@ PAUTAS:
         456789012
     🟠 Cada usuario de la app participante en el procedimiento, tendrá una copia de la solicitud u orden de compra
 CLIENTE:
+    🔵 El receptor debe definir la orden como compra o como reserva según la consulta del stock
+    
     🔵 Procedimiento: perfil cpleitez.2024@gmail.com https://miro.com/app/board/uXjVJy6iRzE=/
         ✨. Cliente: Entra a la <Tienda>, selecciona en el catálogo el kit y da clic en <agregar al carrito>
         ✨. Sistema: En respuesta al cliente (<recepcion.user_id_origen>), crea el registro de <Atención>, el detalle de la <Atencion>, 
@@ -18,20 +20,9 @@ CLIENTE:
 
                 🪒 Visualizador del carrito y editor del kit
 
-                        3. agregar un control para que el usuario eliga entre orden de compra y orden de reserva
                         18. automatizar la seleccion del equipo de trabajo, ya que solo habrá un equipo de trabajo 
                         en todo el sistema
-                        19. tienda: construir el filtro de las categorias
-                        20. tienda: construir la busqueda
-                        21. tienda: construir la paginación
-                        23. tienda: validar si hay existencias antes de agregar un kit al carrito
-                        25. tienda.carrito: agregar un control <eliminar> para cada producto
-                        26. agregar el código local de cada producto y hacerlo visible en el carrito
-                            . agregarlo en el crud de productos
-                            . agregarlo en la asignacion de productos a kits
-                            . agregarlo en la asignacion de productos equivalentes
                         27. la edición del kit debería incluir su precio
-                        28. maquetar todo lo actualmente costruido para celular
 
                 🪒 enlace tienda gestor
                     . Construcción de la herramienta para poder realizar el paso "Revisión de la Orden/Reserva" por parte del receptor
@@ -110,10 +101,10 @@ CLIENTE:
             Registro A: www → IP del servidor
     🔵 Reglas técnicas del negocio:
         . Se manejarán 4 stocks: 
-            Recién pedidos
-            En tránsito
             Bodega
-            Estante de Reservados
+            Estante de reservados
+            Reservados en tránsito
+            Recién comprados
         . Las ordenes de reserva se quedarán en el paso de "Recibidos", mientras que las ordenes de compra podrán pasar a iniciar su despacho, 
         técnicamente podrán pasar a iniciar despacho en el caso que los productos en tránsito ya hayan llegado a los stocks
         . A las tarjetas se les agregará un distintivo de "orden de reserva" cuando tengan esta condición
