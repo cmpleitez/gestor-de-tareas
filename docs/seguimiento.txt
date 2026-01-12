@@ -21,6 +21,8 @@ CLIENTE:
                 🪒 Visualizador del carrito y editor del kit
 
                         27. la edición del kit debería incluir su precio
+                            ... no se habia agregado la validacion
+                                ... es necesario inicializar la libreria que sirve para validar sobre el frontend
 
                 🪒 enlace tienda gestor
                     . Construcción de la herramienta para poder realizar el paso "Revisión de la Orden/Reserva" por parte del receptor
