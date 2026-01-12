@@ -37,6 +37,29 @@
     .row-equivalentes .equivalente-card.equivalente-nuevo {
         border-radius: 4px !important;
     }
+    .btn-pyramid {
+        background: none !important;
+        border: none !important;
+        padding: 0 !important;
+        color: #ff9f43;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        outline: none !important;
+    }
+    .btn-pyramid i {
+        font-size: 2rem;
+    }
+    .btn-pyramid:hover {
+        color: #ff8510;
+        transform: scale(1.2) rotate(10deg);
+        text-shadow: 0 0 12px rgba(255, 159, 67, 0.5);
+    }
+    .btn-pyramid:active {
+        transform: scale(0.9);
+    }
 </style>
 @stop
 
@@ -87,6 +110,16 @@
                                     @enderror
                                 </div>
                                 <div class="form-group">
+                                    <label for="precio">Precio</label>
+                                    <input type="text" name="precio" id="precio" class="form-control input-currency {{ $errors->has('precio') ? 'is-invalid' : '' }}" data-validation-required-message="Este campo es obligatorio" data-clear="true" placeholder="Precio del kit" value="{{ old('precio', $kit->precio) }}" required>
+                                    <div class="help-block"></div>
+                                    @error('precio')
+                                        <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                            {{ $errors->first('precio') }}
+                                        </div>
+                                    @enderror
+                                </div>
+                                <div class="form-group">
                                     <label>Fotografia del Kit <small class="text-muted">(Máximo 10 MB, solo
                                             JPEG/PNG)</small></label>
                                     <input type="file" name="image_path" class="form-control" style="padding-bottom: 35px;" accept="image/jpeg,image/jpg,image/png" onchange="validateFileSize(this, 10)">
@@ -109,13 +142,13 @@
                             $headingId = 'heading' . $kitProducto_id;
                             $accordionId = 'accordion' . $kitProducto_id;
                         @endphp
-                        <div class="row" style="margin-bottom: 0.5em; width: 1920px; max-width: 100%;">
-                            <div class="col-12 col-md-2 col-lg-2 col-xl-2">
-                                <div class="row">
-                                    <div class="col-6"> {{-- Unidades --}}
-                                        <div class="form-group">
+                        <div class="row" style="width: 1920px; max-width: 100%; margin-bottom: 0.3rem;">
+                            <div class="col-12 col-md-3" style="padding:0 !important;"> {{-- Unidades --}}
+                                <div class="row align-items-center">
+                                    <div class="col-9" style="padding:0 !important;">
+                                        <div class="form-group mb-0">
                                             <input type="hidden" name="producto[{{ $kitProducto_id }}][producto_id]" value="{{ $producto->id }}">
-                                            <input style="text-align: center;" type="text" name="producto[{{ $kitProducto_id }}][unidades]" id="producto_{{ $kitProducto_id }}_unidades" class="form-control {{ $errors->has('producto.' . $kitProducto_id . '.unidades') ? 'is-invalid' : '' }}" value="{{ old('producto.' . $kitProducto_id . '.unidades', $producto->kitProductos->first()->unidades) }}" data-validation-required-message="Este campo es obligatorio" data-validation-containsnumber-regex="^[1-9]\d*$" data-validation-containsnumber-message="Solo números positivos (mínimo 1)" required>
+                                            <input style="text-align: center; padding:0 !important;" type="text" name="producto[{{ $kitProducto_id }}][unidades]" id="producto_{{ $kitProducto_id }}_unidades" class="form-control {{ $errors->has('producto.' . $kitProducto_id . '.unidades') ? 'is-invalid' : '' }}" value="{{ old('producto.' . $kitProducto_id . '.unidades', $producto->kitProductos->first()->unidades) }}" data-validation-required-message="Este campo es obligatorio" data-validation-containsnumber-regex="^[1-9]\d*$" data-validation-containsnumber-message="Solo números positivos (mínimo 1)" required>
                                             <div class="help-block"></div>
                                             @error('producto.' . $kitProducto_id . '.unidades')
                                                 <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
@@ -124,15 +157,14 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    <div class="col-6 text-center"> {{-- Botón de nuevo equivalente --}}
-                                        <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#modal-nuevo-equivalente" data-kit-producto-id="{{ $kitProducto_id }}" data-producto-id="{{ $producto->id }}" style="width: 100%; max-width: 100%; box-sizing: border-box;">
-                                            <i class="bx bx-plus" style="top:0.1em !important; left:-0.6em !important;">e</i>
+                                    <div class="col-3 d-flex align-items-center justify-content-center" style="padding:0 !important;">
+                                        <button type="button" class="btn-pyramid" data-toggle="modal" data-target="#modal-nuevo-equivalente" data-kit-producto-id="{{ $kitProducto_id }}" data-producto-id="{{ $producto->id }}" title="Agregar equivalente">
+                                            <i class="bx bxs-pyramid"></i>
                                         </button>
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="col-12 col-md-10 col-lg-10 col-xl-10"> {{-- Titulo del producto --}}
+                            <div class="col-12 col-md-9" style="padding:0 !important;"> {{-- Titulo del producto --}}
                                 <div class="accordion collapse-icon accordion-icon-rotate">
                                     <div class="collapse-header" style="background-color:rgb(255, 255, 255) !important; min-height: 2em;">
                                         <div id="{{ $headingId }}" class="acordion-header" data-toggle="collapse" data-target="#{{ $accordionId }}" aria-expanded="false" aria-controls="{{ $accordionId }}" role="tablist">

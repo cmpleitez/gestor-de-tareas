@@ -20,8 +20,6 @@ CLIENTE:
 
                 🪒 Visualizador del carrito y editor del kit
 
-                        18. automatizar la seleccion del equipo de trabajo, ya que solo habrá un equipo de trabajo 
-                        en todo el sistema
                         27. la edición del kit debería incluir su precio
 
                 🪒 enlace tienda gestor

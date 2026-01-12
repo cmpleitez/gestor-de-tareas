@@ -12,67 +12,69 @@
     @can('asignar')
         <div class="row">
             <div class="col-12">
-                @if (optional(auth()->user()->mainRole)->name != 'operador')
-                    <div class="accordion" id="accordionWrapa2">
-                        <div class="card collapse-header border-0 overflow-hidden">
-                            <div id="heading5" class="card-header" data-toggle="collapse" data-target="#accordion5"
-                                aria-expanded="false" aria-controls="accordion5" role="tablist"
-                                style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); border: none; margin: 0; cursor: pointer; transition: all 0.3s ease;">
-                                <div class="d-flex align-items-center justify-content-between w-100">
-                                    <div class="d-flex align-items-center">
-                                        <div class="d-flex align-items-center" style="padding: 0.75rem;">
-                                            <i class="bx bx-target-lock text-white" style="font-size: 1.1rem;"></i>
+                @if($equipos && $equipos->count() != 1)
+                    @if (optional(auth()->user()->mainRole)->name != 'operador')
+                        <div class="accordion" id="accordionWrapa2">
+                            <div class="card collapse-header border-0 overflow-hidden">
+                                <div id="heading5" class="card-header" data-toggle="collapse" data-target="#accordion5"
+                                    aria-expanded="false" aria-controls="accordion5" role="tablist"
+                                    style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); border: none; margin: 0; cursor: pointer; transition: all 0.3s ease;">
+                                    <div class="d-flex align-items-center justify-content-between w-100">
+                                        <div class="d-flex align-items-center">
+                                            <div class="d-flex align-items-center" style="padding: 0.75rem;">
+                                                <i class="bx bx-target-lock text-white" style="font-size: 1.1rem;"></i>
+                                            </div>
+                                            <div class="d-flex flex-column align-items-start justify-content-center">
+                                                <h6 class="mb-0 text-white font-weight-500"
+                                                    style="font-size: 1rem; letter-spacing: 0.3px;">
+                                                    <span class="font-weight-600"></span>
+                                                </h6>
+                                                <small class="text-white-50" style="font-size: 0.8rem;">
+                                                    Selecciona el equipo de trabajo destino para impulsar las solicitudes
+                                                </small>
+                                            </div>
                                         </div>
-                                        <div class="d-flex flex-column align-items-start justify-content-center">
-                                            <h6 class="mb-0 text-white font-weight-500"
-                                                style="font-size: 1rem; letter-spacing: 0.3px;">
-                                                <span class="font-weight-600"></span>
-                                            </h6>
-                                            <small class="text-white-50" style="font-size: 0.8rem;">
-                                                Selecciona el equipo de trabajo destino para impulsar las solicitudes
-                                            </small>
+                                        <div>
+                                            <i class="bx bx-chevron-down text-white accordion-arrow"
+                                                style="font-size: 1rem; transition: transform 0.3s ease;"></i>
                                         </div>
-                                    </div>
-                                    <div>
-                                        <i class="bx bx-chevron-down text-white accordion-arrow"
-                                            style="font-size: 1rem; transition: transform 0.3s ease;"></i>
                                     </div>
                                 </div>
-                            </div>
-                            <div id="accordion5" role="tabpanel" data-parent="#accordionWrapa2" aria-labelledby="heading5"
-                                class="collapse">
-                                <div class="card-content">
-                                    <div class="card-body" style="background: #f8f9fa; padding: 1rem;">
-                                        @if (optional(auth()->user()->mainRole)->name == 'receptor' && isset($equipos))
-                                            <div class="row" style="display: flex; align-items: stretch;">
-                                                @foreach ($equipos as $equipo)
-                                                    <div class="col-md-3 mt-1">
-                                                        <div class="selectable-item"
-                                                            onclick="selectItem('equipo_{{ $equipo->id }}')">
-                                                            <div class="item-body">
-                                                                <div class="item-info">
-                                                                    <div class="item-name">{{ $equipo->equipo }}</div>
-                                                                    <div class="item-desc">Equipo de trabajo</div>
+                                <div id="accordion5" role="tabpanel" data-parent="#accordionWrapa2" aria-labelledby="heading5"
+                                    class="collapse">
+                                    <div class="card-content">
+                                        <div class="card-body" style="background: #f8f9fa; padding: 1rem;">
+                                            @if (optional(auth()->user()->mainRole)->name == 'receptor' && isset($equipos))
+                                                <div class="row" style="display: flex; align-items: stretch;">
+                                                    @foreach ($equipos as $equipo)
+                                                        <div class="col-md-3 mt-1">
+                                                            <div class="selectable-item"
+                                                                onclick="selectItem('equipo_{{ $equipo->id }}')">
+                                                                <div class="item-body">
+                                                                    <div class="item-info">
+                                                                        <div class="item-name">{{ $equipo->equipo }}</div>
+                                                                        <div class="item-desc">Equipo de trabajo</div>
+                                                                    </div>
+                                                                    <div class="radio-indicator"></div>
                                                                 </div>
-                                                                <div class="radio-indicator"></div>
+                                                                <input type="radio" id="equipo_{{ $equipo->id }}"
+                                                                    name="equipo_destino" value="{{ $equipo->id }}">
                                                             </div>
-                                                            <input type="radio" id="equipo_{{ $equipo->id }}"
-                                                                name="equipo_destino" value="{{ $equipo->id }}">
                                                         </div>
-                                                    </div>
-                                                @endforeach
-                                            </div>
-                                        @else
-                                            <div class="text-center text-muted py-4">
-                                                <i class="bx bx-info-circle" style="font-size: 2rem;"></i>
-                                                <p class="mt-2 mb-0">No hay elementos disponibles para tu rol.</p>
-                                            </div>
-                                        @endif
+                                                    @endforeach
+                                                </div>
+                                            @else
+                                                <div class="text-center text-muted py-4">
+                                                    <i class="bx bx-info-circle" style="font-size: 2rem;"></i>
+                                                    <p class="mt-2 mb-0">No hay elementos disponibles para tu rol.</p>
+                                                </div>
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    @endif
                 @endif
             </div>
         </div>
@@ -162,6 +164,7 @@
     <script>
         //SELECCIONANDO EL ITEM DESTINATARIO
         let userRole = @json(optional(auth()->user()->mainRole)->name) || '';
+        const equipos = @json($equipos);
         function selectItem(radioId) { // Función para seleccionar items
             document.querySelectorAll('.selectable-item').forEach(selector => { // Desmarcar todos los selectores
                 selector.classList.remove('selected');
@@ -392,6 +395,9 @@
             let selectedValue = null;
             if (userRole === 'receptor') { //Asignar
                 selectedValue = $('input[name="equipo_destino"]:checked').val();
+                if (!selectedValue && equipos && equipos.length === 1) { // Auto-selección si solo hay un equipo
+                    selectedValue = equipos[0].id;
+                }
                 if (!selectedValue) {
                     Swal.fire({
                         position: 'top-end',

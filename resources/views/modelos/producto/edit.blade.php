@@ -123,6 +123,5 @@
             , allowClear: true
         });
     });
-
 </script>
 @stop
