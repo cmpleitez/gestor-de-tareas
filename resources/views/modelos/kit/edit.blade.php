@@ -101,7 +101,15 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="kit">Kit</label>
-                                    <input type="text" name="kit" id="kit" class="form-control {{ $errors->has('kit') ? 'is-invalid' : '' }}" data-validation-required-message="Este campo es obligatorio" data-validation-containsnumber-regex="^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ()]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ()]+)*$" data-validation-containsnumber-message="Solo se permiten letras y paréntesis, sin espacios al inicio/final ni dobles espacios" data-validation-minlength-message="El nombre debe tener al menos 3 caracteres" data-clear="true" minlength="3" placeholder="Nombre del kit" value="{{ old('kit', $kit->kit) }}" required>
+                                    <input type="text" name="kit" id="kit" class="form-control {{ $errors->has('kit') ? 'is-invalid' : '' }}" 
+                                    data-validation-required-message="Este campo es obligatorio" 
+                                    data-validation-containsnumber-regex="^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ()]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ()]+)*$" 
+                                    data-validation-containsnumber-message="Solo se permiten letras y paréntesis, sin espacios al inicio/final ni dobles espacios" 
+                                    data-validation-minlength-message="El nombre debe tener al menos 3 caracteres" 
+                                    data-clear="true" 
+                                    minlength="3" 
+                                    placeholder="Nombre del kit" 
+                                    value="{{ old('kit', $kit->kit) }}" required>
                                     <div class="help-block"></div>
                                     @error('kit')
                                         <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
@@ -111,7 +119,12 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="precio">Precio</label>
-                                    <input type="text" name="precio" id="precio" class="form-control input-currency {{ $errors->has('precio') ? 'is-invalid' : '' }}" data-validation-required-message="Este campo es obligatorio" data-clear="true" placeholder="Precio del kit" value="{{ old('precio', $kit->precio) }}" required>
+                                    <input type="number" name="precio" id="precio" step="0.01" min="0.01" class="form-control input-currency {{ $errors->has('precio') ? 'is-invalid' : '' }}" 
+                                    data-validation-required-message="Este campo es obligatorio" 
+                                    data-validation-min-message="El precio debe ser mayor a 0" 
+                                    data-clear="true" 
+                                    placeholder="Precio del kit" 
+                                    value="{{ old('precio', $kit->precio) }}" required>
                                     <div class="help-block"></div>
                                     @error('precio')
                                         <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
