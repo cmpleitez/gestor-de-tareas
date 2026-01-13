@@ -267,7 +267,7 @@
     });
 
     // LÓGICA DE PAGINACIÓN Y BÚSQUEDA FRONTEND
-    const itemsPerPage = 2; // Ajusta este número según necesites
+    const itemsPerPage = 4; // Ajusta este número según necesites
     let currentPage = 1;
     let allItems = [];
     let filteredItems = [];

@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="{{ asset('app-assets/css/colors.css') }}">
     <link rel="stylesheet" href="{{ asset('app-assets/vendors/css/extensions/toastr.css') }}">
     <link rel="stylesheet" href="{{ asset('app-assets/css/plugins/extensions/toastr.css') }}">
+    <link href="{{ asset('app-assets/css/plugins/forms/validation/form-validation.css') }}" rel="stylesheet">
 
     <style>
         .button_delete {
@@ -136,6 +137,7 @@
     <script src="{{ asset('app-assets/vendors/js/extensions/toastr.min.js') }}"></script>
     <script src="{{ asset('app-assets/js/helpers.js') }}"></script>
     <script src="{{ asset('app-assets/vendors/js/forms/validation/jqBootstrapValidation.js') }}"></script>
+    <script src="{{ asset('app-assets/js/scripts/forms/validation/form-validation.js') }}"></script>
     <script>
         if (typeof toastr !== 'undefined') { // Configuración global de toastr para todo el proyecto
             toastr.options = {

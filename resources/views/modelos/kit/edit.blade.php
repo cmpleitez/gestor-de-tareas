@@ -60,6 +60,18 @@
     .btn-pyramid:active {
         transform: scale(0.9);
     }
+    /* Fix para mostrar invalid-feedback con input-clear-wrapper */
+    .form-group:has(.is-invalid) .invalid-feedback {
+        display: block;
+    }
+    /* Eliminar iconos nativos de validación de Bootstrap (X y Check) */
+    .form-control.is-invalid, 
+    .form-control.is-valid,
+    .was-validated .form-control:invalid,
+    .was-validated .form-control:valid {
+        background-image: none !important;
+        padding-right: calc(1.5em + 0.94rem) !important; /* Mantener espacio para el botón de limpiar */
+    }
 </style>
 @stop
 
@@ -101,16 +113,13 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="kit">Kit</label>
-                                    <input type="text" name="kit" id="kit" class="form-control {{ $errors->has('kit') ? 'is-invalid' : '' }}" 
-                                    data-validation-required-message="Este campo es obligatorio" 
-                                    data-validation-containsnumber-regex="^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ()]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ()]+)*$" 
-                                    data-validation-containsnumber-message="Solo se permiten letras y paréntesis, sin espacios al inicio/final ni dobles espacios" 
-                                    data-validation-minlength-message="El nombre debe tener al menos 3 caracteres" 
+                                    <input type="text" name="kit" id="kit" 
+                                    class="form-control {{ $errors->has('kit') ? 'is-invalid' : '' }}" 
                                     data-clear="true" 
                                     minlength="3" 
                                     placeholder="Nombre del kit" 
                                     value="{{ old('kit', $kit->kit) }}" required>
-                                    <div class="help-block"></div>
+                                    <div class="invalid-feedback"></div>
                                     @error('kit')
                                         <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
                                             {{ $errors->first('kit') }}
@@ -119,13 +128,12 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="precio">Precio</label>
-                                    <input type="number" name="precio" id="precio" step="0.01" min="0.01" class="form-control input-currency {{ $errors->has('precio') ? 'is-invalid' : '' }}" 
-                                    data-validation-required-message="Este campo es obligatorio" 
-                                    data-validation-min-message="El precio debe ser mayor a 0" 
+                                    <input type="text" name="precio" id="precio" 
+                                    class="form-control input-currency {{ $errors->has('precio') ? 'is-invalid' : '' }}" 
                                     data-clear="true" 
                                     placeholder="Precio del kit" 
                                     value="{{ old('precio', $kit->precio) }}" required>
-                                    <div class="help-block"></div>
+                                    <div class="invalid-feedback"></div>
                                     @error('precio')
                                         <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
                                             {{ $errors->first('precio') }}
@@ -161,8 +169,8 @@
                                     <div class="col-9" style="padding:0 !important;">
                                         <div class="form-group mb-0">
                                             <input type="hidden" name="producto[{{ $kitProducto_id }}][producto_id]" value="{{ $producto->id }}">
-                                            <input style="text-align: center; padding:0 !important;" type="text" name="producto[{{ $kitProducto_id }}][unidades]" id="producto_{{ $kitProducto_id }}_unidades" class="form-control {{ $errors->has('producto.' . $kitProducto_id . '.unidades') ? 'is-invalid' : '' }}" value="{{ old('producto.' . $kitProducto_id . '.unidades', $producto->kitProductos->first()->unidades) }}" data-validation-required-message="Este campo es obligatorio" data-validation-containsnumber-regex="^[1-9]\d*$" data-validation-containsnumber-message="Solo números positivos (mínimo 1)" required>
-                                            <div class="help-block"></div>
+                                            <input style="text-align: center; padding:0 !important;" type="text" name="producto[{{ $kitProducto_id }}][unidades]" id="producto_{{ $kitProducto_id }}_unidades" class="form-control unidades-input {{ $errors->has('producto.' . $kitProducto_id . '.unidades') ? 'is-invalid' : '' }}" value="{{ old('producto.' . $kitProducto_id . '.unidades', $producto->kitProductos->first()->unidades) }}" required>
+                                            <div class="invalid-feedback"></div>
                                             @error('producto.' . $kitProducto_id . '.unidades')
                                                 <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
                                                     {{ $message }}
@@ -238,7 +246,7 @@
                                     <input type="hidden" name="kit_id" value="{{ $kit->id }}">
                                     <input type="hidden" name="kit_producto_id" id="kit_producto_id" value="">
                                     <label for="producto_id">Producto</label>
-                                    <select name="producto_id" id="producto_id" class="select2 form-control {{ $errors->has('producto_id') ? 'is-invalid' : '' }}" data-placeholder="Seleccione un producto" data-validation-required-message="Este campo es obligatorio" required>
+                                    <select name="producto_id" id="producto_id" class="select2 form-control {{ $errors->has('producto_id') ? 'is-invalid' : '' }}" data-placeholder="Seleccione un producto" required>
                                         <option value=""></option>
                                         @foreach($productos as $producto)
                                         <option value="{{ $producto->id }}" {{ old('producto_id') == $producto->id ? 'selected' : '' }}>
@@ -246,7 +254,7 @@
                                         </option>
                                         @endforeach
                                     </select>
-                                    <div class="help-block"></div>
+                                    <div class="invalid-feedback"></div>
                                     @error('producto_id')
                                         <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
                                             {{ $errors->first('producto_id') }}
@@ -277,8 +285,81 @@
 @section('js')
 <script>
     $(document).ready(function() {
-        $("input,select,textarea").not("[type=submit]").jqBootstrapValidation();
-        
+        $('#precio').on('input blur', function() { // Validación en tiempo real para el campo precio
+            var $input = $(this);
+            var $feedback = $input.closest('.form-group').find('.invalid-feedback');
+            
+            // Obtener el valor sin máscara
+            var unmaskedValue = $input.val();
+            if (typeof $input.inputmask !== 'undefined') {
+                unmaskedValue = $input.inputmask('unmaskedvalue');
+            }
+            
+            if (unmaskedValue === '' || unmaskedValue === null) {
+                $input.addClass('is-invalid').removeClass('is-valid');
+                $feedback.text('Este campo es obligatorio');
+            } else if (parseFloat(unmaskedValue) <= 0) {
+                $input.addClass('is-invalid').removeClass('is-valid');
+                $feedback.text('El precio debe ser mayor a 0');
+            } else {
+                $input.removeClass('is-invalid').addClass('is-valid');
+                $feedback.text('');
+            }
+        });
+        $('#kit').on('input blur', function() { // Validación en tiempo real para el campo kit
+            var $input = $(this);
+            var $feedback = $input.closest('.form-group').find('.invalid-feedback');
+            var value = $input.val();
+            var regex = /^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ()]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ()]+)*$/;
+            
+            if (value === '' || value === null) {
+                $input.addClass('is-invalid').removeClass('is-valid');
+                $feedback.text('Este campo es obligatorio');
+            } else if (value.length < 3) {
+                $input.addClass('is-invalid').removeClass('is-valid');
+                $feedback.text('El nombre debe tener al menos 3 caracteres');
+            } else if (!regex.test(value)) {
+                $input.addClass('is-invalid').removeClass('is-valid');
+                $feedback.text('Solo se permiten letras y paréntesis, sin espacios al inicio/final ni dobles espacios');
+            } else {
+                $input.removeClass('is-invalid').addClass('is-valid');
+                $feedback.text('');
+            }
+        });
+
+        // Validación en tiempo real para campos de unidades
+        $(document).on('input blur', '.unidades-input', function() {
+            var $input = $(this);
+            var $feedback = $input.closest('.form-group').find('.invalid-feedback');
+            var value = $input.val();
+            var regex = /^[1-9]\d*$/;
+
+            if (value === '' || value === null) {
+                $input.addClass('is-invalid').removeClass('is-valid');
+                $feedback.text('Este campo es obligatorio');
+            } else if (!regex.test(value)) {
+                $input.addClass('is-invalid').removeClass('is-valid');
+                $feedback.text('Solo números positivos (mínimo 1)');
+            } else {
+                $input.removeClass('is-invalid').addClass('is-valid');
+                $feedback.text('');
+            }
+        });
+
+        // Validación para el selector de producto en modal
+        $('#producto_id').on('change', function() {
+            var $input = $(this);
+            var $feedback = $input.closest('.form-group').find('.invalid-feedback');
+            var value = $input.val();
+
+            if (value === '' || value === null) {
+                $input.addClass('is-invalid');
+                $feedback.text('Este campo es obligatorio').show();
+            } else {
+                $input.removeClass('is-invalid');
+                $feedback.text('').hide();
+            }
+        });
         $('#modal-nuevo-equivalente').on('show.bs.modal', function(event) { //Asigna valores a los campos de la modal
             var button = $(event.relatedTarget);
             var kitProductoId = button.attr('data-kit-producto-id');

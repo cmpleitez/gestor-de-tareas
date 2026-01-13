@@ -17,15 +17,9 @@ CLIENTE:
         y pendiente de validar (<recepcion.validada_destino=false>) por el receptor (<recepcion.user_id_destino>)
         . Cliente: 
             . Entra al <formulario del carrito> y agrega o cambia los <kits y sus productos> y especifica si va enviar una <orden de compra> o una <orden de reserva>
-
                 🪒 Visualizador del carrito y editor del kit
 
-                        27. la edición del kit debería incluir su precio
-                            ... no se habia agregado la validacion
-                                ... es necesario inicializar la libreria que sirve para validar sobre el frontend
-                                    ... es necesario agregar la validacion de los precios
-                                    demo demo demo
-                                        
+                    ...aqui va lo pendiente...
 
                 🪒 enlace tienda gestor
                     . Construcción de la herramienta para poder realizar el paso "Revisión de la Orden/Reserva" por parte del receptor

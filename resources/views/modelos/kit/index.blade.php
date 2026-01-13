@@ -27,6 +27,7 @@
                             <tr>
                                 <th class="text-center">ID</th>
                                 <th>Kit</th>
+                                <th>precio</th>
                                 <th class="text-center">Creado</th>
                                 <th class="text-center">Actualizado</th>
                                 <th class="text-center">Estado</th>
@@ -39,6 +40,7 @@
                                 {{-- CAMPOS --}}
                                 <td class="text-center">{{ $kit->id }}</td>
                                 <td>{{ $kit->kit }}</td>
+                                <td class="td-currency">{{ $kit->precio }}</td>
                                 <td class="text-center">{{ $kit->created_at->format('d/m/Y') }}</td>
                                 <td class="text-center">{{ $kit->updated_at->format('d/m/Y') }}</td>
                                 {{-- ACTIVAR --}}
