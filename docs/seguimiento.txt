@@ -24,6 +24,7 @@ CLIENTE:
                             ... no se habia agregado la validacion
                                 ... es necesario inicializar la libreria que sirve para validar sobre el frontend
                                     ... es necesario agregar la validacion de los precios
+                                    demo demo demo
                                         
 
                 🪒 enlace tienda gestor
