@@ -24,7 +24,7 @@ CLIENTE:
                             ... no se habia agregado la validacion
                                 ... es necesario inicializar la libreria que sirve para validar sobre el frontend
                                     ... es necesario agregar la validacion de los precios
-                                        ... es posible que el uso de perfiles multiples esta origiando el problema de la doble cuenta en github
+                                        
 
                 🪒 enlace tienda gestor
                     . Construcción de la herramienta para poder realizar el paso "Revisión de la Orden/Reserva" por parte del receptor
