@@ -134,7 +134,7 @@ class RecepcionController extends Controller
                 return back()->with('error', 'No hay operadores disponibles para asignar las solicitudes');
             }
             //PROCESO
-            $user        = auth()->user();
+            $user = auth()->user();
             $recepciones = Recepcion::where(function ($query) use ($user) {
                 if ($user->mainRole->name == 'cliente') {
                     $query->where('origen_user_id', $user->id);
