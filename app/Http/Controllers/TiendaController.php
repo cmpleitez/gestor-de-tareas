@@ -58,7 +58,7 @@ class TiendaController extends Controller
     {
         try {
             DB::beginTransaction();
-            //ACTUALIZACIÓN DE UNIDADES KITS Y VALIDACIÓN SUS PRODUCTOS
+            //ORDEN DE COMPRA
             $atencionId = null;
             $cart = $request->input('cart');
             if (isset($cart['ordenes'])) {
@@ -79,9 +79,6 @@ class TiendaController extends Controller
                             $nuevosProductos = array_values($ordenData['detalles']);
                             $productosIds = []; // Array para validar productos duplicados
                             foreach ($orden->detalle as $index => $detalle) {
-
-                                Log::info($orden->kit->kit);
-
                                 if (isset($nuevosProductos[$index]['producto_id'])) {
                                     $productoId = $nuevosProductos[$index]['producto_id'];
                                     $esValido = DB::table('kit_producto') // Validar que el producto pertenezca al kit o sea equivalente
@@ -148,16 +145,17 @@ class TiendaController extends Controller
                     $recepcion = Recepcion::where('atencion_id', $atencion->id) //Activar la copia del receptor
                     ->where('user_destino_role_id', Role::where('name','Receptor')->first()->id)
                     ->first(); 
-                                        
                     if ($recepcion) {
                         $recepcion->activo = true;
+                        $recepcion->validada_origen = true;
+                        $recepcion->validada_destino = false;
                         $recepcion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
                         $recepcion->save();
                     }
                 }
             }
             DB::commit();
-            return response()->json(['success' => true, 'message' => 'Orden recibida y actualizada correctamente. Redireccionando a la Tienda']);
+            return response()->json(['success' => true, 'message' => 'Orden recibida. Redireccionando a la Tienda']);
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Error en carritoEnviar: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString());

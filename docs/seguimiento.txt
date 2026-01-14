@@ -15,22 +15,15 @@ CLIENTE:
         ✨. Sistema: En respuesta al cliente (<recepcion.user_id_origen>), crea el registro de <Atención>, el detalle de la <Atencion>, 
         y <copia solicitud receptor>; pendiente de validar por el mismo (<recepcion.validada_origen = false>)
         y pendiente de validar (<recepcion.validada_destino=false>) por el receptor (<recepcion.user_id_destino>)
-        . Cliente: 
-            . Entra al <formulario del carrito> y agrega o cambia los <kits y sus productos> y especifica si va enviar una <orden de compra> o una <orden de reserva>
-                🪒 Visualizador del carrito y editor del kit
-
-                    ...aqui va lo pendiente...
-
-                🪒 enlace tienda gestor
-                    . Construcción de la herramienta para poder realizar el paso "Revisión de la Orden/Reserva" por parte del receptor
-                🪒 consultas para el receptor y el administrador: 
-                    . historial de entradas y reversiones en stocks
-
+        ✨. Cliente: 
+            . Entra al <formulario del carrito> y agrega o cambia los <kits y sus productos>
         . Sistema: En atención a la orden (<Enviar>), del cliente: 
             . Crea a partir del <formulario del carrito> una <copia solicitud receptor>
-            y crea una <orden de compra/reserva>, los <kits y sus productos>
-            . Desactiva la <escritura> (<recepcion.validada_origen = true>) para el cliente (<recepcion.user_id_origen>) de la <copia solicitud receptor>
-            . Activa la escritura (<recepcion.validada_destino = true>) para el receptor (<recepcion.user_id_destino>) en la <copia solicitud receptor>
+            y crea un número de <Atención>, una <orden de compra/reserva> con sus <kits> y <productos>
+            
+            ... Desactiva la <escritura> (<recepcion.validada_origen = true>) para el cliente (<recepcion.user_id_origen>) de la <copia solicitud receptor>
+            ... Activa la escritura (<recepcion.validada_destino = false>) para el receptor (<recepcion.user_id_destino>) en la <copia solicitud receptor>
+            
             . Establece <copia solicitud receptor> en estado de <Recibida>
 
         . Receptor: Entra al servicio <Mis ordenes de compra>
@@ -141,6 +134,13 @@ PLATAFORMA:
     🟢 al parecer las librarías de los data tables se estan inicializando dos veces: dashboard y el index respectivo
     🟢 hacer que el boton guardar y el boton retroceder se muestren flotantes, mejorando la experiencia del usuario
 SERVICIOS:
+
+    🪒 Visualizador del carrito y editor del kit
+    🪒 enlace tienda gestor
+        . Construcción de la herramienta para poder realizar el paso "Revisión de la Orden/Reserva" por parte del receptor
+    🪒 consultas para el receptor y el administrador: 
+        . historial de entradas y reversiones en stocks
+
     ...🟢 Crear inventario de servicios a construir y la lista debe estar en orden "consecuencial", es decir en secuencia causal o causa y efecto, 
     sería según procedimiento establecido
 

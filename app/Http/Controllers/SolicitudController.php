@@ -13,7 +13,7 @@ class SolicitudController extends Controller
 {
     public function index()
     {
-        $solicitudes          = Solicitud::orderBy('id', 'desc')->paginate(15);
+        $solicitudes = Solicitud::orderBy('id', 'desc')->paginate(15);
         $operador_por_defecto = User::where('activo', true)->inRandomOrder()->first();
         return view('modelos.solicitud.index', compact('solicitudes', 'operador_por_defecto'));
     }

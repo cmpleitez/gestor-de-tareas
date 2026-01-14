@@ -282,7 +282,7 @@
 
 @push('scripts')
 <script>
-    window.cartDetails = { ordenes: [] };
+    window.cartDetails = { ordenes: [] }; //Lectura de las ordenes de compras
     @if($hasOrders)
         @foreach($currentAtencion->ordenes as $orden)
             window.cartDetails.ordenes[{{ $loop->index }}] = {
@@ -301,7 +301,7 @@
         @endforeach
     @endif
     $(document).ready(function() { 
-        $('.main-kit-collapse').on('show.bs.collapse hidden.bs.collapse', function (e) { // Accordion Logic (Sync row height)
+        $('.main-kit-collapse').on('show.bs.collapse hidden.bs.collapse', function (e) { //Lógica del acordión y el alto de fila
             if (e.target === this) {
                 const isShowing = e.type === 'show';
                 $(this).closest('.row')
@@ -309,17 +309,17 @@
                     .toggleClass('align-items-stretch', isShowing);
             }
         });
-        const validate = ($el) => $el.toggleClass('is-invalid', !$el[0].checkValidity()); // Frontend Validation (Compact Standard)
+        const validate = ($el) => $el.toggleClass('is-invalid', !$el[0].checkValidity()); //Validation
         $(document).on('input blur', '.input-unidades', function() { validate($(this)); });
-        $('#btnEnviarCarrito').on('click', function(e) { // Submit Handler
+        $('#btnEnviarCarrito').on('click', function(e) {
             let isValid = true;
             $('.input-unidades').each(function() {
                 validate($(this));
                 if (!$(this)[0].checkValidity()) isValid = false;
             });
-            if (!isValid) return false; // Stop if invalid (HTML5 valid msg is shown below input)
+            if (!isValid) return false;
             const $btn = $(this);
-            $('.input-unidades').each(function() { // Actualizar unidades en la estructura jerárquica
+            $('.input-unidades').each(function() { //Unidades del Kit
                 const ordenId = String($(this).data('orden-id'));
                 for (let key in window.cartDetails.ordenes) {
                     if (window.cartDetails.ordenes[key].orden_id && String(window.cartDetails.ordenes[key].orden_id) === ordenId) {
@@ -337,7 +337,7 @@
                     }
                 }
             });
-            $btn.prop('disabled', true); //Procesode envío de la orden de compras
+            $btn.prop('disabled', true); //Proceso de envío
             $.ajax({
                 url: '{{ route('tienda.carrito-enviar') }}',
                 method: 'POST',
@@ -362,7 +362,7 @@
                 }
             });
         });
-        $(document).on('click', '.btn-spinner', function() { // Spinner Logic
+        $(document).on('click', '.btn-spinner', function() { // Lógica del spinner para cambio en las unidades
             const $btn = $(this), $input = $($btn.data('target'));
             let val = parseInt($input.val()) || 0;
             $input.val(Math.max(1, val + ($btn.data('type') === 'plus' ? 1 : -1))).trigger('change');
@@ -377,7 +377,7 @@
                 currency: 'USD',
                 minimumFractionDigits: 2
             }).format(subtotal);
-            $('#subtotal_' + ordenId).text(formatted); // Intl.NumberFormat incluye el símbolo $, así que reemplazamos todo el contenido
+            $('#subtotal_' + ordenId).text(formatted);
             let totalGlobal = 0; // Recalcular Total Global
             $('.input-unidades').each(function() {
                 const p = parseFloat($(this).data('precio')) || 0;
