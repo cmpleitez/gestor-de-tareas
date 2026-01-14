@@ -69,7 +69,7 @@ class TiendaController extends Controller
                     if ($unidades < 1) {
                         throw new Exception("Las unidades deben ser mayores a 0.");
                     }
-                    $orden = Orden::with(['detalle' => function ($query) {
+                    $orden = Orden::with(['kit', 'detalle' => function ($query) {
                         $query->orderBy('producto_id');
                     }])->find($ordenId);
                     if ($orden) {
@@ -77,15 +77,14 @@ class TiendaController extends Controller
                         $orden->save();
                         if (isset($ordenData['detalles']) && is_array($ordenData['detalles'])) {
                             $nuevosProductos = array_values($ordenData['detalles']);
-                            
-                            // FASE 1: VALIDACIONES (sin modificar la base de datos)
                             $productosIds = []; // Array para validar productos duplicados
                             foreach ($orden->detalle as $index => $detalle) {
+
+                                Log::info($orden->kit->kit);
+
                                 if (isset($nuevosProductos[$index]['producto_id'])) {
                                     $productoId = $nuevosProductos[$index]['producto_id'];
-                                    
-                                    // Validar que el producto pertenezca al kit o sea equivalente
-                                    $esValido = DB::table('kit_producto')
+                                    $esValido = DB::table('kit_producto') // Validar que el producto pertenezca al kit o sea equivalente
                                         ->where('kit_id', $orden->kit_id)
                                         ->where('producto_id', $productoId)
                                         ->exists();
@@ -98,41 +97,32 @@ class TiendaController extends Controller
                                     if (!$esValido) {
                                         throw new Exception("El producto seleccionado no es válido para este kit.");
                                     }
-                                    
-                                    // Validar que no haya productos duplicados
-                                    if (in_array($productoId, $productosIds)) {
-                                        throw new Exception("No puede haber productos repetidos en el kit. Por favor revise su selección.");
+                                    if (in_array($productoId, $productosIds)) { // Validar que no haya productos duplicados
+                                        throw new Exception("Hay productos repetidos en el kit ".mb_strtoupper($orden->kit->kit).". Por favor revise su selección.");
                                     }
                                     $productosIds[] = $productoId;
                                 }
                             }
-                            
-                            // FASE 2: RECOLECCIÓN DE CAMBIOS
-                            $cambios = [];
+                            $cambios = []; // FASE 2: Recolección
                             foreach ($orden->detalle as $index => $detalle) {
                                 if (isset($nuevosProductos[$index]['producto_id'])) {
                                     $nuevoProductoId = $nuevosProductos[$index]['producto_id'];
-                                    
                                     if ($detalle->producto_id != $nuevoProductoId) {
                                         $cambios[] = [
-                                            'detalle_anterior' => $detalle, // Objeto Eloquent o stdClass
+                                            'detalle_anterior' => $detalle,
                                             'nuevo_producto_id' => $nuevoProductoId
                                         ];
                                     }
                                 }
                             }
-
-                            // FASE 3: ELIMINACIÓN (Delete)
-                            foreach ($cambios as $cambio) {
+                            foreach ($cambios as $cambio) { // FASE 3: Eliminación
                                 DB::table('detalles')
                                     ->where('orden_id', $orden->id)
                                     ->where('kit_id', $orden->kit_id)
                                     ->where('producto_id', $cambio['detalle_anterior']->producto_id)
                                     ->delete();
                             }
-
-                            // FASE 4: INSERCIÓN (Insert)
-                            foreach ($cambios as $cambio) {
+                            foreach ($cambios as $cambio) { // FASE 4: Inserción
                                 $detalleAnterior = $cambio['detalle_anterior'];
                                 DB::table('detalles')->insert([
                                     'orden_id' => $detalleAnterior->orden_id,
