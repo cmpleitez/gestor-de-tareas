@@ -23,6 +23,7 @@ CLIENTE:
             
             ... Desactiva la <escritura> (<recepcion.validada_origen = true>) para el cliente (<recepcion.user_id_origen>) de la <copia solicitud receptor>
             ... Activa la escritura (<recepcion.validada_destino = false>) para el receptor (<recepcion.user_id_destino>) en la <copia solicitud receptor>
+                    
             
             . Establece <copia solicitud receptor> en estado de <Recibida>
 
@@ -34,7 +35,7 @@ CLIENTE:
             . Revisa <stocks digitales> para la <orden de compra/reserva>
             . Agrega o cambia <kits y sus productos> en la <orden de compra/reserva>
             . Valida la <copia solicitud receptor> (<recepcion.validada_destino = true>) y la <orden de compra/reserva>, dando clic en <Enviar> en el formulario <sidebar> 
-            o arrastrando la <copia solicitud receptor> hacia el tablero de "En progreso"
+            o arrastra la <copia solicitud receptor> hacia el tablero de "En progreso"
         . Sistema: Crea <copia solicitud operador> ya validada (<recepcion.validada_origen = true>) por el receptor (<recepcion.user_id_origen>) 
         y pendiente de validar (<recepcion.validada_destino=false>) por el operador (<recepcion.user_id_destino>)
         
@@ -43,8 +44,22 @@ CLIENTE:
         . Operador: 
             . En el tablero de <recibidas> ubica la <copia solicitud operador> que va procesar
             . Arrastra la <copia solicitud operador> ubicada hacia el tablero de "En progreso" para dar inicio al proceso
-            . Da clic a la tarea "Revisar viabilidad técnica y disponibilidad en stocks físicos"
-        . Sistema: Muestra en una ventana modal la <orden de compra/reserva> y los <kits con sus productos>
+
+        . Sistema: 
+            . Da clic a la tarea "Despacho iniciado"
+            . Actualiza en la <copia solicitud operador> el campo (<recepcion.validada_destino = true>) a petición del usuario, 
+            para dar dicha como validada.
+
+
+
+
+
+        .... Sistema: Muestra en una ventana modal la <orden de compra/reserva> y los <kits con sus productos>
+
+
+
+
+
         . Operador: 
             . Revisa si los productos son coherentes con cada kit, así como la compatibilidad entre las marcas y modelos de los primeros
             . Revisa si se dispone en el <stock físico> las cantidades solicitadas en cada producto

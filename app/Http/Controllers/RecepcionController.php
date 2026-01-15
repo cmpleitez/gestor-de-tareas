@@ -256,9 +256,8 @@ class RecepcionController extends Controller
             return response()->json(['warning' => true, 'message' => 'No hay operadores disponibles para asignar la solicitud'], 422);
         }
         try {
-            //VALIDACIÓN
-            $operador = $operadores->random();
             //PROCESO
+            $operador = $operadores->random();
             $estado_en_progreso_id = Estado::where('estado', 'En progreso')->first()->id;
             DB::beginTransaction();
             $new_recepcion                  = new Recepcion();
@@ -266,13 +265,18 @@ class RecepcionController extends Controller
             $new_recepcion->atencion_id     = $recepcion->atencion_id;
             $new_recepcion->solicitud_id    = $recepcion->solicitud_id;
             $new_recepcion->user_destino_role_id         = Role::where('name', 'Operador')->first()->id;
+
             $new_recepcion->origen_user_id  = auth()->user()->id;
+            $new_recepcion->validada_origen = true;
             $new_recepcion->destino_user_id = $operador->id;
-            $new_recepcion->estado_id       = Estado::where('estado', 'Recibida')->first()->id;
+
+            $new_recepcion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
             $new_recepcion->save();
-            $recepcion->activo    = true; //Validar solicitud y actualizar estado - Copia Operador
+            
+            //$recepcion->activo = true; //Activar solicitud y actualizar estados
             $recepcion->estado_id = $estado_en_progreso_id;
-            $atencion_id          = $recepcion->atencion_id;
+            $atencion_id = $recepcion->atencion_id;
+            $recepcion->validada_destino = true;
             $recepcion->save();
             //RESULTADO
             DB::commit();

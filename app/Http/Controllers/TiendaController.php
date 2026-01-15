@@ -148,7 +148,6 @@ class TiendaController extends Controller
                     if ($recepcion) {
                         $recepcion->activo = true;
                         $recepcion->validada_origen = true;
-                        $recepcion->validada_destino = false;
                         $recepcion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
                         $recepcion->save();
                     }
@@ -202,6 +201,7 @@ class TiendaController extends Controller
     {
         try {
             DB::beginTransaction(); //Lectura
+            $atencion_nueva = false;
             $kit->load('productos');
             $user = auth()->user();
             $atencion = Atencion::where('oficina_id', $user->oficina_id) //Verificando si ya existe el número de atención
@@ -209,8 +209,10 @@ class TiendaController extends Controller
                 ->whereHas('recepciones', function ($query) {
                     $query->where('origen_user_id', auth()->user()->id);
                 })
+                ->where('estado_id', Estado::where('estado', 'Solicitada')->first()->id)
                 ->first();
             if (!$atencion) {
+                $atencion_nueva = true;
                 $receptors = User::whereHas('roles', function ($query) { //Seleccionando el receptor
                     $query->where('name', 'Receptor');
                 })->whereHas('oficina', function ($query) use ($user) {
@@ -241,13 +243,15 @@ class TiendaController extends Controller
                 $recepcion->activo          = false;
                 $recepcion->save();
             }
-            $orden = Orden::where('atencion_id', $atencion->id) // Verificar si el kit ya existe en la atención actual (carrito)
-                ->where('kit_id', $kit->id)
-                ->first();
-            if ($orden) {
-                DB::rollBack();
-                $message = 'El kit ya se encuentra en el carrito';
-                return $request->ajax() ? response()->json(['success' => false, 'message' => $message, 'type' => 'info']) : back()->with('info', $message);
+            if(!$atencion_nueva) { // Verificar si el kit ya está en el carrito
+                $ordenExistente = Orden::where('atencion_id', $atencion->id) 
+                    ->where('kit_id', $kit->id)
+                    ->first();
+                if ($ordenExistente) {
+                    DB::rollBack();
+                    $message = 'El kit ya se encuentra en el carrito';
+                    return $request->ajax() ? response()->json(['success' => false, 'message' => $message, 'type' => 'info']) : back()->with('info', $message);
+                }
             }
             $orden = new Orden(); //Agregando Kit (Orden de compra)
             $orden->id = (new KeyMaker())->generate('Orden', Solicitud::where('solicitud', 'Orden de compra')->first()->id);
