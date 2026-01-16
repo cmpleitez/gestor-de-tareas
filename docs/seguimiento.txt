@@ -12,65 +12,70 @@ CLIENTE:
     
     🔵 Procedimiento: perfil cpleitez.2024@gmail.com https://miro.com/app/board/uXjVJy6iRzE=/
         ✨. Cliente: Entra a la <Tienda>, selecciona en el catálogo el kit y da clic en <agregar al carrito>
-        ✨. Sistema: En respuesta al cliente (<recepcion.user_id_origen>), crea el registro de <Atención>, el detalle de la <Atencion>, 
-        y <copia solicitud receptor>; pendiente de validar por el mismo (<recepcion.validada_origen = false>)
-        y pendiente de validar (<recepcion.validada_destino=false>) por el receptor (<recepcion.user_id_destino>)
+            . Sistema: En respuesta al cliente (<recepcion.user_id_origen>), crea el registro de <Atención>, el detalle de la <Atencion>, 
+            y <copia solicitud receptor>; pendiente de validar por el mismo (<recepcion.validada_origen = false>)
+            y pendiente de validar (<recepcion.validada_destino=false>) por el receptor (<recepcion.user_id_destino>)
+        
         ✨. Cliente: 
             . Entra al <formulario del carrito> y agrega o cambia los <kits y sus productos>
-        . Sistema: En atención a la orden (<Enviar>), del cliente: 
-            . Crea a partir del <formulario del carrito> una <copia solicitud receptor>
-            y crea un número de <Atención>, una <orden de compra/reserva> con sus <kits> y <productos>
-            
-            ... Desactiva la <escritura> (<recepcion.validada_origen = true>) para el cliente (<recepcion.user_id_origen>) de la <copia solicitud receptor>
-            ... Activa la escritura (<recepcion.validada_destino = false>) para el receptor (<recepcion.user_id_destino>) en la <copia solicitud receptor>
-                    
-            
-            . Establece <copia solicitud receptor> en estado de <Recibida>
-
+            . Sistema: En atención a la orden (<Enviar>), del cliente: 
+                . Crea a partir del <formulario del carrito> una <copia solicitud receptor>
+                y crea un número de <Atención>, una <orden de compra/reserva> con sus <kits> y <productos>
+                . Desactiva la <escritura> (<recepcion.validada_origen = true>) para el cliente (<recepcion.user_id_origen>) de la <copia solicitud receptor>
+                . Activa la escritura (<recepcion.validada_destino = false>) para el receptor (<recepcion.user_id_destino>) en la <copia solicitud receptor>
+                . Establece <copia solicitud receptor> en estado de <Recibida>
+        
         . Receptor: Entra al servicio <Mis ordenes de compra>
-        . Sistema: Brinda la vista <kanvan> con <autorefrescado> en intervalos de 5 minutos
-        . Receptor: Ubica en el tablero de <recibidas> y selecciona la <copia solicitud receptor> dando clic sobre ella
-        . Sistema: Muestra formulario en el <sidebar> los datos de la gestión (<copia solicitud receptor>), la <orden de compra/reserva> y los <kits con sus productos>
-        . Receptor: 
-            . Revisa <stocks digitales> para la <orden de compra/reserva>
-            . Agrega o cambia <kits y sus productos> en la <orden de compra/reserva>
-            . Valida la <copia solicitud receptor> (<recepcion.validada_destino = true>) y la <orden de compra/reserva>, dando clic en <Enviar> en el formulario <sidebar> 
-            o arrastra la <copia solicitud receptor> hacia el tablero de "En progreso"
-        . Sistema: Crea <copia solicitud operador> ya validada (<recepcion.validada_origen = true>) por el receptor (<recepcion.user_id_origen>) 
-        y pendiente de validar (<recepcion.validada_destino=false>) por el operador (<recepcion.user_id_destino>)
+            . Sistema: Brinda la vista de tableros <kanvan> con <autorefrescado> en intervalos de N minutos
+        
+        . Receptor: Ubica en el tablero de <recibidas> y selecciona la solicitud a revisar <copia solicitud receptor>, dando clic sobre ella
+            . Sistema: Muestra en el <sidebar> el número de gestión y las tareas asignadas para dicha solicitud.
+                
+                
+
+
+                
+                ... muestra o no en el sidebar la orden y su detalle para revisión, 
+                y que pasará con el chequeo automático que haga el sistema cuando esté mesclado con el chequeo manual ?
+
+
+
+
+
+        
+        . Receptor:
+            . Realiza y reporta las tareas asignadas: 
+                . Revisa y corrige la <orden de compra> 
+                . Define la orden como <compra> o como <reserva> (Marca de agua inclinada: Reserva)
+                . Revisa <stocks digitales> para la <orden de compra/reserva>
+                . Valida la <orden de compra>
+                    . Sistema: 
+                        . Crea <copia solicitud operador> ya validada (<recepcion.validada_origen = true>) por el receptor (<recepcion.user_id_origen>) 
+                        y pendiente de validar (<recepcion.validada_destino=false>) por el operador (<recepcion.user_id_destino>)
+                        . En atención al usuario envía un correo con la <orden de compra validada>
         
         . Operador: Entra al servicio <Mis ordenes de compra>
-        . Sistema: Brinda la vista <kanvan> con <autorefrescado> en intervalos de 5 minutos
+            . Sistema: Brinda la vista <kanvan> con <autorefrescado> en intervalos de 5 minutos
+        
         . Operador: 
-            . En el tablero de <recibidas> ubica la <copia solicitud operador> que va procesar
-            . Arrastra la <copia solicitud operador> ubicada hacia el tablero de "En progreso" para dar inicio al proceso
+            . En el tablero de <recibidas> ubica la <copia solicitud operador> que va procesar y da clic sobre ella
+                . Sistema: Muestra en el sidebar la orden de compra y sus productos, además las tareas asignadas al operador
 
-        . Sistema: 
-            . Da clic a la tarea "Despacho iniciado"
-            . Actualiza en la <copia solicitud operador> el campo (<recepcion.validada_destino = true>) a petición del usuario, 
-            para dar dicha como validada.
-
-
-
-
-
-        .... Sistema: Muestra en una ventana modal la <orden de compra/reserva> y los <kits con sus productos>
-
-
-
-
+        . Operador: Verifica el stock físico de la orden de compra y arrastra la <copia solicitud operador> ubicada hacia el tablero de "En progreso" para dar inicio al proceso
+            . Sistema: 
+                . A petición del usuario, da clic a la tarea "Despacho iniciado"
+                . A petición del usuario, actualiza en la <copia solicitud operador> el campo (<recepcion.validada_destino = true>), 
+                para dar dicha solicitud como validada.
 
         . Operador: 
-            . Revisa si los productos son coherentes con cada kit, así como la compatibilidad entre las marcas y modelos de los primeros
-            . Revisa si se dispone en el <stock físico> las cantidades solicitadas en cada producto
-            . Si es necesario: Agrega o cambia <kits y sus productos> en la <orden de compra/reserva>
-            . Finalizadas estas actividades da clic a la tarea "Envió de <orden de compra/reserva> revisada"
-        . Sistema: Envía un correo al cliente con la <orden de compra/reserva> revisada
-        . Operador: 
-            . Verifica que el pago por parte del cliente haya sido efectuado
-            . Una vez el pago sea efectivo: da clic a la tarea "Descarga de <stock digital>"
-        . Sistema: Establece cada una de las <copias solicitud> y la <solicitud principal> al estado de <Resuelta>
-        . Cliente: Traslada los productos a la zona de despacho y hace la entrega al cliente
+            . Realiza la lista de tareas operativas asignadas (Revisa y confirma los stocks físicos, Productos trasladados a zona de despacho)
+        
+        . Receptor:
+            . Realiza las lista de tareas operativas asignadas (Revisión de la orden de compra, Descarga del stock, Pago verificado, Mercadería enviada)
+            . Sistema: 
+                . En cuanto el receptor y el operador han realizado dichas tareas, establece el estado de "Resuelta" a todas las copias de la solicitud y a su solicitud principal <Atencion>, 
+                en consecuencia la solicitud se coloca en el tablero de resueltas.
+                . Envía un correo al cliente con la <orden de compra/reserva> revisada
 
     🔵 procesos: Cada cierta cantidad de días se debe correr una tarea programada para borrar todas las solicitudes no validadas por el cliente
 
