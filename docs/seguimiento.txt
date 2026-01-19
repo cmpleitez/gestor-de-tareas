@@ -25,23 +25,17 @@ CLIENTE:
                 . Activa la escritura (<recepcion.validada_destino = false>) para el receptor (<recepcion.user_id_destino>) en la <copia solicitud receptor>
                 . Establece <copia solicitud receptor> en estado de <Recibida>
         
-        . Receptor: Entra al servicio <Mis ordenes de compra>
+        ✨. Receptor: Entra al servicio <Mis ordenes de compra>
             . Sistema: Brinda la vista de tableros <kanvan> con <autorefrescado> en intervalos de N minutos
+        
         
         . Receptor: Ubica en el tablero de <recibidas> y selecciona la solicitud a revisar <copia solicitud receptor>, dando clic sobre ella
             . Sistema: Muestra en el <sidebar> el número de gestión y las tareas asignadas para dicha solicitud.
                 
-                
-
-
-                
-                ... muestra o no en el sidebar la orden y su detalle para revisión, 
-                y que pasará con el chequeo automático que haga el sistema cuando esté mesclado con el chequeo manual ?
-
-
-
-
-
+                . Las ordenes de compras se mostraran cuando se de clic sobre cualquier solicitud
+                ... Las tareas se mostrarán en el side bar
+                    ... asignar tareas al receptor
+                    ... asignar tareas al operador 
         
         . Receptor:
             . Realiza y reporta las tareas asignadas: 

@@ -220,15 +220,8 @@
 <!-- END: Head-->
 
 <body class="vertical-layout boxicon-layout no-card-shadow footer-static">
-
-    <!-- LOGO -->
-    <div class="row justify-content-center mb-3 mt-3">
-        <div class="col-auto">
-            <img src="{{ asset('app-assets/images/logo/logo.svg') }}" alt="Logo" class="auth-logo">
-        </div>
-    </div>
     <!-- FORMULARIO -->
-    <div class="row d-flex justify-content-center">
+    <div class="row d-flex justify-content-center mt-5">
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header pt-1"> {{-- Cabecera --}}

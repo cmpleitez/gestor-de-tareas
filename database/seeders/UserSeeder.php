@@ -117,18 +117,24 @@ class UserSeeder extends Seeder
         ]);
         DB::table('tareas')->insert([
             'id'         => 2,
-            'tarea'      => 'Revisión de orden de compra/reserva',
+            'tarea'      => 'Revisión',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
         DB::table('tareas')->insert([
             'id'         => 3,
-            'tarea'      => 'Descarga de stock',
+            'tarea'      => 'Verificación física',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
         DB::table('tareas')->insert([
             'id'         => 4,
+            'tarea'      => 'Descarga de stock',
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+        DB::table('tareas')->insert([
+            'id'         => 5,
             'tarea'      => 'Entrega de productos',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
@@ -145,47 +151,28 @@ class UserSeeder extends Seeder
         //CREACION DE ESTADOS
         DB::table('estados')->insert([
             'id'         => 1,
-            'estado'     => 'Recibida',
+            'estado'     => 'Solicitada',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
         DB::table('estados')->insert([
             'id'         => 2,
-            'estado'     => 'En progreso',
+            'estado'     => 'Recibida',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
         DB::table('estados')->insert([
             'id'         => 3,
-            'estado'     => 'Resuelta',
+            'estado'     => 'En progreso',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
         DB::table('estados')->insert([
             'id'         => 4,
-            'estado'     => 'Rechazada',
+            'estado'     => 'Resuelta',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
-        DB::table('estados')->insert([
-            'id'         => 5,
-            'estado'     => 'Retrasada',
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now(),
-        ]);
-        DB::table('estados')->insert([
-            'id'         => 6,
-            'estado'     => 'Priorizada',
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now(),
-        ]);
-        DB::table('estados')->insert([
-            'id'         => 7,
-            'estado'     => 'Solicitada',
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now(),
-        ]);
-
 
         //CREACION DE PARAMETROS
         DB::table('parametros')->insert([
