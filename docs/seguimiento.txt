@@ -34,8 +34,12 @@ CLIENTE:
                 
                 . Las ordenes de compras se mostraran cuando se de clic sobre cualquier solicitud
                 ... Las tareas se mostrarán en el side bar
+                    
+                    ... las tareas se reparten cuando el operador pasa la solicitud al tablero "En progreso"
+                    
                     ... asignar tareas al receptor
-                    ... asignar tareas al operador 
+                    ... asignar tareas al operador
+
         
         . Receptor:
             . Realiza y reporta las tareas asignadas: 

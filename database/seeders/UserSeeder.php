@@ -143,7 +143,13 @@ class UserSeeder extends Seeder
         //CREACION DE SOLICITUDES
         DB::table('solicitudes')->insert([
             'id'         => 1,
-            'solicitud'  => 'Orden de compra',
+            'solicitud'  => 'Revisión de la orden de compra',
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+        DB::table('solicitudes')->insert([
+            'id'         => 2,
+            'solicitud'  => 'Verificación física del stock',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
