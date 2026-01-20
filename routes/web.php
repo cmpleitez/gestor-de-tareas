@@ -162,15 +162,10 @@ Route::middleware([
     Route::get('operadores/{solicitud}', [RecepcionController::class, 'operadores'])->name('recepcion.operadores');
     Route::post('avance-tablero', [RecepcionController::class, 'consultarAvance'])->name('recepcion.consultar-avance');
     Route::post('nuevas-recibidas', [RecepcionController::class, 'nuevasRecibidas'])->name('recepcion.nuevas-recibidas');
-    Route::group(['middleware' => ['role:receptor']], function () {
-        Route::group(['prefix' => 'recepcion'], function () {
-            Route::post('asignar/{recepcion}/{equipo}', [RecepcionController::class, 'asignar'])->name('recepcion.asignar');
-        });
-    });
-    Route::group(['middleware' => ['role:operador']], function () {
+    Route::group(['middleware' => ['role:receptor|operador']], function () {
         Route::group(['prefix' => 'recepcion'], function () {
             Route::get('tareas/{recepcion_id}', [RecepcionController::class, 'tareas'])->name('recepcion.tareas');
-            //Route::post('asignar-tareas/{recepcion_id}', [RecepcionController::class, 'asignarTareas'])->name('recepcion.asignar-tareas');
+            Route::post('asignar/{recepcion}/{equipo}', [RecepcionController::class, 'asignar'])->name('recepcion.asignar');
             Route::post('reportar-tarea/{actividad_id}', [RecepcionController::class, 'reportarTarea'])->name('recepcion.reportar-tarea');
         });
     });

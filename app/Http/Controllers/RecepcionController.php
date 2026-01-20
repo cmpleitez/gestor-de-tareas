@@ -275,6 +275,13 @@ class RecepcionController extends Controller
             $atencion_id = $recepcion->atencion_id;
             $recepcion->validada_destino = true;
             $recepcion->save();
+
+
+
+
+
+
+            
             //RESULTADO
             DB::commit();
             $traza = $this->obtenerTraza($recepcion); // Obtener la traza actualizada
@@ -350,16 +357,6 @@ class RecepcionController extends Controller
 
 
     }
-
-
-    public function asignarTareas(string $recepcion_id)
-    {
-
-    }
-
-
-
-
 
 
     public function consultarAvance(Request $request)
@@ -438,8 +435,6 @@ class RecepcionController extends Controller
             return back()->with('error', 'Ocurrió un error al obtener los operadores: ' . $e->getMessage());
         }
     }
-
-
 
     public function tareas($recepcion_id)
     {
