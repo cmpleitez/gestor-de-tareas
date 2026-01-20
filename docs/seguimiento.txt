@@ -38,11 +38,11 @@ CLIENTE:
                     
                     ... asignar tareas al receptor
                     ... asignar tareas al operador
-                    ... averiguar para que sirve esto @User.php#L51-73 
+                    ... averiguar para que sirve esto @User.php#L51-73
 
                     ... en el controlador <recepcion.asignar> se asignará la copia de la solicitud y las tareas que corresponda segun el rol del usuario actual,
                     es decir de quien arrastro la tarjeta -> recepcion-enprogreso
-                    
+
         
         . Receptor:
             . Realiza y reporta las tareas asignadas: 
