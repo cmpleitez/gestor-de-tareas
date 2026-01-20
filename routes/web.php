@@ -59,8 +59,8 @@ Route::middleware([
             Route::post('roles-update/{user}', [userController::class, 'rolesUpdate'])->name('user.roles-update');
             Route::get('equipos-edit/{user}', [userController::class, 'equiposEdit'])->name('user.equipos-edit');
             Route::post('equipos-update/{user}', [userController::class, 'equiposUpdate'])->name('user.equipos-update');
-            Route::get('solicitudes-edit/{user}', [userController::class, 'solicitudesEdit'])->name('user.solicitudes-edit');
-            Route::post('solicitudes-update/{user}', [userController::class, 'solicitudesUpdate'])->name('user.solicitudes-update');
+            Route::get('tareas-edit/{user}', [userController::class, 'tareasEdit'])->name('user.tareas-edit');
+            Route::post('tareas-update/{user}', [userController::class, 'tareasUpdate'])->name('user.tareas-update');
             Route::get('destroy/{user}', [userController::class, 'destroy'])->name('user.destroy');
             Route::post('activate/{user}', [userController::class, 'activate'])->name('user.activate');
         });
@@ -170,7 +170,7 @@ Route::middleware([
     Route::group(['middleware' => ['role:operador']], function () {
         Route::group(['prefix' => 'recepcion'], function () {
             Route::get('tareas/{recepcion_id}', [RecepcionController::class, 'tareas'])->name('recepcion.tareas');
-            Route::post('iniciar-tareas/{recepcion_id}', [RecepcionController::class, 'iniciarTareas'])->name('recepcion.iniciar-tareas');
+            //Route::post('asignar-tareas/{recepcion_id}', [RecepcionController::class, 'asignarTareas'])->name('recepcion.asignar-tareas');
             Route::post('reportar-tarea/{actividad_id}', [RecepcionController::class, 'reportarTarea'])->name('recepcion.reportar-tarea');
         });
     });

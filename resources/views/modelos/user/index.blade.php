@@ -81,7 +81,7 @@
                                         <div class="btn-group" role="group" aria-label="label">
                                             @can('autorizar')
                                             {{-- Actualizar habilidades --}}
-                                            <a href="{{ route('user.solicitudes-edit', $user->id) }}" role="button" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bx-slider-alt'></i> Actualizar habilidades de {{ $user->name }}" class="button_edit border border-secondary-dark text-secondary-dark bg-secondary-light">
+                                            <a href="{{ route('user.tareas-edit', $user->id) }}" role="button" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bx-slider-alt'></i> Actualizar habilidades de {{ $user->name }}" class="button_edit border border-secondary-dark text-secondary-dark bg-secondary-light">
                                                 <i class="bx bx-slider-alt"></i>
                                             </a>
                                             {{-- Asignar a equipos --}}

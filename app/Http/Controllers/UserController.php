@@ -1,11 +1,5 @@
 <?php
 namespace App\Http\Controllers;
-
-use App\Models\Equipo;
-use App\Models\Oficina;
-use App\Models\Recepcion;
-use App\Models\Solicitud;
-use App\Models\User;
 use App\Services\ImageWeightStabilizer;
 use Exception;
 use Illuminate\Database\QueryException;
@@ -13,7 +7,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+
 use Spatie\Permission\Models\Role;
+use App\Models\Equipo;
+use App\Models\Oficina;
+use App\Models\Recepcion;
+use App\Models\User;
+use App\Models\Tarea;
 
 class UserController extends Controller
 {
@@ -168,16 +168,16 @@ class UserController extends Controller
         return redirect()->route('user')->with('success', 'Los equipos para el usuario ' . $user->name . ' han sido actualizados efectivamente.');
     }
 
-    public function solicitudesEdit(User $user)
+    public function tareasEdit(User $user)
     {
-        $solicitudes = Solicitud::where('activo', true)->get();
-        return view('modelos.user.solicitudes-edit', ['user' => $user, 'solicitudes' => $solicitudes]);
+        $tareas = Tarea::where('activo', true)->get();
+        return view('modelos.user.tareas-edit', ['user' => $user, 'tareas' => $tareas]);
     }
 
-    public function solicitudesUpdate(Request $request, User $user)
+    public function tareasUpdate(Request $request, User $user)
     {
-        $solicitudes = $request->input('solicitudes', []);
-        $user->solicitudes()->sync($solicitudes);
+        $tareas = $request->input('tareas', []);
+        $user->tareas()->sync($tareas);
         return redirect()->route('user')->with('success', 'Las habilidades de ' . $user->name . ' han sido actualizadas efectivamente.');
     }
 

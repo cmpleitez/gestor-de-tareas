@@ -8,19 +8,19 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('solicitud_user', function (Blueprint $table) {
+        Schema::create('tarea_user', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('solicitud_id');
+            $table->foreignId('tarea_id');
             $table->foreignId('user_id');
             $table->timestamps();
 
-            $table->foreign('solicitud_id')->references('id')->on('solicitudes');
+            $table->foreign('tarea_id')->references('id')->on('tareas');
             $table->foreign('user_id')->references('id')->on('users');
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('solicitud_user');
+        Schema::dropIfExists('tarea_user');
     }
 };

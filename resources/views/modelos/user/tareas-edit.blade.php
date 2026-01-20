@@ -23,26 +23,26 @@
                         </div>
                     </div>
                 </div>
-                <form action="{{ route('user.solicitudes-update', ['user' => $user->id]) }}" method="POST">
+                <form action="{{ route('user.tareas-update', ['user' => $user->id]) }}" method="POST">
                     @csrf
                     <div class="card-content">
                         <div class="card-body">
                             <div class="selectable-items-container">
-                                @foreach ($solicitudes as $solicitud)
-                                    <div class="selectable-item {{ $user->solicitudes->contains($solicitud->id) ? 'selected' : '' }}" 
-                                         onclick="toggleSolicitud('solicitud_{{ $solicitud->id }}')">
-                                        <div class="checkbox-indicator {{ $user->solicitudes->contains($solicitud->id) ? 'checked' : '' }}" 
-                                             id="checkbox_solicitud_{{ $solicitud->id }}"></div>
+                                @foreach ($tareas as $tarea)
+                                    <div class="selectable-item {{ $user->tareas->contains($tarea->id) ? 'selected' : '' }}" 
+                                         onclick="toggletarea('tarea_{{ $tarea->id }}')">
+                                        <div class="checkbox-indicator {{ $user->tareas->contains($tarea->id) ? 'checked' : '' }}" 
+                                             id="checkbox_tarea_{{ $tarea->id }}"></div>
                                         <div class="item-body">
                                             <div class="item-info">
-                                                <div class="item-name">{{ $solicitud->solicitud }}</div>
-                                                <div class="item-desc">Solicitud</div>
+                                                <div class="item-name">{{ $tarea->tarea }}</div>
+                                                <div class="item-desc">tarea</div>
                                             </div>
                                         </div>
-                                        <input type="checkbox" name="solicitudes[]" 
-                                               id="solicitud_{{ $solicitud->id }}" 
-                                               value="{{ $solicitud->id }}" 
-                                               {{ $user->solicitudes->contains($solicitud->id) ? 'checked' : '' }}
+                                        <input type="checkbox" name="tareas[]" 
+                                               id="tarea_{{ $tarea->id }}" 
+                                               value="{{ $tarea->id }}" 
+                                               {{ $user->tareas->contains($tarea->id) ? 'checked' : '' }}
                                                style="display: none;">
                                     </div>
                                 @endforeach
@@ -60,16 +60,12 @@
 
 @section('js')
 <script>
-    // Función para alternar la selección de solicitudes
-    function toggleSolicitud(checkboxId) {
+    // Función para alternar la selección de tareas
+    function toggletarea(checkboxId) {
         const checkbox = document.getElementById(checkboxId);
         const selectableItem = checkbox.closest('.selectable-item');
         const checkboxIndicator = selectableItem.querySelector('.checkbox-indicator');
-        
-        // Alternar el estado del checkbox
         checkbox.checked = !checkbox.checked;
-        
-        // Actualizar la apariencia visual
         if (checkbox.checked) {
             selectableItem.classList.add('selected');
             checkboxIndicator.classList.add('checked');

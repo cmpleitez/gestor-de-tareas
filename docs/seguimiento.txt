@@ -16,9 +16,9 @@ CLIENTE:
             y <copia solicitud receptor>; pendiente de validar por el mismo (<recepcion.validada_origen = false>)
             y pendiente de validar (<recepcion.validada_destino=false>) por el receptor (<recepcion.user_id_destino>)
         
-        ✨. Cliente: 
+        ✨. Cliente:
             . Entra al <formulario del carrito> y agrega o cambia los <kits y sus productos>
-            . Sistema: En atención a la orden (<Enviar>), del cliente: 
+            . Sistema: En atención a la orden (<Enviar>), del cliente:
                 . Crea a partir del <formulario del carrito> una <copia solicitud receptor>
                 y crea un número de <Atención>, una <orden de compra/reserva> con sus <kits> y <productos>
                 . Desactiva la <escritura> (<recepcion.validada_origen = true>) para el cliente (<recepcion.user_id_origen>) de la <copia solicitud receptor>
@@ -27,7 +27,6 @@ CLIENTE:
         
         ✨. Receptor: Entra al servicio <Mis ordenes de compra>
             . Sistema: Brinda la vista de tableros <kanvan> con <autorefrescado> en intervalos de N minutos
-        
         
         . Receptor: Ubica en el tablero de <recibidas> y selecciona la solicitud a revisar <copia solicitud receptor>, dando clic sobre ella
             . Sistema: Muestra en el <sidebar> el número de gestión y las tareas asignadas para dicha solicitud.
@@ -39,7 +38,11 @@ CLIENTE:
                     
                     ... asignar tareas al receptor
                     ... asignar tareas al operador
+                    ... averiguar para que sirve esto @User.php#L51-73 
 
+                    ... en el controlador <recepcion.asignar> se asignará la copia de la solicitud y las tareas que corresponda segun el rol del usuario actual,
+                    es decir de quien arrastro la tarjeta -> recepcion-enprogreso
+                    
         
         . Receptor:
             . Realiza y reporta las tareas asignadas: 

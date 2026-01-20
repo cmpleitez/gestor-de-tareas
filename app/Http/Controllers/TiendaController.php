@@ -226,16 +226,16 @@ class TiendaController extends Controller
                 }
                 $receptor = $receptors->random();
                 $atencion             = new Atencion(); //Creando número de atención
-                $atencion->id         = (new KeyMaker())->generate('Atencion', Solicitud::where('solicitud', 'Orden de compra')->first()->id);
+                $atencion->id         = (new KeyMaker())->generate('Atencion', Solicitud::where('solicitud', 'Revisión de la orden de compra')->first()->id);
                 $atencion->oficina_id = auth()->user()->oficina_id;
                 $atencion->estado_id  = Estado::where('estado', 'Solicitada')->first()->id;
                 $atencion->avance     = 0.00;
                 $atencion->activo     = false;
                 $atencion->save();
                 $recepcion                  = new Recepcion(); //Creando la copia de la orden de compra para el <Receptor>
-                $recepcion->id              = (new KeyMaker())->generate('Recepcion', Solicitud::where('solicitud', 'Orden de compra')->first()->id);
+                $recepcion->id              = (new KeyMaker())->generate('Recepcion', Solicitud::where('solicitud', 'Revisión de la orden de compra')->first()->id);
                 $recepcion->atencion_id     = $atencion->id;
-                $recepcion->solicitud_id    = Solicitud::where('solicitud', 'Orden de compra')->first()->id;
+                $recepcion->solicitud_id    = Solicitud::where('solicitud', 'Revisión de la orden de compra')->first()->id;
                 $recepcion->origen_user_id  = auth()->user()->id;
                 $recepcion->destino_user_id = $receptor->id;
                 $recepcion->user_destino_role_id = Role::where('name', 'Receptor')->first()->id;
@@ -254,7 +254,7 @@ class TiendaController extends Controller
                 }
             }
             $orden = new Orden(); //Agregando Kit (Orden de compra)
-            $orden->id = (new KeyMaker())->generate('Orden', Solicitud::where('solicitud', 'Orden de compra')->first()->id);
+            $orden->id = (new KeyMaker())->generate('Orden', Solicitud::where('solicitud', 'Revisión de la orden de compra')->first()->id);
             $orden->atencion_id = $atencion->id;
             $orden->kit_id = $kit->id;
             $orden->unidades = 1;

@@ -224,8 +224,7 @@
                                 });
                                 updatePosition(solicitudId, columnaDestino, evt);
                             } else {
-                                actualizarMensajeColumnaVacia
-                                    (); // Si no hay movimiento, restaurar mensajes
+                                actualizarMensajeColumnaVacia(); // Si no hay movimiento, restaurar mensajes
                             }
                             actualizarMensajeColumnaVacia();
                         }
@@ -365,6 +364,7 @@
                     }
                 }).attr('data-popover-initialized', 'true');
         }
+        
         //ACTUALIZAR EL MOVIMIENTO DE LA TARJETA, TANTO EN EL BACKEND Y COMO EN EL FRONTEND
         function updatePosition(solicitudId, nuevaColumna, evt) {
             let nuevoEstadoId = 1; //Iniciando parametros
@@ -395,8 +395,8 @@
             let selectedValue = null;
             if (userRole === 'receptor') { //Asignar
                 selectedValue = $('input[name="equipo_destino"]:checked').val();
-                if (!selectedValue && equipos && equipos.length === 1) { // Auto-selección si solo hay un equipo
-                    selectedValue = equipos[0].id;
+                if (!selectedValue && equipos && equipos.length === 1) { 
+                    selectedValue = equipos[0].id; // Auto-selección si solo hay un equipo
                 }
                 if (!selectedValue) {
                     Swal.fire({
@@ -411,12 +411,13 @@
                     $(evt.from).append(evt.item);
                     return;
                 }
+
+                //Modificado: aqui se va asignar en un mismo proceso la copia de la solicitud al receptor y las tareas de todos los participantes
                 url = '{{ route('recepcion.asignar', ['recepcion' => ':recepcion_id', 'equipo' => ':equipo_id']) }}'
                     .replace(':recepcion_id', solicitudId)
                     .replace(':equipo_id', selectedValue);
-            } else if (userRole === 'operador') { //Iniciar tareas
-                url = '{{ route('recepcion.iniciar-tareas', ['recepcion_id' => ':id']) }}'
-                    .replace(':id', solicitudId);
+                //Modificado
+
             }
             if (!url) {
                 $(evt.from).append(evt.item);
@@ -434,8 +435,7 @@
                         const tarjeta = $(`.solicitud-card[data-recepcion-id="${solicitudId}"]`);
                         const tituloTarjeta = tarjeta.find('.solicitud-titulo').text() || 'Sin título';
                         if (tarjeta.length > 0) {
-                            // Actualizar estilos básicos de la tarjeta
-                            tarjeta.removeClass(
+                            tarjeta.removeClass( // Actualizar estilos básicos de la tarjeta
                                 'border-badge-secondary border-badge-primary border-badge-success border-badge-danger border-badge-warning'
                             );
                             tarjeta.addClass('border-' + colorBorde);
@@ -446,8 +446,7 @@
                                 'font-size': '11px',
                                 'margin-top': '5px'
                             });
-                            tarjeta.attr('data-recepcion-estado-id', nuevoEstadoId);
-                            // Determinar clase de badge según el nuevo estado
+                            tarjeta.attr('data-recepcion-estado-id', nuevoEstadoId); // Determinar clase de badge según el nuevo estado
                             let badgeColor = 'badge-secondary'; // Por defecto
                             if (nuevoEstadoId == 3) { // Resuelta
                                 badgeColor = 'badge-success';
@@ -531,6 +530,26 @@
                 }
             });
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         //MOSTRAR TAREAS EN SIDEBAR
         @can('asignar')
             @if (auth()->user()->mainRole->name === 'operador')
@@ -790,7 +809,7 @@
             });
             return [...new Set(ids)]; // Eliminar repetidos usando Set
         }
-        // GENERAR HTML DE PARTICIPANTES
+        //GENERAR HTML DE PARTICIPANTES
         function generarHtmlUsuarios(users, estadoId, tipo = 'recibidas') {
             let usersHtml = '';
             if (users && users.length > 0) {
@@ -929,8 +948,7 @@
                                     default:
                                         columnaDestino = '#columna-recibidas';
                                 }
-                                $card.addClass(
-                                    'animar-traslado'); // Trasladar tarjeta al tablero correspondiente
+                                $card.addClass('animar-traslado'); // Trasladar tarjeta al tablero correspondiente
                                 setTimeout(function() {
                                     $card.removeClass('animar-traslado');
                                     $(columnaDestino).append($card);
@@ -938,12 +956,9 @@
                                     setTimeout(function() {
                                         $card.removeClass('animar-llegada');
                                     }, 500);
-                                    actualizarEstilosTarjeta($card,
-                                        estadoBackend
-                                    ); // Actualizar estilos usando la función auxiliar
+                                    actualizarEstilosTarjeta($card, estadoBackend); // Actualizar estilos usando la función auxiliar
                                     actualizarContadores();
-                                    ordenarColumna(columnaDestino.replace('#',
-                                        '')); // Ordenar la columna después del traslado
+                                    ordenarColumna(columnaDestino.replace('#','')); // Ordenar la columna después del traslado
                                 }, 500);
                             }
                             if (item.recepciones && item.recepciones.length > 0) {
@@ -1018,6 +1033,7 @@
                 }
             });
         }
+        
         //CONTROL PRINCIPAL
         $(document).ready(function() {
             inicializarPopovers();
@@ -1040,6 +1056,7 @@
             initKanban();
             let isUpdating = false; // Sistema inteligente de polling para evitar saturación
             let updateInterval = ({{ $frecuencia_actualizacion }} * 1000) * 60;
+
             function safeUpdate() {
                 if (isUpdating) {
                     return;
@@ -1051,8 +1068,8 @@
                     isUpdating = false;
                 }, 10000);
             }
-            safeUpdate(); // Ejecutar inmediatamente al cargar
-            setInterval(safeUpdate, updateInterval);
+            //safeUpdate();
+            //setInterval(safeUpdate, updateInterval);
         });
     </script>
 @endsection

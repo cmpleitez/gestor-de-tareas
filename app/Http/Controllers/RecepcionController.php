@@ -15,6 +15,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Log;
 
 class RecepcionController extends Controller
 {
@@ -264,17 +265,13 @@ class RecepcionController extends Controller
             $new_recepcion->id              = (new KeyMaker())->generate('Recepcion', $recepcion->solicitud_id);
             $new_recepcion->atencion_id     = $recepcion->atencion_id;
             $new_recepcion->solicitud_id    = $recepcion->solicitud_id;
-            $new_recepcion->user_destino_role_id         = Role::where('name', 'Operador')->first()->id;
-
             $new_recepcion->origen_user_id  = auth()->user()->id;
-            $new_recepcion->validada_origen = true;
             $new_recepcion->destino_user_id = $operador->id;
-
+            $new_recepcion->user_destino_role_id         = Role::where('name', 'Operador')->first()->id;
+            $new_recepcion->validada_origen = true;
             $new_recepcion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
             $new_recepcion->save();
-            
-            //$recepcion->activo = true; //Activar solicitud y actualizar estados
-            $recepcion->estado_id = $estado_en_progreso_id;
+            $recepcion->estado_id = $estado_en_progreso_id; //Actualizar estados
             $atencion_id = $recepcion->atencion_id;
             $recepcion->validada_destino = true;
             $recepcion->save();
@@ -290,7 +287,80 @@ class RecepcionController extends Controller
             DB::rollBack();
             return response()->json(['success' => false, 'message' => 'Ocurrió un error al asignar la solicitud:' . $e->getMessage()]);
         }
+
+/*
+        //VALIDANDO
+        $recepcion = Recepcion::find($recepcion_id); //Id de recepcion
+        if (! $recepcion) {
+            return response()->json(['success' => false, 'message' => 'No se encontró la recepción solicitada'], 404);
+        }
+        if ($recepcion->solicitud->tareas->count() == 0) { //Tareas asignadas
+            return response()->json(['success' => false, 'message' => 'La solicitud no tiene tareas asignadas']);
+        }
+
+        //PROCESO
+        DB::beginTransaction();
+        try {
+            $estado_en_progreso_id = Estado::where('estado', 'En progreso')->first()->id;
+            foreach ($recepcion->solicitud->tareas as $tarea) {
+                $actividad                      = new Actividad();
+                $actividad->id                  = (new KeyMaker())->generate('Actividad', $recepcion->solicitud_id);
+                $actividad->recepcion_id        = $recepcion->id;
+                $actividad->tarea_id            = $tarea->id;
+                $actividad->user_destino_role_id= Role::where('name', 'Operador')->first()->id;
+                $actividad->origen_user_id      = auth()->user()->id;
+                $actividad->destino_user_id     = $recepcion->destino_user_id;
+                $actividad->estado_id           = Estado::where('estado', 'En progreso')->first()->id;
+                if ($tarea->id == 1) { //La primer tarea se resuelve en automático
+                    $actividad->estado_id = Estado::where('estado', 'Resuelta')->first()->id;
+                } else {
+                    $actividad->estado_id = $estado_en_progreso_id;
+                }
+                $actividad->save();
+
+
+            }
+            $recepcion->activo    = true; //Actualizar estado de la recepción y establecer la recepción como orden compra válida
+            $recepcion->estado_id = $estado_en_progreso_id;
+            $recepcion->save();
+            $atencion            = $recepcion->atencion; //Actualizar estado de la atención
+            $atencion->estado_id = $estado_en_progreso_id;
+            $atencion->save();
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'El despacho de la solicitud "' . (new KeyRipper())->rip($atencion->id) . '" ha sido iniciado',
+                'traza'   => $this->obtenerTraza($recepcion), // Obtener la traza actualizada
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => 'Ocurrió un error al iniciar el despacho:' . $e->getMessage()]);
+        }
+*/
+
+
+
+
+
+
+
+
+
+
+
+
     }
+
+
+    public function asignarTareas(string $recepcion_id)
+    {
+
+    }
+
+
+
+
+
 
     public function consultarAvance(Request $request)
     {
@@ -370,54 +440,6 @@ class RecepcionController extends Controller
     }
 
 
-
-    public function iniciarTareas(string $recepcion_id)
-    {
-        //VALIDANDO
-        $recepcion = Recepcion::find($recepcion_id); //Id de recepcion
-        if (! $recepcion) {
-            return response()->json(['success' => false, 'message' => 'No se encontró la recepción solicitada'], 404);
-        }
-        if ($recepcion->solicitud->tareas->count() == 0) { //Tareas asignadas
-            return response()->json(['success' => false, 'message' => 'La solicitud no tiene tareas asignadas']);
-        }
-        //PROCESO
-        DB::beginTransaction();
-        try {
-            $estado_en_progreso_id = Estado::where('estado', 'En progreso')->first()->id;
-            foreach ($recepcion->solicitud->tareas as $tarea) {
-                $actividad                      = new Actividad();
-                $actividad->id                  = (new KeyMaker())->generate('Actividad', $recepcion->solicitud_id);
-                $actividad->recepcion_id        = $recepcion->id;
-                $actividad->tarea_id            = $tarea->id;
-                $actividad->user_destino_role_id= Role::where('name', 'Operador')->first()->id;
-                $actividad->origen_user_id      = auth()->user()->id;
-                $actividad->destino_user_id     = $recepcion->destino_user_id;
-                $actividad->estado_id           = Estado::where('estado', 'En progreso')->first()->id;
-                if ($tarea->id == 1) { //La primer tarea se resuelve en automático
-                    $actividad->estado_id = Estado::where('estado', 'Resuelta')->first()->id;
-                } else {
-                    $actividad->estado_id = $estado_en_progreso_id;
-                }
-                $actividad->save();
-            }
-            $recepcion->activo    = true; //Actualizar estado de la recepción y establecer la recepción como orden compra válida
-            $recepcion->estado_id = $estado_en_progreso_id;
-            $recepcion->save();
-            $atencion            = $recepcion->atencion; //Actualizar estado de la atención
-            $atencion->estado_id = $estado_en_progreso_id;
-            $atencion->save();
-            DB::commit();
-            return response()->json([
-                'success' => true,
-                'message' => 'El despacho de la solicitud "' . (new KeyRipper())->rip($atencion->id) . '" ha sido iniciado',
-                'traza'   => $this->obtenerTraza($recepcion), // Obtener la traza actualizada
-            ]);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json(['success' => false, 'message' => 'Ocurrió un error al iniciar el despacho:' . $e->getMessage()]);
-        }
-    }
 
     public function tareas($recepcion_id)
     {
