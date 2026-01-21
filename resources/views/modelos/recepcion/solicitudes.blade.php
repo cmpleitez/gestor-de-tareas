@@ -1068,8 +1068,8 @@
                     isUpdating = false;
                 }, 10000);
             }
-            //safeUpdate();
-            //setInterval(safeUpdate, updateInterval);
+            safeUpdate();
+            setInterval(safeUpdate, updateInterval);
         });
     </script>
 @endsection

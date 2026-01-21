@@ -253,41 +253,67 @@ class RecepcionController extends Controller
         })->whereHas('mainRole', function ($q1) {
             $q1->where('name', 'Operador');
         })->with('equipos')->where('activo', true)->get();
+
+
+        Log::info('$operadores'.$operadores);
+
+
         if ($operadores->isEmpty()) {
             return response()->json(['warning' => true, 'message' => 'No hay operadores disponibles para asignar la solicitud'], 422);
         }
         try {
             //PROCESO
-            $operador = $operadores->random();
-            $estado_en_progreso_id = Estado::where('estado', 'En progreso')->first()->id;
-            DB::beginTransaction();
-            $new_recepcion                  = new Recepcion();
-            $new_recepcion->id              = (new KeyMaker())->generate('Recepcion', $recepcion->solicitud_id);
-            $new_recepcion->atencion_id     = $recepcion->atencion_id;
-            $new_recepcion->solicitud_id    = $recepcion->solicitud_id;
-            $new_recepcion->origen_user_id  = auth()->user()->id;
-            $new_recepcion->destino_user_id = $operador->id;
-            $new_recepcion->user_destino_role_id         = Role::where('name', 'Operador')->first()->id;
-            $new_recepcion->validada_origen = true;
-            $new_recepcion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
-            $new_recepcion->save();
-            $recepcion->estado_id = $estado_en_progreso_id; //Actualizar estados
+            $operador = $operadores->random(); //Seleccion del operador
+
+Log::info('$operador'.$operador);
+
+            $usuario = Auth()->user();
+
+
+            $estado_enprogreso = Estado::where('estado', 'En progreso')->first()->id;
             $atencion_id = $recepcion->atencion_id;
-            $recepcion->validada_destino = true;
-            $recepcion->save();
+            DB::beginTransaction();
+                
+                $new_recepcion = new Recepcion(); //Creando <copia> de la solicitud para el usuario actual
+                $new_recepcion->id = (new KeyMaker())->generate('Recepcion', $recepcion->solicitud_id);
+                $new_recepcion->atencion_id = $recepcion->atencion_id;
+                $new_recepcion->solicitud_id = $recepcion->solicitud_id;
+                $new_recepcion->origen_user_id = auth()->user()->id;
+                $new_recepcion->destino_user_id = $operador->id;
+                $new_recepcion->user_destino_role_id = Role::where('name', $usuario->mainRole->name)->first()->id;
+                $new_recepcion->validada_origen = true;
+                $new_recepcion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
+                $new_recepcion->save();
+                
+                $recepcion->estado_id = $estado_enprogreso; //Actualizar estados
+                $recepcion->validada_destino = true;
+                $recepcion->save();
 
 
+                foreach ($recepcion->solicitud->tareas as $tarea) {
+                    
+                    $coincide = $usuario->tareas()->where('tareas.id', $tarea->id)->first();
+                    if($coincide) {
+                        $actividad                      = new Actividad();
+                        $actividad->id                  = (new KeyMaker())->generate('Actividad', $recepcion->solicitud_id);
+                        $actividad->recepcion_id        = $new_recepcion->id;
+                        $actividad->tarea_id            = $tarea->id;
+                        $actividad->user_destino_role_id= Role::where('name', $usuario->mainRole->name)->first()->id;
+                        $actividad->origen_user_id      = $usuario->id;
+                        $actividad->destino_user_id     = $recepcion->destino_user_id;
+                        $actividad->estado_id           = $estado_enprogreso;
+                        $actividad->save();
+                    }
 
-
-
-
+                }
+                
             
             //RESULTADO
             DB::commit();
             $traza = $this->obtenerTraza($recepcion); // Obtener la traza actualizada
             return response()->json([
                 'success' => true,
-                'message' => 'La solicitud "' . (new KeyRipper())->rip($atencion_id) . '" ha sido asignada al operador ' . $operador->name,
+                'message' => 'La solicitud "' . (new KeyRipper())->rip($atencion_id) . '" ha sido asignada al operador',
                 'traza'   => $traza,
             ], 200);
         } catch (\Exception $e) {
