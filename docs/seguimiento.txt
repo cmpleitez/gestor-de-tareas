@@ -34,7 +34,7 @@ CLIENTE:
                 . Las ordenes de compras se mostraran cuando se de clic sobre cualquier solicitud
                 ... Las tareas se mostrarán en el side bar
                     
-                    
+
                     ... las tareas se reparten cuando el operador pasa la solicitud al tablero "En progreso"
                     ... asignar tareas al receptor
                     ... asignar tareas al operador
@@ -43,6 +43,7 @@ CLIENTE:
                     ... en el origen del proceso si se puede saber quien es el usuario origen y destino, pero no en medio del proceso, habria que analizar como resolverlo
                     ... en el controlador <recepcion.asignar> se asignará la copia de la solicitud y las tareas que corresponda segun el rol del usuario actual,
                     es decir de quien arrastro la tarjeta -> recepcion-enprogreso
+                    ... el campo "Estado_id" en Recepciones no es util, debe usarse en su lugar el de la tabla "Atención"
 
         
         . Receptor:
