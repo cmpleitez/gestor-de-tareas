@@ -393,7 +393,7 @@
             }
             let url = null; //Seleccionando la ruta a la que se va a enviar la solicitud
             let selectedValue = null;
-            if (userRole === 'receptor') { //Asignar
+            if (userRole === 'receptor' || userRole === 'operador') {
                 selectedValue = $('input[name="equipo_destino"]:checked').val();
                 if (!selectedValue && equipos && equipos.length === 1) { 
                     selectedValue = equipos[0].id; // Auto-selección si solo hay un equipo
@@ -411,13 +411,9 @@
                     $(evt.from).append(evt.item);
                     return;
                 }
-
-                //Modificado: aqui se va asignar en un mismo proceso la copia de la solicitud al receptor y las tareas de todos los participantes
                 url = '{{ route('recepcion.asignar', ['recepcion' => ':recepcion_id', 'equipo' => ':equipo_id']) }}'
                     .replace(':recepcion_id', solicitudId)
                     .replace(':equipo_id', selectedValue);
-                //Modificado
-
             }
             if (!url) {
                 $(evt.from).append(evt.item);
@@ -530,26 +526,6 @@
                 }
             });
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         //MOSTRAR TAREAS EN SIDEBAR
         @can('asignar')
             @if (auth()->user()->mainRole->name === 'operador')
@@ -1053,10 +1029,12 @@
                 });
             }
             setTimeout(initializeProgressBars, 100); // Inicializar barras de progreso inmediatamente no es timer
+        
+            
+
             initKanban();
             let isUpdating = false; // Sistema inteligente de polling para evitar saturación
             let updateInterval = ({{ $frecuencia_actualizacion }} * 1000) * 60;
-
             function safeUpdate() {
                 if (isUpdating) {
                     return;

@@ -50,7 +50,6 @@ Route::middleware([
 
     //ADMINISTRACIÓN
     Route::group(['middleware' => ['role:admin|superadmin']], function () {
-
         Route::group(['prefix' => 'user'], function () { //Usuarios
             Route::get('/', [userController::class, 'index'])->name('user');
             Route::get('edit/{user}', [userController::class, 'edit'])->name('user.edit');
@@ -164,14 +163,14 @@ Route::middleware([
     Route::post('nuevas-recibidas', [RecepcionController::class, 'nuevasRecibidas'])->name('recepcion.nuevas-recibidas');
     Route::group(['middleware' => ['role:receptor|operador']], function () {
         Route::group(['prefix' => 'recepcion'], function () {
-            Route::get('tareas/{recepcion_id}', [RecepcionController::class, 'tareas'])->name('recepcion.tareas');
             Route::post('asignar/{recepcion}/{equipo}', [RecepcionController::class, 'asignar'])->name('recepcion.asignar');
+            Route::get('tareas/{recepcion_id}', [RecepcionController::class, 'tareas'])->name('recepcion.tareas');
             Route::post('reportar-tarea/{actividad_id}', [RecepcionController::class, 'reportarTarea'])->name('recepcion.reportar-tarea');
         });
     });
 
-    //TIENDA
-    Route::group(['middleware' => ['role:cliente|superadmin|admin']], function () {
+    //SERVICIOS
+    Route::group(['middleware' => ['role:cliente']], function () {
         Route::group(['prefix' => 'tienda'], function () {
             Route::get('/', [TiendaController::class, 'index'])->name('tienda');
             Route::get('carrito', [TiendaController::class, 'carritoIndex'])->name('tienda.carrito');

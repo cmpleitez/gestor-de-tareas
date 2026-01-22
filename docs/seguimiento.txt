@@ -34,15 +34,13 @@ CLIENTE:
                 . Las ordenes de compras se mostraran cuando se de clic sobre cualquier solicitud
                 ... Las tareas se mostrarán en el side bar
                     
-                    ... las tareas se reparten cuando el operador pasa la solicitud al tablero "En progreso"
                     
+                    ... las tareas se reparten cuando el operador pasa la solicitud al tablero "En progreso"
                     ... asignar tareas al receptor
                     ... asignar tareas al operador
                     ... averiguar para que sirve esto @User.php#L51-73
                     ... usuario_tarea no esta registrando las fechas de transacción
                     ... en el origen del proceso si se puede saber quien es el usuario origen y destino, pero no en medio del proceso, habria que analizar como resolverlo
-                    
-
                     ... en el controlador <recepcion.asignar> se asignará la copia de la solicitud y las tareas que corresponda segun el rol del usuario actual,
                     es decir de quien arrastro la tarjeta -> recepcion-enprogreso
 
