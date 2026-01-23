@@ -102,6 +102,7 @@
                             <tr>
                                 <th class="text-center">ID</th>
                                 <th>Kit</th>
+                                <th>Precio</th>
                                 <th class="text-center">Creado</th>
                                 <th class="text-center">Actualizado</th>
                                 @can('autorizar')

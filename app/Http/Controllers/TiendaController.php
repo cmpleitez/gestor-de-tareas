@@ -2,7 +2,6 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Database\QueryException;
 use Exception;
 
@@ -21,7 +20,17 @@ use App\Models\Solicitud;
 use App\Models\Orden;
 use App\Models\Detalle;
 use App\Services\KeyRipper;
-use App\Models\Tipo;
+
+
+
+
+
+
+use Illuminate\Support\Facades\Log;
+
+
+
+
 
 class TiendaController extends Controller
 {
@@ -201,74 +210,76 @@ class TiendaController extends Controller
     {
         try {
             DB::beginTransaction(); //Lectura
-            $atencion_nueva = false;
-            $kit->load('productos');
-            $user = auth()->user();
-            $atencion = Atencion::where('oficina_id', $user->oficina_id) //Verificando si ya existe el número de atención
-                ->where('activo', false)
-                ->whereHas('recepciones', function ($query) {
-                    $query->where('origen_user_id', auth()->user()->id);
-                })
-                ->where('estado_id', Estado::where('estado', 'Solicitada')->first()->id)
-                ->first();
-            if (!$atencion) {
-                $atencion_nueva = true;
-                $receptors = User::whereHas('roles', function ($query) { //Seleccionando el receptor
-                    $query->where('name', 'Receptor');
-                })->whereHas('oficina', function ($query) use ($user) {
-                    $query->where('id', $user->oficina_id);
-                })->get();
-                if ($receptors->isEmpty()) {
-                    Log::warning('No hay receptores disponibles', ['oficina_id' => $user->oficina_id, 'user_id' => $user->id]);
-                    DB::rollBack();
-                    $message = 'No hay personal <Receptor> disponible para atender la solicitud';
-                    return $request->ajax() ? response()->json(['success' => false, 'message' => $message, 'type' => 'error']) : back()->with('error', $message);
-                }
-                $receptor = $receptors->random();
-                $atencion             = new Atencion(); //Creando número de atención
-                $atencion->id         = (new KeyMaker())->generate('Atencion', Solicitud::where('solicitud', 'Revisión de la orden de compra')->first()->id);
-                $atencion->oficina_id = auth()->user()->oficina_id;
-                $atencion->estado_id  = Estado::where('estado', 'Solicitada')->first()->id;
-                $atencion->avance     = 0.00;
-                $atencion->activo     = false;
-                $atencion->save();
-                $recepcion                  = new Recepcion(); //Creando la copia de la orden de compra para el <Receptor>
-                $recepcion->id              = (new KeyMaker())->generate('Recepcion', Solicitud::where('solicitud', 'Revisión de la orden de compra')->first()->id);
-                $recepcion->atencion_id     = $atencion->id;
-                $recepcion->solicitud_id    = Solicitud::where('solicitud', 'Revisión de la orden de compra')->first()->id;
-                $recepcion->origen_user_id  = auth()->user()->id;
-                $recepcion->destino_user_id = $receptor->id;
-                $recepcion->user_destino_role_id = Role::where('name', 'Receptor')->first()->id;
-                $recepcion->estado_id       = Estado::where('estado', 'Solicitada')->first()->id;
-                $recepcion->activo          = false;
-                $recepcion->save();
-            }
-            if(!$atencion_nueva) { // Verificar si el kit ya está en el carrito
-                $ordenExistente = Orden::where('atencion_id', $atencion->id) 
-                    ->where('kit_id', $kit->id)
+                $atencion_nueva = false;
+                $kit->load('productos');
+                $user = auth()->user();
+                $atencion = Atencion::where('oficina_id', $user->oficina_id) //Verificando si ya existe el número de atención
+                    ->where('activo', false)
+                    ->whereHas('recepciones', function ($query) {
+                        $query->where('origen_user_id', auth()->user()->id);
+                    })
+                    ->where('estado_id', Estado::where('estado', 'Solicitada')->first()->id)
                     ->first();
-                if ($ordenExistente) {
-                    DB::rollBack();
-                    $message = 'El kit ya se encuentra en el carrito';
-                    return $request->ajax() ? response()->json(['success' => false, 'message' => $message, 'type' => 'info']) : back()->with('info', $message);
+                if (!$atencion) {
+                    $atencion_nueva = true;
+                    $receptores = User::whereHas('roles', function ($query) { //Seleccionando el receptor
+                        $query->where('name', 'Receptor');
+                    })->whereHas('oficina', function ($query) use ($user) {
+                        $query->where('id', $user->oficina_id);
+                    })->get();
+                    if ($receptores->isEmpty()) {
+                        
+                        Log::warning('No hay receptores disponibles', ['oficina_id' => $user->oficina_id, 'user_id' => $user->id]);
+                        
+                        DB::rollBack();
+                        $message = 'No hay personal <Receptor> disponible para atender la solicitud';
+                        return $request->ajax() ? response()->json(['success' => false, 'message' => $message, 'type' => 'error']) : back()->with('error', $message);
+                    }
+                    $receptor = $receptores->random();
+                    $atencion             = new Atencion(); //Creando número de atención
+                    $atencion->id         = (new KeyMaker())->generate('Atencion', Solicitud::where('solicitud', 'Orden de compra')->first()->id);
+                    $atencion->oficina_id = auth()->user()->oficina_id;
+                    $atencion->estado_id  = Estado::where('estado', 'Solicitada')->first()->id;
+                    $atencion->avance     = 0.00;
+                    $atencion->activo     = false;
+                    $atencion->save();
+                    $recepcion                  = new Recepcion(); //Creando la copia de la orden de compra para el <Receptor>
+                    $recepcion->id              = (new KeyMaker())->generate('Recepcion', Solicitud::where('solicitud', 'Orden de compra')->first()->id);
+                    $recepcion->atencion_id     = $atencion->id;
+                    $recepcion->solicitud_id    = Solicitud::where('solicitud', 'Orden de compra')->first()->id;
+                    $recepcion->origen_user_id  = auth()->user()->id;
+                    $recepcion->destino_user_id = $receptor->id;
+                    $recepcion->user_destino_role_id = Role::where('name', 'Receptor')->first()->id;
+                    $recepcion->estado_id       = Estado::where('estado', 'Solicitada')->first()->id;
+                    $recepcion->activo          = false;
+                    $recepcion->save();
                 }
-            }
-            $orden = new Orden(); //Agregando Kit (Orden de compra)
-            $orden->id = (new KeyMaker())->generate('Orden', Solicitud::where('solicitud', 'Revisión de la orden de compra')->first()->id);
-            $orden->atencion_id = $atencion->id;
-            $orden->kit_id = $kit->id;
-            $orden->unidades = 1;
-            $orden->precio = $kit->precio;
-            $orden->save();
-            foreach ($kit->productos as $producto) { //Agregando detalle del kit (Detalle de la orden)
-                $detalle = new Detalle();
-                $detalle->orden_id = $orden->id;
-                $detalle->producto_id = $producto->id;
-                $detalle->kit_id = $kit->id;
-                $detalle->unidades = $producto->pivot->unidades;
-                $detalle->precio = $producto->precio;
-                $detalle->save();
-            }
+                if(!$atencion_nueva) { // Verificar si el kit ya está en el carrito
+                    $ordenExistente = Orden::where('atencion_id', $atencion->id) 
+                        ->where('kit_id', $kit->id)
+                        ->first();
+                    if ($ordenExistente) {
+                        DB::rollBack();
+                        $message = 'El kit ya se encuentra en el carrito';
+                        return $request->ajax() ? response()->json(['success' => false, 'message' => $message, 'type' => 'info']) : back()->with('info', $message);
+                    }
+                }
+                $orden = new Orden(); //Agregando Kit (Orden de compra)
+                $orden->id = (new KeyMaker())->generate('Orden', Solicitud::where('solicitud', 'Orden de compra')->first()->id);
+                $orden->atencion_id = $atencion->id;
+                $orden->kit_id = $kit->id;
+                $orden->unidades = 1;
+                $orden->precio = $kit->precio;
+                $orden->save();
+                foreach ($kit->productos as $producto) { //Agregando detalle del kit (Detalle de la orden)
+                    $detalle = new Detalle();
+                    $detalle->orden_id = $orden->id;
+                    $detalle->producto_id = $producto->id;
+                    $detalle->kit_id = $kit->id;
+                    $detalle->unidades = $producto->pivot->unidades;
+                    $detalle->precio = $producto->precio;
+                    $detalle->save();
+                }
             DB::commit();
             $message = 'Kit agregado a la tienda correctamente';
             return $request->ajax() ? response()->json(['success' => true, 'message' => $message, 'type' => 'success']) : back()->with('success', $message);

@@ -1,8 +1,10 @@
 <?php
 namespace App\Http\Controllers;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 use App\Models\Actividad;
-use App\Models\Atencion;
 use App\Models\Equipo;
 use App\Models\Estado;
 use App\Models\Parametro;
@@ -11,11 +13,19 @@ use App\Models\Solicitud;
 use App\Models\User;
 use App\Services\KeyMaker;
 use App\Services\KeyRipper;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
+
+
+
+
+
+
 use Illuminate\Support\Facades\Log;
+
+
+
+
+
 
 class RecepcionController extends Controller
 {
@@ -94,20 +104,19 @@ class RecepcionController extends Controller
 
     private function obtenerTraza($tarjeta)
     {
+        $estado_resuelta_id = Estado::where('estado', 'Resuelta')->first()->id;
         $actividades = Actividad::whereHas('recepcion', function ($query) use ($tarjeta) {
-            $query->where('atencion_id', $tarjeta->atencion_id)
-                ->where('user_destino_role_id', Role::where('name', 'Operador')->first()->id);
+            $query->where('atencion_id', $tarjeta->atencion_id);
         })
-            ->with(['tarea', 'estado'])
-            ->get()
-            ->sortByDesc('updated_at');
+        ->with(['tarea', 'estado'])
+        ->get()
+        ->sortByDesc('updated_at');
         if ($actividades->isEmpty()) {
-            $traza = 'Recibida';
+            $traza = 'Solicitada';
         } else {
-            $todasResueltas = $actividades->every(function ($actividad) {
-                return $actividad->estado_id == 3;
+            $todasResueltas = $actividades->every(function ($actividad) use ($estado_resuelta_id) {
+                return $actividad->estado_id == $estado_resuelta_id;
             });
-
             if ($todasResueltas) {
                 $traza = 'Resuelta';
             } else {
@@ -124,7 +133,7 @@ class RecepcionController extends Controller
             //VALIDACIÓN
             $equipos = Equipo::where('oficina_id', auth()->user()->oficina_id)->get();
             if ($equipos->isEmpty()) {
-                return back()->with('error', 'No hay equipos de trabajo disponibles para asignar las solicitudes');
+                return back()->with('warning', 'No hay equipos de trabajo disponibles para asignar las solicitudes');
             }
             $operadores = User::whereHas('roles', function ($query) {
                 $query->where('name', 'Operador');
@@ -132,7 +141,11 @@ class RecepcionController extends Controller
                 $query->where('id', auth()->user()->oficina_id);
             })->where('activo', true)->get();
             if ($operadores->isEmpty()) {
-                return back()->with('error', 'No hay operadores disponibles para asignar las solicitudes');
+                return back()->with('warning', 'No hay operadores disponibles para asignar las solicitudes');
+            }
+            $solicitudes = Solicitud::has('tareas')->get();
+            if ($solicitudes->isEmpty()) {
+                return back()->with('warning', 'Las solicitudes no tienen tareas asociadas');
             }
             //PROCESO
             $user = auth()->user();
@@ -154,9 +167,9 @@ class RecepcionController extends Controller
             ->get();
             $atencionIds = $recepciones->pluck('atencion_id')->unique();
             $usuariosParticipantes = $this->obtenerUsuariosParticipantes($atencionIds); //Obtener usuarios participantes
-            $tarjetas              = $recepciones->map(function ($tarjeta) use ($usuariosParticipantes) {
+            $tarjetas = $recepciones->map(function ($tarjeta) use ($usuariosParticipantes) {
                 $usuariosParticipantesAtencion = $usuariosParticipantes->get($tarjeta->atencion_id, collect());
-                $traza                         = $this->obtenerTraza($tarjeta);
+                $traza = $this->obtenerTraza($tarjeta);
                 return [
                     'atencion_id'         => $tarjeta->atencion_id,
                     'created_at'          => $tarjeta->created_at->toISOString(),
@@ -261,12 +274,12 @@ class RecepcionController extends Controller
             $operador = $operadores->random(); //Seleccion del operador
             $usuario = Auth()->user();
             $estado_en_progreso_id = Estado::where('estado', 'En progreso')->first()->id;
-            $atencion_id = $recepcion->atencion_id;
+            $atencion = $recepcion->atencion()->first();
             DB::beginTransaction();
                 if ($usuario->mainRole->name=='receptor') { //El Receptor crea una copia de la solicitud y la asigna al Operador
                     $new_recepcion = new Recepcion(); 
                     $new_recepcion->id = (new KeyMaker())->generate('Recepcion', $recepcion->solicitud_id);
-                    $new_recepcion->atencion_id = $recepcion->atencion_id;
+                    $new_recepcion->atencion_id = $atencion->id;
                     $new_recepcion->solicitud_id = $recepcion->solicitud_id;
                     $new_recepcion->origen_user_id = $usuario->id;
                     $new_recepcion->destino_user_id = $operador->id;
@@ -274,6 +287,9 @@ class RecepcionController extends Controller
                     $new_recepcion->validada_origen = true;
                     $new_recepcion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
                     $new_recepcion->save();
+                    $recepcion->estado_id = $estado_en_progreso_id; //Validando de <copia receptor> y cambiando estado local
+                    $recepcion->validada_destino = true;
+                    $recepcion->save();
                     foreach ($recepcion->solicitud->tareas as $tarea) { //Autoasignación de tareas
                         $coincide = $usuario->tareas()->where('tareas.id', $tarea->id)->first();
                         if($coincide) {
@@ -286,7 +302,7 @@ class RecepcionController extends Controller
                         }
                     }
                 } elseIf($usuario->mainRole->name=='operador') {
-                    $recepcion->estado_id = $estado_en_progreso_id;
+                    $recepcion->estado_id = $estado_en_progreso_id; //Validación de <copia operador>
                     $recepcion->validada_destino = true;
                     $recepcion->save();
                     foreach ($recepcion->solicitud->tareas as $tarea) { //Autoasignación de tareas
@@ -301,12 +317,14 @@ class RecepcionController extends Controller
                         }
                     }
                 }
+                $atencion->estado_id = $estado_en_progreso_id; //Cambiando estado global
+                $atencion->save();
             //RESULTADO
             DB::commit();
             $traza = $this->obtenerTraza($recepcion); // Obtener la traza actualizada
             return response()->json([
                 'success' => true,
-                'message' => 'La solicitud "' . (new KeyRipper())->rip($atencion_id) . '" ha sido asignada al operador',
+                'message' => 'La solicitud "' . (new KeyRipper())->rip($atencion->id) . '" ha sido asignada al operador',
                 'traza'   => $traza,
             ], 200);
         } catch (\Exception $e) {
@@ -426,7 +444,7 @@ class RecepcionController extends Controller
             $nuevoEstado           = $request->input('estado');
             $estado_resuelta_id    = Estado::where('estado', 'Resuelta')->first()->id;
             $estado_en_progreso_id = Estado::where('estado', 'En progreso')->first()->id;
-                                               //PROCESO
+            //PROCESO
             if ($nuevoEstado === 'Resuelta') { //Actualizar actividad
                 $actividad->estado_id = Estado::where('estado', 'Resuelta')->first()->id;
             } elseif ($nuevoEstado === 'En progreso') {

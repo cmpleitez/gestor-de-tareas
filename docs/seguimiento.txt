@@ -43,9 +43,17 @@ CLIENTE:
                     ... en el origen del proceso si se puede saber quien es el usuario origen y destino, pero no en medio del proceso, habria que analizar como resolverlo
                     ... en el controlador <recepcion.asignar> se asignará la copia de la solicitud y las tareas que corresponda segun el rol del usuario actual,
                     es decir de quien arrastro la tarjeta -> recepcion-enprogreso
-                    ... el campo "Estado_id" en Recepciones no es util, debe usarse en su lugar el de la tabla "Atención"
 
-        
+                    ... agregar validación para cuando las tareas aun no hayan sido asignadas
+                    ... al parecer la frecuencia de actualizacion se ve intervenida en @RecepcionController.php#L208-209 
+
+                    ... La revision sucedería en el tablero de en progreso, cuando el usuario de clic sobre la 
+                    tarjeta/solicitud se abriran el sidebar con las tareas asignadas, cuando el usuario de clic sobre 
+                    una de ellas se abrirá la ventana modal correspondiente para realizar la tarea, ejemplo:
+                    cuando el receptor de clic sobre "Revisión" se abrirá la orden de compra en estado de edición para 
+                    ser corregida, luego el usuario dara clic sobre el control llamado "Revisada", para que la tarea se establezca
+                    como hecha actividad.estado_id = 4 (Resuelta).
+
         . Receptor:
             . Realiza y reporta las tareas asignadas: 
                 . Revisa y corrige la <orden de compra> 

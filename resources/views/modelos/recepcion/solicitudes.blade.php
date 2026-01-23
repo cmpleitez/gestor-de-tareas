@@ -289,11 +289,11 @@
             const titulo = tarjeta.titulo && tarjeta.detalle ?
                 `${tarjeta.titulo} - ${tarjeta.detalle}` :
                 tarjeta.titulo || tarjeta.detalle || 'Sin título';
-            let borderColor, estadoColor, badgeColor; // Configurar colores según el tipo de tarjeta
+            let borderColor, estadoColor, badgeColor;
             switch (tipo) {
                 case 'recibidas':
-                    borderColor = 'badge-secondary'; // Usar nombre estándar
-                    estadoColor = '#2c3e50'; // Color que coincide con el header del tablero
+                    borderColor = 'badge-secondary'; 
+                    estadoColor = '#2c3e50';
                     badgeColor = 'badge-secondary';
                     break;
                 case 'progreso':
@@ -311,8 +311,7 @@
                     estadoColor = '#2c3e50';
                     badgeColor = 'badge-secondary';
             }
-            let usersHtml = generarHtmlUsuarios(tarjeta.users, tarjeta.estado_id,
-                tipo); // Generar HTML de usuarios usando la función auxiliar estándar
+            let usersHtml = generarHtmlUsuarios(tarjeta.users, tarjeta.estado_id, tipo);
             return `
                 <div class="solicitud-card ${animar ? 'animar-llegada' : ''} border-${borderColor}" 
                 style="border-left-color: ${estadoColor};"
@@ -1029,10 +1028,9 @@
                 });
             }
             setTimeout(initializeProgressBars, 100); // Inicializar barras de progreso inmediatamente no es timer
-        
-            
-
             initKanban();
+            
+            /*
             let isUpdating = false; // Sistema inteligente de polling para evitar saturación
             let updateInterval = ({{ $frecuencia_actualizacion }} * 1000) * 60;
             function safeUpdate() {
@@ -1048,6 +1046,8 @@
             }
             safeUpdate();
             setInterval(safeUpdate, updateInterval);
+            */
+
         });
     </script>
 @endsection
