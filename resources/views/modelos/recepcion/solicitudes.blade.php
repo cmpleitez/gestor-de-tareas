@@ -568,7 +568,13 @@
                 }
                 let tareasHtml = '<div><h6 class="font-weight-600 mb-2"></h6>';
                 tareas.forEach(function(tarea) {
-                    let esCompletada = tarea.estado_id == 3;
+                    
+                    
+                    
+                    let esCompletada = tarea.estado_id == 3; ///el codigo debe ser 4 y no debe estar quemado
+
+
+
                     let taskId = 'task_' + tarea.actividad_id;
                     let htmlGenerado = `
                     <div class="selectable-item ${esCompletada ? 'selected' : ''}" ${esCompletada ? 'style="pointer-events: none;"' : 'onclick="selectTask(\'' + taskId + '\')"'}">

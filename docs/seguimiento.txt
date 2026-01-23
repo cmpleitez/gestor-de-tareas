@@ -31,28 +31,21 @@ CLIENTE:
         . Receptor: Ubica en el tablero de <recibidas> y selecciona la solicitud a revisar <copia solicitud receptor>, dando clic sobre ella
             . Sistema: Muestra en el <sidebar> el número de gestión y las tareas asignadas para dicha solicitud.
                 
-                . Las ordenes de compras se mostraran cuando se de clic sobre cualquier solicitud
-                ... Las tareas se mostrarán en el side bar
+                ... La revision sucedería en el tablero de en progreso, cuando el usuario de clic sobre la 
+                tarjeta/solicitud se abriran el sidebar con las tareas asignadas, cuando el usuario de clic sobre 
+                una de ellas se abrirá la ventana modal correspondiente para realizar la tarea, ejemplo:
+                cuando el receptor de clic sobre "Revisión" se abrirá la orden de compra en estado de edición para 
+                ser corregida, luego el usuario dara clic sobre el control llamado "Revisada", para que la tarea se establezca
+                como hecha actividad.estado_id = 4 (Resuelta).
+                    ... las tareas se estan abriendo ya finalizadas 
+                    ... el cursor no es acorde a cada tablero
                     
-
-                    ... las tareas se reparten cuando el operador pasa la solicitud al tablero "En progreso"
-                    ... asignar tareas al receptor
-                    ... asignar tareas al operador
-                    ... averiguar para que sirve esto @User.php#L51-73
-                    ... usuario_tarea no esta registrando las fechas de transacción
-                    ... en el origen del proceso si se puede saber quien es el usuario origen y destino, pero no en medio del proceso, habria que analizar como resolverlo
-                    ... en el controlador <recepcion.asignar> se asignará la copia de la solicitud y las tareas que corresponda segun el rol del usuario actual,
-                    es decir de quien arrastro la tarjeta -> recepcion-enprogreso
-
-                    ... agregar validación para cuando las tareas aun no hayan sido asignadas
-                    ... al parecer la frecuencia de actualizacion se ve intervenida en @RecepcionController.php#L208-209 
-
-                    ... La revision sucedería en el tablero de en progreso, cuando el usuario de clic sobre la 
-                    tarjeta/solicitud se abriran el sidebar con las tareas asignadas, cuando el usuario de clic sobre 
-                    una de ellas se abrirá la ventana modal correspondiente para realizar la tarea, ejemplo:
-                    cuando el receptor de clic sobre "Revisión" se abrirá la orden de compra en estado de edición para 
-                    ser corregida, luego el usuario dara clic sobre el control llamado "Revisada", para que la tarea se establezca
-                    como hecha actividad.estado_id = 4 (Resuelta).
+                    ... @solicitudes.blade.php#L574 : el codigo debe ser 4 y no debe estar quemado, sino que debe venir desde el controlador ya como variable
+                
+                ... en el origen del proceso si se puede saber quien es el usuario origen y destino, pero no en medio del proceso, habria que analizar como resolverlo
+                ... averiguar para que sirve esto @User.php#L51-73
+                ... al parecer la frecuencia de actualizacion se ve intervenida en @RecepcionController.php#L208-209 
+                ... usuario_tarea no esta registrando las fechas de transacción
 
         . Receptor:
             . Realiza y reporta las tareas asignadas: 
