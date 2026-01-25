@@ -421,7 +421,6 @@ class RecepcionController extends Controller
                     'recepcion_id'        => $actividad->recepcion_id,
                     'tarea'               => $actividad->tarea->tarea,
                     'estado'              => $actividad->estado->estado,
-                    'estado_id'           => $actividad->estado_id,
                     'actividad_id'        => $actividad->id,
                     'actividad_id_ripped' => KeyRipper::rip($actividad->id),
                 ];

@@ -66,7 +66,7 @@ class UserSeeder extends Seeder
         $role->givePermissionTo(['ver', 'crear', 'editar', 'asignar']);
 
         $role = Role::create(['name' => 'cliente']);
-        $role->givePermissionTo(['ver', 'crear', 'editar']);
+        $role->givePermissionTo(['ver', 'crear']);
 
         //SUPERADMINISTRADOR
         DB::table('users')->insert([

@@ -182,7 +182,7 @@
         }
         //INICIALIZAR KANBAN
         function initKanban() { // Inicializar el kanban
-            @can('asignar')
+            @can('editar')
                 const columnas = ['columna-recibidas', 'columna-progreso', 'columna-resueltas'];
                 columnas.forEach(function(columnaId) {
                     const elemento = document.getElementById(columnaId);
@@ -526,85 +526,77 @@
             });
         }
         //MOSTRAR TAREAS EN SIDEBAR
-        @can('asignar')
-            @if (auth()->user()->mainRole->name === 'operador')
-                $(document).on('click', '.solicitud-card', function() {
-                    const $card = $(this);
-                    const titulo = $card.find('.solicitud-titulo').text().trim();
-                    const atencionId = $card.data('atencion-id');
-                    const recepcionId = $card.data('recepcion-id');
-                    const atencionIdRipped = $card.find('.text-right div[style*="font-weight: 600"]').text().trim();
-                    $('#sidebar-card-title').text(atencionIdRipped + ' - ' + titulo).css('font-size', '1rem');
-                    $('#sidebar-card-body').empty();
-                    cargarTareas(recepcionId);
-                    $('.kanban-overlay').addClass('show');
-                    $('.kanban-sidebar').addClass('show');
-                    $('body').addClass('sidebar-open');
-                    limpiarClasesDrag();
-                });
-            @endif
-            function cargarTareas(recepcionId) {
-                $.ajax({
-                    url: '{{ route('recepcion.tareas', ['recepcion_id' => ':id']) }}'.replace(':id', recepcionId),
-                    type: 'GET',
-                    cache: true,
-                    success: function(response) {
-                        const tareas = response.tareas || [];
-                        dibujarTareas(tareas);
-                    },
-                    error: function(xhr, status, error) {
-                        $('#sidebar-card-body').append(
-                            '<div class="text-center text-muted py-3"><i class="bx bx-error-circle text-danger"></i><div class="mt-2">Error al cargar tareas</div></div>'
-                        );
-                    }
-                });
-            }
-            function dibujarTareas(tareas) {
-                if (tareas.length === 0) {
+        @if (in_array(auth()->user()->mainRole->name, ['operador', 'receptor']))
+            $(document).on('click', '.solicitud-card', function() {
+                const $card = $(this);
+                const titulo = $card.find('.solicitud-titulo').text().trim();
+                const atencionId = $card.data('atencion-id');
+                const recepcionId = $card.data('recepcion-id');
+                const atencionIdRipped = $card.find('.text-right div[style*="font-weight: 600"]').text().trim();
+                $('#sidebar-card-title').text(atencionIdRipped + ' - ' + titulo).css('font-size', '1rem');
+                $('#sidebar-card-body').empty();
+                cargarTareas(recepcionId);
+                $('.kanban-overlay').addClass('show');
+                $('.kanban-sidebar').addClass('show');
+                $('body').addClass('sidebar-open');
+                limpiarClasesDrag();
+            });
+        @endif
+        function cargarTareas(recepcionId) {
+            $.ajax({
+                url: '{{ route('recepcion.tareas', ['recepcion_id' => ':id']) }}'.replace(':id', recepcionId),
+                type: 'GET',
+                cache: true,
+                success: function(response) {
+                    const tareas = response.tareas || [];
+                    dibujarTareas(tareas);
+                },
+                error: function(xhr, status, error) {
                     $('#sidebar-card-body').append(
-                        '<div class="text-center text-muted py-3"><i class="bx bx-task text-muted"></i><div class="mt-2">Sin tareas asignadas</div></div>'
+                        '<div class="text-center text-muted py-3"><i class="bx bx-error-circle text-danger"></i><div class="mt-2">Error al cargar tareas</div></div>'
                     );
-                    return;
-                }
-                let tareasHtml = '<div><h6 class="font-weight-600 mb-2"></h6>';
-                tareas.forEach(function(tarea) {
-                    
-                    
-                    
-                    let esCompletada = tarea.estado_id == 3; ///el codigo debe ser 4 y no debe estar quemado
-
-
-
-                    let taskId = 'task_' + tarea.actividad_id;
-                    let htmlGenerado = `
-                    <div class="selectable-item ${esCompletada ? 'selected' : ''}" ${esCompletada ? 'style="pointer-events: none;"' : 'onclick="selectTask(\'' + taskId + '\')"'}">
-                        <div class="checkbox-indicator" id="checkbox_${tarea.actividad_id}" ${esCompletada ? 'style="background: none; border: none;"' : ''}>
-                            ${esCompletada ? '<i class="bx bx-check" style="color: #28a745; font-size: 2rem;"></i>' : ''}
-                        </div>
-                        <div class="item-body">
-                            <div class="item-info">
-                                <div class="item-name">${tarea.tarea}</div>
-                                <div class="item-desc">T-${tarea.actividad_id_ripped}</div>
-                            </div>
-                        </div>
-                        ${!esCompletada ? `<input type="checkbox" id="${taskId}" name="tarea_completada" value="${tarea.actividad_id}" style="display: none;">` : ''}
-                    </div>
-                    `;
-                    tareasHtml += htmlGenerado;
-                });
-                tareasHtml += '</div>';
-                $('#sidebar-card-body').append(tareasHtml);
-            }
-            function limpiarClasesDrag() {
-                $('.solicitud-card').removeClass('dragging sortable-drag sortable-chosen sortable-ghost');
-                $('.sortable-fallback').remove();
-            }
-            $(document).on('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    limpiarClasesDrag();
                 }
             });
-        @endcan
+        }
+        function dibujarTareas(tareas) {
+            if (tareas.length === 0) {
+                $('#sidebar-card-body').append(
+                    '<div class="text-center text-muted py-3"><i class="bx bx-task text-muted"></i><div class="mt-2">Sin tareas asignadas</div></div>'
+                );
+                return;
+            }
+            let tareasHtml = '<div><h6 class="font-weight-600 mb-2"></h6>';
+            tareas.forEach(function(tarea) {
+                let esCompletada = tarea.estado == 'Resuelta';
+                let taskId = 'task_' + tarea.actividad_id;
+                let htmlGenerado = `
+                <div class="selectable-item ${esCompletada ? 'selected' : ''}" ${esCompletada ? 'style="pointer-events: none;"' : 'onclick="selectTask(\'' + taskId + '\')"'}">
+                    <div class="checkbox-indicator" id="checkbox_${tarea.actividad_id}" ${esCompletada ? 'style="background: none; border: none;"' : ''}>
+                        ${esCompletada ? '<i class="bx bx-check" style="color: #28a745; font-size: 2rem;"></i>' : ''}
+                    </div>
+                    <div class="item-body">
+                        <div class="item-info">
+                            <div class="item-name">${tarea.tarea}</div>
+                            <div class="item-desc">T-${tarea.actividad_id_ripped}</div>
+                        </div>
+                    </div>
+                    ${!esCompletada ? `<input type="checkbox" id="${taskId}" name="tarea_completada" value="${tarea.actividad_id}" style="display: none;">` : ''}
+                </div>
+                `;
+                tareasHtml += htmlGenerado;
+            });
+            tareasHtml += '</div>';
+            $('#sidebar-card-body').append(tareasHtml);
+        }
+        function limpiarClasesDrag() {
+            $('.solicitud-card').removeClass('dragging sortable-drag sortable-chosen sortable-ghost');
+            $('.sortable-fallback').remove();
+        }
+        $(document).on('keydown', function(e) {
+            if (e.key === 'Escape') {
+                limpiarClasesDrag();
+            }
+        });
         //ACTUALIZAR EL ESTADO DE LA TAREA
         function selectTask(taskId) { // Función para seleccionar tareas
             const checkbox = document.getElementById(taskId); // Marcar/desmarcar el checkbox
