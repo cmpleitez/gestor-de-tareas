@@ -1,6 +1,10 @@
 /* =====================================
 ESTILOS PARA COMPONENTES DE SOLICITUDES
 ======================================== */
+.cliente-mode .solicitud-card {
+    cursor: default !important;
+}
+
 .btn i {
     position: relative;
     top: 1px;

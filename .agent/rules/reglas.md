@@ -23,14 +23,13 @@ trigger: always_on
     
     
 💡CONCEPIOS:
-    ✅Solicitud: está definida por la tabla "atenciones" y su transaccional hija "recepciones" especificamente por el campo "recepciones.atencion_id"; 
-    ✅Unidad de trabajo: La unidad general de trabajo es la solicitud y se almacena en la tabla "atenciones"
+    ✅Solicitud: está definida por la tabla "atenciones" y se dispersa atravez de sus tablas hijas: recepciones, actividades, ordenes de compra y detalles, visualmente aparecen en el kanban como tarjetas dinámicas que van cambiando entre tableros
+    ✅Los tableros representan los tres estados de la solicitud: Recibida, En progreso y Resuelta
+    ✅Las trazas o tracking son representadas por los nombres de las distintas tareas registradas: Solicitud, Revisión, Verificación física, Descarga del Stock y  
+    Entrega del producto
     ✅Usuario propietario: es quien esta referenciado desde el campo "recepciones.user_id_destino" hacia la tabla padre "users"; 
-    ✅Copia de la solicitud: esta definida por la tabla transaccional "recepciones" y su llave primaria "id"
+    ✅Copia de la solicitud: esta definida por la tabla "recepcion" y su llave primaria
     ✅Flujo de trabajo: los usuarios con distintos perfiles van remitiendo copias de la solicitud en el orden: 
-        recepcionista -> supervisor -> gestor -> equipo (en modo lote de trabajo) u operador (modo por unidad de trabajo)
-    ✅Impulsos: son los avances de usuario a usuario que suceden en la solicitud
-    ✅Tareas: son partes integrales de la solicitud las cuales son procesadas por el area operativa originando varios de los estados de avance.
-    ✅ beneficiario: el usuario que tenga este rol
-    ✅ usuario calificado: es aquel que tiene asignada la solicitud que está solicitando el beneficiario
-    ✅ Has tus pruebas aplicando la solución a un solo control para evitar arruinar el funcioamiento del resto
+      cliente -> receptor -> operador
+    ✅Impulsos: son los avances que realizan las solicitudes moviendose entre los tableros del kanban
+    ✅Tareas: son partes integrales de la solicitud las cuales son procesadas por las personas participantes

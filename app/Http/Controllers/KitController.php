@@ -124,7 +124,7 @@ class KitController extends Controller
 
     public function sincronizarProductos(Kit $kit, Request $request)
     {
-        try { 
+        try {
             DB::beginTransaction();
             $nombre_automatico = Parametro::findOrFail(2)->valor; // Nombre automático del Kit
             if ($nombre_automatico == '1') {

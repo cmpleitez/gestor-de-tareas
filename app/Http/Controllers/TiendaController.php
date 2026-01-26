@@ -40,9 +40,13 @@ class TiendaController extends Controller
         return view('modelos.kit.tienda', compact('kits'));
     }
 
-    public function carritoIndex()
+    public function carritoIndex(?Atencion $atencion = null)
     {
-        $atencion = Atencion::where('activo', false)
+        if (is_null($atencion)) {
+
+Log::info('null');
+
+            $atencion = Atencion::where('activo', false)
             ->where('oficina_id', auth()->user()->oficina_id)
             ->whereHas('recepciones', function ($query) {
                 $query->where('origen_user_id', auth()->user()->id);
@@ -50,16 +54,25 @@ class TiendaController extends Controller
             ->with([
                 'ordenes.kit',
                 'ordenes.detalle' => function ($query) {
-                    $query->orderBy('producto_id');
+                    $query->orderBy('created_at');
                 },
-                'ordenes.detalle.producto.kitProductos.equivalentes.producto'
+                'ordenes.detalle.producto.kitProductos.equivalentes.producto' // Equivalentes
             ])
             ->get();
-        if($atencion->isNotEmpty()){
-            $atencion_id_ripped = KeyRipper::rip($atencion->first()->id);
-        }else{
-            $atencion_id_ripped = null;
+        } else {
+
+Log::info('not null');
+
+            $atencion->load([
+                'ordenes.kit',
+                'ordenes.detalle' => function ($query) {
+                    $query->orderBy('created_at');
+                },
+                'ordenes.detalle.producto.kitProductos.equivalentes.producto' // Equivalentes
+            ]);
+            $atencion = collect([$atencion]);
         }
+        $atencion_id_ripped = KeyRipper::rip($atencion->first()->id);
         return view('modelos.kit.carrito', compact('atencion', 'atencion_id_ripped'));
     }
 

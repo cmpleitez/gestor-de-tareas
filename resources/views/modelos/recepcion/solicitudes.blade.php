@@ -5,6 +5,9 @@
     <link href="{{ asset('app-assets/css/bootstrap-extended.css') }}" rel="stylesheet">
     <link href="{{ asset('app-assets/css/pages/app-kanban.css') }}" rel="stylesheet">
     <link href="{{ asset('app-assets/css/solicitudes.css') }}" rel="stylesheet">
+    <style>
+
+    </style>
 @endsection
 
 @section('contenedor')
@@ -80,7 +83,7 @@
         </div>
     @endcan
     {{-- TABLEROS KANBAN --}}
-    <div class="row kanban-container" style="display: flex; align-items: stretch;">
+    <div class="row kanban-container {{ optional(auth()->user()->mainRole)->name === 'cliente' ? 'cliente-mode' : '' }}" style="display: flex; align-items: stretch;">
         <div class="col-md-4"> {{-- Recibidas --}}
             <div class="card border-0 overflow-hidden">
                 <div class="card-header"
@@ -182,7 +185,8 @@
         }
         //INICIALIZAR KANBAN
         function initKanban() { // Inicializar el kanban
-            @can('editar')
+            @php $esCliente = optional(auth()->user()->mainRole)->name === 'cliente'; @endphp
+            @if(auth()->user()->can('editar') && !$esCliente)
                 const columnas = ['columna-recibidas', 'columna-progreso', 'columna-resueltas'];
                 columnas.forEach(function(columnaId) {
                     const elemento = document.getElementById(columnaId);
@@ -204,7 +208,7 @@
                             if (columnaOrigen !== columnaDestino) {
                                 if (columnaOrigen !== 'columna-recibidas' || columnaDestino !==
                                     'columna-progreso') {
-                                    toastr.error('Movimiento no disponible');
+                                    toastr.warning('Movimiento reservado para el sistema');
                                     $(evt.from).append(evt
                                         .item); // Revertir la tarjeta a su posición original
                                     actualizarMensajeColumnaVacia
@@ -239,7 +243,7 @@
                         columnaId); // Solo crear columnas vacías sin funcionalidad de drag & drop
                     if (!elemento) return;
                 });
-            @endcan
+            @endif
         }
         //FUNCIONES PARA ORDENAMIENTO DE LAS TARJETAS
         function ordenarColumna(columnaId) {

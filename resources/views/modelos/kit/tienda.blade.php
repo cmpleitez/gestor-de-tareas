@@ -8,13 +8,16 @@
             </a>
         </div>
         <div class="col d-flex justify-content-center">
-            <spam style="font-size: 1rem;">... EL SALVADOR</spam>
+            <spam style="font-size: 1rem;">CATALOGO DE PRODUCTOS</spam>
         </div>
         <div class="col-auto d-flex justify-content-end">
-            <a href="{{ route('tienda.carrito') }}" class="text-primary-light position-relative" id="btn-carrito">
-                <i class="fas fa-cart-plus fa-2x"></i>
-                <span id="badge-carrito" class="badge-carrito-count d-none">0</span>
-            </a>
+            <form action="{{ route('tienda.carrito') }}" method="POST" class="d-inline">
+                @csrf
+                <button type="submit" class="btn btn-link text-primary-light position-relative p-0 border-0 align-baseline" id="btn-carrito" style="background: none;">
+                    <i class="fas fa-cart-plus fa-2x"></i>
+                    <span id="badge-carrito" class="badge-carrito-count d-none">0</span>
+                </button>
+            </form>
         </div>
     </div>
 @endsection

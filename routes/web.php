@@ -173,7 +173,7 @@ Route::middleware([
     Route::group(['middleware' => ['role:cliente']], function () {
         Route::group(['prefix' => 'tienda'], function () {
             Route::get('/', [TiendaController::class, 'index'])->name('tienda');
-            Route::get('carrito', [TiendaController::class, 'carritoIndex'])->name('tienda.carrito');
+            Route::post('carrito/{atencion?}', [TiendaController::class, 'carritoIndex'])->name('tienda.carrito');
             Route::post('carrito-enviar', [TiendaController::class, 'carritoEnviar'])->name('tienda.carrito-enviar');
             Route::get('movimiento', [TiendaController::class, 'createMovimiento'])->name('tienda.create-movimiento');
             Route::post('movimiento', [TiendaController::class, 'storeMovimiento'])->name('tienda.store-movimiento');

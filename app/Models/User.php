@@ -48,9 +48,6 @@ class User extends Authenticatable implements MustVerifyEmail
         return asset('app-assets/images/pages/operador.png');
     }
 
-    /**
-     * Sobrescribir el accessor de profile_photo_url para usar image_path
-     */
     public function getProfilePhotoUrlAttribute()
     {
         return $this->image_path
@@ -58,9 +55,6 @@ class User extends Authenticatable implements MustVerifyEmail
             : $this->defaultProfilePhotoUrl();
     }
 
-    /**
-     * Sobrescribir el método updateProfilePhoto del trait HasProfilePhoto para usar ImageWeightStabilizer
-     */
     public function updateProfilePhoto(\Illuminate\Http\UploadedFile $photo): void
     {
         $imageStabilizer = new \App\Services\ImageWeightStabilizer();
@@ -104,7 +98,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function tareas()
     {
-        return $this->belongsToMany(Tarea::class);
+        return $this->belongsToMany(Tarea::class)->withTimestamps();
     }
 
 }

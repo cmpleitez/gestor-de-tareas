@@ -31,20 +31,12 @@ CLIENTE:
         . Receptor: Ubica en el tablero de <recibidas> y selecciona la solicitud a revisar <copia solicitud receptor>, dando clic sobre ella
             . Sistema: Muestra en el <sidebar> el número de gestión y las tareas asignadas para dicha solicitud.
                 
-                ... La revision sucedería en el tablero de en progreso, cuando el usuario de clic sobre la 
-                tarjeta/solicitud se abriran el sidebar con las tareas asignadas, cuando el usuario de clic sobre 
-                una de ellas se abrirá la ventana modal correspondiente para realizar la tarea, ejemplo:
+                ... La revision sucedería en el tablero "en progreso", 
                 cuando el receptor de clic sobre "Revisión" se abrirá la orden de compra en estado de edición para 
                 ser corregida, luego el usuario dara clic sobre el control llamado "Revisada", para que la tarea se establezca
-                como hecha actividad.estado_id = 4 (Resuelta).
-                    ... las tareas se estan abriendo ya finalizadas 
-                    ... el cursor no es acorde a cada tablero
-                    
-                    ... @solicitudes.blade.php#L574 : el codigo debe ser 4 y no debe estar quemado, sino que debe venir desde el controlador ya como variable
+                como hecha: actividad.estado_id = 4 (Resuelta).
                 
                 ... en el origen del proceso si se puede saber quien es el usuario origen y destino, pero no en medio del proceso, habria que analizar como resolverlo
-                ... averiguar para que sirve esto @User.php#L51-73
-                ... al parecer la frecuencia de actualizacion se ve intervenida en @RecepcionController.php#L208-209 
                 ... usuario_tarea no esta registrando las fechas de transacción
 
         . Receptor:
