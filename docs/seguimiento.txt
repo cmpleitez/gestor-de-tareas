@@ -36,8 +36,9 @@ CLIENTE:
                 ser corregida, luego el usuario dara clic sobre el control llamado "Revisada", para que la tarea se establezca
                 como hecha: actividad.estado_id = 4 (Resuelta).
                 
-                ... en el origen del proceso si se puede saber quien es el usuario origen y destino, pero no en medio del proceso, habria que analizar como resolverlo
-                ... usuario_tarea no esta registrando las fechas de transacción
+                ... agregar un campo en la tabla tareas que se llama ruta y que sea un string, con la finalidad de hacer 
+                dinamica la forma en que se procesan las tareas, sin ese campo tendriamos que hardcorear las rutas en la vista
+
 
         . Receptor:
             . Realiza y reporta las tareas asignadas: 

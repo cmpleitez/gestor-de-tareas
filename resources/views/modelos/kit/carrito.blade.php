@@ -12,9 +12,16 @@
     @endphp
     <div class="row align-items-center flex-nowrap">
         <div class="col-auto d-flex justify-content-start">
-            <a href="{{ route('tienda') }}" class="btn btn-primary-light">
-                <i class="fas fa-arrow-left"></i>
-            </a>
+            @if(auth()->user()->mainRole->name == 'receptor')
+                <a href="javascript:history.back()" class="btn btn-primary-light">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+            @endif
+            @if(auth()->user()->mainRole->name == 'cliente')
+                <a href="{{ route('tienda') }}" class="btn btn-primary-light">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+            @endif
         </div>
         <div class="col d-flex justify-content-center">
             <span style="font-size: 1.5em;">ORDEN # {{ $atencion_id_ripped }}</span>
@@ -102,6 +109,7 @@
 @endpush
 
 @section('content')
+
 @php
     $currentAtencion = $atencion->first();
     $hasOrders = $currentAtencion && $currentAtencion->ordenes && $currentAtencion->ordenes->count() > 0;
@@ -115,9 +123,11 @@
             </div>
             <h3 class="text-muted fw-light">Aún no has agregado articulos al carrito</h3>
             <p class="text-muted mb-4">Explora nuestros productos.</p>
-            <a href="{{ route('tienda') }}" class="btn btn-primary btn-lg px-4 shadow-sm">
-                <i class="fas fa-store me-2"></i> Ir a la tienda
-            </a>
+            @if(auth()->user()->mainRole->name == 'cliente')
+                <a href="{{ route('tienda') }}" class="btn btn-primary btn-lg px-4 shadow-sm">
+                    <i class="fas fa-store me-2"></i> Ir a la tienda
+                </a>
+            @endif
         </div>
     </div>
 @else
@@ -259,9 +269,17 @@
 
         <div class="row mt-4">
             <div class="col-12 col-md-12 d-flex justify-content-end">
+            @if(auth()->user()->mainRole->name == 'cliente')
                 <button type="button" id="btnEnviarCarrito" class="btn btn-primary">
                     Enviar
                 </button>
+            @endif
+            @if(auth()->user()->mainRole->name == 'receptor')
+                <button type="button" id="darPorRevisado" class="btn btn-warning">
+                    Revisado
+                </button>
+            @endif
+
             </div>
         </div>
 

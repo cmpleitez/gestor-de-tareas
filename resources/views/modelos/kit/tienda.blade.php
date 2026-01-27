@@ -11,13 +11,10 @@
             <spam style="font-size: 1rem;">CATALOGO DE PRODUCTOS</spam>
         </div>
         <div class="col-auto d-flex justify-content-end">
-            <form action="{{ route('tienda.carrito') }}" method="POST" class="d-inline">
-                @csrf
-                <button type="submit" class="btn btn-link text-primary-light position-relative p-0 border-0 align-baseline" id="btn-carrito" style="background: none;">
-                    <i class="fas fa-cart-plus fa-2x"></i>
-                    <span id="badge-carrito" class="badge-carrito-count d-none">0</span>
-                </button>
-            </form>
+            <a href="{{ route('tienda.carrito') }}" class="btn btn-link text-primary-light position-relative p-0 border-0 align-baseline" id="btn-carrito" style="background: none;">
+                <i class="fas fa-cart-plus fa-2x"></i>
+                <span id="badge-carrito" class="badge-carrito-count d-none">0</span>
+            </a>
         </div>
     </div>
 @endsection

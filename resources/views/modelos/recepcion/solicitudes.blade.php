@@ -539,21 +539,21 @@
                 const atencionIdRipped = $card.find('.text-right div[style*="font-weight: 600"]').text().trim();
                 $('#sidebar-card-title').text(atencionIdRipped + ' - ' + titulo).css('font-size', '1rem');
                 $('#sidebar-card-body').empty();
-                cargarTareas(recepcionId);
+                cargarTareas(recepcionId, atencionId);
                 $('.kanban-overlay').addClass('show');
                 $('.kanban-sidebar').addClass('show');
                 $('body').addClass('sidebar-open');
                 limpiarClasesDrag();
             });
         @endif
-        function cargarTareas(recepcionId) {
+        function cargarTareas(recepcionId, atencionId) {
             $.ajax({
                 url: '{{ route('recepcion.tareas', ['recepcion_id' => ':id']) }}'.replace(':id', recepcionId),
                 type: 'GET',
                 cache: true,
                 success: function(response) {
                     const tareas = response.tareas || [];
-                    dibujarTareas(tareas);
+                    dibujarTareas(tareas, atencionId);
                 },
                 error: function(xhr, status, error) {
                     $('#sidebar-card-body').append(
@@ -562,7 +562,7 @@
                 }
             });
         }
-        function dibujarTareas(tareas) {
+        function dibujarTareas(tareas, atencionId) {
             if (tareas.length === 0) {
                 $('#sidebar-card-body').append(
                     '<div class="text-center text-muted py-3"><i class="bx bx-task text-muted"></i><div class="mt-2">Sin tareas asignadas</div></div>'
@@ -573,20 +573,32 @@
             tareas.forEach(function(tarea) {
                 let esCompletada = tarea.estado == 'Resuelta';
                 let taskId = 'task_' + tarea.actividad_id;
+                let formId = 'form_' + tarea.actividad_id;
+                
                 let htmlGenerado = `
-                <div class="selectable-item ${esCompletada ? 'selected' : ''}" ${esCompletada ? 'style="pointer-events: none;"' : 'onclick="selectTask(\'' + taskId + '\')"'}">
-                    <div class="checkbox-indicator" id="checkbox_${tarea.actividad_id}" ${esCompletada ? 'style="background: none; border: none;"' : ''}>
-                        ${esCompletada ? '<i class="bx bx-check" style="color: #28a745; font-size: 2rem;"></i>' : ''}
-                    </div>
-                    <div class="item-body">
-                        <div class="item-info">
-                            <div class="item-name">${tarea.tarea}</div>
-                            <div class="item-desc">T-${tarea.actividad_id_ripped}</div>
+                <div class="selectable-item ${esCompletada ? 'selected' : ''}" style="display: flex; align-items: center; padding: 10px;">
+                    <form id="${formId}" action="{{ route('tienda.carrito-editar') }}" method="POST" style="display: flex; align-items: center; flex: 1; margin: 0;">
+                        @csrf
+                        <input type="hidden" name="atencion_id" value="${atencionId}">
+                        <input type="checkbox" 
+                               id="${taskId}" 
+                               name="tarea_completada" 
+                               value="${tarea.actividad_id}" 
+                               ${esCompletada ? 'checked disabled' : ''}
+                               onclick="event.preventDefault(); if(!this.disabled) document.getElementById('${formId}').submit();"
+                               style="width: 20px; height: 20px; margin-right: 12px; cursor: ${esCompletada ? 'not-allowed' : 'pointer'};">
+                        <div class="item-body" style="flex: 1;">
+                            <div class="item-info">
+                                <div class="item-name">${tarea.tarea}</div>
+                                <div class="item-desc">T-${tarea.actividad_id_ripped}</div>
+                            </div>
                         </div>
-                    </div>
-                    ${!esCompletada ? `<input type="checkbox" id="${taskId}" name="tarea_completada" value="${tarea.actividad_id}" style="display: none;">` : ''}
+                    </form>
                 </div>
                 `;
+
+                
+
                 tareasHtml += htmlGenerado;
             });
             tareasHtml += '</div>';
@@ -602,6 +614,7 @@
             }
         });
         //ACTUALIZAR EL ESTADO DE LA TAREA
+        /*
         function selectTask(taskId) { // Función para seleccionar tareas
             const checkbox = document.getElementById(taskId); // Marcar/desmarcar el checkbox
             const visualCheckbox = document.querySelector(`[onclick="selectTask('${taskId}')"] .checkbox-indicator`);
@@ -696,6 +709,8 @@
                 });
             }
         }
+        */
+        
         //CERRAR SIDEBAR
         $(document).on('click', '.kanban-overlay, .kanban-sidebar .close-icon',
             function() {

@@ -170,10 +170,13 @@ Route::middleware([
     });
 
     //SERVICIOS
-    Route::group(['middleware' => ['role:cliente']], function () {
+    Route::group(['middleware' => ['role:cliente|receptor']], function () {
         Route::group(['prefix' => 'tienda'], function () {
             Route::get('/', [TiendaController::class, 'index'])->name('tienda');
-            Route::post('carrito/{atencion?}', [TiendaController::class, 'carritoIndex'])->name('tienda.carrito');
+            Route::get('carrito', [TiendaController::class, 'carritoIndex'])->name('tienda.carrito');
+            
+            Route::post('carrito-editar', [TiendaController::class, 'carritoEditar'])->name('tienda.carrito-editar');
+
             Route::post('carrito-enviar', [TiendaController::class, 'carritoEnviar'])->name('tienda.carrito-enviar');
             Route::get('movimiento', [TiendaController::class, 'createMovimiento'])->name('tienda.create-movimiento');
             Route::post('movimiento', [TiendaController::class, 'storeMovimiento'])->name('tienda.store-movimiento');
