@@ -33,7 +33,10 @@
     },
     "extensions": {
         "recommendations": [
-            "ms-vscode.vscode-json"
+            "ms-vscode.vscode-json",
+            "codingyu.laravel-goto-view",
+            "amirmarmul.laravel-blade-vscode",
+            "bmewburn.vscode-intelephense-client"
         ]
     }
 }
