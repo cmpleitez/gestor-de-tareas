@@ -574,31 +574,41 @@
                 let esCompletada = tarea.estado == 'Resuelta';
                 let taskId = 'task_' + tarea.actividad_id;
                 let formId = 'form_' + tarea.actividad_id;
-                
-                let htmlGenerado = `
-                <div class="selectable-item ${esCompletada ? 'selected' : ''}" style="display: flex; align-items: center; padding: 10px;">
-                    <form id="${formId}" action="{{ route('tienda.carrito-editar') }}" method="POST" style="display: flex; align-items: center; flex: 1; margin: 0;">
-                        @csrf
-                        <input type="hidden" name="atencion_id" value="${atencionId}">
-                        <input type="checkbox" 
-                               id="${taskId}" 
-                               name="tarea_completada" 
-                               value="${tarea.actividad_id}" 
-                               ${esCompletada ? 'checked disabled' : ''}
-                               onclick="event.preventDefault(); if(!this.disabled) document.getElementById('${formId}').submit();"
-                               style="width: 20px; height: 20px; margin-right: 12px; cursor: ${esCompletada ? 'not-allowed' : 'pointer'};">
-                        <div class="item-body" style="flex: 1;">
-                            <div class="item-info">
-                                <div class="item-name">${tarea.tarea}</div>
-                                <div class="item-desc">T-${tarea.actividad_id_ripped}</div>
-                            </div>
+                let formAction = '';
+                let ruta = '';
+                if (tarea.tarea === 'Revisión') {
+                    ruta = '{{ route("tienda.carrito-editar") }}';
+                } else if (tarea.tarea === 'Descarga de stock') {
+                    ruta = '{{ route("tienda.stock-salida") }}';
+                } else if (tarea.tarea === 'Entrega de productos') {
+                    ruta = '{{ route("tienda.atencion-cierre") }}';
+                } else {
+                    ruta = '{{ route("tienda.tarea-cierre") }}';
+                }
+                let htmlGenerado = '';
+                if (ruta) {
+                    htmlGenerado = `
+                        <div class="selectable-item ${esCompletada ? 'selected' : ''}" style="display: flex; align-items: center; padding: 10px;">
+                            <form id="${formId}" action="${ruta}" method="POST" style="display: flex; align-items: center; flex: 1; margin: 0;">
+                                @csrf
+                                <input type="hidden" name="atencion_id" value="${atencionId}">
+                                <input type="checkbox" 
+                                    id="${taskId}" 
+                                    name="tarea_completada" 
+                                    value="${tarea.actividad_id}" 
+                                    ${esCompletada ? 'checked disabled' : ''}
+                                    onclick="event.preventDefault(); if(!this.disabled) document.getElementById('${formId}').submit();"
+                                    style="width: 20px; height: 20px; margin-right: 12px; cursor: ${esCompletada ? 'not-allowed' : 'pointer'};">
+                                <div class="item-body" style="flex: 1;">
+                                    <div class="item-info">
+                                        <div class="item-name">${tarea.tarea}</div>
+                                        <div class="item-desc">T-${tarea.actividad_id_ripped}</div>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
-                    </form>
-                </div>
-                `;
-
-                
-
+                    `;                    
+                }
                 tareasHtml += htmlGenerado;
             });
             tareasHtml += '</div>';

@@ -174,8 +174,11 @@ Route::middleware([
         Route::group(['prefix' => 'tienda'], function () {
             Route::get('/', [TiendaController::class, 'index'])->name('tienda');
             Route::get('carrito', [TiendaController::class, 'carritoIndex'])->name('tienda.carrito');
-            
             Route::post('carrito-editar', [TiendaController::class, 'carritoEditar'])->name('tienda.carrito-editar');
+
+            Route::post('stock-salida', [TiendaController::class, 'stockSalida'])->name('tienda.stock-salida');
+            Route::post('atencion-cierre', [TiendaController::class, 'atencionCierre'])->name('tienda.atencion-cierre');
+            Route::post('tarea-cierre', [TiendaController::class, 'tareaCierre'])->name('tienda.tarea-cierre');
 
             Route::post('carrito-enviar', [TiendaController::class, 'carritoEnviar'])->name('tienda.carrito-enviar');
             Route::get('movimiento', [TiendaController::class, 'createMovimiento'])->name('tienda.create-movimiento');
@@ -185,6 +188,7 @@ Route::middleware([
             Route::get('agregar/{kit}', [TiendaController::class, 'agregarKit'])->name('tienda.agregar');
             Route::get('retirar', [TiendaController::class, 'retirar'])->name('tienda.retirar');
             Route::get('cantidad', [TiendaController::class, 'cantidad'])->name('tienda.cantidad');
+
         });
     });
 });

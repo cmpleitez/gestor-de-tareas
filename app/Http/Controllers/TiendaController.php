@@ -66,7 +66,6 @@ class TiendaController extends Controller
         ]);
     }
 
-
     public function carritoEditar(Request $request)
     {
         $atencion = Atencion::find($request->atencion_id);
@@ -83,7 +82,6 @@ class TiendaController extends Controller
             'atencion_id_ripped' => $atencion_id_ripped
         ]);        
     }
-
 
     public function carritoEnviar(Request $request)
     {
@@ -193,34 +191,17 @@ class TiendaController extends Controller
         }
     }
 
-    public function create()
+    public function stockSalida(Request $request)
     {
-        //
+        return 'stockSalida';
     }
 
-    public function store(Request $request)
-    {
-        //
+    public function atencionCierre(){
+        return 'atencionCierre';
     }
 
-    public function show(string $id)
-    {
-        //
-    }
-
-    public function edit(string $id)
-    {
-        //
-    }
-
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    public function destroy(string $id)
-    {
-        //
+    public function tareaCierre(){
+        return 'tareaCierre';
     }
 
     public function retirar(Kit $kit)

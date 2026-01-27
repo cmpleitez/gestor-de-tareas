@@ -39,7 +39,6 @@ CLIENTE:
                 ... agregar un campo en la tabla tareas que se llama ruta y que sea un string, con la finalidad de hacer 
                 dinamica la forma en que se procesan las tareas, sin ese campo tendriamos que hardcorear las rutas en la vista
 
-
         . Receptor:
             . Realiza y reporta las tareas asignadas: 
                 . Revisa y corrige la <orden de compra> 
