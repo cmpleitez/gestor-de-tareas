@@ -15,11 +15,10 @@ CLIENTE:
     🔵 Revelación del stock actual en tienda (stock bodega exclusivamente), solo mostrar la frase "Hay existencias" o "No hay existencias" 
     y cuando hayan menos o igual a 3 revelar la cantidad exacta disponible
 
-    🔵 Tablero "En progreso" del cliente debe llamarse "Pendiente de pago", retirarle el tracking a sus tarjetas, y retirarle los nombres de los participantes.
-
     🔵 En la confirmacion de stock físico: agregar un dato llamado "existencias" en el detalle de la orden para el reporte "Stock físico confirmado", 
     la orden de compra para el receptor y para el operador debe mostrar dicho campo indicando "Stock físico disponible" o "No hay existencias" en su caso.
 
+    🔵 Actualizar el nuevo tracking en la vista sidebar donde están las tareas
         
     🔵 Procedimiento: perfil cpleitez.2024@gmail.com https://miro.com/app/board/uXjVJy6iRzE=/
         ✨. Cliente: Entra a la <Tienda>, selecciona en el catálogo el kit y da clic en <agregar al carrito>

@@ -165,20 +165,26 @@ Route::middleware([
         Route::group(['prefix' => 'recepcion'], function () {
             Route::post('asignar/{recepcion}/{equipo}', [RecepcionController::class, 'asignar'])->name('recepcion.asignar');
             Route::get('tareas/{recepcion_id}', [RecepcionController::class, 'tareas'])->name('recepcion.tareas');
-            Route::post('reportar-tarea/{actividad_id}', [RecepcionController::class, 'reportarTarea'])->name('recepcion.reportar-tarea');
+            
+            
+            Route::post('confirmar-fisico', [RecepcionController::class, 'confirmarFisico'])->name('recepcion.confirmar-fisico');
+            Route::post('efectuar-pago', [RecepcionController::class, 'efectuarPago'])->name('recepcion.efectuar-pago');
+            Route::post('descargar-stock', [RecepcionController::class, 'descargarStock'])->name('recepcion.descargar-stock');
+            Route::post('efectuar-entrega', [RecepcionController::class, 'efectuarEntrega'])->name('recepcion.efectuar-entrega');
+
+
+
         });
     });
 
     //SERVICIOS
     Route::group(['middleware' => ['role:cliente|receptor']], function () {
         Route::group(['prefix' => 'tienda'], function () {
+
             Route::get('/', [TiendaController::class, 'index'])->name('tienda');
             Route::get('carrito', [TiendaController::class, 'carritoIndex'])->name('tienda.carrito');
             Route::post('carrito-editar', [TiendaController::class, 'carritoEditar'])->name('tienda.carrito-editar');
 
-            Route::post('stock-salida', [TiendaController::class, 'stockSalida'])->name('tienda.stock-salida');
-            Route::post('atencion-cierre', [TiendaController::class, 'atencionCierre'])->name('tienda.atencion-cierre');
-            Route::post('tarea-cierre', [TiendaController::class, 'tareaCierre'])->name('tienda.tarea-cierre');
 
             Route::post('carrito-enviar', [TiendaController::class, 'carritoEnviar'])->name('tienda.carrito-enviar');
             Route::get('movimiento', [TiendaController::class, 'createMovimiento'])->name('tienda.create-movimiento');

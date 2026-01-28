@@ -29,104 +29,6 @@ use Illuminate\Support\Facades\Log;
 
 class RecepcionController extends Controller
 {
-
-    public function parametros()
-    {
-        $parametros = Parametro::All();
-        return view('modelos.parametro.index', compact('parametros'));
-    }
-
-    public function parametrosEdit(Parametro $parametro)
-    {
-        return view('modelos.parametro.edit', compact('parametro'));
-    }
-
-    public function parametrosUpdate(Request $request, Parametro $parametro)
-    {
-        $validatedData = $request->validate([
-            'parametro'     => 'required|string|min:3|max:255|unique:parametros,parametro,' . $parametro->id,
-            'valor'         => 'required|string|min:1|max:255',
-            'unidad_medida' => 'required|string|min:3|max:255',
-        ]);
-        $parametro->parametro     = $validatedData['parametro']; 
-        $parametro->valor         = $validatedData['valor'];     
-        $parametro->unidad_medida = $validatedData['unidad_medida']; 
-        $parametro->save(); 
-        return redirect()->route('recepcion.parametros')->with('success', 'Parámetro actualizado correctamente');
-    }
-
-    public function parametrosActivate(Parametro $parametro)
-    {
-        $parametro->activo = ! $parametro->activo; // Guardado por unidad, no masivo
-        $parametro->save();
-        return redirect()->route('recepcion.parametros')->with('success', 'Parámetro actualizado correctamente');
-    }
-
-    private function obtenerUsuariosParticipantes($atencionIds)
-    {
-        $usuariosDestino = Recepcion::with(['usuarioDestino', 'role']) // Consulta separada para usuarios destino
-            ->whereIn('atencion_id', $atencionIds)
-            ->get()
-            ->map(function ($recepcion) {
-                return [
-                    'recepcion_id'        => $recepcion->id,
-                    'atencion_id'         => $recepcion->atencion_id,
-                    'name'                => $recepcion->usuarioDestino->name,
-                    'profile_photo_url'   => $recepcion->usuarioDestino->profile_photo_url,
-                    'recepcion_role_name' => $recepcion->role->name,
-                    'tipo'                => 'destino',
-                ];
-            });
-        $usuariosOrigen = Recepcion::with(['usuarioOrigen', 'role']) // Consulta separada para usuarios origen
-            ->whereIn('atencion_id', $atencionIds)
-            ->whereHas('role', function ($query) {
-                $query->where('name', 'Receptor');
-            })
-            ->get()
-            ->map(function ($recepcion) {
-                return [
-                    'recepcion_id'        => $recepcion->id,
-                    'atencion_id'         => $recepcion->atencion_id,
-                    'name'                => $recepcion->usuarioOrigen->name,
-                    'profile_photo_url'   => $recepcion->usuarioOrigen->profile_photo_url,
-                    'recepcion_role_name' => $recepcion->usuarioOrigen->mainRole->name,
-                    'tipo'                => 'origen',
-                ];
-            });
-        return $usuariosDestino->merge($usuariosOrigen) // Combinar y agrupar por atencion_id
-            ->groupBy('atencion_id')
-            ->map(function ($grupo) {
-                return $grupo->unique(function ($usuario) {
-                    return $usuario['recepcion_id'] . '_' . $usuario['tipo'];
-                })->values();
-            });
-    }
-
-    private function obtenerTraza($tarjeta)
-    {
-        $estado_resuelta_id = Estado::where('estado', 'Resuelta')->first()->id;
-        $actividades = Actividad::whereHas('recepcion', function ($query) use ($tarjeta) {
-            $query->where('atencion_id', $tarjeta->atencion_id);
-        })
-        ->with(['tarea', 'estado'])
-        ->get()
-        ->sortByDesc('updated_at');
-        if ($actividades->isEmpty()) {
-            $traza = 'Solicitada';
-        } else {
-            $todasResueltas = $actividades->every(function ($actividad) use ($estado_resuelta_id) {
-                return $actividad->estado_id == $estado_resuelta_id;
-            });
-            if ($todasResueltas) {
-                $traza = 'Resuelta';
-            } else {
-                $ultimaActividad = $actividades->first();
-                $traza           = $ultimaActividad->tarea->tarea;
-            }
-        }
-        return $traza;
-    }
-
     public function solicitudes()
     {
         try {
@@ -431,7 +333,63 @@ class RecepcionController extends Controller
         }
     }
 
-    public function reportarTarea(Request $request, $actividad_id)
+    public function parametros()
+    {
+        $parametros = Parametro::All();
+        return view('modelos.parametro.index', compact('parametros'));
+    }
+
+    public function parametrosEdit(Parametro $parametro)
+    {
+        return view('modelos.parametro.edit', compact('parametro'));
+    }
+
+    public function parametrosUpdate(Request $request, Parametro $parametro)
+    {
+        $validatedData = $request->validate([
+            'parametro'     => 'required|string|min:3|max:255|unique:parametros,parametro,' . $parametro->id,
+            'valor'         => 'required|string|min:1|max:255',
+            'unidad_medida' => 'required|string|min:3|max:255',
+        ]);
+        $parametro->parametro     = $validatedData['parametro']; 
+        $parametro->valor         = $validatedData['valor'];     
+        $parametro->unidad_medida = $validatedData['unidad_medida']; 
+        $parametro->save(); 
+        return redirect()->route('recepcion.parametros')->with('success', 'Parámetro actualizado correctamente');
+    }
+
+    public function parametrosActivate(Parametro $parametro)
+    {
+        $parametro->activo = ! $parametro->activo; // Guardado por unidad, no masivo
+        $parametro->save();
+        return redirect()->route('recepcion.parametros')->with('success', 'Parámetro actualizado correctamente');
+    }
+
+    public function confirmarFisico(Request $request)
+    {
+        return 'confirmarFisico';
+        //ejecutar la funcion privada: reportarTarea
+    }
+
+    public function efectuarPago(Request $request)
+    {
+        return 'efectuarPago';
+        //ejecutar la funcion privada: reportarTarea
+    }
+
+    public function descargarStock(Request $request)
+    {
+        return 'descargarStock';
+        //ejecutar la funcion privada: reportarTarea
+    }
+
+    public function efectuarEntrega(Request $request)
+    {
+        return 'efectuarEntrega';
+        //ejecutar la funcion privada: reportarTarea
+    }
+
+    private function reportarTarea(Request $request, $actividad_id)
     {
         try {
             DB::beginTransaction();
@@ -504,6 +462,71 @@ class RecepcionController extends Controller
                 'message' => 'Error al actualizar la tarea: ' . $e->getMessage(),
             ], 500);
         }
+    }
+
+    private function obtenerTraza($tarjeta)
+    {
+        $estado_resuelta_id = Estado::where('estado', 'Resuelta')->first()->id;
+        $actividades = Actividad::whereHas('recepcion', function ($query) use ($tarjeta) {
+            $query->where('atencion_id', $tarjeta->atencion_id);
+        })
+        ->with(['tarea', 'estado'])
+        ->get()
+        ->sortByDesc('updated_at');
+        if ($actividades->isEmpty()) {
+            $traza = 'Solicitada';
+        } else {
+            $todasResueltas = $actividades->every(function ($actividad) use ($estado_resuelta_id) {
+                return $actividad->estado_id == $estado_resuelta_id;
+            });
+            if ($todasResueltas) {
+                $traza = 'Resuelta';
+            } else {
+                $ultimaActividad = $actividades->first();
+                $traza           = $ultimaActividad->tarea->tarea;
+            }
+        }
+        return $traza;
+    }
+
+        private function obtenerUsuariosParticipantes($atencionIds)
+    {
+        $usuariosDestino = Recepcion::with(['usuarioDestino', 'role']) // Consulta separada para usuarios destino
+            ->whereIn('atencion_id', $atencionIds)
+            ->get()
+            ->map(function ($recepcion) {
+                return [
+                    'recepcion_id'        => $recepcion->id,
+                    'atencion_id'         => $recepcion->atencion_id,
+                    'name'                => $recepcion->usuarioDestino->name,
+                    'profile_photo_url'   => $recepcion->usuarioDestino->profile_photo_url,
+                    'recepcion_role_name' => $recepcion->role->name,
+                    'tipo'                => 'destino',
+                ];
+            });
+        $usuariosOrigen = Recepcion::with(['usuarioOrigen', 'role']) // Consulta separada para usuarios origen
+            ->whereIn('atencion_id', $atencionIds)
+            ->whereHas('role', function ($query) {
+                $query->where('name', 'Receptor');
+            })
+            ->get()
+            ->map(function ($recepcion) {
+                return [
+                    'recepcion_id'        => $recepcion->id,
+                    'atencion_id'         => $recepcion->atencion_id,
+                    'name'                => $recepcion->usuarioOrigen->name,
+                    'profile_photo_url'   => $recepcion->usuarioOrigen->profile_photo_url,
+                    'recepcion_role_name' => $recepcion->usuarioOrigen->mainRole->name,
+                    'tipo'                => 'origen',
+                ];
+            });
+        return $usuariosDestino->merge($usuariosOrigen) // Combinar y agrupar por atencion_id
+            ->groupBy('atencion_id')
+            ->map(function ($grupo) {
+                return $grupo->unique(function ($usuario) {
+                    return $usuario['recepcion_id'] . '_' . $usuario['tipo'];
+                })->values();
+            });
     }
 
 }

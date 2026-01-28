@@ -191,18 +191,7 @@ class TiendaController extends Controller
         }
     }
 
-    public function stockSalida(Request $request)
-    {
-        return 'stockSalida';
-    }
 
-    public function atencionCierre(){
-        return 'atencionCierre';
-    }
-
-    public function tareaCierre(){
-        return 'tareaCierre';
-    }
 
     public function retirar(Kit $kit)
     {

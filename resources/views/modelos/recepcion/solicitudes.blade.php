@@ -336,13 +336,17 @@
                         <div style="font-size: 0.6rem; color: #6c757d;">${tarjeta.fecha_relativa}</div>
                     </div>
                 </div>
-                <div class="solicitud-estado" style="font-size: 11px; color: ${estadoColor}; margin-top: 5px;">
-                    ${tarjeta.traza}
-                </div>
+                @if(auth()->user()->mainRole->name != 'cliente')
+                    <div class="solicitud-estado" style="font-size: 11px; color: ${estadoColor}; margin-top: 5px;">
+                        ${tarjeta.traza}
+                    </div>
+                @endif
                 <div class="progress-divider" data-atencion-id="${tarjeta.atencion_id}" data-avance="${tarjeta.porcentaje_progreso}"></div>
-                <div class="users-container" style="display: flex; align-items: center; justify-content: end; margin-top: 8px; padding-top: 6px;">
-                    ${usersHtml}
-                </div>
+                @if(auth()->user()->mainRole->name != 'cliente')
+                    <div class="users-container" style="display: flex; align-items: center; justify-content: end; margin-top: 8px; padding-top: 6px;">
+                        ${usersHtml}
+                    </div>
+                @endif
             </div>`;
         }
         function obtenerAtencionIdsExistentes() {
@@ -582,15 +586,18 @@
                 let formId = 'form_' + tarea.actividad_id;
                 let formAction = '';
                 let ruta = '';
-                if (tarea.tarea === 'Revisión') {
+                if (tarea.tarea === 'Orden de compra revisada') { //Definiendo las tareas del tracking
                     ruta = '{{ route("tienda.carrito-editar") }}';
-                } else if (tarea.tarea === 'Descarga de stock') {
-                    ruta = '{{ route("tienda.stock-salida") }}';
-                } else if (tarea.tarea === 'Entrega de productos') {
-                    ruta = '{{ route("tienda.atencion-cierre") }}';
-                } else {
-                    ruta = '{{ route("tienda.tarea-cierre") }}';
+                } else if (tarea.tarea === 'Stock físico confirmado') {
+                    ruta = '{{ route("recepcion.confirmar-fisico") }}';
+                } else if (tarea.tarea === 'Pago efectuado') {
+                    ruta = '{{ route("recepcion.efectuar-pago") }}';
+                } else if (tarea.tarea === 'Stock descargado') {
+                    ruta = '{{ route("recepcion.descargar-stock") }}';
+                } else if (tarea.tarea === 'Entrega efectuada') {
+                    ruta = '{{ route("recepcion.efectuar-entrega") }}';
                 }
+
                 let htmlGenerado = '';
                 if (ruta) {
                     htmlGenerado = `
@@ -599,7 +606,7 @@
                                 @csrf
                                 <input type="hidden" name="atencion_id" value="${atencionId}">
                                 <input type="checkbox" 
-                                    id="${taskId}" 
+                                    id="${taskId}"
                                     name="tarea_completada" 
                                     value="${tarea.actividad_id}" 
                                     ${esCompletada ? 'checked disabled' : ''}
@@ -629,103 +636,6 @@
                 limpiarClasesDrag();
             }
         });
-        //ACTUALIZAR EL ESTADO DE LA TAREA
-        /*
-        function selectTask(taskId) { // Función para seleccionar tareas
-            const checkbox = document.getElementById(taskId); // Marcar/desmarcar el checkbox
-            const visualCheckbox = document.querySelector(`[onclick="selectTask('${taskId}')"] .checkbox-indicator`);
-            const selectableItem = document.querySelector(`[onclick="selectTask('${taskId}')"]`);
-            if (checkbox && visualCheckbox && selectableItem) {
-                checkbox.checked = !checkbox.checked;
-                if (checkbox.checked) {
-                    visualCheckbox.classList.add('checked');
-                    selectableItem.classList.add('selected');
-                } else {
-                    visualCheckbox.classList.remove('checked');
-                    selectableItem.classList.remove('selected');
-                }
-                const actividadId = taskId.replace('task_', ''); // AJAX para actualizar estado
-                const nuevoEstado = checkbox.checked ? 'Resuelta' : 'En progreso';
-                $.ajax({
-                    url: '{{ route('recepcion.reportar-tarea', [':id']) }}'.replace(':id', actividadId),
-                    method: 'POST',
-                    data: {
-                        _token: $('meta[name="csrf-token"]').attr('content'),
-                        estado: nuevoEstado
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            const tarjeta = $(
-                                `.solicitud-card[data-recepcion-id="${response.recepcion_id}"]`
-                            ); // Actualizar la traza en la tarjeta
-                            if (tarjeta.length > 0 && response.traza) {
-                                tarjeta.find('.solicitud-estado').text(response.traza);
-                            }
-                            updateProgressByPercentage(response.atencion_id, response.progreso.porcentaje);
-                            if (response.todas_resueltas && response
-                                .solicitud_actualizada) { // Verificar si todas las tareas están resueltas
-                                const tarjeta = $(
-                                    `.solicitud-card[data-recepcion-id="${response.recepcion_id}"]`
-                                ); // Mover la tarjeta al tablero de resueltas
-                                if (tarjeta.length > 0) {
-                                    // Actualizar estilos usando la función auxiliar
-                                    actualizarEstilosTarjeta(tarjeta, 3);
-                                    tarjeta.attr('data-recepcion-estado-id', 3);
-                                    $('#columna-resueltas').append(tarjeta);
-                                    actualizarContadores();
-                                    Swal.fire({
-                                        position: 'top-end',
-                                        type: 'success',
-                                        title: '¡Se completaron todas las tareas! Solicitud movida a Resueltas',
-                                        showConfirmButton: false,
-                                        timer: 3000,
-                                        confirmButtonClass: 'btn btn-primary',
-                                        buttonsStyling: false
-                                    });
-                                }
-                            } else {
-                                Swal.fire({
-                                    position: 'top-end',
-                                    type: 'success',
-                                    title: 'Tarea ' + String(actividadId).slice(-4) +
-                                        ' se reportó como ' + nuevoEstado,
-                                    showConfirmButton: false,
-                                    timer: 500,
-                                    confirmButtonClass: 'btn btn-primary',
-                                    buttonsStyling: false
-                                });
-                            }
-                        } else {
-                            Swal.fire({
-                                position: 'top-end',
-                                type: 'error',
-                                title: response.message,
-                                showConfirmButton: true,
-                                timer: 60000,
-                                confirmButtonClass: 'btn btn-danger',
-                                buttonsStyling: false
-                            });
-                        }
-                    },
-                    error: function(xhr) {
-                        let mensaje = 'Error desconocido';
-                        if (xhr.responseJSON && xhr.responseJSON.message) {
-                            mensaje = xhr.responseJSON.message;
-                        }
-                        Swal.fire({
-                            position: 'top-end',
-                            type: 'error',
-                            title: mensaje,
-                            showConfirmButton: true,
-                            timer: 60000,
-                            confirmButtonClass: 'btn btn-danger',
-                            buttonsStyling: false
-                        });
-                    }
-                });
-            }
-        }
-        */
         
         //CERRAR SIDEBAR
         $(document).on('click', '.kanban-overlay, .kanban-sidebar .close-icon',
