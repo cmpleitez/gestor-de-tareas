@@ -8,8 +8,19 @@ PAUTAS:
         456789012
     🟠 Cada usuario de la app participante en el procedimiento, tendrá una copia de la solicitud u orden de compra
 CLIENTE:
-    🔵 El receptor debe definir la orden como compra o como reserva según la consulta del stock
-    
+
+    🔵 Los precios de los productos inciden en el precio del kit en la orden de compra, el precio del kit es el resultado de sumar los precios de sus productos, 
+    cuando un producto cambie por su equivalente es posible que varíe el total general.
+
+    🔵 Revelación del stock actual en tienda (stock bodega exclusivamente), solo mostrar la frase "Hay existencias" o "No hay existencias" 
+    y cuando hayan menos o igual a 3 revelar la cantidad exacta disponible
+
+    🔵 Tablero "En progreso" del cliente debe llamarse "Pendiente de pago", retirarle el tracking a sus tarjetas, y retirarle los nombres de los participantes.
+
+    🔵 En la confirmacion de stock físico: agregar un dato llamado "existencias" en el detalle de la orden para el reporte "Stock físico confirmado", 
+    la orden de compra para el receptor y para el operador debe mostrar dicho campo indicando "Stock físico disponible" o "No hay existencias" en su caso.
+
+        
     🔵 Procedimiento: perfil cpleitez.2024@gmail.com https://miro.com/app/board/uXjVJy6iRzE=/
         ✨. Cliente: Entra a la <Tienda>, selecciona en el catálogo el kit y da clic en <agregar al carrito>
             . Sistema: En respuesta al cliente (<recepcion.user_id_origen>), crea el registro de <Atención>, el detalle de la <Atencion>, 

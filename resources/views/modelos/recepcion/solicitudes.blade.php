@@ -113,7 +113,13 @@
                         <div class="mr-2">
                             <i class="bx bx-time-five text-white" style="font-size: 0.9rem;"></i>
                         </div>
-                        <h6 class="mb-0 text-white font-weight-600" style="font-size: 0.9rem;">En Progreso</h6>
+                        <h6 class="mb-0 text-white font-weight-600" style="font-size: 0.9rem;">
+                        @if(auth()->user()->mainRole->name == 'cliente')
+                            Pendientes de pago
+                        @else
+                            En Progreso
+                        @endif
+                        </h6>
                         <span class="badge badge-white ml-auto text-dark"
                             id="contador-progreso">{{ count($progreso) }}</span>
                     </div>
