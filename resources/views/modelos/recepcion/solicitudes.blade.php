@@ -620,7 +620,7 @@
                                 </div>
                             </form>
                         </div>
-                    `;                    
+                    `;
                 }
                 tareasHtml += htmlGenerado;
             });
