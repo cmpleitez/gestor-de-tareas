@@ -84,7 +84,7 @@
         aria-hidden="true" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
             <div class="modal-content">
-                <form id="formMovimiento" action="{{ route('tienda.store-movimiento') }}" method="POST" novalidate>
+                <form id="formMovimiento" action="{{ route('tienda.store-stock') }}" method="POST" novalidate>
                     @csrf
                     <div class="d-flex flex-column h-100">
                         <input type="hidden" name="producto_id" id="producto_id" value="{{ old('producto_id') }}">

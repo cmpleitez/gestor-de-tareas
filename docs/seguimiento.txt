@@ -17,6 +17,13 @@ CLIENTE:
 
     🔵 En la confirmacion de stock físico: agregar un dato llamado "existencias" en el detalle de la orden para el reporte "Stock físico confirmado", 
     la orden de compra para el receptor y para el operador debe mostrar dicho campo indicando "Stock físico disponible" o "No hay existencias" en su caso.
+        ...modificar el editor de la orden de compra
+
+    ...🔵 El cliente al dar clic sobre cualquier tarjeta podría ver la orden de compra en estado de lectura
+        ...construir el metodo de eliminación de items dentro del kit: en realidad se elimina el registro de la tabla detalles
+        ...construir el metodo de eliminación de kits dentro de la orden de compra: en realidad se elimina el registro de la tabla ordenes y sus registros hijos en la tabla detalles.
+        ...maquetar filas de items en los kits
+        ...tratar de sacar el control de eliminar items del scrolldown para que no tenga doble efecto
 
     🔵 Actualizar el nuevo tracking en la vista sidebar donde están las tareas
         

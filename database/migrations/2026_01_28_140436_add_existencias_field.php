@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('detalles', function (Blueprint $table) {
-            $table->boolean('stock_fisico_existencias')->default(false)->after('precio');
+            $table->boolean('stock_fisico_existencias')->nullable()->default(null)->after('precio');
         });
     }
 

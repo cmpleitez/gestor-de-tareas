@@ -179,7 +179,7 @@
                 toastr.error("{{ Session::get('danger') }}");
             @endif
             $.ajax({
-                url: '{{ route("tienda.cantidad") }}'
+                url: '{{ route("tienda.kit-cantidad") }}'
                 , type: 'GET'
                 , dataType: 'json'
                 , success: function(response) {

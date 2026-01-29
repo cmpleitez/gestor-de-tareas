@@ -11,6 +11,7 @@ class Detalle extends Model
     protected $keyType = 'string';
     protected $casts = [
         'activo' => 'boolean',
+        'stock_fisico_existencias' => 'boolean',
     ];
 
     public function orden()

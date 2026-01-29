@@ -377,7 +377,6 @@
                     }
                 }).attr('data-popover-initialized', 'true');
         }
-        
         //ACTUALIZAR EL MOVIMIENTO DE LA TARJETA, TANTO EN EL BACKEND Y COMO EN EL FRONTEND
         function updatePosition(solicitudId, nuevaColumna, evt) {
             let nuevoEstadoId = 1; //Iniciando parametros

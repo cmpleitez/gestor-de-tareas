@@ -67,6 +67,14 @@
   --text-warning-dark: var(--color-warning-dark);
   --text-danger-dark: var(--color-danger-dark);
 
+  /* Colores regulares de texto */
+  --text-primary: var(--color-primary);
+  --text-secondary: var(--color-secondary);
+  --text-success: var(--color-success);
+  --text-info: var(--color-info);
+  --text-warning: var(--color-warning);
+  --text-danger: var(--color-danger);
+
   /* Colores específicos para texto light (Centralizados) */
   --text-primary-light: var(--color-primary-light);
   --text-secondary-light: var(--color-secondary-light);

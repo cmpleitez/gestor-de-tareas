@@ -97,6 +97,16 @@
     .btn-scale-hover {
         transition: transform 0.2s ease;
     }
+
+    [id^="btn_retirar_"] {
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    [id^="btn_retirar_"]:hover {
+        transform: scale(1.1);
+        filter: brightness(0.8);
+    }
     
     .btn-scale-hover:hover {
         transform: scale(1.2);
@@ -155,13 +165,24 @@
                                             <div class="accordion-item">
                                                 <h2 class="accordion-header" id="{{ $detHeadingId }}">
                                                     <button class="accordion-button collapsed d-flex justify-content-start text-start" style="padding: 0.5em; font-size: 0.8rem;" type="button" data-bs-toggle="collapse" data-bs-target="#{{ $detCollapseId }}" aria-expanded="false" aria-controls="{{ $detCollapseId }}">
-                                                        <a href="#" role="button"
-                                                            data-html="true"
-                                                            data-placement="bottom"
-                                                            class="btn btn-scale-hover align-center text-danger-dark">
-                                                            <i class="fas fa-trash" style="font-size: 0.85rem;"></i>
-                                                        </a>
-                                                        <span class="badge bg-secondary me-2">{{ $detalle->unidades }}</span>
+                                                        @role('cliente|receptor')
+                                                            <i id="btn_retirar_{{ $detalle->orden_id }}_{{ $detalle->kit_id }}_{{ $detalle->producto_id }}"
+                                                                class="fas fa-trash text-danger-dark" 
+                                                                onclick="retirarProductoAJAX(this)"
+                                                                data-orden-id="{{ $detalle->orden_id }}"
+                                                                data-kit-id="{{ $detalle->kit_id }}"
+                                                                data-producto-id="{{ $detalle->producto_id }}"
+                                                                data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="Eliminar producto">
+                                                            </i>
+                                                        @endrole
+                                                        @if($detalle->stock_fisico_existencias === true)
+                                                            <span class="text-primary-dark me-2">Existencias físicas verificadas</span>
+                                                        @elseif($detalle->stock_fisico_existencias === false)
+                                                            <span class="text-warning-dark me-2">Físicamente no hay existencias</span>
+                                                        @elseif($detalle->stock_fisico_existencias === null)
+                                                            <span class="text-info-dark me-2">Stock físico pendiente de verificar</span>
+                                                        @endif
+                                                        <span class="text-secondary me-2">{{ $detalle->unidades }}</span>
                                                         <span id="badgeId_{{ $detAccordionId }}" class="badge bg-secondary-dark me-2">{{ $detalle->producto_id }}</span>
                                                         <span id="productName_{{ $detAccordionId }}">{{ $detalle->producto->producto }}</span>
                                                         <input type="hidden" id="productId_{{ $detAccordionId }}" value="{{ $detalle->producto_id }}">
@@ -409,7 +430,45 @@
             }).format(totalGlobal);
             $('#total-global').text(formattedTotal);
         });
+
     });
+
+    // Retirar producto vía AJAX identificado por ID
+    function retirarProductoAJAX(elemento) {
+        const btn = $(elemento);
+        const elementoId = elemento.id; // Referencia al ID solicitada
+        const ordenId = btn.data('orden-id');
+        const kitId = btn.data('kit-id');
+        const productoId = btn.data('producto-id');
+        const accordionItem = btn.closest('.accordion-item');
+        $.ajax({
+            url: '{{ route("tienda.retirar-producto") }}',
+            method: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                orden_id: ordenId,
+                kit_id: kitId,
+                producto_id: productoId
+            },
+            success: function(response) {
+                if (response.success) {
+                    toastr.success(response.message);
+                    // Efecto visual y eliminación del DOM usando el ID del elemento
+                    accordionItem.fadeOut(400, function() {
+                        $(this).remove();
+                        // Recalcular totales después de eliminar
+                        $('.input-unidades').first().trigger('input');
+                    });
+                } else {
+                    toastr.error(response.message);
+                }
+            },
+            error: function(xhr) {
+                const errorMsg = xhr.responseJSON ? xhr.responseJSON.message : 'Error al retirar el producto';
+                toastr.error(errorMsg);
+            }
+        });
+    }
     function updateProductName(radio) { // Update product name and ID in specific elements
         const productName = radio.getAttribute('data-product-name');
         const targetSelector = radio.getAttribute('data-name-target');

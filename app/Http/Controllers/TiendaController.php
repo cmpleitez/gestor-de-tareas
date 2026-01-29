@@ -80,7 +80,7 @@ class TiendaController extends Controller
         return view('modelos.kit.carrito', [
             'atencion' => $atencion,
             'atencion_id_ripped' => $atencion_id_ripped
-        ]);        
+        ]);   
     }
 
     public function carritoEnviar(Request $request)
@@ -191,9 +191,7 @@ class TiendaController extends Controller
         }
     }
 
-
-
-    public function retirar(Kit $kit)
+    public function retirarKit(Kit $kit)
     {
         return back()->with('error', 'La operación de retirada no está disponible en este momento');
     }
@@ -282,14 +280,36 @@ class TiendaController extends Controller
         }
     }
 
-    public function createMovimiento()
+    public function retirarProducto(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+            $eliminado = DB::table('detalles')
+                ->where('orden_id', $request->orden_id)
+                ->where('kit_id', $request->kit_id)
+                ->where('producto_id', $request->producto_id)
+                ->delete();
+
+            if ($eliminado) {
+                DB::commit();
+                return response()->json(['success' => true, 'message' => 'Producto retirado del carrito']);
+            }
+
+            throw new Exception('No se encontró el producto especificado');
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function createStock()
     {
         $stocks = Stock::where('activo', true)->get();
         $productos = Producto::where('activo', true)->with('modelo', 'tipo')->get();
         return view('modelos.producto.movimiento', compact('productos', 'stocks'));
     }
 
-    public function storeMovimiento(Request $request)
+    public function storeStock(Request $request)
     {
         //PREESTABLECIMIENTOS
         $request->merge([ //Limpiando máscara de entrada
@@ -414,7 +434,7 @@ class TiendaController extends Controller
         ]);
     }
 
-    public function cantidad()
+    public function kitCantidad()
     {
         $kitsUnicos = Orden::whereNotNull('kit_id')
             ->whereHas('atencion', function ($query1) {

@@ -14,12 +14,12 @@ trigger: always_on
 9. Cuando yo te diga la frase clave "Iniciemos una configuración", preguntame en que idioma necesito los nombres de las opciones, las distintas herramientas que se configuran a veces están en español y la mayoria de veces en inglés.
 10. Nunca agregues datos hardcoreados en el frontend, los datos de pueba tendrán origen en los seeders, lo cual indica que los datos se leerán siempre de las tablas de la base de datos.
 11. Cuando vayas a crear un archivo, metodo, funcion o similar nuevo(a) o eliminar uno existente debes pedirme confirmación.
-12. Cuando te diga "Has una Prueba basica", lo que tu debes hacer es: verificar que la ruta existe y funciona, verificar que el controlador este enviando los datos, verificar que la vista está recibiendo los datos, verificar que se estén dibujando bien los datos, verificar el laravel.log en caso de errores
-13. Consulta siempre que necesites cambiar algo que no te he pedido expresamente en el chat, sigue las reglas del proyecto, nunca actues independientemente sin pedir mi confirmación
-14. No sigas otras reglas que no sean las reglas del proyecto, cuando necesites seguir reglas externas pídeme confirmación
-15. Cuando hayan comandos "Return" o "dd" en el codigo no lo tomes como error, porque lo he escrito yo para depurar, cuando te pida "pruebalo" entonces pideme que los retire en el caso que no los haya retirado.
-16. No modifiques código cuando no te lo he pedido expresa y directamente
-17. Respóndeme siempre en español
+12. Consulta siempre que necesites cambiar algo que no te he pedido expresamente en el chat, sigue las reglas del proyecto, nunca actues independientemente sin pedir mi confirmación
+13. No sigas otras reglas que no sean las reglas del proyecto, cuando necesites seguir reglas externas pídeme confirmación
+14. Cuando hayan comandos "Return" o "dd" en el codigo no lo tomes como error, porque lo he escrito yo para depurar, cuando te pida "pruebalo" entonces pideme que los retire en el caso que no los haya retirado.
+15. No modifiques código cuando no te lo he pedido expresa y directamente
+16. Respóndeme siempre en español
+17. No realices pruebas proactivas: Nunca ejecutes herramientas de navegación o pruebas automáticas por cuenta propia. Entra en fase de VERIFICACIÓN únicamente para documentar el trabajo realizado o cuando yo utilice explícitamente las frases clave de las reglas 1.
     
     
 💡CONCEPIOS:

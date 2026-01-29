@@ -177,23 +177,23 @@ Route::middleware([
         });
     });
 
-    //SERVICIOS
+    //TIENDA
     Route::group(['middleware' => ['role:cliente|receptor']], function () {
         Route::group(['prefix' => 'tienda'], function () {
 
             Route::get('/', [TiendaController::class, 'index'])->name('tienda');
             Route::get('carrito', [TiendaController::class, 'carritoIndex'])->name('tienda.carrito');
             Route::post('carrito-editar', [TiendaController::class, 'carritoEditar'])->name('tienda.carrito-editar');
-
-
             Route::post('carrito-enviar', [TiendaController::class, 'carritoEnviar'])->name('tienda.carrito-enviar');
-            Route::get('movimiento', [TiendaController::class, 'createMovimiento'])->name('tienda.create-movimiento');
-            Route::post('movimiento', [TiendaController::class, 'storeMovimiento'])->name('tienda.store-movimiento');
+            Route::get('stock', [TiendaController::class, 'createStock'])->name('tienda.create-stock');
+            Route::post('stock', [TiendaController::class, 'storeStock'])->name('tienda.store-stock');
             Route::get('get-stocks-producto/{productoId}', [TiendaController::class, 'getStocksProducto'])->name('tienda.get-stocks-producto');
             Route::post('get-kit-productos', [TiendaController::class, 'getKitProductos'])->name('tienda.get-kit-productos');
-            Route::get('agregar/{kit}', [TiendaController::class, 'agregarKit'])->name('tienda.agregar');
-            Route::get('retirar', [TiendaController::class, 'retirar'])->name('tienda.retirar');
-            Route::get('cantidad', [TiendaController::class, 'cantidad'])->name('tienda.cantidad');
+            Route::get('agregar-kit/{kit}', [TiendaController::class, 'agregarKit'])->name('tienda.agregar-kit');
+            Route::get('retirar-kit/{kit}', [TiendaController::class, 'retirarKit'])->name('tienda.retirar-kit');
+            Route::post('retirar-producto', [TiendaController::class, 'retirarProducto'])->name('tienda.retirar-producto');
+            Route::get('kit-cantidad', [TiendaController::class, 'kitCantidad'])->name('tienda.kit-cantidad');
+            
 
         });
     });
