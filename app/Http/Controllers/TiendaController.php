@@ -78,9 +78,9 @@ class TiendaController extends Controller
         ]);
         $atencion_id_ripped = KeyRipper::rip($atencion->id); //cuando es nuevo no tiene id, no hay productos en el carrito
         return view('modelos.kit.carrito', [
-            'atencion' => $atencion,
+            'atencion' => collect([$atencion]),
             'atencion_id_ripped' => $atencion_id_ripped
-        ]);   
+        ]);
     }
 
     public function carritoEnviar(Request $request)
@@ -280,8 +280,17 @@ class TiendaController extends Controller
         }
     }
 
-    public function retirarProducto(Request $request)
+    public function retirarItem(Request $request)
     {
+        if (auth()->user()->mainRole->name !== 'cliente') {
+            $orden = Orden::with('atencion.ordenes')->find($request->orden_id);
+            if ($orden && $orden->detalle()->count() === 1 && $orden->atencion->ordenes->count() === 1) {
+                return response()->json([
+                    'success' => false, 
+                    'message' => 'No puedes vaciar el carrito completamente. Ya que provocarías una inconsistencia, la solicitud quedaría vacía, sin posibilidades de ser resuelta, por tanto quedaría permanentemente en los tableros de trabajo.'
+                ], 422);
+            }
+        }
         try {
             DB::beginTransaction();
             $eliminado = DB::table('detalles')
@@ -291,10 +300,20 @@ class TiendaController extends Controller
                 ->delete();
 
             if ($eliminado) {
+                $orden = Orden::find($request->orden_id);
+                $ordenVacia = false;
+                if ($orden && $orden->detalle()->count() === 0) {
+                    $orden->delete();
+                    $ordenVacia = true;
+                }
+                
                 DB::commit();
-                return response()->json(['success' => true, 'message' => 'Producto retirado del carrito']);
+                return response()->json([
+                    'success' => true, 
+                    'message' => 'Se retiró el item',
+                    'orden_vacia' => $ordenVacia
+                ]);
             }
-
             throw new Exception('No se encontró el producto especificado');
         } catch (Exception $e) {
             DB::rollBack();

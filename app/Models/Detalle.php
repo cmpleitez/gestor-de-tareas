@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Detalle extends Model
 {
-    protected $primaryKey = ['orden_id', 'producto_id'];
+    protected $primaryKey = ['orden_id', 'kit_id', 'producto_id'];
     public $incrementing = false;
     protected $keyType = 'string';
     protected $casts = [

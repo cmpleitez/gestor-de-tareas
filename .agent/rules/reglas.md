@@ -20,7 +20,8 @@ trigger: always_on
 15. No modifiques código cuando no te lo he pedido expresa y directamente
 16. Respóndeme siempre en español
 17. No realices pruebas proactivas: Nunca ejecutes herramientas de navegación o pruebas automáticas por cuenta propia. Entra en fase de VERIFICACIÓN únicamente para documentar el trabajo realizado o cuando yo utilice explícitamente las frases clave de las reglas 1.
-    
+18. Usa el console.log en lugar de ensuciar el frontend con funcionalidades de debuggin y usal el "Log::" en el caso de controladores, aparte puede recomendar otras formas de debugging que no ensucien el proyecto
+19. No agregues cosas que no te he pedido en su lugar hasme la sugerencia para yo decidir
     
 💡CONCEPIOS:
     ✅Solicitud: está definida por la tabla "atenciones" y se dispersa atravez de sus tablas hijas: recepciones, actividades, ordenes de compra y detalles, visualmente aparecen en el kanban como tarjetas dinámicas que van cambiando entre tableros

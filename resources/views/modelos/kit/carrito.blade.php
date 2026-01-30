@@ -125,22 +125,23 @@
     $hasOrders = $currentAtencion && $currentAtencion->ordenes && $currentAtencion->ordenes->count() > 0;
 @endphp
 
-@if(!$hasOrders)
-    <div class="d-flex flex-column justify-content-center align-items-center" style="min-height: 60vh;">
-        <div class="text-center">
-            <div class="mb-4">
-                <i class="fas fa-shopping-basket text-light-primary" style="font-size: 5rem; opacity: 0.5;"></i>
-            </div>
-            <h3 class="text-muted fw-light">Aún no has agregado articulos al carrito</h3>
-            <p class="text-muted mb-4">Explora nuestros productos.</p>
-            @if(auth()->user()->mainRole->name == 'cliente')
-                <a href="{{ route('tienda') }}" class="btn btn-primary btn-lg px-4 shadow-sm">
-                    <i class="fas fa-store me-2"></i> Ir a la tienda
-                </a>
-            @endif
+<div id="empty-cart-msg" class="{{ $hasOrders ? 'd-none' : '' }} d-flex flex-column justify-content-center align-items-center" style="min-height: 60vh;">
+    <div class="text-center">
+        <div class="mb-4">
+            <i class="fas fa-shopping-basket text-light-primary" style="font-size: 5rem; opacity: 0.5;"></i>
         </div>
+        <h3 class="text-muted fw-light">Aún no has agregado articulos al carrito</h3>
+        <p class="text-muted mb-4">Explora nuestros productos.</p>
+        @if(auth()->user()->mainRole->name == 'cliente')
+            <a href="{{ route('tienda') }}" class="btn btn-primary btn-lg px-4 shadow-sm">
+                <i class="fas fa-store me-2"></i> Ir a la tienda
+            </a>
+        @endif
     </div>
-@else
+</div>
+
+<div id="orders-container" class="{{ !$hasOrders ? 'd-none' : '' }}">
+    @if($hasOrders)
     @if($currentAtencion && $currentAtencion->ordenes)
         @foreach($currentAtencion->ordenes as $orden)
             @php $headingId = 'heading' . $orden->id; $accordionId = 'accordion' . $orden->id; $ordenIndex = $loop->index; @endphp
@@ -154,7 +155,7 @@
                                 </button>
                             </span>
                             <div id="collapse{{ $orden->id }}" class="accordion-collapse collapse main-kit-collapse" aria-labelledby="{{ $headingId }}" data-bs-parent="#{{ $accordionId }}">
-                                <div class="accordion-body"> <!--Productos-->
+                                <div class="accordion-body"> <!--Items-->
                                     @foreach($orden->detalle as $index => $detalle)
                                         @php
                                             $detHeadingId = 'heading_det_' . $orden->id . '_' . $index;
@@ -163,18 +164,20 @@
                                         @endphp
                                         <div class="accordion accordion-flush" id="{{ $detAccordionId }}">
                                             <div class="accordion-item">
-                                                <h2 class="accordion-header" id="{{ $detHeadingId }}">
-                                                    <button class="accordion-button collapsed d-flex justify-content-start text-start" style="padding: 0.5em; font-size: 0.8rem;" type="button" data-bs-toggle="collapse" data-bs-target="#{{ $detCollapseId }}" aria-expanded="false" aria-controls="{{ $detCollapseId }}">
-                                                        @role('cliente|receptor')
+                                                <h2 class="accordion-header d-flex align-items-center" id="{{ $detHeadingId }}">
+                                                    @role('cliente|receptor')
+                                                        <div class="ps-2 pe-1">
                                                             <i id="btn_retirar_{{ $detalle->orden_id }}_{{ $detalle->kit_id }}_{{ $detalle->producto_id }}"
                                                                 class="fas fa-trash text-danger-dark" 
-                                                                onclick="retirarProductoAJAX(this)"
+                                                                onclick="retirarItemAJAX(this)"
                                                                 data-orden-id="{{ $detalle->orden_id }}"
                                                                 data-kit-id="{{ $detalle->kit_id }}"
                                                                 data-producto-id="{{ $detalle->producto_id }}"
                                                                 data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="Eliminar producto">
                                                             </i>
-                                                        @endrole
+                                                        </div>
+                                                    @endrole
+                                                    <button class="accordion-button collapsed d-flex justify-content-start text-start flex-grow-1" style="padding: 0.5em; font-size: 0.8rem;" type="button" data-bs-toggle="collapse" data-bs-target="#{{ $detCollapseId }}" aria-expanded="false" aria-controls="{{ $detCollapseId }}">
                                                         @if($detalle->stock_fisico_existencias === true)
                                                             <span class="text-primary-dark me-2">Existencias físicas verificadas</span>
                                                         @elseif($detalle->stock_fisico_existencias === false)
@@ -194,25 +197,24 @@
                                                             $kitProducto = $detalle->producto->kitProductos->where('kit_id', $orden->kit_id)->first();
                                                         @endphp
                                                         @if($kitProducto)
+                                                        @if ($kitProducto->equivalentes->count() > 0)
                                                             <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-2">
-                                                                @if ($kitProducto->equivalentes->count() > 0)
-                                                                    <div class="col">
-                                                                        <label class="card rounded border m-0 shadow-none h-100" style="cursor: pointer;">
-                                                                            <div class="card-header text-center p-1">
-                                                                                <small class="fw-bold">{{ $kitProducto->producto->id }}</small>
+                                                                <div class="col">
+                                                                    <label class="card rounded border m-0 shadow-none h-100" style="cursor: pointer;">
+                                                                        <div class="card-header text-center p-1">
+                                                                            <small class="fw-bold">{{ $kitProducto->producto->id }}</small>
+                                                                        </div>
+                                                                        <div class="card-body p-2 d-flex flex-column align-items-center">
+                                                                            <div class="mb-2">
+                                                                                <input type="radio" name="radio_{{ $detAccordionId }}" value="{{ $kitProducto->producto->id }}" data-name-target="#productName_{{ $detAccordionId }}" data-id-target="#productId_{{ $detAccordionId }}" data-badge-target="#badgeId_{{ $detAccordionId }}" data-product-name="{{ $kitProducto->producto->producto }}" {{ $detalle->producto_id == $kitProducto->producto->id ? 'checked' : '' }} onchange="updateProductName(this)">
                                                                             </div>
-                                                                            <div class="card-body p-2 d-flex flex-column align-items-center">
-                                                                                <div class="mb-2">
-                                                                                    <input type="radio" name="radio_{{ $detAccordionId }}" value="{{ $kitProducto->producto->id }}" data-name-target="#productName_{{ $detAccordionId }}" data-id-target="#productId_{{ $detAccordionId }}" data-badge-target="#badgeId_{{ $detAccordionId }}" data-product-name="{{ $kitProducto->producto->producto }}" {{ $detalle->producto_id == $kitProducto->producto->id ? 'checked' : '' }} onchange="updateProductName(this)">
-                                                                                </div>
-                                                                                <div class="text-center d-flex flex-column justify-content-center flex-grow-1">
-                                                                                    <span class="d-block">{{ $kitProducto->producto->producto }}</span>
-                                                                                    <span class="badge badge-primary badge-pill mt-1 mx-auto">Estándar</span>
-                                                                                </div>
+                                                                            <div class="text-center d-flex flex-column justify-content-center flex-grow-1">
+                                                                                <span class="d-block">{{ $kitProducto->producto->producto }}</span>
+                                                                                <span class="badge badge-primary badge-pill mt-1 mx-auto">Estándar</span>
                                                                             </div>
-                                                                        </label>
-                                                                    </div>
-                                                                @endif
+                                                                        </div>
+                                                                    </label>
+                                                                </div>
                                                                 @foreach($kitProducto->equivalentes as $equivalente) 
                                                                     <div class="col">
                                                                         <label class="card rounded border m-0 shadow-none h-100" style="cursor: pointer;">
@@ -231,6 +233,11 @@
                                                                     </div>
                                                                 @endforeach
                                                             </div>
+                                                        @else
+                                                            <div class="w-100 text-center">
+                                                                <small class="text-secondary" style="opacity: 0.50; font-size: 1rem;">Sin equivalentes asociados</small>
+                                                            </div>
+                                                        @endif
                                                         @else
                                                             <div class="alert alert-light mb-0 p-2">
                                                                 <small class="text-muted">No hay opciones disponibles o es un producto alternativo.</small>
@@ -306,6 +313,7 @@
 
     @endif
 @endif
+</div>
 @endsection
 
 @section('footer')
@@ -339,6 +347,7 @@
             };
         @endforeach
     @endif
+    
     $(document).ready(function() { 
         $('.main-kit-collapse').on('show.bs.collapse hidden.bs.collapse', function (e) { //Lógica del acordión y el alto de fila
             if (e.target === this) {
@@ -434,7 +443,7 @@
     });
 
     // Retirar producto vía AJAX identificado por ID
-    function retirarProductoAJAX(elemento) {
+    function retirarItemAJAX(elemento) {
         const btn = $(elemento);
         const elementoId = elemento.id; // Referencia al ID solicitada
         const ordenId = btn.data('orden-id');
@@ -442,7 +451,7 @@
         const productoId = btn.data('producto-id');
         const accordionItem = btn.closest('.accordion-item');
         $.ajax({
-            url: '{{ route("tienda.retirar-producto") }}',
+            url: '{{ route("tienda.retirar-item") }}',
             method: 'POST',
             data: {
                 _token: '{{ csrf_token() }}',
@@ -453,12 +462,21 @@
             success: function(response) {
                 if (response.success) {
                     toastr.success(response.message);
-                    // Efecto visual y eliminación del DOM usando el ID del elemento
-                    accordionItem.fadeOut(400, function() {
-                        $(this).remove();
-                        // Recalcular totales después de eliminar
-                        $('.input-unidades').first().trigger('input');
-                    });
+                    if (response.orden_vacia) {
+                        // Verificar si quedan órdenes visibles
+                        if ($('#orders-container .row').filter(function() { return $(this).css('display') !== 'none'; }).length === 0) {
+                             $('#orders-container').fadeOut(400, function() {
+                                 $('#empty-cart-msg').removeClass('d-none').hide().fadeIn();
+                             });
+                        }
+                    } else {
+                        // Efecto visual solo para el item
+                        accordionItem.fadeOut(400, function() {
+                            $(this).remove();
+                            // Recalcular totales después de eliminar item
+                            $('.input-unidades').first().trigger('input');
+                        });
+                    }
                 } else {
                     toastr.error(response.message);
                 }

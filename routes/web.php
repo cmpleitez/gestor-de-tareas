@@ -191,7 +191,7 @@ Route::middleware([
             Route::post('get-kit-productos', [TiendaController::class, 'getKitProductos'])->name('tienda.get-kit-productos');
             Route::get('agregar-kit/{kit}', [TiendaController::class, 'agregarKit'])->name('tienda.agregar-kit');
             Route::get('retirar-kit/{kit}', [TiendaController::class, 'retirarKit'])->name('tienda.retirar-kit');
-            Route::post('retirar-producto', [TiendaController::class, 'retirarProducto'])->name('tienda.retirar-producto');
+            Route::post('retirar-item', [TiendaController::class, 'retirarItem'])->name('tienda.retirar-item');
             Route::get('kit-cantidad', [TiendaController::class, 'kitCantidad'])->name('tienda.kit-cantidad');
             
 
