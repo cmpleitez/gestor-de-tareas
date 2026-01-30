@@ -202,9 +202,7 @@ class TiendaController extends Controller
             $orden->detalle()->delete();
             $orden->delete();
             DB::commit();
-            
             return response()->json(['success' => true, 'message' => 'Kit retirado del carrito correctamente', 'orden_vacia' => true]);
-
         } catch (Exception $e) {
             DB::rollBack();
             Log::error("Error al retirar orden {$orden->id}: " . $e->getMessage());
