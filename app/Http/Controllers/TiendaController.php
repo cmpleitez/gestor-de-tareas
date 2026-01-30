@@ -191,17 +191,33 @@ class TiendaController extends Controller
         }
     }
 
-    public function retirarKit(Kit $kit)
+    public function retirarOrden(Orden $orden)
     {
-        return back()->with('error', 'La operación de retirada no está disponible en este momento');
-    }
+        try {
+            DB::beginTransaction();
+            $atencion = Atencion::with('ordenes')->find($orden->atencion_id);
+            if ($atencion && $atencion->ordenes->count() === 1) {
+                return response()->json(['success' => false, 'message' => 'No se autoriza dejar vacío el carrito porque crearía una inconsistencia: la solicitud quedaría en el tablero de trabajo de manera permanente']);
+            }
+            $orden->detalle()->delete();
+            $orden->delete();
+            DB::commit();
+            
+            return response()->json(['success' => true, 'message' => 'Kit retirado del carrito correctamente', 'orden_vacia' => true]);
 
-    public function agregarKit(Request $request, Kit $kit)
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error("Error al retirar orden {$orden->id}: " . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Error al procesar la solicitud: ' . $e->getMessage()], 500);
+        }
+    }
+    
+    public function agregarOrden(Request $request, Kit $orden)
     {
         try {
             DB::beginTransaction(); //Lectura
                 $atencion_nueva = false;
-                $kit->load('productos');
+                $orden->load('productos');
                 $user = auth()->user();
                 $atencion = Atencion::where('oficina_id', $user->oficina_id) //Verificando si ya existe el número de atención
                     ->where('activo', false)
@@ -246,7 +262,7 @@ class TiendaController extends Controller
                 }
                 if(!$atencion_nueva) { // Verificar si el kit ya está en el carrito
                     $ordenExistente = Orden::where('atencion_id', $atencion->id) 
-                        ->where('kit_id', $kit->id)
+                        ->where('kit_id', $orden->id)
                         ->first();
                     if ($ordenExistente) {
                         DB::rollBack();
@@ -254,18 +270,18 @@ class TiendaController extends Controller
                         return $request->ajax() ? response()->json(['success' => false, 'message' => $message, 'type' => 'info']) : back()->with('info', $message);
                     }
                 }
-                $orden = new Orden(); //Agregando Kit (Orden de compra)
-                $orden->id = (new KeyMaker())->generate('Orden', Solicitud::where('solicitud', 'Orden de compra')->first()->id);
-                $orden->atencion_id = $atencion->id;
-                $orden->kit_id = $kit->id;
-                $orden->unidades = 1;
-                $orden->precio = $kit->precio;
-                $orden->save();
-                foreach ($kit->productos as $producto) { //Agregando detalle del kit (Detalle de la orden)
+                $nuevaOrden = new Orden(); //Agregando Kit (Orden de compra)
+                $nuevaOrden->id = (new KeyMaker())->generate('Orden', Solicitud::where('solicitud', 'Orden de compra')->first()->id);
+                $nuevaOrden->atencion_id = $atencion->id;
+                $nuevaOrden->kit_id = $orden->id;
+                $nuevaOrden->unidades = 1;
+                $nuevaOrden->precio = $orden->precio;
+                $nuevaOrden->save();
+                foreach ($orden->productos as $producto) { //Agregando detalle del kit (Detalle de la orden)
                     $detalle = new Detalle();
-                    $detalle->orden_id = $orden->id;
+                    $detalle->orden_id = $nuevaOrden->id;
                     $detalle->producto_id = $producto->id;
-                    $detalle->kit_id = $kit->id;
+                    $detalle->kit_id = $orden->id;
                     $detalle->unidades = $producto->pivot->unidades;
                     $detalle->precio = $producto->precio;
                     $detalle->save();

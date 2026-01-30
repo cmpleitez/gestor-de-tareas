@@ -189,8 +189,8 @@ Route::middleware([
             Route::post('stock', [TiendaController::class, 'storeStock'])->name('tienda.store-stock');
             Route::get('get-stocks-producto/{productoId}', [TiendaController::class, 'getStocksProducto'])->name('tienda.get-stocks-producto');
             Route::post('get-kit-productos', [TiendaController::class, 'getKitProductos'])->name('tienda.get-kit-productos');
-            Route::get('agregar-kit/{kit}', [TiendaController::class, 'agregarKit'])->name('tienda.agregar-kit');
-            Route::get('retirar-kit/{kit}', [TiendaController::class, 'retirarKit'])->name('tienda.retirar-kit');
+            Route::get('agregar-orden/{orden}', [TiendaController::class, 'agregarOrden'])->name('tienda.agregar-orden');
+            Route::post('retirar-orden/{orden}', [TiendaController::class, 'retirarOrden'])->name('tienda.retirar-orden');
             Route::post('retirar-item', [TiendaController::class, 'retirarItem'])->name('tienda.retirar-item');
             Route::get('kit-cantidad', [TiendaController::class, 'kitCantidad'])->name('tienda.kit-cantidad');
             

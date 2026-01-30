@@ -20,13 +20,15 @@ CLIENTE:
         ...modificar el editor de la orden de compra
 
     ...🔵 El cliente al dar clic sobre cualquier tarjeta podría ver la orden de compra en estado de lectura
-        ...construir el metodo de eliminación de items dentro del kit: en realidad se elimina el registro de la tabla detalles
-            ...cuando se elimine el ultimo item del kit, tambien eliminar el kit en si, ya que queradá vacío
-        ...construir el metodo de eliminación de kits dentro de la orden de compra: en realidad se elimina el registro de la tabla ordenes y sus registros hijos en la tabla detalles.
-        ...maquetar filas de items en los kits
-        ...tratar de sacar el control de eliminar items del scrolldown para que no tenga doble efecto
         
 
+
+        ...construir el metodo de eliminación de kits dentro de la orden de compra: en realidad se elimina el registro de la tabla ordenes y sus registros hijos en la tabla detalles.
+
+
+        
+        ...maquetar filas de items en los kits
+        ...tratar de sacar el control de eliminar items del scrolldown para que no tenga doble efecto
     🔵 Actualizar el nuevo tracking en la vista sidebar donde están las tareas
         
     🔵 Procedimiento: perfil cpleitez.2024@gmail.com https://miro.com/app/board/uXjVJy6iRzE=/

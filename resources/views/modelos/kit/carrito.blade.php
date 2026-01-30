@@ -285,29 +285,29 @@
                     <span id="subtotal_{{ $orden->id }}">${{ number_format($orden->precio * old('ordenes.' . $orden->id, $orden->unidades), 2) }}</span>
                 </div>
                 <div class="col-3 col-md-1 text-center d-flex align-items-center justify-content-center">
-                    <a href="#" role="button"
-                        data-html="true"
-                        data-placement="bottom"
-                        class="btn btn-scale-hover align-center text-danger-dark">
-                        <i class="fas fa-trash" style="font-size: 1rem;"></i>
-                    </a>
+                    <i id="btn_retirar_orden_{{ $orden->id }}"
+                        class="fas fa-trash text-danger-dark" 
+                        onclick="retirarOrdenAJAX(this)"
+                        data-url="{{ route('tienda.retirar-orden', $orden) }}"
+                        data-orden-id="{{ $orden->id }}"
+                        data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="Eliminar kit">
+                    </i>
                 </div>
             </div>
         @endforeach
 
         <div class="row mt-4">
             <div class="col-12 col-md-12 d-flex justify-content-end">
-            @if(auth()->user()->mainRole->name == 'cliente')
-                <button type="button" id="btnEnviarCarrito" class="btn btn-primary">
-                    Enviar
-                </button>
-            @endif
-            @if(auth()->user()->mainRole->name == 'receptor')
-                <button type="button" id="darPorRevisado" class="btn btn-warning">
-                    Revisado
-                </button>
-            @endif
-
+                @if(auth()->user()->mainRole->name == 'cliente')
+                    <button type="button" id="btnEnviarCarrito" class="btn btn-primary">
+                        <i class="fas fa-shopping-cart me-2"></i> Enviar
+                    </button>
+                @endif
+                @if(auth()->user()->mainRole->name == 'receptor')
+                    <button type="button" id="darPorRevisado" class="btn btn-warning">
+                        <i class="fas fa-check me-2"></i> Revisado
+                    </button>
+                @endif
             </div>
         </div>
 
@@ -463,12 +463,19 @@
                 if (response.success) {
                     toastr.success(response.message);
                     if (response.orden_vacia) {
-                        // Verificar si quedan órdenes visibles
-                        if ($('#orders-container .row').filter(function() { return $(this).css('display') !== 'none'; }).length === 0) {
-                             $('#orders-container').fadeOut(400, function() {
-                                 $('#empty-cart-msg').removeClass('d-none').hide().fadeIn();
-                             });
-                        }
+                        // Si la orden quedó vacía, eliminar toda la fila de la orden con efecto suave
+                        const orderRow = $('#accordion' + ordenId).closest('.row');
+                        orderRow.fadeOut(400, function() {
+                            $(this).remove();
+                            // Verificar si quedan órdenes visibles en el contenedor
+                            if ($('#orders-container .row').length === 0) {
+                                $('#orders-container').fadeOut(400, function() {
+                                    $('#empty-cart-msg').removeClass('d-none').hide().fadeIn();
+                                });
+                            }
+                            // Recalcular totales
+                            $('.input-unidades').first().trigger('input');
+                        });
                     } else {
                         // Efecto visual solo para el item
                         accordionItem.fadeOut(400, function() {
@@ -483,6 +490,47 @@
             },
             error: function(xhr) {
                 const errorMsg = xhr.responseJSON ? xhr.responseJSON.message : 'Error al retirar el producto';
+                toastr.error(errorMsg);
+            }
+        });
+    }
+
+    // Retirar orden completa vía AJAX
+    function retirarOrdenAJAX(elemento) {
+        const btn = $(elemento);
+        const elementoId = elemento.id; // Referencia al ID solicitada
+        const url = btn.data('url');
+        const ordenId = btn.data('orden-id');
+        const orderRow = btn.closest('.row');
+
+        $.ajax({
+            url: url,
+            method: 'POST',
+            headers: {'X-Requested-With': 'XMLHttpRequest'},
+            data: {
+                _token: '{{ csrf_token() }}'
+            },
+            success: function(response) {
+                if (response.success) {
+                    toastr.success(response.message);
+                    // Efecto visual para toda la fila de la orden
+                    orderRow.fadeOut(400, function() {
+                        $(this).remove();
+                        // Verificar si el carrito quedó vacío
+                        if ($('#orders-container .row').length === 0) {
+                            $('#orders-container').fadeOut(400, function() {
+                                $('#empty-cart-msg').removeClass('d-none').hide().fadeIn();
+                            });
+                        }
+                        // Recalcular totales
+                        $('.input-unidades').first().trigger('input');
+                    });
+                } else {
+                    toastr.error(response.message);
+                }
+            },
+            error: function(xhr) {
+                const errorMsg = xhr.responseJSON ? xhr.responseJSON.message : 'Error al retirar la orden';
                 toastr.error(errorMsg);
             }
         });
