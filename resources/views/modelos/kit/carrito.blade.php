@@ -115,6 +115,162 @@
     .btn-scale-hover:active {
         transform: scale(0.9);
     }
+
+    /* ===== ESTILOS ELEGANTES PARA CONTROL DE RADIO DE STOCK ===== */
+    .btn-check-stock {
+        position: absolute;
+        clip: rect(0,0,0,0);
+        pointer-events: none;
+    }
+
+    .btn-group-stock-status {
+        display: flex;
+        flex-direction: row;
+        gap: 0.5rem;
+        padding: 0;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+    }
+
+    .btn-stock-status {
+        flex: 0 1 auto;
+        width: auto;
+        min-width: auto;
+        padding: 0.5rem 1rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-align: center;
+        border: 2px solid transparent;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        white-space: nowrap;
+    }
+
+    .btn-stock-status i {
+        font-size: 1rem;
+        transition: transform 0.3s ease;
+    }
+
+    .btn-stock-status span {
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Estado: Verificado (Success) */
+    .btn-stock-verified {
+        background-color: var(--color-success-light);
+        color: var(--text-success-dark);
+        border-color: var(--border-success-dark);
+    }
+
+    .btn-stock-verified:hover {
+        background-color: var(--color-success-light);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(13, 121, 65, 0.25);
+    }
+
+    .btn-check-stock:checked + .btn-stock-verified {
+        background-color: var(--color-success-dark);
+        color: #ffffff;
+        border-color: var(--border-success-dark);
+        transform: scale(1.05);
+        box-shadow: 0 6px 20px rgba(13, 121, 65, 0.4);
+    }
+
+    .btn-check-stock:checked + .btn-stock-verified i {
+        transform: scale(1.2) rotate(360deg);
+    }
+
+    /* Estado: Sin Existencias (Warning) */
+    .btn-stock-unavailable {
+        background-color: var(--color-warning-light);
+        color: var(--text-warning-dark);
+        border-color: var(--border-warning-dark);
+    }
+
+    .btn-stock-unavailable:hover {
+        background-color: var(--color-warning-light);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(183, 69, 28, 0.25);
+    }
+
+    .btn-check-stock:checked + .btn-stock-unavailable {
+        background-color: var(--color-warning-dark);
+        color: #ffffff;
+        border-color: var(--border-warning-dark);
+        transform: scale(1.05);
+        box-shadow: 0 6px 20px rgba(183, 69, 28, 0.4);
+    }
+
+    .btn-check-stock:checked + .btn-stock-unavailable i {
+        transform: scale(1.2) rotate(360deg);
+    }
+
+    /* Estado: Pendiente (Primary) */
+    .btn-stock-pending {
+        background-color: var(--color-primary-light);
+        color: var(--text-primary-dark);
+        border-color: var(--border-primary-dark);
+    }
+
+    .btn-stock-pending:hover {
+        background-color: var(--color-primary-light);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(22, 65, 145, 0.25);
+    }
+
+    .btn-check-stock:checked + .btn-stock-pending {
+        background-color: var(--color-primary-dark);
+        color: #ffffff;
+        border-color: var(--border-primary-dark);
+        transform: scale(1.05);
+        box-shadow: 0 6px 20px rgba(22, 65, 145, 0.4);
+    }
+
+    .btn-check-stock:checked + .btn-stock-pending i {
+        transform: scale(1.2) rotate(360deg);
+    }
+
+    /* Efecto de brillo al hacer clic */
+    .btn-stock-status::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.5);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+
+    .btn-check-stock:checked + .btn-stock-status::before {
+        width: 300px;
+        height: 300px;
+        opacity: 0;
+    }
+
+    /* Responsive para móviles */
+    @media (max-width: 768px) {
+        .btn-group-stock-status {
+            flex-direction: row;
+        }
+        
+        .btn-stock-status {
+            font-size: 0.7rem;
+            padding: 0.4rem 0.8rem;
+        }
+    }
+
+
 </style>
 @endpush
 
@@ -177,19 +333,36 @@
                                                             </i>
                                                         </div>
                                                     @endrole
-                                                    <button class="accordion-button collapsed d-flex justify-content-start text-start flex-grow-1" style="padding: 0.5em; font-size: 0.8rem;" type="button" data-bs-toggle="collapse" data-bs-target="#{{ $detCollapseId }}" aria-expanded="false" aria-controls="{{ $detCollapseId }}">
-                                                        @if($detalle->stock_fisico_existencias === true)
-                                                            <span class="text-primary-dark me-2">Existencias físicas verificadas</span>
-                                                        @elseif($detalle->stock_fisico_existencias === false)
-                                                            <span class="text-warning-dark me-2">Físicamente no hay existencias</span>
-                                                        @elseif($detalle->stock_fisico_existencias === null)
-                                                            <span class="text-info-dark me-2">Stock físico pendiente de verificar</span>
-                                                        @endif
-                                                        <span class="text-secondary me-2">{{ $detalle->unidades }}</span>
-                                                        <span id="badgeId_{{ $detAccordionId }}" class="badge bg-secondary-dark me-2">{{ $detalle->producto_id }}</span>
-                                                        <span id="productName_{{ $detAccordionId }}">{{ $detalle->producto->producto }}</span>
-                                                        <input type="hidden" id="productId_{{ $detAccordionId }}" value="{{ $detalle->producto_id }}">
-                                                    </button>
+                                                    <div class="w-100 d-flex flex-column gap-2 p-2">
+                                                        {{-- Información del Producto --}}
+                                                        <button class="accordion-button collapsed d-flex justify-content-start text-start flex-grow-1" style="padding: 0.5em; font-size: 0.8rem;" type="button" data-bs-toggle="collapse" data-bs-target="#{{ $detCollapseId }}" aria-expanded="false" aria-controls="{{ $detCollapseId }}">
+                                                            <span class="text-secondary me-2">{{ $detalle->unidades }}</span>
+                                                            <span id="badgeId_{{ $detAccordionId }}" class="badge bg-secondary-dark me-2">{{ $detalle->producto_id }}</span>
+                                                            <span id="productName_{{ $detAccordionId }}">{{ $detalle->producto->producto }}</span>
+                                                            <input type="hidden" id="productId_{{ $detAccordionId }}" value="{{ $detalle->producto_id }}">
+                                                        </button>
+
+                                                        {{-- Control de Radio para Estado de Stock Físico --}}
+                                                        <div class="btn-group-stock-status w-100" role="group" aria-label="Estado de stock físico">
+                                                            <input type="radio" class="btn-check-stock" name="stock_status_{{ $detAccordionId }}" id="stock_verificado_{{ $detAccordionId }}" value="verificado" {{ $detalle->stock_fisico_existencias === true ? 'checked' : '' }}>
+                                                            <label class="btn-stock-status btn-stock-verified bg-success-light border-success-dark text-success-dark" for="stock_verificado_{{ $detAccordionId }}">
+                                                                <i class="fas fa-check-circle me-1"></i>
+                                                                <span>Existencias verificadas</span>
+                                                            </label>
+
+                                                            <input type="radio" class="btn-check-stock" name="stock_status_{{ $detAccordionId }}" id="stock_sin_existencias_{{ $detAccordionId }}" value="sin_existencias" {{ $detalle->stock_fisico_existencias === false ? 'checked' : '' }}>
+                                                            <label class="btn-stock-status btn-stock-unavailable bg-warning-light border-warning-dark text-warning-dark" for="stock_sin_existencias_{{ $detAccordionId }}">
+                                                                <i class="fas fa-times-circle me-1"></i>
+                                                                <span>Sin existencias</span>
+                                                            </label>
+
+                                                            <input type="radio" class="btn-check-stock" name="stock_status_{{ $detAccordionId }}" id="stock_pendiente_{{ $detAccordionId }}" value="pendiente" {{ $detalle->stock_fisico_existencias === null ? 'checked' : '' }}>
+                                                            <label class="btn-stock-status btn-stock-pending bg-primary-light border-primary-dark text-primary-dark" for="stock_pendiente_{{ $detAccordionId }}">
+                                                                <i class="fas fa-clock me-1"></i>
+                                                                <span>Pendiente de revisar</span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
                                                 </h2>
                                                 <div id="{{ $detCollapseId }}" class="accordion-collapse collapse" aria-labelledby="{{ $detHeadingId }}" data-bs-parent="#{{ $detAccordionId }}">
                                                     <div class="accordion-body"> {{-- Equivalentes --}}
@@ -253,46 +426,48 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-6 col-md-2 d-flex align-items-center justify-content-center">
-                    <button type="button" class="btn btn-primary-light shadow-sm rounded-circle d-flex align-items-center justify-content-center p-0 btn-scale-hover btn-spinner" 
-                        data-type="minus" data-target="#unidades_{{ $orden->id }}" data-step="1"
-                        style="width: 1.5rem; height: 1.5rem; cursor: pointer;">
-                        <i class="fas fa-minus text-danger" style="font-size: 0.9rem;"></i>
-                    </button>
-                    <div class="d-flex flex-column align-items-center justify-content-center mx-2" style="width: 4.5rem;">
-                        <input id="unidades_{{ $orden->id }}" type="number" min="1" step="1"
-                            class="form-control text-center no-spinners input-unidades {{ $errors->has('ordenes.' . $orden->id) ? 'is-invalid' : '' }}" 
-                            name="unidades" data-orden-id="{{ $orden->id }}" data-precio="{{ $orden->precio }}"
-                            aria-label="unidades" value="{{ old('ordenes.' . $orden->id, $orden->unidades) }}" 
-                            required
-                            style="width: 100%;">
-                        <div class="invalid-feedback">
-                            Solo números positivos (mínimo 1)
-                        </div>
-                        @error('ordenes.' . $orden->id)
-                            <div class="badge bg-danger text-wrap" style="margin-top: 0.2rem; font-size: 0.7rem;">
-                                {{ $message }}
+                @if(auth()->user()->mainRole->name == 'receptor')
+                    <div class="col-6 col-md-2 d-flex align-items-center justify-content-center">
+                        <button type="button" class="btn btn-primary-light shadow-sm rounded-circle d-flex align-items-center justify-content-center p-0 btn-scale-hover btn-spinner" 
+                            data-type="minus" data-target="#unidades_{{ $orden->id }}" data-step="1"
+                            style="width: 1.5rem; height: 1.5rem; cursor: pointer;">
+                            <i class="fas fa-minus text-danger" style="font-size: 0.9rem;"></i>
+                        </button>
+                        <div class="d-flex flex-column align-items-center justify-content-center mx-2" style="width: 4.5rem;">
+                            <input id="unidades_{{ $orden->id }}" type="number" min="1" step="1"
+                                class="form-control text-center no-spinners input-unidades {{ $errors->has('ordenes.' . $orden->id) ? 'is-invalid' : '' }}" 
+                                name="unidades" data-orden-id="{{ $orden->id }}" data-precio="{{ $orden->precio }}"
+                                aria-label="unidades" value="{{ old('ordenes.' . $orden->id, $orden->unidades) }}" 
+                                required
+                                style="width: 100%;">
+                            <div class="invalid-feedback">
+                                Solo números positivos (mínimo 1)
                             </div>
-                        @enderror
+                            @error('ordenes.' . $orden->id)
+                                <div class="badge bg-danger text-wrap" style="margin-top: 0.2rem; font-size: 0.7rem;">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                        <button type="button" class="btn btn-primary-light shadow-sm rounded-circle d-flex align-items-center justify-content-center p-0 btn-scale-hover btn-spinner" 
+                            data-type="plus" data-target="#unidades_{{ $orden->id }}" data-step="1"
+                            style="width: 1.5rem; height: 1.5rem; cursor: pointer;">
+                            <i class="fas fa-plus text-success" style="font-size: 0.9rem;"></i>
+                        </button>
                     </div>
-                    <button type="button" class="btn btn-primary-light shadow-sm rounded-circle d-flex align-items-center justify-content-center p-0 btn-scale-hover btn-spinner" 
-                        data-type="plus" data-target="#unidades_{{ $orden->id }}" data-step="1"
-                        style="width: 1.5rem; height: 1.5rem; cursor: pointer;">
-                        <i class="fas fa-plus text-success" style="font-size: 0.9rem;"></i>
-                    </button>
-                </div>
-                <div class="col-3 col-md-1 text-center d-flex align-items-center justify-content-center">
-                    <span id="subtotal_{{ $orden->id }}">${{ number_format($orden->precio * old('ordenes.' . $orden->id, $orden->unidades), 2) }}</span>
-                </div>
-                <div class="col-3 col-md-1 text-center d-flex align-items-center justify-content-center">
-                    <i id="btn_retirar_orden_{{ $orden->id }}"
-                        class="fas fa-trash text-danger-dark" 
-                        onclick="retirarOrdenAJAX(this)"
-                        data-url="{{ route('tienda.retirar-orden', $orden) }}"
-                        data-orden-id="{{ $orden->id }}"
-                        data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="Eliminar kit">
-                    </i>
-                </div>
+                    <div class="col-3 col-md-1 text-center d-flex align-items-center justify-content-center">
+                        <span id="subtotal_{{ $orden->id }}">${{ number_format($orden->precio * old('ordenes.' . $orden->id, $orden->unidades), 2) }}</span>
+                    </div>
+                    <div class="col-3 col-md-1 text-center d-flex align-items-center justify-content-center">
+                        <i id="btn_retirar_orden_{{ $orden->id }}"
+                            class="fas fa-trash text-danger-dark" 
+                            onclick="retirarOrdenAJAX(this)"
+                            data-url="{{ route('tienda.retirar-orden', $orden) }}"
+                            data-orden-id="{{ $orden->id }}"
+                            data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="Eliminar kit">
+                        </i>
+                    </div>
+                @endif
             </div>
         @endforeach
 

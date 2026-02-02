@@ -365,12 +365,6 @@ class RecepcionController extends Controller
         return redirect()->route('recepcion.parametros')->with('success', 'Parámetro actualizado correctamente');
     }
 
-    public function confirmarFisico(Request $request)
-    {
-        return 'confirmarFisico';
-        //ejecutar la funcion privada: reportarTarea
-    }
-
     public function efectuarPago(Request $request)
     {
         return 'efectuarPago';

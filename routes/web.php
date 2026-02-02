@@ -166,8 +166,8 @@ Route::middleware([
             Route::post('asignar/{recepcion}/{equipo}', [RecepcionController::class, 'asignar'])->name('recepcion.asignar');
             Route::get('tareas/{recepcion_id}', [RecepcionController::class, 'tareas'])->name('recepcion.tareas');
             
+            Route::post('efectuar-pago', [RecepcionController::class, 'efectuarPago'])->name('recepcion.efectuar-pago');
             
-            Route::post('confirmar-fisico', [RecepcionController::class, 'confirmarFisico'])->name('recepcion.confirmar-fisico');
             Route::post('efectuar-pago', [RecepcionController::class, 'efectuarPago'])->name('recepcion.efectuar-pago');
             Route::post('descargar-stock', [RecepcionController::class, 'descargarStock'])->name('recepcion.descargar-stock');
             Route::post('efectuar-entrega', [RecepcionController::class, 'efectuarEntrega'])->name('recepcion.efectuar-entrega');
@@ -178,7 +178,7 @@ Route::middleware([
     });
 
     //TIENDA
-    Route::group(['middleware' => ['role:cliente|receptor']], function () {
+    Route::group(['middleware' => ['role:cliente|receptor|operador']], function () {
         Route::group(['prefix' => 'tienda'], function () {
             Route::get('/', [TiendaController::class, 'index'])->name('tienda');
             Route::get('carrito', [TiendaController::class, 'carritoIndex'])->name('tienda.carrito');

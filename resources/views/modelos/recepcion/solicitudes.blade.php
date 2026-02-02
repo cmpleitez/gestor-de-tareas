@@ -585,10 +585,14 @@
                 let formId = 'form_' + tarea.actividad_id;
                 let formAction = '';
                 let ruta = '';
+
+
+
+
                 if (tarea.tarea === 'Orden de compra revisada') { //Definiendo las tareas del tracking
                     ruta = '{{ route("tienda.carrito-editar") }}';
-                } else if (tarea.tarea === 'Stock físico confirmado') {
-                    ruta = '{{ route("recepcion.confirmar-fisico") }}';
+                } else if (tarea.tarea === 'Stock físico revisado') {
+                    ruta = '{{ route("tienda.carrito-editar") }}';
                 } else if (tarea.tarea === 'Pago efectuado') {
                     ruta = '{{ route("recepcion.efectuar-pago") }}';
                 } else if (tarea.tarea === 'Stock descargado') {
@@ -596,6 +600,8 @@
                 } else if (tarea.tarea === 'Entrega efectuada') {
                     ruta = '{{ route("recepcion.efectuar-entrega") }}';
                 }
+
+
 
                 let htmlGenerado = '';
                 if (ruta) {

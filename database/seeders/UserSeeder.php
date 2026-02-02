@@ -117,7 +117,7 @@ class UserSeeder extends Seeder
         ]);
         DB::table('tareas')->insert([
             'id'         => 2,
-            'tarea'      => 'Stock físico confirmado',
+            'tarea'      => 'Stock físico revisado',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);

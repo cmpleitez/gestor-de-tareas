@@ -9,6 +9,13 @@ PAUTAS:
     🟠 Cada usuario de la app participante en el procedimiento, tendrá una copia de la solicitud u orden de compra
 CLIENTE:
 
+    🔵 Construir el proceso de revisión
+
+    🔵 Construir el proceso de verificación física
+
+        ... hay que trabajar esto por motivos de secuencia en el procedimiento
+            ... se debe usar la misma orden de compra pero con un control de radio que cambie su titulo segun sea <Stock físico verificado> o <Stock físico pendiente de verificar>
+
     🔵 Los precios de los productos inciden en el precio del kit en la orden de compra, el precio del kit es el resultado de sumar los precios de sus productos, 
     cuando un producto cambie por su equivalente es posible que varíe el total general.
 
@@ -17,18 +24,10 @@ CLIENTE:
 
     🔵 En la confirmacion de stock físico: agregar un dato llamado "existencias" en el detalle de la orden para el reporte "Stock físico confirmado", 
     la orden de compra para el receptor y para el operador debe mostrar dicho campo indicando "Stock físico disponible" o "No hay existencias" en su caso.
-        ...modificar el editor de la orden de compra
+        .modificar el editor de la orden de compra
 
     🔵 El cliente al dar clic sobre cualquier tarjeta podría ver la orden de compra en estado de lectura
         
-
-
-    ...🔵 Re-maquetación del editor del carrito
-        ...sidebar en celulares debe convertirse a pantalla completa
-        ...maquetar filas de items en los kits
-
-
-
     🔵 Actualizar el nuevo tracking en la vista sidebar donde están las tareas
         
     🔵 Procedimiento: perfil cpleitez.2024@gmail.com https://miro.com/app/board/uXjVJy6iRzE=/
