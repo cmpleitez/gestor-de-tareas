@@ -180,7 +180,6 @@ Route::middleware([
     //TIENDA
     Route::group(['middleware' => ['role:cliente|receptor']], function () {
         Route::group(['prefix' => 'tienda'], function () {
-
             Route::get('/', [TiendaController::class, 'index'])->name('tienda');
             Route::get('carrito', [TiendaController::class, 'carritoIndex'])->name('tienda.carrito');
             Route::post('carrito-editar', [TiendaController::class, 'carritoEditar'])->name('tienda.carrito-editar');
@@ -193,8 +192,6 @@ Route::middleware([
             Route::post('retirar-orden/{orden}', [TiendaController::class, 'retirarOrden'])->name('tienda.retirar-orden');
             Route::post('retirar-item', [TiendaController::class, 'retirarItem'])->name('tienda.retirar-item');
             Route::get('kit-cantidad', [TiendaController::class, 'kitCantidad'])->name('tienda.kit-cantidad');
-            
-
         });
     });
 });

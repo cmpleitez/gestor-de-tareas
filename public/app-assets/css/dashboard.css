@@ -173,7 +173,7 @@
 }
 
 .fixed-top {
-    top: 6px;
+    top: 0;
 }
 
 .avatar {
@@ -190,7 +190,7 @@
 }
 
 html body.navbar-sticky .app-content .content-wrapper {
-    margin-top: 5rem;
+    margin-top: 4.6rem;
 }
 
 html body {
