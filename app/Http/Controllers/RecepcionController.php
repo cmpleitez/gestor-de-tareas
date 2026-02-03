@@ -403,7 +403,7 @@ class RecepcionController extends Controller
                 ], 422);
             }
             foreach ($lote_stock as $item) {
-                if (!isset($item['estado_stock']) || !in_array($item['estado_stock'], ['verificado', 'sin_existencias'])) {
+                if (!isset($item['stock_fisico_existencias']) || !in_array($item['stock_fisico_existencias'], ['1', '0'])) {
                     return response()->json([
                         'success' => false,
                         'message' => 'Error: Hay ítems sin una confirmación de stock válida.'
@@ -412,10 +412,18 @@ class RecepcionController extends Controller
             }
 
             //PROCESAMIENTO
-
-            //aqui va el guardado en detalles
-
+            DB::beginTransaction();
+                
+                foreach ($lote_stock as $item) {
+                    Detalle::where('orden_id', $item['orden_id'])
+                        ->where('kit_id', $item['kit_id'])
+                        ->where('producto_id', $item['producto_id'])
+                        ->update(['stock_fisico_existencias' => $item['stock_fisico_existencias']]);
+                }
+            
             //aquiva el llamado a la funcion privada: reportarTarea
+            
+            DB::commit();
 
             return response()->json([
                 'success' => true,

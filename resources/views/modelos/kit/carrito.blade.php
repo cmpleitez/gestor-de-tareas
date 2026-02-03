@@ -334,7 +334,7 @@
                                                                     class="btn-check-stock" 
                                                                     name="stock_status_{{ $detAccordionId }}" 
                                                                     id="stock_verificado_{{ $detAccordionId }}" 
-                                                                    value="verificado" 
+                                                                    value="1" 
                                                                     {{ $detalle->stock_fisico_existencias === true ? 'checked' : '' }}
                                                                     data-route="{{ route('recepcion.confirmar-stock') }}"
                                                                     data-orden-id="{{ $detalle->orden_id }}"
@@ -349,7 +349,7 @@
                                                                     class="btn-check-stock" 
                                                                     name="stock_status_{{ $detAccordionId }}" 
                                                                     id="stock_sin_existencias_{{ $detAccordionId }}" 
-                                                                    value="sin_existencias" 
+                                                                    value="0" 
                                                                     {{ $detalle->stock_fisico_existencias === false ? 'checked' : '' }}
                                                                     data-route="{{ route('recepcion.confirmar-stock') }}"
                                                                     data-orden-id="{{ $detalle->orden_id }}"
@@ -770,16 +770,16 @@
             const kitId = primerRadio.data('kit-id');
             const productoId = primerRadio.data('producto-id');
 
-            // Construir objeto con clave compuesta
+            // Construir objeto con clave real de la BD
             let itemData = {
                 orden_id: ordenId,
                 kit_id: kitId,
                 producto_id: productoId,
-                estado_stock: null
+                stock_fisico_existencias: null
             };
 
             if (radioSeleccionado.length > 0) {
-                itemData.estado_stock = radioSeleccionado.val();
+                itemData.stock_fisico_existencias = radioSeleccionado.val();
                 stockData.push(itemData);
             } else {
                 todoConfirmado = false;
