@@ -55,9 +55,6 @@ CLIENTE:
                 cuando el receptor de clic sobre "Revisión" se abrirá la orden de compra en estado de edición para 
                 ser corregida, luego el usuario dara clic sobre el control llamado "Revisada", para que la tarea se establezca
                 como hecha: actividad.estado_id = 4 (Resuelta).
-                
-                ... agregar un campo en la tabla tareas que se llama ruta y que sea un string, con la finalidad de hacer 
-                dinamica la forma en que se procesan las tareas, sin ese campo tendriamos que hardcorear las rutas en la vista
 
         . Receptor:
             . Realiza y reporta las tareas asignadas: 
@@ -74,18 +71,31 @@ CLIENTE:
             . Sistema: Brinda la vista <kanvan> con <autorefrescado> en intervalos de 5 minutos
         
         . Operador: 
-            . En el tablero de <recibidas> ubica la <copia solicitud operador> que va procesar y da clic sobre ella
-                . Sistema: Muestra en el sidebar la orden de compra y sus productos, además las tareas asignadas al operador
-
-        . Operador: Verifica el stock físico de la orden de compra y arrastra la <copia solicitud operador> ubicada hacia el tablero de "En progreso" para dar inicio al proceso
-            . Sistema: 
-                . A petición del usuario, da clic a la tarea "Despacho iniciado"
-                . A petición del usuario, actualiza en la <copia solicitud operador> el campo (<recepcion.validada_destino = true>), 
-                para dar dicha solicitud como validada.
-
-        . Operador: 
-            . Realiza la lista de tareas operativas asignadas (Revisa y confirma los stocks físicos, Productos trasladados a zona de despacho)
+            . En el tablero de <recibidas> ubica visualmente la <copia solicitud operador> que va procesar y la arrastra hacia el tablero "En Progreso"
+            . A petición del usuario, actualiza en la <copia solicitud operador> el campo (<recepcion.validada_destino = true>), 
+            para dar dicha solicitud como validada.
+            
+        . Operador:
+            . Ubica la <copia solicitud operador> en el tablero "En Progreso" y da clic sobre ella
+            . Sistema: Muestra en el sidebar las tareas asignadas al operador
         
+        . Operador: 
+            . Da clic sobre su única tarea 
+            . Sistema: Abre la edición del carrito mostrando todas las ordenes y sus items
+        
+        . Operador: Confirma en cada item si hay stock físico disponible o no lo hay
+            
+            
+            
+            
+            
+            ... 03.feb: agrega funcionalidad a los controles de confirmación del stock físico
+                ... revisar el tracking que se esta enviando
+
+
+
+
+
         . Receptor:
             . Realiza las lista de tareas operativas asignadas (Revisión de la orden de compra, Descarga del stock, Pago verificado, Mercadería enviada)
             . Sistema: 

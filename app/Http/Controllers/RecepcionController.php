@@ -11,6 +11,8 @@ use App\Models\Parametro;
 use App\Models\Recepcion;
 use App\Models\Solicitud;
 use App\Models\User;
+use App\Models\Detalle;
+use App\Models\Tarea;
 use App\Services\KeyMaker;
 use App\Services\KeyRipper;
 use Spatie\Permission\Models\Role;
@@ -365,7 +367,72 @@ class RecepcionController extends Controller
         return redirect()->route('recepcion.parametros')->with('success', 'Parámetro actualizado correctamente');
     }
 
-    public function efectuarPago(Request $request)
+
+    public function confirmarStock(Request $request)
+    {
+        try {
+            // LECTURA DE DATOS
+            $atencion_id = $request->input('atencion_id');
+            $lote_stock = $request->input('lote_stock', []);
+
+            // VALIDACIÓN
+            if (empty($atencion_id) || empty($lote_stock)) { //Ordenes e items no vacíos
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Información incompleta para la validación del lote'
+                ], 422);
+            }
+            $detallesRequeridos = Detalle::whereHas('orden', function($q) use ($atencion_id) { //Confirmaciones
+                $q->where('atencion_id', $atencion_id);
+            })->get(['orden_id', 'kit_id', 'producto_id']);
+            $clavesRequeridas = $detallesRequeridos->map(function($item) {
+                return "{$item->orden_id}-{$item->kit_id}-{$item->producto_id}";
+            })->toArray();
+            $clavesRecibidas = [];
+            foreach ($lote_stock as $item) {
+                 if (isset($item['orden_id'], $item['kit_id'], $item['producto_id'])) {
+                     $clavesRecibidas[] = "{$item['orden_id']}-{$item['kit_id']}-{$item['producto_id']}";
+                 }
+            }
+            $faltantes = array_diff($clavesRequeridas, $clavesRecibidas);
+            if (!empty($faltantes)) {
+                Log::warning("Log:: Intento de confirmación incompleta para atención $atencion_id. Faltan items.");
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Error: El lote enviado no contiene todos los ítems de la solicitud.'
+                ], 422);
+            }
+            foreach ($lote_stock as $item) {
+                if (!isset($item['estado_stock']) || !in_array($item['estado_stock'], ['verificado', 'sin_existencias'])) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Error: Hay ítems sin una confirmación de stock válida.'
+                    ], 422);
+                }
+            }
+
+            //PROCESAMIENTO
+
+            //aqui va el guardado en detalles
+
+            //aquiva el llamado a la funcion privada: reportarTarea
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Validación de stock completada. Todos los ítems han sido verificados correctamente.',
+                'count' => count($lote_stock)
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error("Log:: error en confirmarStock (batch): " . $e->getMessage());
+            return response()->json([
+                'success' => false, 
+                'message' => 'Error al validar el lote de stock: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function confirmarPago(Request $request)
     {
         return 'efectuarPago';
         //ejecutar la funcion privada: reportarTarea

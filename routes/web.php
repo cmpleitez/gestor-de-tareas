@@ -166,9 +166,9 @@ Route::middleware([
             Route::post('asignar/{recepcion}/{equipo}', [RecepcionController::class, 'asignar'])->name('recepcion.asignar');
             Route::get('tareas/{recepcion_id}', [RecepcionController::class, 'tareas'])->name('recepcion.tareas');
             
-            Route::post('efectuar-pago', [RecepcionController::class, 'efectuarPago'])->name('recepcion.efectuar-pago');
+            Route::post('confirmar-stock', [RecepcionController::class, 'confirmarStock'])->name('recepcion.confirmar-stock');
             
-            Route::post('efectuar-pago', [RecepcionController::class, 'efectuarPago'])->name('recepcion.efectuar-pago');
+            Route::post('confirmar-pago', [RecepcionController::class, 'efectuarPago'])->name('recepcion.confirmar-pago');
             Route::post('descargar-stock', [RecepcionController::class, 'descargarStock'])->name('recepcion.descargar-stock');
             Route::post('efectuar-entrega', [RecepcionController::class, 'efectuarEntrega'])->name('recepcion.efectuar-entrega');
 

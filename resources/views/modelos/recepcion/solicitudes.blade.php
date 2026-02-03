@@ -594,7 +594,7 @@
                 } else if (tarea.tarea === 'Stock físico revisado') {
                     ruta = '{{ route("tienda.carrito-editar") }}';
                 } else if (tarea.tarea === 'Pago efectuado') {
-                    ruta = '{{ route("recepcion.efectuar-pago") }}';
+                    ruta = '{{ route("recepcion.confirmar-pago") }}';
                 } else if (tarea.tarea === 'Stock descargado') {
                     ruta = '{{ route("recepcion.descargar-stock") }}';
                 } else if (tarea.tarea === 'Entrega efectuada') {
@@ -642,6 +642,19 @@
             }
         });
         
+        //PROPAGAR CLICK AL FORMULARIO
+        $(document).on('click', '.selectable-item', function(e) {
+            // Si el clic NO fue directamente en el checkbox (para evitar doble acción)
+            if (!$(e.target).is('input[type="checkbox"]')) {
+                const form = $(this).find('form');
+                const checkbox = $(this).find('input[type="checkbox"]');
+                
+                if (checkbox.length && !checkbox.is(':disabled')) {
+                    form.submit();
+                }
+            }
+        });
+
         //CERRAR SIDEBAR
         $(document).on('click', '.kanban-overlay, .kanban-sidebar .close-icon',
             function() {

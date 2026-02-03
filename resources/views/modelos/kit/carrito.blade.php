@@ -12,7 +12,7 @@
     @endphp
     <div class="row align-items-center flex-nowrap">
         <div class="col-auto d-flex justify-content-start">
-            @if(auth()->user()->mainRole->name == 'receptor')
+            @if(auth()->user()->mainRole->name == 'receptor' || auth()->user()->mainRole->name == 'operador')
                 <a href="javascript:history.back()" class="btn btn-primary-light">
                     <i class="fas fa-arrow-left"></i>
                 </a>
@@ -26,9 +26,11 @@
         <div class="col d-flex justify-content-center">
             <span style="font-size: 1.5em;">ORDEN # {{ $atencion_id_ripped }}</span>
         </div>
-        <div class="col-auto d-flex justify-content-end">
-            <span style="font-size: 1.9em;"><i class="fas fa-cart-plus" style="padding-right: 0.5em;"></i><span id="total-global">${{ number_format($total, 2) }}</span></span>
-        </div>
+        @if(auth()->user()->mainRole->name == 'cliente' || auth()->user()->mainRole->name == 'receptor')
+            <div class="col-auto d-flex justify-content-end">
+                <span style="font-size: 1.9em;"><i class="fas fa-cart-plus" style="padding-right: 0.5em;"></i><span id="total-global">${{ number_format($total, 2) }}</span></span>
+            </div>
+        @endif
     </div>
 @endsection
 
@@ -149,7 +151,6 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         white-space: nowrap;
     }
 
@@ -167,76 +168,52 @@
     .btn-stock-verified {
         background-color: var(--color-success-light);
         color: var(--text-success-dark);
-        border-color: var(--border-success-dark);
+        border: 2px solid transparent; /* Asegurar base sin borde visible pero con espacio */
     }
 
     .btn-stock-verified:hover {
-        background-color: var(--color-success-light);
+        border-color: var(--border-success-dark);
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(13, 121, 65, 0.25);
+        transform: translateY(-2px);
     }
 
     .btn-check-stock:checked + .btn-stock-verified {
-        background-color: var(--color-success-dark);
+        background-color: var(--color-success);
         color: #ffffff;
-        border-color: var(--border-success-dark);
+        border-color: transparent; /* Quitar borde al estar seleccionado */
         transform: scale(1.05);
-        box-shadow: 0 6px 20px rgba(13, 121, 65, 0.4);
+        transform: scale(1.05);
     }
 
     .btn-check-stock:checked + .btn-stock-verified i {
         transform: scale(1.2) rotate(360deg);
     }
 
-    /* Estado: Sin Existencias (Warning) */
     .btn-stock-unavailable {
         background-color: var(--color-warning-light);
         color: var(--text-warning-dark);
-        border-color: var(--border-warning-dark);
+        border: 2px solid transparent;
     }
 
     .btn-stock-unavailable:hover {
-        background-color: var(--color-warning-light);
+        border-color: var(--border-warning-dark);
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(183, 69, 28, 0.25);
+        transform: translateY(-2px);
     }
 
     .btn-check-stock:checked + .btn-stock-unavailable {
-        background-color: var(--color-warning-dark);
+        background-color: var(--color-warning);
         color: #ffffff;
-        border-color: var(--border-warning-dark);
+        border-color: transparent;
         transform: scale(1.05);
-        box-shadow: 0 6px 20px rgba(183, 69, 28, 0.4);
+        transform: scale(1.05);
     }
 
     .btn-check-stock:checked + .btn-stock-unavailable i {
         transform: scale(1.2) rotate(360deg);
     }
 
-    /* Estado: Pendiente (Primary) */
-    .btn-stock-pending {
-        background-color: var(--color-primary-light);
-        color: var(--text-primary-dark);
-        border-color: var(--border-primary-dark);
-    }
 
-    .btn-stock-pending:hover {
-        background-color: var(--color-primary-light);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(22, 65, 145, 0.25);
-    }
-
-    .btn-check-stock:checked + .btn-stock-pending {
-        background-color: var(--color-primary-dark);
-        color: #ffffff;
-        border-color: var(--border-primary-dark);
-        transform: scale(1.05);
-        box-shadow: 0 6px 20px rgba(22, 65, 145, 0.4);
-    }
-
-    .btn-check-stock:checked + .btn-stock-pending i {
-        transform: scale(1.2) rotate(360deg);
-    }
 
     /* Efecto de brillo al hacer clic */
     .btn-stock-status::before {
@@ -321,7 +298,7 @@
                                         <div class="accordion accordion-flush" id="{{ $detAccordionId }}">
                                             <div class="accordion-item">
                                                 <h2 class="accordion-header d-flex align-items-center" id="{{ $detHeadingId }}">
-                                                    @role('cliente|receptor')
+                                                    @if(auth()->user()->mainRole->name == 'cliente' || auth()->user()->mainRole->name == 'receptor')
                                                         <div class="ps-2 pe-1">
                                                             <i id="btn_retirar_{{ $detalle->orden_id }}_{{ $detalle->kit_id }}_{{ $detalle->producto_id }}"
                                                                 class="fas fa-trash text-danger-dark" 
@@ -332,10 +309,18 @@
                                                                 data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="Eliminar producto">
                                                             </i>
                                                         </div>
-                                                    @endrole
+                                                    @endif
                                                     <div class="w-100 d-flex flex-column gap-2 p-2">
                                                         {{-- Información del Producto --}}
-                                                        <button class="accordion-button collapsed d-flex justify-content-start text-start flex-grow-1" style="padding: 0.5em; font-size: 0.8rem;" type="button" data-bs-toggle="collapse" data-bs-target="#{{ $detCollapseId }}" aria-expanded="false" aria-controls="{{ $detCollapseId }}">
+                                                        <button class="d-flex justify-content-start text-start flex-grow-1 {{ (auth()->user()->mainRole->name == 'cliente' || auth()->user()->mainRole->name == 'receptor') ? 'accordion-button collapsed' : 'border-0 bg-transparent' }}" 
+                                                            style="padding: 0.5em; font-size: 0.8rem;" 
+                                                            type="button" 
+                                                            @if(auth()->user()->mainRole->name == 'cliente' || auth()->user()->mainRole->name == 'receptor')
+                                                                data-bs-toggle="collapse" 
+                                                                data-bs-target="#{{ $detCollapseId }}" 
+                                                                aria-expanded="false" 
+                                                                aria-controls="{{ $detCollapseId }}"
+                                                            @endif>
                                                             <span class="text-secondary me-2">{{ $detalle->unidades }}</span>
                                                             <span id="badgeId_{{ $detAccordionId }}" class="badge bg-secondary-dark me-2">{{ $detalle->producto_id }}</span>
                                                             <span id="productName_{{ $detAccordionId }}">{{ $detalle->producto->producto }}</span>
@@ -343,81 +328,97 @@
                                                         </button>
 
                                                         {{-- Control de Radio para Estado de Stock Físico --}}
-                                                        <div class="btn-group-stock-status w-100" role="group" aria-label="Estado de stock físico">
-                                                            <input type="radio" class="btn-check-stock" name="stock_status_{{ $detAccordionId }}" id="stock_verificado_{{ $detAccordionId }}" value="verificado" {{ $detalle->stock_fisico_existencias === true ? 'checked' : '' }}>
-                                                            <label class="btn-stock-status btn-stock-verified bg-success-light border-success-dark text-success-dark" for="stock_verificado_{{ $detAccordionId }}">
-                                                                <i class="fas fa-check-circle me-1"></i>
-                                                                <span>Existencias verificadas</span>
-                                                            </label>
+                                                        @if(auth()->user()->mainRole->name == 'operador')
+                                                            <div class="btn-group-stock-status d-flex justify-content-end" role="group" aria-label="Estado de stock físico">
+                                                                <input type="radio" 
+                                                                    class="btn-check-stock" 
+                                                                    name="stock_status_{{ $detAccordionId }}" 
+                                                                    id="stock_verificado_{{ $detAccordionId }}" 
+                                                                    value="verificado" 
+                                                                    {{ $detalle->stock_fisico_existencias === true ? 'checked' : '' }}
+                                                                    data-route="{{ route('recepcion.confirmar-stock') }}"
+                                                                    data-orden-id="{{ $detalle->orden_id }}"
+                                                                    data-kit-id="{{ $detalle->kit_id }}"
+                                                                    data-producto-id="{{ $detalle->producto_id }}">
+                                                                <label class="btn-stock-status btn-stock-verified" for="stock_verificado_{{ $detAccordionId }}">
+                                                                    <i class="fas fa-check-circle me-1"></i>
+                                                                    <span>Existencias verificadas</span>
+                                                                </label>
 
-                                                            <input type="radio" class="btn-check-stock" name="stock_status_{{ $detAccordionId }}" id="stock_sin_existencias_{{ $detAccordionId }}" value="sin_existencias" {{ $detalle->stock_fisico_existencias === false ? 'checked' : '' }}>
-                                                            <label class="btn-stock-status btn-stock-unavailable bg-warning-light border-warning-dark text-warning-dark" for="stock_sin_existencias_{{ $detAccordionId }}">
-                                                                <i class="fas fa-times-circle me-1"></i>
-                                                                <span>Sin existencias</span>
-                                                            </label>
-
-                                                            <input type="radio" class="btn-check-stock" name="stock_status_{{ $detAccordionId }}" id="stock_pendiente_{{ $detAccordionId }}" value="pendiente" {{ $detalle->stock_fisico_existencias === null ? 'checked' : '' }}>
-                                                            <label class="btn-stock-status btn-stock-pending bg-primary-light border-primary-dark text-primary-dark" for="stock_pendiente_{{ $detAccordionId }}">
-                                                                <i class="fas fa-clock me-1"></i>
-                                                                <span>Pendiente de revisar</span>
-                                                            </label>
-                                                        </div>
+                                                                <input type="radio" 
+                                                                    class="btn-check-stock" 
+                                                                    name="stock_status_{{ $detAccordionId }}" 
+                                                                    id="stock_sin_existencias_{{ $detAccordionId }}" 
+                                                                    value="sin_existencias" 
+                                                                    {{ $detalle->stock_fisico_existencias === false ? 'checked' : '' }}
+                                                                    data-route="{{ route('recepcion.confirmar-stock') }}"
+                                                                    data-orden-id="{{ $detalle->orden_id }}"
+                                                                    data-kit-id="{{ $detalle->kit_id }}"
+                                                                    data-producto-id="{{ $detalle->producto_id }}">
+                                                                <label class="btn-stock-status btn-stock-unavailable" for="stock_sin_existencias_{{ $detAccordionId }}">
+                                                                    <i class="fas fa-times-circle me-1"></i>
+                                                                    <span>No hay existencias</span>
+                                                                </label>
+                                                            </div>
+                                                        @endif
                                                     </div>
                                                 </h2>
-                                                <div id="{{ $detCollapseId }}" class="accordion-collapse collapse" aria-labelledby="{{ $detHeadingId }}" data-bs-parent="#{{ $detAccordionId }}">
-                                                    <div class="accordion-body"> {{-- Equivalentes --}}
-                                                        @php
-                                                            $kitProducto = $detalle->producto->kitProductos->where('kit_id', $orden->kit_id)->first();
-                                                        @endphp
-                                                        @if($kitProducto)
-                                                        @if ($kitProducto->equivalentes->count() > 0)
-                                                            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-2">
-                                                                <div class="col">
-                                                                    <label class="card rounded border m-0 shadow-none h-100" style="cursor: pointer;">
-                                                                        <div class="card-header text-center p-1">
-                                                                            <small class="fw-bold">{{ $kitProducto->producto->id }}</small>
-                                                                        </div>
-                                                                        <div class="card-body p-2 d-flex flex-column align-items-center">
-                                                                            <div class="mb-2">
-                                                                                <input type="radio" name="radio_{{ $detAccordionId }}" value="{{ $kitProducto->producto->id }}" data-name-target="#productName_{{ $detAccordionId }}" data-id-target="#productId_{{ $detAccordionId }}" data-badge-target="#badgeId_{{ $detAccordionId }}" data-product-name="{{ $kitProducto->producto->producto }}" {{ $detalle->producto_id == $kitProducto->producto->id ? 'checked' : '' }} onchange="updateProductName(this)">
-                                                                            </div>
-                                                                            <div class="text-center d-flex flex-column justify-content-center flex-grow-1">
-                                                                                <span class="d-block">{{ $kitProducto->producto->producto }}</span>
-                                                                                <span class="badge badge-primary badge-pill mt-1 mx-auto">Estándar</span>
-                                                                            </div>
-                                                                        </div>
-                                                                    </label>
-                                                                </div>
-                                                                @foreach($kitProducto->equivalentes as $equivalente) 
+                                                @if(auth()->user()->mainRole->name == 'cliente' || auth()->user()->mainRole->name == 'receptor')
+                                                    <div id="{{ $detCollapseId }}" class="accordion-collapse collapse" aria-labelledby="{{ $detHeadingId }}" data-bs-parent="#{{ $detAccordionId }}">
+                                                        <div class="accordion-body"> {{-- Equivalentes --}}
+                                                            @php
+                                                                $kitProducto = $detalle->producto->kitProductos->where('kit_id', $orden->kit_id)->first();
+                                                            @endphp
+                                                            @if($kitProducto)
+                                                            @if ($kitProducto->equivalentes->count() > 0)
+                                                                <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-2">
                                                                     <div class="col">
                                                                         <label class="card rounded border m-0 shadow-none h-100" style="cursor: pointer;">
                                                                             <div class="card-header text-center p-1">
-                                                                                <small class="fw-bold">{{ $equivalente->producto->id }}</small>
+                                                                                <small class="fw-bold">{{ $kitProducto->producto->id }}</small>
                                                                             </div>
                                                                             <div class="card-body p-2 d-flex flex-column align-items-center">
                                                                                 <div class="mb-2">
-                                                                                    <input type="radio" name="radio_{{ $detAccordionId }}" value="{{ $equivalente->producto->id }}" data-name-target="#productName_{{ $detAccordionId }}" data-id-target="#productId_{{ $detAccordionId }}" data-badge-target="#badgeId_{{ $detAccordionId }}" data-product-name="{{ $equivalente->producto->producto }}" {{ $detalle->producto_id == $equivalente->producto->id ? 'checked' : '' }} onchange="updateProductName(this)">
+                                                                                    <input type="radio" name="radio_{{ $detAccordionId }}" value="{{ $kitProducto->producto->id }}" data-name-target="#productName_{{ $detAccordionId }}" data-id-target="#productId_{{ $detAccordionId }}" data-badge-target="#badgeId_{{ $detAccordionId }}" data-product-name="{{ $kitProducto->producto->producto }}" {{ $detalle->producto_id == $kitProducto->producto->id ? 'checked' : '' }} onchange="updateProductName(this)">
                                                                                 </div>
                                                                                 <div class="text-center d-flex flex-column justify-content-center flex-grow-1">
-                                                                                    {{ $equivalente->producto->producto }}
+                                                                                    <span class="d-block">{{ $kitProducto->producto->producto }}</span>
+                                                                                    <span class="badge badge-primary badge-pill mt-1 mx-auto">Estándar</span>
                                                                                 </div>
                                                                             </div>
                                                                         </label>
                                                                     </div>
-                                                                @endforeach
-                                                            </div>
-                                                        @else
-                                                            <div class="w-100 text-center">
-                                                                <small class="text-secondary" style="opacity: 0.50; font-size: 1rem;">Sin equivalentes asociados</small>
-                                                            </div>
-                                                        @endif
-                                                        @else
-                                                            <div class="alert alert-light mb-0 p-2">
-                                                                <small class="text-muted">No hay opciones disponibles o es un producto alternativo.</small>
-                                                            </div>
-                                                        @endif
+                                                                    @foreach($kitProducto->equivalentes as $equivalente) 
+                                                                        <div class="col">
+                                                                            <label class="card rounded border m-0 shadow-none h-100" style="cursor: pointer;">
+                                                                                <div class="card-header text-center p-1">
+                                                                                    <small class="fw-bold">{{ $equivalente->producto->id }}</small>
+                                                                                </div>
+                                                                                <div class="card-body p-2 d-flex flex-column align-items-center">
+                                                                                    <div class="mb-2">
+                                                                                        <input type="radio" name="radio_{{ $detAccordionId }}" value="{{ $equivalente->producto->id }}" data-name-target="#productName_{{ $detAccordionId }}" data-id-target="#productId_{{ $detAccordionId }}" data-badge-target="#badgeId_{{ $detAccordionId }}" data-product-name="{{ $equivalente->producto->producto }}" {{ $detalle->producto_id == $equivalente->producto->id ? 'checked' : '' }} onchange="updateProductName(this)">
+                                                                                    </div>
+                                                                                    <div class="text-center d-flex flex-column justify-content-center flex-grow-1">
+                                                                                        {{ $equivalente->producto->producto }}
+                                                                                    </div>
+                                                                                </div>
+                                                                            </label>
+                                                                        </div>
+                                                                    @endforeach
+                                                                </div>
+                                                            @else
+                                                                <div class="w-100 text-center">
+                                                                    <small class="text-secondary" style="opacity: 0.50; font-size: 1rem;">Sin equivalentes asociados</small>
+                                                                </div>
+                                                            @endif
+                                                            @else
+                                                                <div class="alert alert-light mb-0 p-2">
+                                                                    <small class="text-muted">No hay opciones disponibles o es un producto alternativo.</small>
+                                                                </div>
+                                                            @endif
+                                                        </div>
                                                     </div>
-                                                </div>
+                                                @endif
                                             </div>
                                         </div>
                                     @endforeach
@@ -483,6 +484,15 @@
                         <i class="fas fa-check me-2"></i> Revisado
                     </button>
                 @endif
+                @if(auth()->user()->mainRole->name == 'operador')
+                    <button type="button" 
+                        id="btnConfirmarLoteStock" 
+                        class="btn btn-primary"
+                        data-atencion-id="{{ isset($orden) ? $orden->atencion_id : '' }}"
+                        data-route="{{ route('recepcion.confirmar-stock') }}">
+                        <i class="fas fa-clipboard-check me-2"></i> Revisado
+                    </button>
+                @endif
             </div>
         </div>
 
@@ -501,6 +511,8 @@
     </div>
 </div>
 @endsection
+
+
 
 @push('scripts')
 <script>
@@ -734,6 +746,88 @@
                 badgeElement.textContent = productId;
             }
         }
+    }
+</script>
+
+<script>
+    // Confirmar stock por lote (Operador)
+    $(document).on('click', '#btnConfirmarLoteStock', function() {
+        const btn = $(this);
+        const ruta = btn.data('route');
+        const atencionId = btn.data('atencion-id');
+        let stockData = [];
+        let itemsSinConfirmar = [];
+        let todoConfirmado = true;
+
+        // Iterar sobre cada grupo de stock (un grupo por cada item/detalle)
+        $('.btn-group-stock-status').each(function() {
+            const grupo = $(this);
+            const radioSeleccionado = grupo.find('input.btn-check-stock:checked');
+            
+            // Obtener datos del primer radio del grupo
+            const primerRadio = grupo.find('input.btn-check-stock').first();
+            const ordenId = primerRadio.data('orden-id');
+            const kitId = primerRadio.data('kit-id');
+            const productoId = primerRadio.data('producto-id');
+
+            // Construir objeto con clave compuesta
+            let itemData = {
+                orden_id: ordenId,
+                kit_id: kitId,
+                producto_id: productoId,
+                estado_stock: null
+            };
+
+            if (radioSeleccionado.length > 0) {
+                itemData.estado_stock = radioSeleccionado.val();
+                stockData.push(itemData);
+            } else {
+                todoConfirmado = false;
+                // Para feedback visual podríamos usar un identificador único si lo tuviéramos, 
+                // o simplemente el mensaje genérico.
+            }
+        });
+
+        // VALIDACIÓN FRONTEND: Debe haber algo seleccionado en todos los items
+        if (!todoConfirmado) {
+            toastr.error('Faltan ítems por confirmar. Por favor, revise todos los productos.');
+            return;
+        }
+
+        // Envío AJAX
+        $.ajax({
+            url: ruta,
+            method: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                atencion_id: atencionId,
+                lote_stock: stockData
+            },
+            beforeSend: function() {
+                btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i> Procesando...');
+            },
+            success: function(response) {
+                if (response.success) {
+                    toastr.success(response.message);
+                    // Opcional: Refrescar o redirigir según necesidad
+                } else {
+                    toastr.error(response.message || 'Error al procesar el lote');
+                }
+            },
+            error: function(xhr) {
+                const errorMsg = xhr.responseJSON ? xhr.responseJSON.message : 'Error de conexión';
+                toastr.error(errorMsg);
+            },
+            complete: function() {
+                btn.prop('disabled', false).html('<i class="fas fa-clipboard-check me-2"></i> Revisado');
+            }
+        });
+    });
+
+    // Función antigua (mantener solo si es necesaria para otros roles, 
+    // pero según el plan ya no se usa onchange)
+    function confirmarStockAJAX(elemento) {
+        // Obsoleto por cambio a confirmación por lote
     }
 </script>
 @endpush
