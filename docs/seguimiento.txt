@@ -102,6 +102,12 @@ CLIENTE:
             para que realice una acción, éste último se deshabilitará, y así deshabilitado mostrará un icono de reloj
             o algun efecto de "procesando", sin delays adicionales, sino el tiempo puro en que se tarde el proceso en sí
 
+            . tanto en la tienda como en la edicion de la orden de compra, se debe verificar el stock digital, 
+            si no se dispone de unidades para un item N, debe deshabilitarse, si las unidades son <= 3 hay que mostrarlas
+            explícitamente en el item, para que el usuario sepa que quedan pocas unidades
+
+            
+
 
 
 

@@ -844,20 +844,89 @@
     $(document).on('click', '#corregir-orden', function() { // Corregir Orden (Receptor)
         const btn = $(this);
         const atencionId = btn.data('atencion-id');
+        
+        // Recolectar TODAS las órdenes y sus detalles
+        let ordenes = [];
+        
+        // Iterar sobre cada collapse principal (orden/kit)
+        $('.main-kit-collapse').each(function() {
+            const collapseDiv = $(this);
+            const ordenId = collapseDiv.attr('id').replace('collapse', '');
+            
+            // Obtener kit_id del botón del accordion
+            const accordionButton = collapseDiv.prev().find('.accordion-button');
+            const kitText = accordionButton.text().trim();
+            const kitId = kitText.split(' -')[0].trim(); // Extrae el número antes del guión
+            
+            const unidadesInput = $(`#unidades_${ordenId}`);
+            const unidades = unidadesInput.val();
+            
+            if (!unidades || !ordenId || !kitId) return; // Skip si no hay datos
+            
+            let detalles = [];
+            
+            // Iterar sobre cada detalle dentro de esta orden
+            collapseDiv.find('.accordion.accordion-flush').each(function() {
+                const detalleAccordion = $(this);
+                const accordionId = detalleAccordion.attr('id');
+                
+                // Extraer el producto_id original del input hidden productId_
+                const productIdInput = detalleAccordion.find(`input[id^="productId_"]`);
+                const productoIdOriginal = productIdInput.val();
+                
+                // Obtener el nombre del radio button para este detalle
+                const primerRadio = detalleAccordion.find('input[type="radio"]').first();
+                const radioName = primerRadio.attr('name');
+                
+                if (!radioName) return; // Skip si no hay radio buttons
+                
+                // Obtener el producto NUEVO seleccionado (del radio)
+                const radioSeleccionado = detalleAccordion.find(`input[name="${radioName}"]:checked`);
+                const productoIdNuevo = radioSeleccionado.length > 0 ? radioSeleccionado.val() : productoIdOriginal;
+                
+                if (productoIdOriginal) {
+                    detalles.push({
+                        kit_id: parseInt(kitId),
+                        producto_id_original: productoIdOriginal,
+                        producto_id_nuevo: productoIdNuevo
+                    });
+                }
+            });
+            
+            if (detalles.length > 0) {
+                ordenes.push({
+                    orden_id: parseInt(ordenId),
+                    unidades: parseInt(unidades),
+                    detalles: detalles
+                });
+            }
+        });
+        
+        // Validación básica del frontend
+        if (ordenes.length === 0) {
+            toastr.error('No se encontraron órdenes para corregir.');
+            return;
+        }
+        
         $.ajax({
             url: '{{ route('recepcion.corregir-orden') }}',
             method: 'POST',
-            data: { _token: '{{ csrf_token() }}', atencion_id: atencionId },
+            data: { 
+                _token: '{{ csrf_token() }}', 
+                atencion_id: atencionId,
+                ordenes: ordenes
+            },
             beforeSend: function() {
                 btn.prop('disabled', true).html('<i class="fas fa-clock me-2"></i> Procesando...');
             },
             success: function(response) {
-                toastr.success(response.message || 'Orden enviada a corrección');
-                btn.prop('disabled', false).html('<i class="fas fa-check"></i> Corregido');
+                toastr.success(response.message || 'Orden corregida exitosamente');
+                // Restaurar icono y nombre del botón a "Corregir"
+                btn.prop('disabled', false).html('<i class="fas fa-pencil-alt"></i> Corregir');
             },
             error: function(xhr) {
                 btn.prop('disabled', false).html('<i class="fas fa-pencil-alt"></i> Corregir');
-                toastr.error(xhr.responseJSON?.message || 'Error al procesar');
+                toastr.error(xhr.responseJSON?.message || 'Error al corregir la orden');
             }
         });
     });
