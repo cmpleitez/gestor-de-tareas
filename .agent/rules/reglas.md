@@ -3,7 +3,7 @@ trigger: always_on
 ---
 
 ⛑️REGLAS:
-1. Cuando diga "pruebalo" debes probar en el explorador lo que acabas de construir, debes probarlo en la pestaña activa (donde la app ya debería estar sesionada), luego debes corregir si lo consideras necesario según los resultados obtenidos.
+1. Cuando diga "pruebalo" debes probar en la pestaña que te dejé activa no crees una nueva pestaña
 2. Ante cualquier peticion de mi parte: trabaja primero en la pestaña activa, si no es posible consultame
 3. Cuando comentes una línea o una serie de líneas hazlo a la derecha de la primera línea de bloque
 4. Escribe para mi código limpio con buenas practicas y el uso constante de estandares

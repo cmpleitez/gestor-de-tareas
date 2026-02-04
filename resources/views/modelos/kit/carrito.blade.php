@@ -298,7 +298,7 @@
                                         <div class="accordion accordion-flush" id="{{ $detAccordionId }}">
                                             <div class="accordion-item">
                                                 <h2 class="accordion-header d-flex align-items-center" id="{{ $detHeadingId }}">
-                                                    @if(auth()->user()->mainRole->name == 'cliente' || auth()->user()->mainRole->name == 'receptor')
+                                                    @if(auth()->user()->mainRole->name == 'cliente' || auth()->user()->mainRole->name == 'receptor') 
                                                         <div class="ps-2 pe-1">
                                                             <i id="btn_retirar_{{ $detalle->orden_id }}_{{ $detalle->kit_id }}_{{ $detalle->producto_id }}"
                                                                 class="fas fa-trash text-danger-dark" 
@@ -311,8 +311,7 @@
                                                         </div>
                                                     @endif
                                                     <div class="w-100 d-flex flex-column gap-2 p-2">
-                                                        {{-- Información del Producto --}}
-                                                        <button class="d-flex justify-content-start text-start flex-grow-1 {{ (auth()->user()->mainRole->name == 'cliente' || auth()->user()->mainRole->name == 'receptor') ? 'accordion-button collapsed' : 'border-0 bg-transparent' }}" 
+                                                        <button class="d-flex justify-content-start align-items-center text-start flex-grow-1 {{ (auth()->user()->mainRole->name == 'cliente' || auth()->user()->mainRole->name == 'receptor') ? 'accordion-button collapsed' : 'border-0 bg-transparent' }}" 
                                                             style="padding: 0.5em; font-size: 0.8rem;" 
                                                             type="button" 
                                                             @if(auth()->user()->mainRole->name == 'cliente' || auth()->user()->mainRole->name == 'receptor')
@@ -321,13 +320,29 @@
                                                                 aria-expanded="false" 
                                                                 aria-controls="{{ $detCollapseId }}"
                                                             @endif>
-                                                            <span class="text-secondary me-2">{{ $detalle->unidades }}</span>
-                                                            <span id="badgeId_{{ $detAccordionId }}" class="badge bg-secondary-dark me-2">{{ $detalle->producto_id }}</span>
+                                                            <span>{{ $detalle->unidades }}</span>
+                                                            @if(auth()->user()->mainRole->name == 'cliente' || auth()->user()->mainRole->name == 'receptor') 
+                                                                @if(is_null($detalle->stock_fisico_existencias))
+                                                                    <span class="px-1">
+                                                                        <i class="fas fa-clock text-muted" title="Pendiente de revisión"></i>
+                                                                    </span>
+                                                                @elseif($detalle->stock_fisico_existencias == 1)
+                                                                    <span class="px-1">
+                                                                        <i class="fas fa-check text-success" title="Stock verificado"></i>
+                                                                    </span>
+                                                                @else
+                                                                    <span class="px-1">
+                                                                        <i class="fas fa-times text-danger" title="Sin stock"></i>
+                                                                    </span>
+                                                                @endif
+                                                            @endif
+                                                            <div class="p-2">
+                                                                <span id="badgeId_{{ $detAccordionId }}" class="badge bg-secondary-dark">{{ $detalle->producto_id }}</span>
+                                                            </div>
+
                                                             <span id="productName_{{ $detAccordionId }}">{{ $detalle->producto->producto }}</span>
                                                             <input type="hidden" id="productId_{{ $detAccordionId }}" value="{{ $detalle->producto_id }}">
                                                         </button>
-
-                                                        {{-- Control de Radio para Estado de Stock Físico --}}
                                                         @if(auth()->user()->mainRole->name == 'operador')
                                                             <div class="btn-group-stock-status d-flex justify-content-end" role="group" aria-label="Estado de stock físico">
                                                                 <input type="radio" 
@@ -336,7 +351,7 @@
                                                                     id="stock_verificado_{{ $detAccordionId }}" 
                                                                     value="1" 
                                                                     {{ $detalle->stock_fisico_existencias === true ? 'checked' : '' }}
-                                                                    data-route="{{ route('recepcion.confirmar-stock') }}"
+                                                                    data-route="{{ route('recepcion.validar-stock') }}"
                                                                     data-orden-id="{{ $detalle->orden_id }}"
                                                                     data-kit-id="{{ $detalle->kit_id }}"
                                                                     data-producto-id="{{ $detalle->producto_id }}">
@@ -344,14 +359,13 @@
                                                                     <i class="fas fa-check-circle me-1"></i>
                                                                     <span>Existencias verificadas</span>
                                                                 </label>
-
                                                                 <input type="radio" 
                                                                     class="btn-check-stock" 
                                                                     name="stock_status_{{ $detAccordionId }}" 
                                                                     id="stock_sin_existencias_{{ $detAccordionId }}" 
                                                                     value="0" 
                                                                     {{ $detalle->stock_fisico_existencias === false ? 'checked' : '' }}
-                                                                    data-route="{{ route('recepcion.confirmar-stock') }}"
+                                                                    data-route="{{ route('recepcion.validar-stock') }}"
                                                                     data-orden-id="{{ $detalle->orden_id }}"
                                                                     data-kit-id="{{ $detalle->kit_id }}"
                                                                     data-producto-id="{{ $detalle->producto_id }}">
@@ -388,7 +402,7 @@
                                                                             </div>
                                                                         </label>
                                                                     </div>
-                                                                    @foreach($kitProducto->equivalentes as $equivalente) 
+                                                                    @foreach($kitProducto->equivalentes as $equivalente)
                                                                         <div class="col">
                                                                             <label class="card rounded border m-0 shadow-none h-100" style="cursor: pointer;">
                                                                                 <div class="card-header text-center p-1">
@@ -472,30 +486,42 @@
             </div>
         @endforeach
 
-        <div class="row mt-4">
-            <div class="col-12 col-md-12 d-flex justify-content-end">
+        <div class="row d-flex justify-content-end mt-4"> {{--Tablero de control--}}
+            <div class="col-12 col-md-12 d-flex justify-content-end gap-2">
                 @if(auth()->user()->mainRole->name == 'cliente')
                     <button type="button" id="btnEnviarCarrito" class="btn btn-primary">
                         <i class="fas fa-shopping-cart me-2"></i> Enviar
                     </button>
                 @endif
                 @if(auth()->user()->mainRole->name == 'receptor')
-                    <button type="button" id="darPorRevisado" class="btn btn-warning">
-                        <i class="fas fa-check me-2"></i> Revisado
+                    <button type="button" id="corregir-orden" class="btn btn-warning"
+                        @if($atencion && $atencion->count() > 0)
+                            data-atencion-id="{{ $atencion->first()->id }}"
+                        @endif>
+                        <i class="fas fa-pencil-alt"></i> Corregir
+                    </button>
+                @endif
+                @if(auth()->user()->mainRole->name == 'receptor')
+                    <button type="button" id="validar-orden" class="btn btn-primary"
+                        @if($atencion && $atencion->count() > 0)
+                            data-atencion-id="{{ $atencion->first()->id }}"
+                        @endif>
+                        <i class="fas fa-clipboard-check me-2"></i> Validar
                     </button>
                 @endif
                 @if(auth()->user()->mainRole->name == 'operador')
                     <button type="button" 
-                        id="btnConfirmarLoteStock" 
+                        id="validar-stock" 
                         class="btn btn-primary"
-                        data-atencion-id="{{ isset($orden) ? $orden->atencion_id : '' }}"
-                        data-route="{{ route('recepcion.confirmar-stock') }}">
-                        <i class="fas fa-clipboard-check me-2"></i> Revisado
+                        @if($atencion && $atencion->count() > 0)
+                            data-atencion-id="{{ $atencion->first()->id }}"
+                        @endif
+                        data-route="{{ route('recepcion.validar-stock') }}">
+                        <i class="fas fa-clipboard-check me-2"></i> Validar
                     </button>
                 @endif
             </div>
         </div>
-
     @endif
 @endif
 </div>
@@ -511,8 +537,6 @@
     </div>
 </div>
 @endsection
-
-
 
 @push('scripts')
 <script>
@@ -534,7 +558,6 @@
             };
         @endforeach
     @endif
-    
     $(document).ready(function() { 
         $('.main-kit-collapse').on('show.bs.collapse hidden.bs.collapse', function (e) { //Lógica del acordión y el alto de fila
             if (e.target === this) {
@@ -572,7 +595,7 @@
                     }
                 }
             });
-            $btn.prop('disabled', true); //Proceso de envío
+            $btn.prop('disabled', true).html('<i class="fas fa-clock me-2"></i> Procesando...');
             $.ajax({
                 url: '{{ route('tienda.carrito-enviar') }}',
                 method: 'POST',
@@ -582,14 +605,13 @@
                     cart: window.cartDetails
                 }),
                 success: function(response) {
-                    $btn.prop('disabled', false);
                     toastr.success(response.message, null, { "progressBar": false, "timeOut": 0, "extendedTimeOut": 0 });
                     setTimeout(function() {
                         window.location.href = "{{ route('recepcion.solicitudes') }}";
                     }, 2000);
                 },
                 error: function(xhr) {
-                    $btn.prop('disabled', false);
+                    $btn.prop('disabled', false).html('<i class="fas fa-shopping-cart me-2"></i> Enviar');
                     const errorMessage = xhr.responseJSON && xhr.responseJSON.message 
                         ? xhr.responseJSON.message 
                         : 'Error al procesar la orden';
@@ -650,24 +672,19 @@
                 if (response.success) {
                     toastr.success(response.message);
                     if (response.orden_vacia) {
-                        // Si la orden quedó vacía, eliminar toda la fila de la orden con efecto suave
                         const orderRow = $('#accordion' + ordenId).closest('.row');
                         orderRow.fadeOut(400, function() {
                             $(this).remove();
-                            // Verificar si quedan órdenes visibles en el contenedor
                             if ($('#orders-container .row').length === 0) {
                                 $('#orders-container').fadeOut(400, function() {
                                     $('#empty-cart-msg').removeClass('d-none').hide().fadeIn();
                                 });
                             }
-                            // Recalcular totales
                             $('.input-unidades').first().trigger('input');
                         });
                     } else {
-                        // Efecto visual solo para el item
                         accordionItem.fadeOut(400, function() {
                             $(this).remove();
-                            // Recalcular totales después de eliminar item
                             $('.input-unidades').first().trigger('input');
                         });
                     }
@@ -700,16 +717,13 @@
             success: function(response) {
                 if (response.success) {
                     toastr.success(response.message);
-                    // Efecto visual para toda la fila de la orden
                     orderRow.fadeOut(400, function() {
                         $(this).remove();
-                        // Verificar si el carrito quedó vacío
                         if ($('#orders-container .row').length === 0) {
                             $('#orders-container').fadeOut(400, function() {
                                 $('#empty-cart-msg').removeClass('d-none').hide().fadeIn();
                             });
                         }
-                        // Recalcular totales
                         $('.input-unidades').first().trigger('input');
                     });
                 } else {
@@ -747,30 +761,20 @@
             }
         }
     }
-</script>
-
-<script>
-    // Confirmar stock por lote (Operador)
-    $(document).on('click', '#btnConfirmarLoteStock', function() {
+    $(document).on('click', '#validar-stock', function() {
         const btn = $(this);
         const ruta = btn.data('route');
         const atencionId = btn.data('atencion-id');
         let stockData = [];
         let itemsSinConfirmar = [];
         let todoConfirmado = true;
-
-        // Iterar sobre cada grupo de stock (un grupo por cada item/detalle)
         $('.btn-group-stock-status').each(function() {
             const grupo = $(this);
             const radioSeleccionado = grupo.find('input.btn-check-stock:checked');
-            
-            // Obtener datos del primer radio del grupo
             const primerRadio = grupo.find('input.btn-check-stock').first();
             const ordenId = primerRadio.data('orden-id');
             const kitId = primerRadio.data('kit-id');
             const productoId = primerRadio.data('producto-id');
-
-            // Construir objeto con clave real de la BD
             let itemData = {
                 orden_id: ordenId,
                 kit_id: kitId,
@@ -783,18 +787,12 @@
                 stockData.push(itemData);
             } else {
                 todoConfirmado = false;
-                // Para feedback visual podríamos usar un identificador único si lo tuviéramos, 
-                // o simplemente el mensaje genérico.
             }
         });
-
-        // VALIDACIÓN FRONTEND: Debe haber algo seleccionado en todos los items
         if (!todoConfirmado) {
             toastr.error('Faltan ítems por confirmar. Por favor, revise todos los productos.');
             return;
         }
-
-        // Envío AJAX
         $.ajax({
             url: ruta,
             method: 'POST',
@@ -804,30 +802,65 @@
                 lote_stock: stockData
             },
             beforeSend: function() {
-                btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i> Procesando...');
+                btn.prop('disabled', true).html('<i class="fas fa-clock me-2"></i> Procesando...');
             },
             success: function(response) {
                 if (response.success) {
                     toastr.success(response.message);
-                    // Opcional: Refrescar o redirigir según necesidad
                 } else {
                     toastr.error(response.message || 'Error al procesar el lote');
                 }
             },
             error: function(xhr) {
+                btn.prop('disabled', false).html('<i class="fas fa-clipboard-check"></i> Validar');
                 const errorMsg = xhr.responseJSON ? xhr.responseJSON.message : 'Error de conexión';
                 toastr.error(errorMsg);
             },
             complete: function() {
-                btn.prop('disabled', false).html('<i class="fas fa-clipboard-check me-2"></i> Revisado');
+                btn.prop('disabled', false).html('<i class="fas fa-check"></i> Validado');
+            }
+        });
+    });
+    $(document).on('click', '#validar-orden', function() { // Validar Orden (Receptor)
+        const btn = $(this);
+        const atencionId = btn.data('atencion-id');
+        $.ajax({
+            url: '{{ route('recepcion.validar-orden') }}',
+            method: 'POST',
+            data: { _token: '{{ csrf_token() }}', atencion_id: atencionId },
+            beforeSend: function() {
+                btn.prop('disabled', true).html('<i class="fas fa-clock me-2"></i> Procesando...');
+            },
+            success: function(response) {
+                toastr.success(response.message || 'Orden validada correctamente');
+                btn.prop('disabled', false).html('<i class="fas fa-check"></i> Validado');
+            },
+            error: function(xhr) {
+                btn.prop('disabled', false).html('<i class="fas fa-check"></i> Validar');
+                toastr.error(xhr.responseJSON?.message || 'Error al validar');
+            }
+        });
+    });
+    $(document).on('click', '#corregir-orden', function() { // Corregir Orden (Receptor)
+        const btn = $(this);
+        const atencionId = btn.data('atencion-id');
+        $.ajax({
+            url: '{{ route('recepcion.corregir-orden') }}',
+            method: 'POST',
+            data: { _token: '{{ csrf_token() }}', atencion_id: atencionId },
+            beforeSend: function() {
+                btn.prop('disabled', true).html('<i class="fas fa-clock me-2"></i> Procesando...');
+            },
+            success: function(response) {
+                toastr.success(response.message || 'Orden enviada a corrección');
+                btn.prop('disabled', false).html('<i class="fas fa-check"></i> Corregido');
+            },
+            error: function(xhr) {
+                btn.prop('disabled', false).html('<i class="fas fa-pencil-alt"></i> Corregir');
+                toastr.error(xhr.responseJSON?.message || 'Error al procesar');
             }
         });
     });
 
-    // Función antigua (mantener solo si es necesaria para otros roles, 
-    // pero según el plan ya no se usa onchange)
-    function confirmarStockAJAX(elemento) {
-        // Obsoleto por cambio a confirmación por lote
-    }
 </script>
 @endpush

@@ -28,11 +28,11 @@
    ======================================== */
 :root {
   /* Colores principales del sistema */
-  --color-primary: #3676ed;
+  --color-primary: #6397f7;
   --color-secondary: #4d72a0;
   --color-success: #0da557;
   --color-info: #00c6d3;
-  --color-warning: #f78b64;
+  --color-warning: #f5926e;
   --color-danger: #f36262;
 
   /* Variaciones de colores - dark */
@@ -107,6 +107,12 @@
   --btn-warning-light: var(--color-warning-light);
   --btn-danger-light: var(--color-danger-light);
 
+}
+
+/* Efectos Hover para botones principales (Iluminación Unificada) */
+.btn-primary:hover, .btn-warning:hover, .btn-success:hover {
+  filter: brightness(1.15) contrast(1.1) !important;
+  transition: all 0.25s ease;
 }
 
 /* Clases personalizadas para variaciones dark */

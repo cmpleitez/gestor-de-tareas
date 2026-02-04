@@ -368,15 +368,15 @@ class RecepcionController extends Controller
     }
 
 
-    public function confirmarStock(Request $request)
+    public function validarStock(Request $request)
     {
         try {
             // LECTURA DE DATOS
             $atencion_id = $request->input('atencion_id');
-            $lote_stock = $request->input('lote_stock', []);
+            $orden = $request->input('lote_stock', []);
 
             // VALIDACIÓN
-            if (empty($atencion_id) || empty($lote_stock)) { //Ordenes e items no vacíos
+            if (empty($atencion_id) || empty($orden)) { //Ordenes e items no vacíos
                 return response()->json([
                     'success' => false,
                     'message' => 'Información incompleta para la validación del lote'
@@ -389,7 +389,7 @@ class RecepcionController extends Controller
                 return "{$item->orden_id}-{$item->kit_id}-{$item->producto_id}";
             })->toArray();
             $clavesRecibidas = [];
-            foreach ($lote_stock as $item) {
+            foreach ($orden as $item) {
                  if (isset($item['orden_id'], $item['kit_id'], $item['producto_id'])) {
                      $clavesRecibidas[] = "{$item['orden_id']}-{$item['kit_id']}-{$item['producto_id']}";
                  }
@@ -402,7 +402,7 @@ class RecepcionController extends Controller
                     'message' => 'Error: El lote enviado no contiene todos los ítems de la solicitud.'
                 ], 422);
             }
-            foreach ($lote_stock as $item) {
+            foreach ($orden as $item) {
                 if (!isset($item['stock_fisico_existencias']) || !in_array($item['stock_fisico_existencias'], ['1', '0'])) {
                     return response()->json([
                         'success' => false,
@@ -414,7 +414,7 @@ class RecepcionController extends Controller
             //PROCESAMIENTO
             DB::beginTransaction();
                 
-                foreach ($lote_stock as $item) {
+                foreach ($orden as $item) {
                     Detalle::where('orden_id', $item['orden_id'])
                         ->where('kit_id', $item['kit_id'])
                         ->where('producto_id', $item['producto_id'])
@@ -427,8 +427,8 @@ class RecepcionController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Validación de stock completada. Todos los ítems han sido verificados correctamente.',
-                'count' => count($lote_stock)
+                'message' => 'Validación de stock físico completa.',
+                'count' => count($orden)
             ]);
 
         } catch (\Exception $e) {
@@ -438,6 +438,18 @@ class RecepcionController extends Controller
                 'message' => 'Error al validar el lote de stock: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    public function corregirOrden(Request $request)
+    {
+        return 'corregirOrden';
+        //ejecutar la funcion privada: reportarTarea
+    }
+
+    public function validarOrden(Request $request)
+    {
+        return 'validarOrden';
+        //ejecutar la funcion privada: reportarTarea
     }
 
     public function confirmarPago(Request $request)
