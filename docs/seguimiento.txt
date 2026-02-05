@@ -114,6 +114,8 @@ CLIENTE:
 
             . pendiente construir la funcion privada para reportar la tarea como terminada
 
+            . edicion carrito: tambien en el validar del operador se debe cambiar la validacion que se hace en la tabla recepciones
+
 
 
 
