@@ -314,6 +314,8 @@
                                                         <button class="d-flex justify-content-start align-items-center text-start flex-grow-1 {{ (auth()->user()->mainRole->name == 'cliente' || auth()->user()->mainRole->name == 'receptor') ? 'accordion-button collapsed' : 'border-0 bg-transparent' }}" 
                                                             style="padding: 0.5em; font-size: 0.8rem;" 
                                                             type="button" 
+                                                            data-orden-id="{{ $detalle->orden_id }}"
+                                                            data-kit-id="{{ $detalle->kit_id }}"
                                                             @if(auth()->user()->mainRole->name == 'cliente' || auth()->user()->mainRole->name == 'receptor')
                                                                 data-bs-toggle="collapse" 
                                                                 data-bs-target="#{{ $detCollapseId }}" 
@@ -341,7 +343,7 @@
                                                             </div>
 
                                                             <span id="productName_{{ $detAccordionId }}">{{ $detalle->producto->producto }}</span>
-                                                            <input type="hidden" id="productId_{{ $detAccordionId }}" value="{{ $detalle->producto_id }}">
+                                                            <input type="hidden" id="productId_{{ $detAccordionId }}" value="{{ $detalle->producto_id }}" data-original-id="{{ $detalle->producto_id }}">
                                                         </button>
                                                         @if(auth()->user()->mainRole->name == 'operador')
                                                             <div class="btn-group-stock-status d-flex justify-content-end" role="group" aria-label="Estado de stock físico">
@@ -381,54 +383,53 @@
                                                     <div id="{{ $detCollapseId }}" class="accordion-collapse collapse" aria-labelledby="{{ $detHeadingId }}" data-bs-parent="#{{ $detAccordionId }}">
                                                         <div class="accordion-body"> {{-- Equivalentes --}}
                                                             @php
-                                                                $kitProducto = $detalle->producto->kitProductos->where('kit_id', $orden->kit_id)->first();
+                                                                // Usar producto_id_original si existe, sino usar producto_id (retrocompatibilidad)
+                                                                $productoOriginalId = $detalle->producto_id_original ?? $detalle->producto_id;
+                                                                $productoOriginal = \App\Models\Producto::find($productoOriginalId);
+                                                                $kitProducto = $productoOriginal?->kitProductos->where('kit_id', $orden->kit_id)->first();
                                                             @endphp
                                                             @if($kitProducto)
-                                                            @if ($kitProducto->equivalentes->count() > 0)
-                                                                <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-2">
-                                                                    <div class="col">
-                                                                        <label class="card rounded border m-0 shadow-none h-100" style="cursor: pointer;">
-                                                                            <div class="card-header text-center p-1">
-                                                                                <small class="fw-bold">{{ $kitProducto->producto->id }}</small>
-                                                                            </div>
-                                                                            <div class="card-body p-2 d-flex flex-column align-items-center">
-                                                                                <div class="mb-2">
-                                                                                    <input type="radio" name="radio_{{ $detAccordionId }}" value="{{ $kitProducto->producto->id }}" data-name-target="#productName_{{ $detAccordionId }}" data-id-target="#productId_{{ $detAccordionId }}" data-badge-target="#badgeId_{{ $detAccordionId }}" data-product-name="{{ $kitProducto->producto->producto }}" {{ $detalle->producto_id == $kitProducto->producto->id ? 'checked' : '' }} onchange="updateProductName(this)">
-                                                                                </div>
-                                                                                <div class="text-center d-flex flex-column justify-content-center flex-grow-1">
-                                                                                    <span class="d-block">{{ $kitProducto->producto->producto }}</span>
-                                                                                    <span class="badge badge-primary badge-pill mt-1 mx-auto">Estándar</span>
-                                                                                </div>
-                                                                            </div>
-                                                                        </label>
-                                                                    </div>
-                                                                    @foreach($kitProducto->equivalentes as $equivalente)
+                                                                @if ($kitProducto->equivalentes->count() > 0)
+                                                                    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-2">
                                                                         <div class="col">
                                                                             <label class="card rounded border m-0 shadow-none h-100" style="cursor: pointer;">
                                                                                 <div class="card-header text-center p-1">
-                                                                                    <small class="fw-bold">{{ $equivalente->producto->id }}</small>
+                                                                                    <small class="fw-bold">{{ $kitProducto->producto->id }}</small>
                                                                                 </div>
                                                                                 <div class="card-body p-2 d-flex flex-column align-items-center">
                                                                                     <div class="mb-2">
-                                                                                        <input type="radio" name="radio_{{ $detAccordionId }}" value="{{ $equivalente->producto->id }}" data-name-target="#productName_{{ $detAccordionId }}" data-id-target="#productId_{{ $detAccordionId }}" data-badge-target="#badgeId_{{ $detAccordionId }}" data-product-name="{{ $equivalente->producto->producto }}" {{ $detalle->producto_id == $equivalente->producto->id ? 'checked' : '' }} onchange="updateProductName(this)">
+                                                                                        <input type="radio" name="radio_{{ $detAccordionId }}" value="{{ $kitProducto->producto->id }}" data-name-target="#productName_{{ $detAccordionId }}" data-id-target="#productId_{{ $detAccordionId }}" data-badge-target="#badgeId_{{ $detAccordionId }}" data-product-name="{{ $kitProducto->producto->producto }}" {{ $detalle->producto_id == $kitProducto->producto->id ? 'checked' : '' }} onchange="updateProductName(this)">
                                                                                     </div>
                                                                                     <div class="text-center d-flex flex-column justify-content-center flex-grow-1">
-                                                                                        {{ $equivalente->producto->producto }}
+                                                                                        <span class="d-block">{{ $kitProducto->producto->producto }}</span>
+                                                                                        <span class="badge badge-primary badge-pill mt-1 mx-auto">Estándar</span>
                                                                                     </div>
                                                                                 </div>
                                                                             </label>
                                                                         </div>
-                                                                    @endforeach
-                                                                </div>
-                                                            @else
-                                                                <div class="w-100 text-center">
-                                                                    <small class="text-secondary" style="opacity: 0.50; font-size: 1rem;">Sin equivalentes asociados</small>
-                                                                </div>
-                                                            @endif
-                                                            @else
-                                                                <div class="alert alert-light mb-0 p-2">
-                                                                    <small class="text-muted">No hay opciones disponibles o es un producto alternativo.</small>
-                                                                </div>
+                                                                        @foreach($kitProducto->equivalentes as $equivalente)
+                                                                            <div class="col">
+                                                                                <label class="card rounded border m-0 shadow-none h-100" style="cursor: pointer;">
+                                                                                    <div class="card-header text-center p-1">
+                                                                                        <small class="fw-bold">{{ $equivalente->producto->id }}</small>
+                                                                                    </div>
+                                                                                    <div class="card-body p-2 d-flex flex-column align-items-center">
+                                                                                        <div class="mb-2">
+                                                                                            <input type="radio" name="radio_{{ $detAccordionId }}" value="{{ $equivalente->producto->id }}" data-name-target="#productName_{{ $detAccordionId }}" data-id-target="#productId_{{ $detAccordionId }}" data-badge-target="#badgeId_{{ $detAccordionId }}" data-product-name="{{ $equivalente->producto->producto }}" {{ $detalle->producto_id == $equivalente->producto->id ? 'checked' : '' }} onchange="updateProductName(this)">
+                                                                                        </div>
+                                                                                        <div class="text-center d-flex flex-column justify-content-center flex-grow-1">
+                                                                                            {{ $equivalente->producto->producto }}
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </label>
+                                                                            </div>
+                                                                        @endforeach
+                                                                    </div>
+                                                                @else
+                                                                    <div class="w-100 text-center">
+                                                                        <small class="text-secondary" style="opacity: 0.50; font-size: 1rem;">Sin equivalentes asociados</small>
+                                                                    </div>
+                                                                @endif
                                                             @endif
                                                         </div>
                                                     </div>
@@ -649,7 +650,7 @@
             $('#total-global').text(formattedTotal);
         });
 
-    });
+                                    });
 
     // Retirar producto vía AJAX identificado por ID
     function retirarItemAJAX(elemento) {
@@ -872,7 +873,7 @@
                 
                 // Extraer el producto_id original del input hidden productId_
                 const productIdInput = detalleAccordion.find(`input[id^="productId_"]`);
-                const productoIdOriginal = productIdInput.val();
+                const productoIdOriginal = productIdInput.data('original-id');
                 
                 // Obtener el nombre del radio button para este detalle
                 const primerRadio = detalleAccordion.find('input[type="radio"]').first();
@@ -921,6 +922,27 @@
             },
             success: function(response) {
                 toastr.success(response.message || 'Orden corregida exitosamente');
+                
+                // BARRIDO DE PRODUCTOS CAMBIADOS PARA ACTUALIZAR ICONOS
+                if (response.productos_cambiados && response.productos_cambiados.length > 0) {
+                    response.productos_cambiados.forEach(item => {
+                        // Localizar el botón del detalle por orden_id y kit_id
+                        // Luego buscar el input hidden de producto para confirmar que es el nuevo producto_id
+                        const $btn = $(`button[data-orden-id="${item.orden_id}"][data-kit-id="${item.kit_id}"]`).filter(function() {
+                            return $(this).find('input[id^="productId_"]').val() == item.producto_id;
+                        });
+
+                        if ($btn.length) {
+                            const $icon = $btn.find('span.px-1 i.fas');
+                            if ($icon.length) {
+                                $icon.attr('class', 'fas fa-clock text-muted')
+                                     .attr('title', 'Pendiente de revisión');
+                                console.log(`Icono actualizado a reloj para producto ${item.producto_id} en orden ${item.orden_id}`);
+                            }
+                        }
+                    });
+                }
+
                 // Restaurar icono y nombre del botón a "Corregir"
                 btn.prop('disabled', false).html('<i class="fas fa-pencil-alt"></i> Corregir');
             },

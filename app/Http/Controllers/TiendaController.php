@@ -153,6 +153,7 @@ class TiendaController extends Controller
                                 DB::table('detalles')->insert([
                                     'orden_id' => $detalleAnterior->orden_id,
                                     'producto_id' => $cambio['nuevo_producto_id'],
+                                    'producto_id_original' => $detalleAnterior->producto_id_original ?? $detalleAnterior->producto_id, // Preservar el original
                                     'kit_id' => $detalleAnterior->kit_id,
                                     'unidades' => $detalleAnterior->unidades,
                                     'precio' => $detalleAnterior->precio,
@@ -279,6 +280,7 @@ class TiendaController extends Controller
                     $detalle = new Detalle();
                     $detalle->orden_id = $nuevaOrden->id;
                     $detalle->producto_id = $producto->id;
+                    $detalle->producto_id_original = $producto->id; // Preservar el producto original del kit
                     $detalle->kit_id = $orden->id;
                     $detalle->unidades = $producto->pivot->unidades;
                     $detalle->precio = $producto->precio;

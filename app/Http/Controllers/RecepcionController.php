@@ -442,91 +442,52 @@ class RecepcionController extends Controller
     public function corregirOrden(Request $request)
     {
         try {
-            // LECTURA DE DATOS
+            // LECTURA
             $atencion_id = $request->input('atencion_id');
             $ordenes_recibidas = $request->input('ordenes', []);
-
-            // VALIDACIÓN BÁSICA
-            if (empty($atencion_id) || empty($ordenes_recibidas)) {
+            // VALIDACIÓN
+            if (empty($atencion_id) || empty($ordenes_recibidas)) { //Colecciones vacías
                 return response()->json([
                     'success' => false,
                     'message' => 'Información incompleta para la corrección'
                 ], 422);
             }
-
-            // VALIDACIÓN DE INTEGRIDAD: Verificar que vengan TODAS las órdenes y TODOS los detalles
-            $ordenesEsperadas = Orden::where('atencion_id', $atencion_id)->get(['id']);
-            $idsOrdenesEsperadas = $ordenesEsperadas->pluck('id')->sort()->values()->toArray();
-            $idsOrdenesRecibidas = collect($ordenes_recibidas)->pluck('orden_id')->sort()->values()->toArray();
-
-            if ($idsOrdenesEsperadas !== $idsOrdenesRecibidas) {
-                Log::warning("Log:: Intento de corrección incompleta para atención $atencion_id. Órdenes faltantes o extras.");
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Error: El lote enviado no contiene todas las órdenes de la solicitud.'
-                ], 422);
-            }
-
-            // Validar que cada orden tenga todos sus detalles
-            foreach ($ordenes_recibidas as $ordenData) {
-                $orden_id = $ordenData['orden_id'];
-                $detallesRecibidos = $ordenData['detalles'] ?? [];
-
-                $detallesEsperados = Detalle::where('orden_id', $orden_id)
-                    ->get(['kit_id', 'producto_id']);
-                
-                $clavesEsperadas = $detallesEsperados->map(function($item) {
-                    return "{$item->kit_id}-{$item->producto_id}";
-                })->sort()->values()->toArray();
-
-                $clavesRecibidas = collect($detallesRecibidos)->map(function($item) {
-                    return "{$item['kit_id']}-{$item['producto_id_original']}";
-                })->sort()->values()->toArray();
-
-                if ($clavesEsperadas !== $clavesRecibidas) {
-                    Log::warning("Log:: Intento de corrección incompleta para orden $orden_id. Detalles faltantes o extras.");
-                    return response()->json([
-                        'success' => false,
-                        'message' => "Error: Faltan detalles en la orden $orden_id."
-                    ], 422);
-                }
-            }
-
             // PROCESAMIENTO
+            $productos_cambiados = [];
             DB::beginTransaction();
-
-            foreach ($ordenes_recibidas as $ordenData) {
-                $orden_id = $ordenData['orden_id'];
-                $unidades = $ordenData['unidades'];
-                $detalles = $ordenData['detalles'] ?? [];
-
-                // Actualizar unidades en la orden
-                Orden::where('id', $orden_id)->update(['unidades' => $unidades]);
-
-                // Actualizar productos en los detalles
-                foreach ($detalles as $detalleData) {
-                    $kit_id = $detalleData['kit_id'];
-                    $producto_id_original = $detalleData['producto_id_original'];
-                    $producto_id_nuevo = $detalleData['producto_id_nuevo'];
-
-                    // Solo actualizar si cambió el producto
-                    if ($producto_id_original != $producto_id_nuevo) {
-                        Detalle::where('orden_id', $orden_id)
-                            ->where('kit_id', $kit_id)
-                            ->where('producto_id', $producto_id_original)
-                            ->update(['producto_id' => $producto_id_nuevo]);
+                foreach ($ordenes_recibidas as $ordenData) {
+                    $orden_id = $ordenData['orden_id'];
+                    $unidades = $ordenData['unidades'];
+                    $detalles = $ordenData['detalles'] ?? [];
+                    Orden::where('id', $orden_id)->update(['unidades' => $unidades]);
+                    foreach ($detalles as $detalleData) {
+                        $kit_id = $detalleData['kit_id'];
+                        $producto_id_original = $detalleData['producto_id_original'];
+                        $producto_id_nuevo = $detalleData['producto_id_nuevo'];
+                        if ($producto_id_original != $producto_id_nuevo) {
+                            Detalle::where('orden_id', $orden_id)
+                                ->where('kit_id', $kit_id)
+                                ->where('producto_id', $producto_id_original)
+                                ->update([
+                                    'producto_id' => $producto_id_nuevo,
+                                    'stock_fisico_existencias' => null
+                                ]);
+                            $productos_cambiados[] = [ //Registrando productos que cambiaron de la orden
+                                'orden_id' => $orden_id,
+                                'kit_id' => $kit_id,
+                                'producto_id' => $producto_id_nuevo
+                            ];
+                        }
                     }
                 }
-            }
-
             DB::commit();
-
+            //RESULTADO
             return response()->json([
                 'success' => true,
                 'message' => 'Orden corregida exitosamente.',
+                'productos_cambiados' => $productos_cambiados,
                 'count' => count($ordenes_recibidas)
             ]);
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error("Log:: error en corregirOrden: " . $e->getMessage());
@@ -540,6 +501,7 @@ class RecepcionController extends Controller
     public function validarOrden(Request $request)
     {
         return 'validarOrden';
+        //no olvidar validar que no vengan estados de "no hay existencias" o estados de "pendientes de validar"
         //ejecutar la funcion privada: reportarTarea
     }
 

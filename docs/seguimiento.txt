@@ -106,6 +106,8 @@ CLIENTE:
             si no se dispone de unidades para un item N, debe deshabilitarse, si las unidades son <= 3 hay que mostrarlas
             explícitamente en el item, para que el usuario sepa que quedan pocas unidades
 
+            . hacer que en http://gestor-de-tareas:7000/kit/edit/2 aparezca el mensaje "Sin equivalentes asociados"
+
             
 
 

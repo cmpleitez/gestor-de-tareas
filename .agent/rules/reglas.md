@@ -3,7 +3,7 @@ trigger: always_on
 ---
 
 ⛑️REGLAS:
-1. Cuando diga "pruebalo" debes probar en la pestaña que te dejé activa no crees una nueva pestaña
+1. Cuando diga "pruebalo" debes probar en la pestaña que te dejé activa no crees una nueva pestaña ni lo hagas en otra pestaña, e importante no pruebes si no te lo pido.
 2. Ante cualquier peticion de mi parte: trabaja primero en la pestaña activa, si no es posible consultame
 3. Cuando comentes una línea o una serie de líneas hazlo a la derecha de la primera línea de bloque
 4. Escribe para mi código limpio con buenas practicas y el uso constante de estandares

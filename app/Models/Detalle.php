@@ -14,6 +14,16 @@ class Detalle extends Model
         'stock_fisico_existencias' => 'boolean',
     ];
 
+    protected $fillable = [
+        'orden_id',
+        'kit_id',
+        'producto_id',
+        'producto_id_original',
+        'unidades',
+        'precio',
+        'stock_fisico_existencias',
+    ];
+
     public function orden()
     {
         return $this->belongsTo(Orden::class);
@@ -27,6 +37,11 @@ class Detalle extends Model
     public function producto()
     {
         return $this->belongsTo(Producto::class);
+    }
+
+    public function productoOriginal()
+    {
+        return $this->belongsTo(Producto::class, 'producto_id_original');
     }
 
     protected function setKeysForSaveQuery($query)
