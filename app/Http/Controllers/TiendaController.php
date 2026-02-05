@@ -79,7 +79,8 @@ class TiendaController extends Controller
         $atencion_id_ripped = KeyRipper::rip($atencion->id); //cuando es nuevo no tiene id, no hay productos en el carrito
         return view('modelos.kit.carrito', [
             'atencion' => collect([$atencion]),
-            'atencion_id_ripped' => $atencion_id_ripped
+            'atencion_id_ripped' => $atencion_id_ripped,
+            'recepcion_id' => $request->recepcion_id
         ]);
     }
 

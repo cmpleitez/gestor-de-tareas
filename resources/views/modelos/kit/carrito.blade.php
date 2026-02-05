@@ -323,7 +323,7 @@
                                                                 aria-controls="{{ $detCollapseId }}"
                                                             @endif>
                                                             <span>{{ $detalle->unidades }}</span>
-                                                            @if(auth()->user()->mainRole->name == 'cliente' || auth()->user()->mainRole->name == 'receptor') 
+                                                            @if(auth()->user()->mainRole->name == 'receptor' || auth()->user()->mainRole->name == 'operador') 
                                                                 @if(is_null($detalle->stock_fisico_existencias))
                                                                     <span class="px-1">
                                                                         <i class="fas fa-clock text-muted" title="Pendiente de revisión"></i>
@@ -506,7 +506,9 @@
                     <button type="button" id="validar-orden" class="btn btn-primary"
                         @if($atencion && $atencion->count() > 0)
                             data-atencion-id="{{ $atencion->first()->id }}"
-                        @endif>
+                        @endif
+                        data-recepcion-id="{{ $recepcion_id ?? '' }}"
+                        data-route="{{ route('recepcion.validar-orden') }}">
                         <i class="fas fa-clipboard-check me-2"></i> Validar
                     </button>
                 @endif
@@ -808,6 +810,27 @@
             success: function(response) {
                 if (response.success) {
                     toastr.success(response.message);
+                    if (response.items_validados) {
+                        response.items_validados.forEach(function(item) {
+                            const $detalleContainer = $(`input[id^="productId_"][value="${item.producto_id}"]`)
+                                .filter(function() {
+                                    return true; 
+                                })
+                                .closest('.accordion-item');
+                            const $stockRadio = $(`input.btn-check-stock[data-orden-id="${item.orden_id}"][data-kit-id="${item.kit_id}"][data-producto-id="${item.producto_id}"]`).first();
+                            let $accordionHeader = $stockRadio.closest('.accordion-header');
+                            if ($accordionHeader.length === 0) {
+                                $accordionHeader = $stockRadio.closest('.accordion-collapse').prev('.accordion-header');
+                            }
+                            const $iconContainer = $accordionHeader.find('button .px-1');
+                            $iconContainer.empty();
+                            if (item.stock_existencias == "1") {
+                                $iconContainer.html('<i class="fas fa-check text-success" title="Stock verificado"></i>');
+                            } else {
+                                $iconContainer.html('<i class="fas fa-times text-danger" title="Sin stock"></i>');
+                            }
+                        });
+                    }
                 } else {
                     toastr.error(response.message || 'Error al procesar el lote');
                 }
@@ -825,10 +848,16 @@
     $(document).on('click', '#validar-orden', function() { // Validar Orden (Receptor)
         const btn = $(this);
         const atencionId = btn.data('atencion-id');
+        const recepcionId = btn.data('recepcion-id');
+        const ruta = btn.data('route');
         $.ajax({
-            url: '{{ route('recepcion.validar-orden') }}',
+            url: ruta,
             method: 'POST',
-            data: { _token: '{{ csrf_token() }}', atencion_id: atencionId },
+            data: { 
+                _token: '{{ csrf_token() }}', 
+                atencion_id: atencionId, 
+                recepcion_id: recepcionId 
+            },
             beforeSend: function() {
                 btn.prop('disabled', true).html('<i class="fas fa-clock me-2"></i> Procesando...');
             },

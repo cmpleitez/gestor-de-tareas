@@ -562,7 +562,7 @@
                 cache: true,
                 success: function(response) {
                     const tareas = response.tareas || [];
-                    dibujarTareas(tareas, atencionId);
+                    dibujarTareas(tareas, atencionId, recepcionId);
                 },
                 error: function(xhr, status, error) {
                     $('#sidebar-card-body').append(
@@ -571,7 +571,7 @@
                 }
             });
         }
-        function dibujarTareas(tareas, atencionId) {
+        function dibujarTareas(tareas, atencionId, recepcionId) {
             if (tareas.length === 0) {
                 $('#sidebar-card-body').append(
                     '<div class="text-center text-muted py-3"><i class="bx bx-task text-muted"></i><div class="mt-2">Sin tareas asignadas</div></div>'
@@ -609,6 +609,7 @@
                         <div class="selectable-item ${esCompletada ? 'selected' : ''}" style="display: flex; align-items: center; padding: 10px;">
                             <form id="${formId}" action="${ruta}" method="POST" style="display: flex; align-items: center; flex: 1; margin: 0;">
                                 @csrf
+                                <input type="hidden" name="recepcion_id" value="${recepcionId || tarea.recepcion_id}">
                                 <input type="hidden" name="atencion_id" value="${atencionId}">
                                 <input type="checkbox" 
                                     id="${taskId}"
@@ -644,11 +645,9 @@
         
         //PROPAGAR CLICK AL FORMULARIO
         $(document).on('click', '.selectable-item', function(e) {
-            // Si el clic NO fue directamente en el checkbox (para evitar doble acción)
             if (!$(e.target).is('input[type="checkbox"]')) {
                 const form = $(this).find('form');
                 const checkbox = $(this).find('input[type="checkbox"]');
-                
                 if (checkbox.length && !checkbox.is(':disabled')) {
                     form.submit();
                 }
@@ -660,12 +659,10 @@
             function() {
                 $('.kanban-overlay').removeClass('show');
                 $('.kanban-sidebar').removeClass('show');
-                $('body').removeClass('sidebar-open'); // Reactivar scroll de la página principal
-
-                //VERIFICAR SI SE USA
+                $('body').removeClass('sidebar-open');
                 $('.solicitud-card').removeClass(
                     'dragging sortable-drag sortable-chosen sortable-ghost'
-                ); // Limpiar clases de rotación y drag que puedan haber quedado
+                );
                 $('.sortable-fallback').remove();
             }
         );
@@ -752,7 +749,6 @@
                 const cliente = users.find(user => user.tipo ===
                     'origen'); // Separar cliente (origen) de otros participantes (destino)
                 const participantes = users.filter(user => user.tipo === 'destino');
-
                 function generarAvatar(user) { // Función para generar avatar
                     return user.profile_photo_url ?
                         `<img src="${user.profile_photo_url}" alt="Usuario" class="avatar" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;">` :
@@ -772,14 +768,14 @@
                 }
                 if (cliente) { // Mostrar cliente primero
                     usersHtml += `
-                <div style="margin: 0;" data-toggle="popover" 
-                    data-title="${cliente.name || 'Cliente'}" 
-                    data-content="<span class='badge badge-pill ${badgeColor}'>Cliente</span>"
-                    data-trigger="hover"
-                    data-placement="top">
-                    ${generarAvatar(cliente)}
-                </div>
-            `;
+                        <div style="margin: 0;" data-toggle="popover" 
+                            data-title="${cliente.name || 'Cliente'}" 
+                            data-content="<span class='badge badge-pill ${badgeColor}'>Cliente</span>"
+                            data-trigger="hover"
+                            data-placement="top">
+                            ${generarAvatar(cliente)}
+                        </div>
+                    `;
                     if (participantes.length > 0) { // Agregar flecha si hay participantes
                         usersHtml += `
                     <div style="margin: 0 8px; display: flex; align-items: center; justify-content: center; width: 20px; height: 32px;">

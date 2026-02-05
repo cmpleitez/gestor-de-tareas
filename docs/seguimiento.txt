@@ -110,7 +110,10 @@ CLIENTE:
 
             . formula para el calculo del total de la orden de compra
 
-            
+            . en a respuesta de la validación por parte del operador, se deben barrer las ordenes y actualizar el icono de estado
+
+            . pendiente construir la funcion privada para reportar la tarea como terminada
+
 
 
 

@@ -191,7 +191,6 @@ class RecepcionController extends Controller
                     $new_recepcion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
                     $new_recepcion->save();
                     $recepcion->estado_id = $estado_en_progreso_id; //Validando de <copia receptor> y cambiando estado local
-                    $recepcion->validada_destino = true;
                     $recepcion->save();
                     foreach ($recepcion->solicitud->tareas as $tarea) { //Autoasignación de tareas
                         $coincide = $usuario->tareas()->where('tareas.id', $tarea->id)->first();
@@ -206,7 +205,6 @@ class RecepcionController extends Controller
                     }
                 } elseIf($usuario->mainRole->name=='operador') {
                     $recepcion->estado_id = $estado_en_progreso_id; //Validación de <copia operador>
-                    $recepcion->validada_destino = true;
                     $recepcion->save();
                     foreach ($recepcion->solicitud->tareas as $tarea) { //Autoasignación de tareas
                         $coincide = $usuario->tareas()->where('tareas.id', $tarea->id)->first();
@@ -412,12 +410,18 @@ class RecepcionController extends Controller
 
             //PROCESAMIENTO
             DB::beginTransaction();
-                
+                $itemsValidados = [];
                 foreach ($orden as $item) {
                     Detalle::where('orden_id', $item['orden_id'])
                         ->where('kit_id', $item['kit_id'])
                         ->where('producto_id', $item['producto_id'])
                         ->update(['stock_fisico_existencias' => $item['stock_fisico_existencias']]);
+                    $itemsValidados[] = [
+                        'orden_id' => $item['orden_id'],
+                        'kit_id' => $item['kit_id'],
+                        'producto_id' => $item['producto_id'],
+                        'stock_existencias' => $item['stock_fisico_existencias']
+                    ];
                 }
             
             //aquiva el llamado a la funcion privada: reportarTarea
@@ -427,7 +431,7 @@ class RecepcionController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Validación de stock físico completa.',
-                'count' => count($orden)
+                'items_validados' => $itemsValidados
             ]);
 
         } catch (\Exception $e) {
@@ -500,7 +504,12 @@ class RecepcionController extends Controller
 
     public function validarOrden(Request $request)
     {
-        return 'validarOrden';
+        Log::info('$request->all()', $request->all());
+        return response()->json(['success' => true, 'message' => 'Orden validada correctamente', 'data' => $request->all()]);
+
+        //en este punto se debe validar la solicitud recibida
+        //$recepcion->validada_destino = true;
+        //$recepcion->save();
         //no olvidar validar que no vengan estados de "no hay existencias" o estados de "pendientes de validar"
         //ejecutar la funcion privada: reportarTarea
     }
