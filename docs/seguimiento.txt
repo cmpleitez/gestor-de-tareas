@@ -108,6 +108,8 @@ CLIENTE:
 
             . hacer que en http://gestor-de-tareas:7000/kit/edit/2 aparezca el mensaje "Sin equivalentes asociados"
 
+            . formula para el calculo del total de la orden de compra
+
             
 
 
