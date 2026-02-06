@@ -87,11 +87,14 @@ CLIENTE:
             
 
 
+            
+            ... revisar el tracking que se esta enviando y de una vez revisar la secuencia del validado
 
+            . en los equivalentes será necesario validar stock digital
+            . reportarTarea: hacer el proceso
 
-            ... 03.feb: agrega funcionalidad a los controles de confirmación del stock físico
-                ... revisar el tracking que se esta enviando
-                . en los equivalentes será necesario validar stock digital
+            . revisar si la orden que el cliente envia es igual a la orden que el receptor recibe, 
+            cuando el cliente retira items del kit.
             
             . retirar la validación que se hace al arrastrar la solicitud hacia "En progreso" y aplicarla en
             la acción cuando el usuario (receptor , operador) da clic a "Validar" en la edición de la orden 
@@ -116,7 +119,9 @@ CLIENTE:
 
             . edicion carrito: tambien en el validar del operador se debe cambiar la validacion que se hace en la tabla recepciones
 
+            . ordenar las etiquetas del codigo fuente de carrito.blade.php 
 
+            . al validar orden enviar correo adjuntando la orden de compra corregida para validación del cliente
 
 
 

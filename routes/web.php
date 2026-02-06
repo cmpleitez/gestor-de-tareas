@@ -167,7 +167,7 @@ Route::middleware([
             Route::get('tareas/{recepcion_id}', [RecepcionController::class, 'tareas'])->name('recepcion.tareas');
             
             Route::post('corregir-orden', [RecepcionController::class, 'corregirOrden'])->name('recepcion.corregir-orden');
-            Route::post('validar-orden', [RecepcionController::class, 'validarOrden'])->name('recepcion.validar-orden');
+            Route::post('revisar-orden', [RecepcionController::class, 'revisarOrden'])->name('recepcion.revisar-orden');
             Route::post('validar-stock', [RecepcionController::class, 'validarStock'])->name('recepcion.validar-stock');
             Route::post('confirmar-pago', [RecepcionController::class, 'efectuarPago'])->name('recepcion.confirmar-pago');
             Route::post('descargar-stock', [RecepcionController::class, 'descargarStock'])->name('recepcion.descargar-stock');

@@ -503,13 +503,13 @@
                     </button>
                 @endif
                 @if(auth()->user()->mainRole->name == 'receptor')
-                    <button type="button" id="validar-orden" class="btn btn-primary"
+                    <button type="button" id="revisar-orden" class="btn btn-primary"
                         @if($atencion && $atencion->count() > 0)
                             data-atencion-id="{{ $atencion->first()->id }}"
                         @endif
                         data-recepcion-id="{{ $recepcion_id ?? '' }}"
-                        data-route="{{ route('recepcion.validar-orden') }}">
-                        <i class="fas fa-clipboard-check me-2"></i> Validar
+                        data-route="{{ route('recepcion.revisar-orden') }}">
+                        <i class="fas fa-clipboard-check me-2"></i> Revisar
                     </button>
                 @endif
                 @if(auth()->user()->mainRole->name == 'operador')
@@ -793,7 +793,7 @@
             }
         });
         if (!todoConfirmado) {
-            toastr.error('Faltan ítems por confirmar. Por favor, revise todos los productos.');
+            toastr.error('Faltan ítems por revisar.');
             return;
         }
         $.ajax({
@@ -845,84 +845,33 @@
             }
         });
     });
-    $(document).on('click', '#validar-orden', function() { // Validar Orden (Receptor)
+    $(document).on('click', '#revisar-orden', function() { // Revisar Orden (Receptor)
         const btn = $(this);
         const atencionId = btn.data('atencion-id');
         const recepcionId = btn.data('recepcion-id');
         const ruta = btn.data('route');
-        $.ajax({
-            url: ruta,
-            method: 'POST',
-            data: { 
-                _token: '{{ csrf_token() }}', 
-                atencion_id: atencionId, 
-                recepcion_id: recepcionId 
-            },
-            beforeSend: function() {
-                btn.prop('disabled', true).html('<i class="fas fa-clock me-2"></i> Procesando...');
-            },
-            success: function(response) {
-                toastr.success(response.message || 'Orden validada correctamente');
-                btn.prop('disabled', false).html('<i class="fas fa-check"></i> Validado');
-            },
-            error: function(xhr) {
-                btn.prop('disabled', false).html('<i class="fas fa-check"></i> Validar');
-                toastr.error(xhr.responseJSON?.message || 'Error al validar');
-            }
-        });
-    });
-    $(document).on('click', '#corregir-orden', function() { // Corregir Orden (Receptor)
-        const btn = $(this);
-        const atencionId = btn.data('atencion-id');
-        
-        // Recolectar TODAS las órdenes y sus detalles
         let ordenes = [];
-        
-        // Iterar sobre cada collapse principal (orden/kit)
         $('.main-kit-collapse').each(function() {
             const collapseDiv = $(this);
             const ordenId = collapseDiv.attr('id').replace('collapse', '');
-            
-            // Obtener kit_id del botón del accordion
             const accordionButton = collapseDiv.prev().find('.accordion-button');
             const kitText = accordionButton.text().trim();
-            const kitId = kitText.split(' -')[0].trim(); // Extrae el número antes del guión
-            
+            const kitId = kitText.split(' -')[0].trim();
             const unidadesInput = $(`#unidades_${ordenId}`);
             const unidades = unidadesInput.val();
-            
-            if (!unidades || !ordenId || !kitId) return; // Skip si no hay datos
-            
+            if (!unidades || !ordenId || !kitId) return;
             let detalles = [];
-            
-            // Iterar sobre cada detalle dentro de esta orden
             collapseDiv.find('.accordion.accordion-flush').each(function() {
                 const detalleAccordion = $(this);
-                const accordionId = detalleAccordion.attr('id');
-                
-                // Extraer el producto_id original del input hidden productId_
                 const productIdInput = detalleAccordion.find(`input[id^="productId_"]`);
-                const productoIdOriginal = productIdInput.data('original-id');
-                
-                // Obtener el nombre del radio button para este detalle
-                const primerRadio = detalleAccordion.find('input[type="radio"]').first();
-                const radioName = primerRadio.attr('name');
-                
-                if (!radioName) return; // Skip si no hay radio buttons
-                
-                // Obtener el producto NUEVO seleccionado (del radio)
-                const radioSeleccionado = detalleAccordion.find(`input[name="${radioName}"]:checked`);
-                const productoIdNuevo = radioSeleccionado.length > 0 ? radioSeleccionado.val() : productoIdOriginal;
-                
-                if (productoIdOriginal) {
+                const productoId = productIdInput.val();
+                if (productoId) {
                     detalles.push({
                         kit_id: parseInt(kitId),
-                        producto_id_original: productoIdOriginal,
-                        producto_id_nuevo: productoIdNuevo
+                        producto_id: productoId
                     });
                 }
             });
-            
             if (detalles.length > 0) {
                 ordenes.push({
                     orden_id: parseInt(ordenId),
@@ -931,13 +880,83 @@
                 });
             }
         });
-        
-        // Validación básica del frontend
+        if (ordenes.length === 0) {
+            toastr.error('No se encontraron órdenes para revisar.');
+            return;
+        }
+        $.ajax({
+            url: ruta,
+            method: 'POST',
+            data: { 
+                _token: '{{ csrf_token() }}', 
+                atencion_id: atencionId, 
+                recepcion_id: recepcionId,
+                ordenes: ordenes
+            },
+            beforeSend: function() {
+                btn.prop('disabled', true).html('<i class="fas fa-clock me-2"></i> Revisando...');
+            },
+            success: function(response) {
+                toastr.success(response.message);
+                $('.main-kit-collapse').find('.accordion.accordion-flush button').each(function() {
+                    const $iconContainer = $(this).find('span.px-1');
+                    if ($iconContainer.length) {
+                        $iconContainer.empty().html('<i class="fas fa-check-double text-success" title="Orden revisada"></i>');
+                    }
+                });
+                btn.prop('disabled', false).html('<i class="fas fa-check"></i> Revisado');
+            },
+            error: function(xhr) {
+                btn.prop('disabled', false).html('<i class="fas fa-clipboard-check"></i> Revisar');
+                toastr.error(xhr.responseJSON?.message || 'Error al revisar');
+            }
+        });
+    });
+
+    $(document).on('click', '#corregir-orden', function() { // Corregir Orden (Receptor)
+        const btn = $(this);
+        const atencionId = btn.data('atencion-id');
+        let ordenes = [];
+        $('.main-kit-collapse').each(function() {
+            const collapseDiv = $(this);
+            const ordenId = collapseDiv.attr('id').replace('collapse', '');
+            const accordionButton = collapseDiv.prev().find('.accordion-button');
+            const kitText = accordionButton.text().trim();
+            const kitId = kitText.split(' -')[0].trim();
+            const unidadesInput = $(`#unidades_${ordenId}`);
+            const unidades = unidadesInput.val();
+            if (!unidades || !ordenId || !kitId) return;
+            let detalles = [];
+            collapseDiv.find('.accordion.accordion-flush').each(function() {
+                const detalleAccordion = $(this);
+                const accordionId = detalleAccordion.attr('id');
+                const productIdInput = detalleAccordion.find(`input[id^="productId_"]`);
+                const productoIdOriginal = productIdInput.data('original-id');
+                const primerRadio = detalleAccordion.find('input[type="radio"]').first();
+                const radioName = primerRadio.attr('name');
+                if (!radioName) return;
+                const radioSeleccionado = detalleAccordion.find(`input[name="${radioName}"]:checked`);
+                const productoIdNuevo = radioSeleccionado.length > 0 ? radioSeleccionado.val() : productoIdOriginal;
+                if (productoIdOriginal) {
+                    detalles.push({
+                        kit_id: parseInt(kitId),
+                        producto_id_original: productoIdOriginal,
+                        producto_id_nuevo: productoIdNuevo
+                    });
+                }
+            });
+            if (detalles.length > 0) {
+                ordenes.push({
+                    orden_id: parseInt(ordenId),
+                    unidades: parseInt(unidades),
+                    detalles: detalles
+                });
+            }
+        });
         if (ordenes.length === 0) {
             toastr.error('No se encontraron órdenes para corregir.');
             return;
         }
-        
         $.ajax({
             url: '{{ route('recepcion.corregir-orden') }}',
             method: 'POST',
@@ -951,16 +970,11 @@
             },
             success: function(response) {
                 toastr.success(response.message || 'Orden corregida exitosamente');
-                
-                // BARRIDO DE PRODUCTOS CAMBIADOS PARA ACTUALIZAR ICONOS
                 if (response.productos_cambiados && response.productos_cambiados.length > 0) {
                     response.productos_cambiados.forEach(item => {
-                        // Localizar el botón del detalle por orden_id y kit_id
-                        // Luego buscar el input hidden de producto para confirmar que es el nuevo producto_id
                         const $btn = $(`button[data-orden-id="${item.orden_id}"][data-kit-id="${item.kit_id}"]`).filter(function() {
                             return $(this).find('input[id^="productId_"]').val() == item.producto_id;
                         });
-
                         if ($btn.length) {
                             const $icon = $btn.find('span.px-1 i.fas');
                             if ($icon.length) {
@@ -971,8 +985,6 @@
                         }
                     });
                 }
-
-                // Restaurar icono y nombre del botón a "Corregir"
                 btn.prop('disabled', false).html('<i class="fas fa-pencil-alt"></i> Corregir');
             },
             error: function(xhr) {

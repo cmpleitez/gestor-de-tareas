@@ -187,7 +187,7 @@ class RecepcionController extends Controller
                     $new_recepcion->origen_user_id = $usuario->id;
                     $new_recepcion->destino_user_id = $operador->id;
                     $new_recepcion->user_destino_role_id = Role::where('name', 'Operador')->first()->id;
-                    $new_recepcion->validada_origen = true;
+                    //$new_recepcion->validada_origen = true;
                     $new_recepcion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
                     $new_recepcion->save();
                     $recepcion->estado_id = $estado_en_progreso_id; //Validando de <copia receptor> y cambiando estado local
@@ -367,11 +367,13 @@ class RecepcionController extends Controller
 
     public function validarStock(Request $request)
     {
+
+        Log:info('$request->all() ', $request->all());
+
         try {
             // LECTURA DE DATOS
             $atencion_id = $request->input('atencion_id');
             $orden = $request->input('lote_stock', []);
-
             // VALIDACIÓN
             if (empty($atencion_id) || empty($orden)) { //Ordenes e items no vacíos
                 return response()->json([
@@ -407,7 +409,6 @@ class RecepcionController extends Controller
                     ], 422);
                 }
             }
-
             //PROCESAMIENTO
             DB::beginTransaction();
                 $itemsValidados = [];
@@ -424,7 +425,7 @@ class RecepcionController extends Controller
                     ];
                 }
             
-            //aquiva el llamado a la funcion privada: reportarTarea
+            //aqui va el llamado a la funcion privada: reportarTarea
             
             DB::commit();
 
@@ -502,16 +503,65 @@ class RecepcionController extends Controller
         }
     }
 
-    public function validarOrden(Request $request)
+    public function revisarOrden(Request $request)
     {
-        Log::info('$request->all()', $request->all());
-        return response()->json(['success' => true, 'message' => 'Orden validada correctamente', 'data' => $request->all()]);
-
-        //en este punto se debe validar la solicitud recibida
-        //$recepcion->validada_destino = true;
-        //$recepcion->save();
-        //no olvidar validar que no vengan estados de "no hay existencias" o estados de "pendientes de validar"
-        //ejecutar la funcion privada: reportarTarea
+        try {
+            // LECTURA
+            $atencion_id = $request->input('atencion_id');
+            $recepcion_id = $request->input('recepcion_id');
+            $ordenes_recibidas = $request->input('ordenes', []);
+            // VALIDACIÓN
+            if (empty($atencion_id) || empty($ordenes_recibidas)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Información incompleta para la revisión'
+                ], 422);
+            }
+            // PROCESAMIENTO
+            $detalles = Detalle::whereHas('orden', function($q) use ($atencion_id) {
+                $q->where('atencion_id', $atencion_id);
+            })->get();
+            if ($detalles->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No se encontraron productos asociados a esta solicitud para revisar.'
+                ], 422);
+            }
+            foreach ($detalles as $detalle) {
+                if ($detalle->stock_fisico_existencias === null) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Hay productos pendientes de revisión física. Por favor, espere a que el operador complete la revisión.'
+                    ], 422);
+                }
+                
+                if ($detalle->stock_fisico_existencias == "0") {
+                    return response()->json([
+                        'success' => false,
+                        'message' => "El producto {$detalle->producto_id} - {$detalle->producto->producto} no tiene existencias físicas. No se puede revisar la orden."
+                    ], 422);
+                }
+            }
+            DB::beginTransaction();
+                $recepcion = Recepcion::find($recepcion_id);
+                if ($recepcion) {
+                    $recepcion->validada_destino = true;
+                    $recepcion->save();
+                }
+            DB::commit();
+            //RESULTADO
+            return response()->json([
+                'success' => true,
+                'message' => 'Orden revisada correctamente.'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Log:: error en revisarOrden: " . $e->getMessage());
+            return response()->json([
+                'success' => false, 
+                'message' => 'Error al revisar la orden: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function confirmarPago(Request $request)

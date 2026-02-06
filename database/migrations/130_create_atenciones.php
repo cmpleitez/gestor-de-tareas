@@ -14,7 +14,6 @@ return new class extends Migration
             $table->foreignId('estado_id')->constrained('estados');
             $table->string('detalle')->nullable();
             $table->decimal('avance', 5, 2)->default(0.00);
-            $table->boolean('reserva')->default(false);
             $table->boolean('activo')->default(true);
             $table->timestamps();
         });
