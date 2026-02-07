@@ -87,8 +87,8 @@ CLIENTE:
             
 
 
-            
             ... revisar el tracking que se esta enviando y de una vez revisar la secuencia del validado
+
 
             . en los equivalentes será necesario validar stock digital
             . reportarTarea: hacer el proceso

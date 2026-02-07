@@ -317,6 +317,9 @@ class RecepcionController extends Controller
             $actividades = Actividad::where('recepcion_id', $recepcion_id)
                 ->with(['tarea', 'estado'])
                 ->get();
+
+            Log::info('$actividades ' . $actividades);
+
             $tareas = $actividades->map(function ($actividad) {
                 return [
                     'recepcion_id'        => $actividad->recepcion_id,
