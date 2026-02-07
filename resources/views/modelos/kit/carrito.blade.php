@@ -353,7 +353,7 @@
                                                                     id="stock_verificado_{{ $detAccordionId }}" 
                                                                     value="1" 
                                                                     {{ $detalle->stock_fisico_existencias === true ? 'checked' : '' }}
-                                                                    data-route="{{ route('recepcion.validar-stock') }}"
+                                                                    data-route="{{ route('recepcion.revisar-stock') }}"
                                                                     data-orden-id="{{ $detalle->orden_id }}"
                                                                     data-kit-id="{{ $detalle->kit_id }}"
                                                                     data-producto-id="{{ $detalle->producto_id }}">
@@ -367,7 +367,7 @@
                                                                     id="stock_sin_existencias_{{ $detAccordionId }}" 
                                                                     value="0" 
                                                                     {{ $detalle->stock_fisico_existencias === false ? 'checked' : '' }}
-                                                                    data-route="{{ route('recepcion.validar-stock') }}"
+                                                                    data-route="{{ route('recepcion.revisar-stock') }}"
                                                                     data-orden-id="{{ $detalle->orden_id }}"
                                                                     data-kit-id="{{ $detalle->kit_id }}"
                                                                     data-producto-id="{{ $detalle->producto_id }}">
@@ -514,13 +514,14 @@
                 @endif
                 @if(auth()->user()->mainRole->name == 'operador')
                     <button type="button" 
-                        id="validar-stock" 
+                        id="revisar-stock" 
                         class="btn btn-primary"
                         @if($atencion && $atencion->count() > 0)
                             data-atencion-id="{{ $atencion->first()->id }}"
                         @endif
-                        data-route="{{ route('recepcion.validar-stock') }}">
-                        <i class="fas fa-clipboard-check me-2"></i> Validar
+                        data-recepcion-id="{{ $recepcion_id ?? '' }}"
+                        data-route="{{ route('recepcion.revisar-stock') }}">
+                        <i class="fas fa-clipboard-check me-2"></i> Revisar
                     </button>
                 @endif
             </div>
@@ -764,10 +765,11 @@
             }
         }
     }
-    $(document).on('click', '#validar-stock', function() {
+    $(document).on('click', '#revisar-stock', function() {
         const btn = $(this);
         const ruta = btn.data('route');
         const atencionId = btn.data('atencion-id');
+        const recepcionId = btn.data('recepcion-id');
         let stockData = [];
         let itemsSinConfirmar = [];
         let todoConfirmado = true;
@@ -802,10 +804,11 @@
             data: {
                 _token: '{{ csrf_token() }}',
                 atencion_id: atencionId,
+                recepcion_id: recepcionId,
                 lote_stock: stockData
             },
             beforeSend: function() {
-                btn.prop('disabled', true).html('<i class="fas fa-clock me-2"></i> Procesando...');
+                btn.prop('disabled', true).html('<i class="fas fa-clock me-2"></i> Revisando...');
             },
             success: function(response) {
                 if (response.success) {
@@ -836,12 +839,12 @@
                 }
             },
             error: function(xhr) {
-                btn.prop('disabled', false).html('<i class="fas fa-clipboard-check"></i> Validar');
+                btn.prop('disabled', false).html('<i class="fas fa-clipboard-check"></i> Revisar');
                 const errorMsg = xhr.responseJSON ? xhr.responseJSON.message : 'Error de conexión';
                 toastr.error(errorMsg);
             },
             complete: function() {
-                btn.prop('disabled', false).html('<i class="fas fa-check"></i> Validado');
+                btn.prop('disabled', false).html('<i class="fas fa-check"></i> Revisado');
             }
         });
     });

@@ -368,14 +368,12 @@ class RecepcionController extends Controller
     }
 
 
-    public function validarStock(Request $request)
+    public function revisarStock(Request $request)
     {
-
-        Log:info('$request->all() ', $request->all());
-
         try {
             // LECTURA DE DATOS
             $atencion_id = $request->input('atencion_id');
+            $recepcion_id = $request->input('recepcion_id');
             $orden = $request->input('lote_stock', []);
             // VALIDACIÓN
             if (empty($atencion_id) || empty($orden)) { //Ordenes e items no vacíos
@@ -412,7 +410,7 @@ class RecepcionController extends Controller
                     ], 422);
                 }
             }
-            //PROCESAMIENTO
+            //PROCESO
             DB::beginTransaction();
                 $itemsValidados = [];
                 foreach ($orden as $item) {
@@ -427,14 +425,19 @@ class RecepcionController extends Controller
                         'stock_existencias' => $item['stock_fisico_existencias']
                     ];
                 }
+                $recepcion = Recepcion::find($recepcion_id); // Validar copia operador
+                if ($recepcion) {
+                    $recepcion->validada_destino = true;
+                    $recepcion->save();
+                }
             
             //aqui va el llamado a la funcion privada: reportarTarea
             
             DB::commit();
-
+            //RESULTADO
             return response()->json([
                 'success' => true,
-                'message' => 'Validación de stock físico completa.',
+                'message' => 'Stock revisado correctamente',
                 'items_validados' => $itemsValidados
             ]);
 
@@ -492,7 +495,7 @@ class RecepcionController extends Controller
             //RESULTADO
             return response()->json([
                 'success' => true,
-                'message' => 'Orden corregida exitosamente.',
+                'message' => 'La orden ha sido corregida',
                 'productos_cambiados' => $productos_cambiados,
                 'count' => count($ordenes_recibidas)
             ]);
@@ -555,7 +558,7 @@ class RecepcionController extends Controller
             //RESULTADO
             return response()->json([
                 'success' => true,
-                'message' => 'Orden revisada correctamente.'
+                'message' => 'Orden revisada correctamente'
             ]);
         } catch (\Exception $e) {
             DB::rollBack();

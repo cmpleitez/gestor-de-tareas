@@ -87,41 +87,22 @@ CLIENTE:
             
 
 
-            ... revisar el tracking que se esta enviando y de una vez revisar la secuencia del validado
 
 
-            . en los equivalentes será necesario validar stock digital
-            . reportarTarea: hacer el proceso
-
-            . revisar si la orden que el cliente envia es igual a la orden que el receptor recibe, 
-            cuando el cliente retira items del kit.
-            
-            . retirar la validación que se hace al arrastrar la solicitud hacia "En progreso" y aplicarla en
-            la acción cuando el usuario (receptor , operador) da clic a "Validar" en la edición de la orden 
-            de compra (carrito.editar)
-
-
-            . agregar este comportamiento a los botones de todo el proyecto: cuando el uusario da clic a un boton 
-            para que realice una acción, éste último se deshabilitará, y así deshabilitado mostrará un icono de reloj
-            o algun efecto de "procesando", sin delays adicionales, sino el tiempo puro en que se tarde el proceso en sí
-
-            . tanto en la tienda como en la edicion de la orden de compra, se debe verificar el stock digital, 
-            si no se dispone de unidades para un item N, debe deshabilitarse, si las unidades son <= 3 hay que mostrarlas
-            explícitamente en el item, para que el usuario sepa que quedan pocas unidades
-
-            . hacer que en http://gestor-de-tareas:7000/kit/edit/2 aparezca el mensaje "Sin equivalentes asociados"
-
-            . formula para el calculo del total de la orden de compra
-
-            . en a respuesta de la validación por parte del operador, se deben barrer las ordenes y actualizar el icono de estado
-
-            . pendiente construir la funcion privada para reportar la tarea como terminada
-
-            . edicion carrito: tambien en el validar del operador se debe cambiar la validacion que se hace en la tabla recepciones
-
-            . ordenar las etiquetas del codigo fuente de carrito.blade.php 
-
-            . al validar orden enviar correo adjuntando la orden de compra corregida para validación del cliente
+            06/feb-> . luego seguiría reportar tarea, pero hay que corregir primero la siguiente lista de errores y falencias:
+                . en los equivalentes será necesario validar stock digital
+                . habilitar para el cliente las unidades de la orden de compra
+                . no permitir el click que muestra la orden en tablero de recepciones
+                . Revisar el problema "No se encontraron ordenes para corregir"
+                . agregar este comportamiento a los botones que realicen procesos extensos: cuando el usario da clic a un boton 
+                para que realice una acción, éste último se deshabilitará, y así deshabilitado mostrará un icono de reloj
+                o algun efecto de "procesando", sin delays adicionales, sino el tiempo puro en que se tarde el proceso en sí
+                . formula para el calculo del total de la orden de compra
+                . ordenar las etiquetas del codigo fuente de carrito.blade.php 
+                . al validar orden enviar correo adjuntando la orden de compra corregida para validación del cliente
+                . tanto en la tienda como en la edicion de la orden de compra, se debe verificar el stock digital, 
+                si no se dispone de unidades para un item N, debe deshabilitarse, si las unidades son <= 3 hay que mostrarlas
+                explícitamente en el item, para que el usuario sepa que quedan pocas unidades
 
 
 
