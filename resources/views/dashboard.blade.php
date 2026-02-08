@@ -258,7 +258,7 @@
                 <li class="nav-item has-sub open"><a href="#"><i class="bx bx-list-ul"></i><span class="menu-title"
                             data-i18n="Menu Levels">Servicios</span></a>
                     <ul class="menu-content" style="display: block;">
-                        @role('superadmin|admin')
+                        @role('superadmin|admin|receptor')
                         <li><a href="{{ route('tienda.create-stock') }}">
                                 <i class="bx bx-right-arrow-alt"></i>
                                 <span class="menu-item" data-i18n="Second Level">Stocks</span>

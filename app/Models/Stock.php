@@ -19,4 +19,8 @@ class Stock extends Model
         return $this->belongsToMany(Oficina::class)->withPivot('unidades', 'producto_id');
     }
 
+    public function productos(){
+        return $this->belongsToMany(Producto::class);
+    }
+
 }

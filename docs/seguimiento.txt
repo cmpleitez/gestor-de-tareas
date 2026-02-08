@@ -91,6 +91,7 @@ CLIENTE:
 
             06/feb-> . luego seguiría reportar tarea, pero hay que corregir primero la siguiente lista de errores y falencias:
                 . en los equivalentes será necesario validar stock digital
+                    . necesitamos darle permiso de administracion de los stocks al receptor
                 . habilitar para el cliente las unidades de la orden de compra
                 . no permitir el click que muestra la orden en tablero de recepciones
                 . Revisar el problema "No se encontraron ordenes para corregir"

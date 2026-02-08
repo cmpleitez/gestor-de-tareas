@@ -383,7 +383,6 @@
                                                     <div id="{{ $detCollapseId }}" class="accordion-collapse collapse" aria-labelledby="{{ $detHeadingId }}" data-bs-parent="#{{ $detAccordionId }}">
                                                         <div class="accordion-body"> {{-- Equivalentes --}}
                                                             @php
-                                                                // Usar producto_id_original si existe, sino usar producto_id (retrocompatibilidad)
                                                                 $productoOriginalId = $detalle->producto_id_original ?? $detalle->producto_id;
                                                                 $productoOriginal = \App\Models\Producto::find($productoOriginalId);
                                                                 $kitProducto = $productoOriginal?->kitProductos->where('kit_id', $orden->kit_id)->first();
@@ -418,7 +417,7 @@
                                                                                             <input type="radio" name="radio_{{ $detAccordionId }}" value="{{ $equivalente->producto->id }}" data-name-target="#productName_{{ $detAccordionId }}" data-id-target="#productId_{{ $detAccordionId }}" data-badge-target="#badgeId_{{ $detAccordionId }}" data-product-name="{{ $equivalente->producto->producto }}" {{ $detalle->producto_id == $equivalente->producto->id ? 'checked' : '' }} onchange="updateProductName(this)">
                                                                                         </div>
                                                                                         <div class="text-center d-flex flex-column justify-content-center flex-grow-1">
-                                                                                            {{ $equivalente->producto->producto }}
+                                                                                            {{ $equivalente->producto->producto }} <span class="badge bg-secondary">{{ $equivalente->producto->oficinaStock->first()->unidades ?? 0 }}</span>
                                                                                         </div>
                                                                                     </div>
                                                                                 </label>

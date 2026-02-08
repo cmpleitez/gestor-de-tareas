@@ -69,12 +69,20 @@ class TiendaController extends Controller
     public function carritoEditar(Request $request)
     {
         $atencion = Atencion::find($request->atencion_id);
+        $oficinaId = auth()->user()->oficina_id;
+        $stockBodegaId = Stock::where('stock', 'Bodega')->first()->id;
+        
         $atencion->load([
             'ordenes.kit',
-            'ordenes.detalle' => function ($query) {
-                $query->orderBy('created_at');
+            'ordenes.detalle' => function ($query1) {
+                $query1->orderBy('created_at');
             },
-            'ordenes.detalle.producto.kitProductos.equivalentes.producto' // Equivalentes
+            'ordenes.detalle.producto.oficinaStock' => function($query2) use ($oficinaId, $stockBodegaId){
+                $query2->where('stock_id', $stockBodegaId)->where('oficina_id', $oficinaId);
+            },
+            'ordenes.detalle.producto.kitProductos.equivalentes.producto.oficinaStock'=> function($query3) use ($oficinaId, $stockBodegaId){
+                $query3->where('stock_id', $stockBodegaId)->where('oficina_id', $oficinaId);
+            }
         ]);
         $atencion_id_ripped = KeyRipper::rip($atencion->id); //cuando es nuevo no tiene id, no hay productos en el carrito
         return view('modelos.kit.carrito', [
