@@ -8,7 +8,7 @@
             <div class="col-md-12 d-flex justify-content-between" style="padding: 0;">
                 <div class="col-11 p-1">
                     <h4 class="card-title">KITS</h4>
-                    <p class="card-text">Son grupos de productos y accesorios enfocados a resolver una necesidad específica</p>
+                    <p class="card-text">Son grupos de productos enfocados a resolver una necesidad específica</p>
                 </div>
                 <div class="col-1 d-flex justify-content-end" style="padding: 0;">
                     <a href="{!! route('kit.create') !!}">

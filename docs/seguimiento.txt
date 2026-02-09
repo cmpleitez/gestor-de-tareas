@@ -93,6 +93,7 @@ CLIENTE:
                 
                 
                 09/feb->... En la tienda: se debe verificar el stock digital
+                    . cálculo del precio del kit
 
 
                 . habilitar para el cliente las unidades de la orden de compra

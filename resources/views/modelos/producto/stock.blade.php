@@ -28,7 +28,7 @@
                                         <th>Producto</th>
                                         <th class="text-center">Modelo</th>
                                         <th class="text-center">Tipo</th>
-                                        <th class="text-center">Producto/Accesorio</th>
+
                                         <th class="text-center">Tablero de control</th>
                                     </tr>
                                 </thead>
@@ -40,8 +40,6 @@
                                             <td>{{ $producto->producto }}</td>
                                             <td class="text-center">{{ $producto->modelo->modelo }}</td>
                                             <td class="text-center">{{ $producto->tipo->tipo }}</td>
-                                            <td class="text-center">{{ $producto->accesorio ? 'Accesorio' : 'Producto' }}
-                                            </td>
                                             {{-- TABLERO DE CONTROL --}}
                                             <td class="text-center">
                                                 @can('editar')
@@ -67,7 +65,6 @@
                                         <th>Producto</th>
                                         <th class="text-center">Modelo</th>
                                         <th class="text-center">Tipo</th>
-                                        <th class="text-center">Producto/Accesorio</th>
                                         <th class="text-center">Tablero de control</th>
                                     </tr>
                                 </tfoot>

@@ -4,7 +4,7 @@
 
 <Workspace>
 	<Local Expanded="Yes">
-		<Model Expanded="Yes" ID="{0001C3BE-6725-4EE1-AA59-06DDF08F6BB5}" Name="gestor-de-tareas" Selected="Yes" Type="{CDE44E21-9669-11D1-9914-006097355D9B}" URL="gestor-de-tareas.pdm"/>
+		<Model Expanded="Yes" ID="{0001C3BE-6725-4EE1-AA59-06DDF08F6BB5}" Loaded="No" Name="gestor-de-tareas" Type="{CDE44E21-9669-11D1-9914-006097355D9B}" URL="gestor-de-tareas.pdm"/>
 	</Local>
 	<BrowserModule Name="Repository"/>
 </Workspace>

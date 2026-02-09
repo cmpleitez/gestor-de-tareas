@@ -13,7 +13,6 @@ class Producto extends Model
     protected $fillable = ['producto', 'precio', 'modelo_id', 'tipo_id'];
 
     protected $casts = [
-        'accesorio' => 'boolean',
         'activo' => 'boolean',
     ];
 

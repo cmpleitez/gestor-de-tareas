@@ -30,14 +30,16 @@ class KitController extends Controller
     public function store(KitStoreRequest $request)
     {
         try {
+            // Lectura
             DB::beginTransaction();
-            $generator = new CorrelativeIdGenerator; // Registrar Kit
+            $generator = new CorrelativeIdGenerator; 
             $id = $generator->generate('Kit');
-            $kit = new Kit;
+            // Registrar Kit
+            $kit = new Kit; 
             $kit->fill($request->validated());
             $kit->id = $id;
             $kit->save();
-            if (isset($request->image_path) && $request->image_path->isValid()) { // Procesar imagen de perfil si existe
+            if (isset($request->image_path) && $request->image_path->isValid()) {
                 $imageStabilizer = new ImageWeightStabilizer;
                 $imageStabilizer->stabilize(
                     $request->image_path,
@@ -47,7 +49,8 @@ class KitController extends Controller
                 );
             }
             DB::commit();
-        return redirect()->route('kit')->with('success', 'Kit creado correctamente');    
+            // Resultado
+            return redirect()->route('kit')->with('success', 'Kit creado correctamente');    
         } catch (Exception $e) {
             DB::rollback();
             return back()->with('error', 'Ocurrió un error cuando se intentaba registrar el Kit: '.$e->getMessage());
@@ -144,6 +147,9 @@ class KitController extends Controller
                 }
             }
             $this->sincronizarProductosConIds($kit, $request->productos ?? []); // Sincronizar productos del Kit
+
+            //
+
             DB::commit();
             return redirect()->route('kit')->with('success', 'Kit actualizado correctamente');
         } catch (\Exception $e) {

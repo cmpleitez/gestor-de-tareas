@@ -106,23 +106,6 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="form-group"> {{-- Accesorio --}}
-                            <div class="checkbox checkbox-primary">
-                                <input type="hidden" name="accesorio" value="0">
-                                <input type="checkbox" name="accesorio" id="accesorio" value="1" {{ old('accesorio') == 1 ? 'checked' : '' }}>
-                                <label for="accesorio">Accesorio</label>
-                            </div>
-                            <div class="help-block"></div>
-                            @error('accesorio')
-                                <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
-                                    {{ $errors->first('accesorio') }}
-                                </div>
-                            @enderror
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
         {{-- GUARDAR --}}

@@ -36,7 +36,9 @@ class TiendaController extends Controller
 {
     public function index()
     {
-        $kits = Kit::where('activo', true)->get();
+        $kits = Kit::where('activo', true)
+        ->with('productos')
+        ->get();
         return view('modelos.kit.tienda', compact('kits'));
     }
 
@@ -55,7 +57,6 @@ class TiendaController extends Controller
             'ordenes.detalle.producto.kitProductos.equivalentes.producto' // Equivalentes
         ])
         ->get();
-
         $atencion_id_ripped = null;
         if (!$atencion->isEmpty()) {
             $atencion_id_ripped = KeyRipper::rip($atencion->first()->id); //cuando es nuevo no tiene id, no hay productos en el carrito
@@ -71,7 +72,6 @@ class TiendaController extends Controller
         $atencion = Atencion::find($request->atencion_id);
         $oficinaId = auth()->user()->oficina_id;
         $stockBodegaId = Stock::where('stock', 'Bodega')->first()->id;
-        
         $atencion->load([
             'ordenes.kit',
             'ordenes.detalle' => function ($query1) {
@@ -84,7 +84,7 @@ class TiendaController extends Controller
                 $query3->where('stock_id', $stockBodegaId)->where('oficina_id', $oficinaId);
             }
         ]);
-        $atencion_id_ripped = KeyRipper::rip($atencion->id); //cuando es nuevo no tiene id, no hay productos en el carrito
+        $atencion_id_ripped = KeyRipper::rip($atencion->id);
         return view('modelos.kit.carrito', [
             'atencion' => collect([$atencion]),
             'atencion_id_ripped' => $atencion_id_ripped,

@@ -7,8 +7,8 @@
                 <i class="fas fa-arrow-left"></i>
             </a>
         </div>
-        <div class="col d-flex justify-content-center">
-            <spam style="font-size: 1rem;">CATALOGO DE PRODUCTOS</spam>
+        <div class="col d-flex justify-content-center align-items-center">
+            <span style="font-size: 1rem;">CATALOGO DE KITS</span>
         </div>
         <div class="col-auto d-flex justify-content-end">
             <a href="{{ route('tienda.carrito') }}" class="btn btn-link text-primary-light position-relative p-0 border-0 align-baseline" id="btn-carrito" style="background: none;">
@@ -22,19 +22,11 @@
 @push('css')
 @endpush
 
-@section('content')
-{{-- GALERIA DE KITS --}}
+@section('content') {{-- TIENDA --}}
 <div class="d-flex flex-column h-100">
     <div class="row">
         <div class="col-lg-12">
-            <div class="row mb-3"> {{-- Categorías --}}
-                <div class="col-md-4 ms-auto">
-                    <div class="d-flex justify-content-end">
-                        <input class="form-control form-control-md" type="text" placeholder="Buscar producto" aria-label=".form-control-lg example">
-                    </div>
-                </div>
-            </div>
-            <div class="row" id="contenedor-kits"> {{-- Tienda --}}
+            <div class="row" id="contenedor-kits">
                 @foreach ($kits as $kit)
                 <div class="col-md-3 kit-item" data-kit-name="{{ strtolower($kit->kit) }}">
                     <div class="card mb-4" style="border: 0;">
@@ -106,7 +98,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row"> {{-- Productos (Carrusel de alternativas) --}}
+                    <div class="row">
                         <div class="col-sm-12">
                             <div class="row" id="kit_productos">
                                 {{-- dibujar aqui los productos del kit clicado --}}
@@ -134,11 +126,11 @@
 </div>
 @endsection
 
-
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const modalPreferencias = document.getElementById('modalPreferencias');
+        //MOSTRAR KIT Y SUS PRODUCTOS
+        const modalPreferencias = document.getElementById('modalPreferencias'); 
         const kitImageContainer = document.getElementById('kit-image-container');
         const kitImage = document.getElementById('kit-image');
         const kitImagePlaceholder = document.getElementById('kit-image-placeholder');
@@ -149,10 +141,10 @@
                 const kitName = button.getAttribute('data-kit-name');
                 const kitImagePath = button.getAttribute('data-kit-image-path');
                 const kitNameElement = document.getElementById('kit-name');
-                if (kitNameElement) { // Actualizar nombre del kit
+                if (kitNameElement) { 
                     kitNameElement.textContent = kitName || 'Nombre del Kit';
                 }
-                if (kitImagePath && kitImagePath.trim() !== '') { // Actualizar imagen del kit
+                if (kitImagePath && kitImagePath.trim() !== '') { 
                     kitImage.src = kitImagePath;
                     kitImage.style.display = 'block';
                     kitImagePlaceholder.style.display = 'none';
@@ -166,7 +158,7 @@
                     kitImagePlaceholder.style.display = 'block';
                     kitImagePlaceholder.textContent = 'Foto del Kit (sin imagen)';
                 }
-                fetch('{{ route("tienda.get-kit-productos") }}', { // Cargar productos del kit via AJAX
+                fetch('{{ route("tienda.get-kit-productos") }}', {
                         method: 'POST'
                         , headers: {
                             'Content-Type': 'application/json'
@@ -183,7 +175,6 @@
                         if (data.success) {
                             let agregarKitUrl = "{{ Route('tienda.agregar-orden', ':id') }}";
                             agregarKitUrl = agregarKitUrl.replace(':id', kitId);
-
                             let html = '';
                             data.kit.productos.forEach(producto => {
                                 html += `
@@ -225,7 +216,7 @@
                 kitNameElement.textContent = '';
             }
         });
-        const updateCartBadge = () => { // Update Cart Badge Logic
+        const updateCartBadge = () => {
             fetch('{{ route("tienda.kit-cantidad") }}')
                 .then(response => response.json())
                 .then(data => {
@@ -237,7 +228,7 @@
                 });
         };
         updateCartBadge();
-        const handleAgregarKit = (e) => { // AJAX Add Kit Handler
+        const handleAgregarKit = (e) => {
             const href = e.currentTarget.getAttribute('href');
             if (href && href !== '#') {
                 e.preventDefault();
@@ -249,7 +240,6 @@
                     toastr[data.type || (data.success ? 'success' : 'error')](data.message);
                     if (data.success) {
                         updateCartBadge();
-                        // Cerrar modal si está abierta
                         const modalElement = document.getElementById('modalPreferencias');
                         const modal = bootstrap.Modal.getInstance(modalElement);
                         if (modal) {
@@ -263,10 +253,9 @@
                 });
             }
         };
-        $(document).on('click', '.btn-agregar-kit', handleAgregarKit); // Delegated for both gallery and modal
+        $(document).on('click', '.btn-agregar-kit', handleAgregarKit);
     });
-
-    // LÓGICA DE PAGINACIÓN Y BÚSQUEDA FRONTEND
+    //PAGINACIÓN
     const itemsPerPage = 4; // Ajusta este número según necesites
     let currentPage = 1;
     let allItems = [];
@@ -279,15 +268,15 @@
     const renderPage = () => {
         const totalItems = filteredItems.length;
         const totalPages = Math.ceil(totalItems / itemsPerPage);
-        if (currentPage < 1) currentPage = 1; // Validar página actual
+        if (currentPage < 1) currentPage = 1;
         if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
         const startIndex = (currentPage - 1) * itemsPerPage;
         const endIndex = startIndex + itemsPerPage;
-        allItems.forEach(item => { // Mostrar/Ocultar items
-            item.classList.add('d-none'); // Ocultar todos primero
+        allItems.forEach(item => {
+            item.classList.add('d-none');
         });
         filteredItems.slice(startIndex, endIndex).forEach(item => {
-            item.classList.remove('d-none'); // Mostrar solo los de la página actual
+            item.classList.remove('d-none');
         });
         renderPaginationControls(totalItems, totalPages, startIndex, endIndex);
     };
@@ -313,13 +302,13 @@
                 </div>
                 <ul class="pagination pagination-lg mb-0">
         `;
-        const prevDisabled = currentPage === 1; // Botón Anterior
+        const prevDisabled = currentPage === 1;
         html += `
             <li class="page-item ${prevDisabled ? 'disabled' : ''}">
                 <a class="page-link rounded-0 me-3 shadow-sm border-top-0 border-start-0" href="javascript:void(0)" ${!prevDisabled ? 'onclick="changePage(' + (currentPage - 1) + ')"' : ''}>&lsaquo;</a>
             </li>
         `;
-        const windowSize = 2; // Páginas a los lados
+        const windowSize = 2;
         let range = [];
         for (let i = 1; i <= totalPages; i++) {
              if (i === 1 || i === totalPages || (i >= currentPage - windowSize && i <= currentPage + windowSize)) {
@@ -339,7 +328,7 @@
             `;
             prev = i;
         });
-        const nextDisabled = currentPage === totalPages; // Botón Siguiente
+        const nextDisabled = currentPage === totalPages;
         html += `
             <li class="page-item ${nextDisabled ? 'disabled' : ''}">
                 <a class="page-link rounded-0 shadow-sm border-top-0 border-start-0 ${nextDisabled ? '' : 'text-dark'}" href="javascript:void(0)" ${!nextDisabled ? 'onclick="changePage(' + (currentPage + 1) + ')"' : ''}>&rsaquo;</a>
@@ -348,12 +337,13 @@
         html += `</ul></nav>`;
         container.innerHTML = html;
     };
-    window.changePage = (page) => { // Función global para los onclick
+    window.changePage = (page) => {
         currentPage = page;
         renderPage();
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
-    initPagination(); // Inicializar
+    initPagination();
+    //BÚSQUEDA
     const searchInput = document.querySelector('input[placeholder="Buscar producto"]');
     if (searchInput) {
         searchInput.addEventListener('input', function() {
@@ -366,7 +356,7 @@
                     return name.includes(searchTerm);
                 });
             }
-            currentPage = 1; // Reset a primera página al buscar
+            currentPage = 1;
             renderPage();
         });
         searchInput.focus(); // Enfocar al cargar

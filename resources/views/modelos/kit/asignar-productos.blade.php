@@ -101,14 +101,6 @@
                                                     <span class="product-card-label">Tipo</span>
                                                     <span class="product-card-value">{{ $producto->tipo->tipo }}</span>
                                                 </div>
-                                                @if($producto->accesorio)
-                                                <div class="product-card-info">
-                                                    <span class="product-card-label">Accesorio</span>
-                                                    <span class="product-card-value">
-                                                        <i class="bx bx-check text-success"></i>
-                                                    </span>
-                                                </div>
-                                                @endif
                                             </div>
                                         </div>
                                     </td>

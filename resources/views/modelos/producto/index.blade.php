@@ -10,7 +10,7 @@
                 <div class="col-md-12 d-flex justify-content-between" style="padding: 0;">
                     <div class="col-11 p-1">
                         <h4 class="card-title">PRODUCTOS</h4>
-                        <p class="card-text">Los productos son los artículos o accesorios que forman parte de los kits compatibles para marcas específicas</p>
+                        <p class="card-text">Los productos son los artículos que forman parte de los kits compatibles para marcas específicas</p>
                     </div>
                     <div class="col-1 d-flex justify-content-end" style="padding: 0;">
                         <a href="{!! route('producto.create') !!}">

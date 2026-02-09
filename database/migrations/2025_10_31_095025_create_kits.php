@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('kits', function (Blueprint $table) {
             $table->unsignedBigInteger('id')->primary();
             $table->string('kit')->unique();
-            $table->decimal('precio', 20, 4);
+            $table->decimal('precio',20,4)->default(0);
             $table->string('image_path', 2048)->nullable();
             $table->integer('descargas')->default(0);
             $table->boolean('activo')->default(true);
