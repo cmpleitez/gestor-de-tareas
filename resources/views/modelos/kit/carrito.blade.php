@@ -408,16 +408,24 @@
                                                                         </div>
                                                                         @foreach($kitProducto->equivalentes as $equivalente)
                                                                             <div class="col">
-                                                                                <label class="card rounded border m-0 shadow-none h-100" style="cursor: pointer;">
+                                                                                @php 
+                                                                                    $stock = $equivalente->producto->oficinaStock->first()->unidades ?? 0;
+                                                                                @endphp 
+                                                                                <label class="card rounded border m-0 shadow-none h-100 {{ $stock == 0 ? 'bg-light' : '' }}" style="cursor: {{ $stock == 0 ? 'not-allowed' : 'pointer' }}; opacity: {{ $stock == 0 ? '0.5' : '1' }};">
                                                                                     <div class="card-header text-center p-1">
                                                                                         <small class="fw-bold">{{ $equivalente->producto->id }}</small>
                                                                                     </div>
                                                                                     <div class="card-body p-2 d-flex flex-column align-items-center">
                                                                                         <div class="mb-2">
-                                                                                            <input type="radio" name="radio_{{ $detAccordionId }}" value="{{ $equivalente->producto->id }}" data-name-target="#productName_{{ $detAccordionId }}" data-id-target="#productId_{{ $detAccordionId }}" data-badge-target="#badgeId_{{ $detAccordionId }}" data-product-name="{{ $equivalente->producto->producto }}" {{ $detalle->producto_id == $equivalente->producto->id ? 'checked' : '' }} onchange="updateProductName(this)">
+                                                                                            <input type="radio" name="radio_{{ $detAccordionId }}" value="{{ $equivalente->producto->id }}" data-name-target="#productName_{{ $detAccordionId }}" data-id-target="#productId_{{ $detAccordionId }}" data-badge-target="#badgeId_{{ $detAccordionId }}" data-product-name="{{ $equivalente->producto->producto }}" {{ $detalle->producto_id == $equivalente->producto->id ? 'checked' : '' }} {{ $stock == 0 ? 'disabled' : '' }} onchange="updateProductName(this)">
                                                                                         </div>
                                                                                         <div class="text-center d-flex flex-column justify-content-center flex-grow-1">
-                                                                                            {{ $equivalente->producto->producto }} <span class="badge bg-secondary">{{ $equivalente->producto->oficinaStock->first()->unidades ?? 0 }}</span>
+                                                                                            <span class="d-block">{{ $equivalente->producto->producto }}</span>
+                                                                                            @if($stock >= 1 && $stock <= 3)
+                                                                                                <span class="badge bg-warning badge-pill mt-1 mx-auto">Stock {{ $stock }}</span>
+                                                                                            @elseif($stock == 0)
+                                                                                                <span class="badge bg-secondary-light text-dark badge-pill mt-1 mx-auto">Sin stock</span>
+                                                                                            @endif
                                                                                         </div>
                                                                                     </div>
                                                                                 </label>

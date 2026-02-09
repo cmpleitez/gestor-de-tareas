@@ -110,7 +110,6 @@ class InventarioSeeder extends Seeder
             ['id' => 2, 'stock' => 'Bodega'],
             ['id' => 3, 'stock' => 'Estante de reservados'],
             ['id' => 4, 'stock' => 'Reservados en tránsito'],
-            ['id' => 5, 'stock' => 'Recién comprados'],
         ];
         foreach ($stocks as $stock) {
             Stock::firstOrCreate([

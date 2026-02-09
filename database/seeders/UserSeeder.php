@@ -111,13 +111,13 @@ class UserSeeder extends Seeder
         //CREACION DE TAREAS
         DB::table('tareas')->insert([
             'id'         => 1,
-            'tarea'      => 'Orden de compra revisada',
+            'tarea'      => 'Orden de compra en revisión',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
         DB::table('tareas')->insert([
             'id'         => 2,
-            'tarea'      => 'Stock físico revisado',
+            'tarea'      => 'Stock físico en revisión',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);

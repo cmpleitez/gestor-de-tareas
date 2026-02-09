@@ -350,7 +350,7 @@ class TiendaController extends Controller
     {
         $stocks = Stock::where('activo', true)->get();
         $productos = Producto::where('activo', true)->with('modelo', 'tipo')->get();
-        return view('modelos.producto.movimiento', compact('productos', 'stocks'));
+        return view('modelos.producto.stock', compact('productos', 'stocks'));
     }
 
     public function storeStock(Request $request)
@@ -458,6 +458,9 @@ class TiendaController extends Controller
     {
         $producto = Producto::with(['oficinaStock' => function ($query) {
             $query->where('oficina_id', auth()->user()->oficina_id)
+                ->whereHas('stock', function ($q) {
+                    $q->whereNot('stock', 'Proveedor');
+                })
                 ->with('stock');
         }])->find($productoId);
         if (!$producto) {

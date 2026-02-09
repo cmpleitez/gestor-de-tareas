@@ -589,9 +589,9 @@
 
 
 
-                if (tarea.tarea === 'Orden de compra revisada') { //Definiendo las tareas del tracking
+                if (tarea.tarea === 'Orden de compra en revisión') { //Definiendo las tareas del tracking
                     ruta = '{{ route("tienda.carrito-editar") }}';
-                } else if (tarea.tarea === 'Stock físico revisado') {
+                } else if (tarea.tarea === 'Stock físico en revisión') {
                     ruta = '{{ route("tienda.carrito-editar") }}';
                 } else if (tarea.tarea === 'Pago efectuado') {
                     ruta = '{{ route("recepcion.confirmar-pago") }}';

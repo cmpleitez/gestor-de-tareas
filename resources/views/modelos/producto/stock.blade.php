@@ -90,7 +90,7 @@
                         <input type="hidden" name="producto_id" id="producto_id" value="{{ old('producto_id') }}">
                         <div class="modal-header">
                             <h5 class="modal-title" id="modalMovimientoLabel">
-                                Movimiento de producto
+                                Stocks del producto
                             </h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
@@ -200,16 +200,16 @@
     <script>
         $(document).ready(function() {
             //VALIDACION
-            $('#destino_stock_id').val('5');
+            $('#destino_stock_id').val('2');
             $('#origen_stock_id').on('change', function() {
                 var origenVal = $(this).val();
                 var destinoVal = $('#destino_stock_id').val();
-                if ((origenVal == '1' || origenVal == '5')) {
+                if ((origenVal == '1' || origenVal == '2')) {
                     if (origenVal == '1') {
-                        $('#destino_stock_id').val('5');
-                        destinoVal = '5';
+                        $('#destino_stock_id').val('2');
+                        destinoVal = '2';
                     }
-                    if (origenVal == '5') {
+                    if (origenVal == '2') {
                         $('#destino_stock_id').val('1');
                         destinoVal = '1';
                     }
@@ -218,12 +218,12 @@
             $('#destino_stock_id').on('change', function() {
                 var destinoVal = $(this).val();
                 var origenVal = $('#origen_stock_id').val();
-                if ((destinoVal == '1' || destinoVal == '5')) {
+                if ((destinoVal == '1' || destinoVal == '2')) {
                     if (destinoVal == '1') {
-                        $('#origen_stock_id').val('5');
-                        origenVal = '5';
+                        $('#origen_stock_id').val('2');
+                        origenVal = '2';
                     }
-                    if (destinoVal == '5') {
+                    if (destinoVal == '2') {
                         $('#origen_stock_id').val('1');
                         origenVal = '1';
                     }
@@ -293,7 +293,7 @@
                                 var nombre = stock.nombre || 'Stock sin nombre';
                                 var unidades = typeof stock.unidades !== 'undefined' ? stock.unidades : 0;
                                 var col = $('<div>', {
-                                    class: 'col-6 col-md-6 ' + (response.stocks.length <= 2 ? 'col-lg-6' : 'col-lg-4') + ' mb-2 d-flex'
+                                    class: (response.stocks.length === 1 ? 'col-12' : 'col-6 col-md-6 ' + (response.stocks.length <= 2 ? 'col-lg-6' : 'col-lg-4')) + ' mb-2 d-flex'
                                 });
                                 var card = $('<div>', {
                                     class: 'border rounded p-2 w-100'
@@ -305,10 +305,12 @@
                                 );
                                 var unidadesRow = $('<div>', { class: 'd-flex justify-content-between align-items-center' });
                                 unidadesRow.append(
-                                    $('<span>', { class: 'text-muted small mb-0' }).text('Unidades'),
                                     $('<span>', {
                                         class: 'badge badge-pill ' + ((unidades == 0 && stock.id != 1) ? 'badge-warning' : 'badge-primary')
-                                    }).text(unidades)
+                                    }).append(
+                                        $('<span>', { class: 'mb-0' }).text('Stock '),
+                                        unidades
+                                    )
                                 );
                                 card.append(headerRow, unidadesRow);
                                 col.append(card);

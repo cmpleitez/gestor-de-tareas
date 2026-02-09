@@ -89,9 +89,12 @@ CLIENTE:
 
 
 
-            06/feb-> . luego seguiría reportar tarea, pero hay que corregir primero la siguiente lista de errores y falencias:
-                . en los equivalentes será necesario validar stock digital
-                    . necesitamos darle permiso de administracion de los stocks al receptor
+            . luego seguiría reportar tarea, pero hay que corregir primero la siguiente lista de errores y falencias:
+                
+                
+                09/feb->... En la tienda: se debe verificar el stock digital
+
+
                 . habilitar para el cliente las unidades de la orden de compra
                 . no permitir el click que muestra la orden en tablero de recepciones
                 . Revisar el problema "No se encontraron ordenes para corregir"
@@ -101,7 +104,7 @@ CLIENTE:
                 . formula para el calculo del total de la orden de compra
                 . ordenar las etiquetas del codigo fuente de carrito.blade.php 
                 . al validar orden enviar correo adjuntando la orden de compra corregida para validación del cliente
-                . tanto en la tienda como en la edicion de la orden de compra, se debe verificar el stock digital, 
+                
                 si no se dispone de unidades para un item N, debe deshabilitarse, si las unidades son <= 3 hay que mostrarlas
                 explícitamente en el item, para que el usuario sepa que quedan pocas unidades
 

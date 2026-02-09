@@ -427,6 +427,7 @@ class RecepcionController extends Controller
                 }
                 $recepcion = Recepcion::find($recepcion_id); // Validar copia operador
                 if ($recepcion) {
+                    $recepcion->validada_origen = true;
                     $recepcion->validada_destino = true;
                     $recepcion->save();
                 }
