@@ -36,12 +36,20 @@
                                 <ul class="list-unstyled">
                                     <li><a class="btn btn-success text-white" href="#" style="pointer-events: auto;"><i class="far fa-heart"></i></a></li>
                                     <li><a class="btn btn-success text-white mt-2 btn-ver-kit" data-bs-toggle="modal" data-bs-target="#modalPreferencias" data-kit-id="{{ $kit->id }}" data-kit-name="{{ $kit->kit }}" data-kit-image-path="{{ $kit->image_path ? Storage::url($kit->image_path) : '' }}" href="#" style="pointer-events: auto;"><i class="far fa-eye"></i></a></li>
+                                    @if($kit->disponible)
                                     <li><a class="btn btn-success text-white mt-2 btn-agregar-kit" href="{{ Route('tienda.agregar-orden', $kit->id) }}" style="pointer-events: auto;"><i class="fas fa-cart-plus"></i></a></li>
+                                    @else
+                                    <li><button class="btn btn-secondary text-white mt-2" disabled style="pointer-events: auto; cursor: not-allowed;"><i class="fas fa-ban"></i></button></li>
+                                    @endif
                                 </ul>
                             </div>
                         </div>
                         <div class="card-body ">
+                            @if($kit->disponible)
                             <a href="{{ Route('tienda.agregar-orden', $kit->id) }}" class="text-decoration-none d-flex justify-content-center btn-agregar-kit">{{ $kit->kit }}</a>
+                            @else
+                            <span class="text-decoration-none d-flex justify-content-center text-muted">{{ $kit->kit }} <span class="badge bg-danger ms-1">Agotado</span></span>
+                            @endif
                             <ul class="w-100 list-unstyled d-flex justify-content-between mb-0">
                                 <li class="pt-2">
                                     <span class="product-color-dot color-dot-red float-left rounded-circle ml-1"></span>
@@ -176,19 +184,36 @@
                             let agregarKitUrl = "{{ Route('tienda.agregar-orden', ':id') }}";
                             agregarKitUrl = agregarKitUrl.replace(':id', kitId);
                             let html = '';
+                            let kitDisponible = true;
                             data.kit.productos.forEach(producto => {
+                                const stock = producto.oficina_stock.length > 0 ? producto.oficina_stock[0].unidades : 0;
+                                const sinStock = stock <= 0;
+                                const textClass = sinStock ? 'text-danger fw-bold' : '';
+                                const badgeClass = sinStock ? 'bg-danger' : 'bg-success';
+                                const badgeText = sinStock ? '0' : producto.pivot.unidades;
+                                if (sinStock) kitDisponible = false;
                                 html += `
                                 <div class="col-12 col-sm-3 p-2 d-flex flex-column align-items-center mb-2">
-                                    <p class="text-center mb-2">${producto.producto}</p>
-                                    <p class="badge bg-success mb-0">${producto.pivot.unidades}</p> <span class="text-muted small">Unidad(es)</span>
+                                    <p class="text-center mb-2 ${textClass}">${producto.producto}</p>
+                                    <p class="badge ${badgeClass} mb-0">${badgeText}</p> <span class="text-muted small">Unidad(es)</span>
                                 </div>
                             `;
                             });
+                            let botonAgregar = '';
+                            if (kitDisponible) {
+                                botonAgregar = `
+                                <a class="btn btn-secondary btn-agregar-kit" style="font-size: 1rem;" href="${agregarKitUrl}">
+                                    Agregar <i class="fas fa-cart-plus"></i>
+                                </a>`;
+                            } else {
+                                botonAgregar = `
+                                <button type="button" class="btn btn-secondary" disabled style="font-size: 1rem; cursor: not-allowed;">
+                                    Agotado <i class="fas fa-ban"></i>
+                                </button>`;
+                            }
                             modalFooter.innerHTML = `
                             <button type="button" class="btn btn-secondary" style="font-size: 0.8rem;" data-bs-dismiss="modal">Cerrar</button>
-                            <a class="btn btn-secondary btn-agregar-kit" style="font-size: 1rem;" href="${agregarKitUrl}">
-                                Agregar <i class="fas fa-cart-plus"></i>
-                            </a>
+                            ${botonAgregar}
                         `;
                             kitProductosContainer.innerHTML = html;
                         } else {

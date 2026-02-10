@@ -36,9 +36,25 @@ class TiendaController extends Controller
 {
     public function index()
     {
+        $oficinaId = auth()->user()->oficina_id;
+        $stockBodegaId = Stock::where('stock', 'Bodega')->first()->id;
+
         $kits = Kit::where('activo', true)
-        ->with('productos')
+        ->with(['productos.oficinaStock' => function ($query) use ($oficinaId, $stockBodegaId) {
+            $query->where('oficina_id', $oficinaId)
+                  ->where('stock_id', $stockBodegaId);
+        }])
         ->get();
+        foreach ($kits as $kit) {
+            $kit->disponible = true;
+            foreach ($kit->productos as $producto) {
+                $stock = $producto->oficinaStock->first();
+                if (!$stock || $stock->unidades <= 0) {
+                    $kit->disponible = false;
+                    break;
+                }
+            }
+        }
         return view('modelos.kit.tienda', compact('kits'));
     }
 
@@ -500,7 +516,13 @@ class TiendaController extends Controller
     public function getKitProductos(Request $request)
     {
         $kitId = $request->input('kit_id');
-        $kit = Kit::with('productos')->find($kitId);
+        $oficinaId = auth()->user()->oficina_id;
+        $stockBodegaId = Stock::where('stock', 'Bodega')->first()->id;
+
+        $kit = Kit::with(['productos.oficinaStock' => function ($query) use ($oficinaId, $stockBodegaId) {
+            $query->where('oficina_id', $oficinaId)
+                  ->where('stock_id', $stockBodegaId);
+        }])->find($kitId);
         if (!$kit) {
             return response()->json(['error' => 'Kit no encontrado'], 404);
         }

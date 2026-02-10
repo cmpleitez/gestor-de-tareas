@@ -13,9 +13,6 @@ CLIENTE:
 
     🔵 Construir el proceso de verificación física
 
-        ... hay que trabajar esto por motivos de secuencia en el procedimiento
-            ... se debe usar la misma orden de compra pero con un control de radio que cambie su titulo segun sea <Stock físico verificado> o <Stock físico pendiente de verificar>
-
     🔵 Los precios de los productos inciden en el precio del kit en la orden de compra, el precio del kit es el resultado de sumar los precios de sus productos, 
     cuando un producto cambie por su equivalente es posible que varíe el total general.
 
@@ -92,26 +89,27 @@ CLIENTE:
             . luego seguiría reportar tarea, pero hay que corregir primero la siguiente lista de errores y falencias:
                 
                 
-                09/feb->... En la tienda: se debe verificar el stock digital
-                    . cálculo del precio del kit
+                
 
                 . se debería poder vaciar el carrito completamente, lo que implica borrar la solicitud y sus dependencias: 
                 el cliente podría hacerlo pero no los usuarios de la empresa porque sería muy riesgoso que perdiera la solicitud completa 
                 y el cliente perdiera su trabajo realizado y su turno
-                . en editar carrito del operador, deberìan mostrarse las unidades de cada kit solo lectura para que pueda revisar bien el stock fìsico
-                . habilitar para el cliente las unidades de la orden de compra
-                . no permitir el click que muestra la orden en tablero de recepciones
-                . Revisar el problema "No se encontraron ordenes para corregir"
+                . hacer que el superadmin tenga acceso a todo
                 . agregar este comportamiento a los botones que realicen procesos extensos: cuando el usario da clic a un boton 
                 para que realice una acción, éste último se deshabilitará, y así deshabilitado mostrará un icono de reloj
                 o algun efecto de "procesando", sin delays adicionales, sino el tiempo puro en que se tarde el proceso en sí
-                . formula para el calculo del total de la orden de compra
+                
+                
+                10/feb->... formula para el calculo del total de la orden de compra
+                    . cuando se elimina un item debe actualizar el precio del kit
+                    . cuando se cambia a un equivalente debe hacer lo mismo que el punto anterior
+                
+                
                 . ordenar las etiquetas del codigo fuente de carrito.blade.php 
                 . al validar orden enviar correo adjuntando la orden de compra corregida para validación del cliente
                 
                 si no se dispone de unidades para un item N, debe deshabilitarse, si las unidades son <= 3 hay que mostrarlas
                 explícitamente en el item, para que el usuario sepa que quedan pocas unidades
-
 
 
 

@@ -323,7 +323,7 @@
             }
             let usersHtml = generarHtmlUsuarios(tarjeta.users, tarjeta.estado_id, tipo);
             return `
-                <div class="solicitud-card ${animar ? 'animar-llegada' : ''} border-${borderColor}" 
+            <div class="solicitud-card ${animar ? 'animar-llegada' : ''} border-${borderColor}"
                 style="border-left-color: ${estadoColor};"
                 data-recepcion-id="${tarjeta.recepcion_id}"
                 data-atencion-id="${tarjeta.atencion_id}"
@@ -539,22 +539,33 @@
             });
         }
         //MOSTRAR TAREAS EN SIDEBAR
-        @if (in_array(auth()->user()->mainRole->name, ['operador', 'receptor']))
-            $(document).on('click', '.solicitud-card', function() {
-                const $card = $(this);
-                const titulo = $card.find('.solicitud-titulo').text().trim();
-                const atencionId = $card.data('atencion-id');
-                const recepcionId = $card.data('recepcion-id');
-                const atencionIdRipped = $card.find('.text-right div[style*="font-weight: 600"]').text().trim();
-                $('#sidebar-card-title').text(atencionIdRipped + ' - ' + titulo).css('font-size', '1rem');
-                $('#sidebar-card-body').empty();
-                cargarTareas(recepcionId, atencionId);
-                $('.kanban-overlay').addClass('show');
-                $('.kanban-sidebar').addClass('show');
-                $('body').addClass('sidebar-open');
-                limpiarClasesDrag();
-            });
-        @endif
+        $(document).on('click', '.solicitud-card', function() {
+            const $card = $(this);
+            const estadoId = parseInt($card.attr('data-recepcion-estado-id'));
+            if (estadoId === 3) { // En progreso
+                @if (in_array(auth()->user()->mainRole->name, ['operador', 'receptor']))
+                    const titulo = $card.find('.solicitud-titulo').text().trim();
+                    const atencionId = $card.data('atencion-id');
+                    const recepcionId = $card.data('recepcion-id');
+                    const atencionIdRipped = $card.find('.text-right div[style*="font-weight: 600"]').text().trim();
+                    $('#sidebar-card-title').text(atencionIdRipped + ' - ' + titulo).css('font-size', '1rem');
+                    $('#sidebar-card-body').empty();
+                    cargarTareas(recepcionId, atencionId);
+                    $('.kanban-overlay').addClass('show');
+                    $('.kanban-sidebar').addClass('show');
+                    $('body').addClass('sidebar-open');
+                    limpiarClasesDrag();
+                @endif
+            } else if (estadoId === 2) { // Recibida
+                @if (in_array(auth()->user()->mainRole->name, ['cliente']))
+
+                    // PENDIENTE: Consulta solo lectura de la orden de compra
+                    console.log('Consulta de orden de compra (solo lectura) pendiente de implementar.');
+
+                @endif
+            }
+        });
+        
         function cargarTareas(recepcionId, atencionId) {
             $.ajax({
                 url: '{{ route('recepcion.tareas', ['recepcion_id' => ':id']) }}'.replace(':id', recepcionId),
@@ -585,10 +596,6 @@
                 let formId = 'form_' + tarea.actividad_id;
                 let formAction = '';
                 let ruta = '';
-
-
-
-
                 if (tarea.tarea === 'Orden de compra en revisión') { //Definiendo las tareas del tracking
                     ruta = '{{ route("tienda.carrito-editar") }}';
                 } else if (tarea.tarea === 'Stock físico en revisión') {
@@ -600,9 +607,6 @@
                 } else if (tarea.tarea === 'Entrega efectuada') {
                     ruta = '{{ route("recepcion.efectuar-entrega") }}';
                 }
-
-
-
                 let htmlGenerado = '';
                 if (ruta) {
                     htmlGenerado = `

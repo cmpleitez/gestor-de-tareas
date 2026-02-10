@@ -165,7 +165,6 @@ Route::middleware([
         Route::group(['prefix' => 'recepcion'], function () {
             Route::post('asignar/{recepcion}/{equipo}', [RecepcionController::class, 'asignar'])->name('recepcion.asignar');
             Route::get('tareas/{recepcion_id}', [RecepcionController::class, 'tareas'])->name('recepcion.tareas');
-            
             Route::post('corregir-orden', [RecepcionController::class, 'corregirOrden'])->name('recepcion.corregir-orden');
             Route::post('revisar-orden', [RecepcionController::class, 'revisarOrden'])->name('recepcion.revisar-orden');
             Route::post('revisar-stock', [RecepcionController::class, 'revisarStock'])->name('recepcion.revisar-stock');
