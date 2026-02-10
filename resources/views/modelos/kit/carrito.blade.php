@@ -449,7 +449,7 @@
                         </div>
                     </div>
                 </div>
-                @if(auth()->user()->mainRole->name == 'receptor')
+                @if(auth()->user()->mainRole->name == 'receptor' || auth()->user()->mainRole->name == 'cliente')
                     <div class="col-6 col-md-2 d-flex align-items-center justify-content-center">
                         <button type="button" class="btn btn-primary-light shadow-sm rounded-circle d-flex align-items-center justify-content-center p-0 btn-scale-hover btn-spinner" 
                             data-type="minus" data-target="#unidades_{{ $orden->id }}" data-step="1"

@@ -95,7 +95,10 @@ CLIENTE:
                 09/feb->... En la tienda: se debe verificar el stock digital
                     . cálculo del precio del kit
 
-
+                . se debería poder vaciar el carrito completamente, lo que implica borrar la solicitud y sus dependencias: 
+                el cliente podría hacerlo pero no los usuarios de la empresa porque sería muy riesgoso que perdiera la solicitud completa 
+                y el cliente perdiera su trabajo realizado y su turno
+                . en editar carrito del operador, deberìan mostrarse las unidades de cada kit solo lectura para que pueda revisar bien el stock fìsico
                 . habilitar para el cliente las unidades de la orden de compra
                 . no permitir el click que muestra la orden en tablero de recepciones
                 . Revisar el problema "No se encontraron ordenes para corregir"
