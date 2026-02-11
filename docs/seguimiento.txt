@@ -87,17 +87,6 @@ CLIENTE:
 
 
             . luego seguiría reportar tarea, pero hay que corregir primero la siguiente lista de errores y falencias:
-                
-                
-
-
-
-                11.feb... hacer que el superadmin tenga acceso a todo
-                    . revisar la seguridad de los permisos en todo el proyecto
-                
-
-
-
                 . agregar este comportamiento a los botones que realicen procesos extensos: cuando el usario da clic a un boton 
                 para que realice una acción, éste último se deshabilitará, y así deshabilitado mostrará un icono de reloj
                 o algun efecto de "procesando", sin delays adicionales, sino el tiempo puro en que se tarde el proceso en sí
