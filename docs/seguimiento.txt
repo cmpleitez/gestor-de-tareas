@@ -89,26 +89,19 @@ CLIENTE:
             . luego seguiría reportar tarea, pero hay que corregir primero la siguiente lista de errores y falencias:
                 
                 
-                
-
-                . se debería poder vaciar el carrito completamente, lo que implica borrar la solicitud y sus dependencias: 
-                el cliente podría hacerlo pero no los usuarios de la empresa porque sería muy riesgoso que perdiera la solicitud completa 
-                y el cliente perdiera su trabajo realizado y su turno
                 . hacer que el superadmin tenga acceso a todo
+                
                 . agregar este comportamiento a los botones que realicen procesos extensos: cuando el usario da clic a un boton 
                 para que realice una acción, éste último se deshabilitará, y así deshabilitado mostrará un icono de reloj
                 o algun efecto de "procesando", sin delays adicionales, sino el tiempo puro en que se tarde el proceso en sí
                 
                 
-                10/feb->... 
+                
                 
                 
                 . ordenar las etiquetas del codigo fuente de carrito.blade.php 
                 . al validar orden enviar correo adjuntando la orden de compra corregida para validación del cliente
                 
-                si no se dispone de unidades para un item N, debe deshabilitarse, si las unidades son <= 3 hay que mostrarlas
-                explícitamente en el item, para que el usuario sepa que quedan pocas unidades
-
 
 
 

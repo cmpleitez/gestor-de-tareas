@@ -308,7 +308,7 @@
                                                                     data-orden-id="{{ $detalle->orden_id }}"
                                                                     data-kit-id="{{ $detalle->kit_id }}"
                                                                     data-producto-id="{{ $detalle->producto_id }}"
-                                                                    data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="Eliminar producto">
+                                                                    data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="Eliminar item">
                                                                 </i>
                                                             </div>
                                                         @endif
@@ -560,6 +560,9 @@
 
 @push('scripts')
 <script>
+    /** @var \App\Models\Atencion $atencion */
+    /** @var \App\Models\Orden $orden */
+    /** @var \App\Models\Detalle $detalle */
     window.cartDetails = { ordenes: [] }; //Lectura de las ordenes de compras
     @if($hasOrders)
         @foreach($currentAtencion->ordenes as $orden)
@@ -695,7 +698,8 @@
                         const orderRow = $('#accordion' + ordenId).closest('.row');
                         orderRow.fadeOut(400, function() {
                             $(this).remove();
-                            if ($('#orders-container .row').length === 0) {
+                            // Contar solo las filas que tienen un acordeón (ordenes reales)
+                            if ($('#orders-container').find('.row:has(.accordion)').length === 0) {
                                 $('#orders-container').fadeOut(400, function() {
                                     $('#empty-cart-msg').removeClass('d-none').hide().fadeIn();
                                 });
@@ -738,7 +742,6 @@
         const url = btn.data('url');
         const ordenId = btn.data('orden-id');
         const orderRow = btn.closest('.row');
-
         $.ajax({
             url: url,
             method: 'POST',
@@ -751,7 +754,8 @@
                     toastr.success(response.message);
                     orderRow.fadeOut(400, function() {
                         $(this).remove();
-                        if ($('#orders-container .row').length === 0) {
+                        // Contar solo las filas que tienen un acordeón (ordenes reales)
+                        if ($('#orders-container').find('.row:has(.accordion)').length === 0) {
                             $('#orders-container').fadeOut(400, function() {
                                 $('#empty-cart-msg').removeClass('d-none').hide().fadeIn();
                             });

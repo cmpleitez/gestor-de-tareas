@@ -1,328 +1,332 @@
 @extends('dashboard')
 
 @section('css')
-    <link href="{{ asset('app-assets/vendors/css/extensions/sweetalert2.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('app-assets/css/bootstrap-extended.css') }}" rel="stylesheet">
-    <link href="{{ asset('app-assets/css/pages/app-kanban.css') }}" rel="stylesheet">
-    <link href="{{ asset('app-assets/css/solicitudes.css') }}" rel="stylesheet">
-    <style>
+<link href="{{ asset('app-assets/vendors/css/extensions/sweetalert2.min.css') }}" rel="stylesheet">
+<link href="{{ asset('app-assets/css/bootstrap-extended.css') }}" rel="stylesheet">
+<link href="{{ asset('app-assets/css/pages/app-kanban.css') }}" rel="stylesheet">
+<link href="{{ asset('app-assets/css/solicitudes.css') }}" rel="stylesheet">
+<style>
 
-    </style>
+</style>
 @endsection
 
 @section('contenedor')
-    {{-- EQUIPOS DE TRABAJO DESTINO --}}
-    @can('asignar')
-        <div class="row">
-            <div class="col-12">
-                @if($equipos && $equipos->count() != 1)
-                    @if (optional(auth()->user()->mainRole)->name != 'operador')
-                        <div class="accordion" id="accordionWrapa2">
-                            <div class="card collapse-header border-0 overflow-hidden">
-                                <div id="heading5" class="card-header" data-toggle="collapse" data-target="#accordion5"
-                                    aria-expanded="false" aria-controls="accordion5" role="tablist"
-                                    style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); border: none; margin: 0; cursor: pointer; transition: all 0.3s ease;">
-                                    <div class="d-flex align-items-center justify-content-between w-100">
-                                        <div class="d-flex align-items-center">
-                                            <div class="d-flex align-items-center" style="padding: 0.75rem;">
-                                                <i class="bx bx-target-lock text-white" style="font-size: 1.1rem;"></i>
-                                            </div>
-                                            <div class="d-flex flex-column align-items-start justify-content-center">
-                                                <h6 class="mb-0 text-white font-weight-500"
-                                                    style="font-size: 1rem; letter-spacing: 0.3px;">
-                                                    <span class="font-weight-600"></span>
-                                                </h6>
-                                                <small class="text-white-50" style="font-size: 0.8rem;">
-                                                    Selecciona el equipo de trabajo destino para impulsar las solicitudes
-                                                </small>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <i class="bx bx-chevron-down text-white accordion-arrow"
-                                                style="font-size: 1rem; transition: transform 0.3s ease;"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div id="accordion5" role="tabpanel" data-parent="#accordionWrapa2" aria-labelledby="heading5"
-                                    class="collapse">
-                                    <div class="card-content">
-                                        <div class="card-body" style="background: #f8f9fa; padding: 1rem;">
-                                            @if (optional(auth()->user()->mainRole)->name == 'receptor' && isset($equipos))
-                                                <div class="row" style="display: flex; align-items: stretch;">
-                                                    @foreach ($equipos as $equipo)
-                                                        <div class="col-md-3 mt-1">
-                                                            <div class="selectable-item"
-                                                                onclick="selectItem('equipo_{{ $equipo->id }}')">
-                                                                <div class="item-body">
-                                                                    <div class="item-info">
-                                                                        <div class="item-name">{{ $equipo->equipo }}</div>
-                                                                        <div class="item-desc">Equipo de trabajo</div>
-                                                                    </div>
-                                                                    <div class="radio-indicator"></div>
-                                                                </div>
-                                                                <input type="radio" id="equipo_{{ $equipo->id }}"
-                                                                    name="equipo_destino" value="{{ $equipo->id }}">
-                                                            </div>
-                                                        </div>
-                                                    @endforeach
-                                                </div>
-                                            @else
-                                                <div class="text-center text-muted py-4">
-                                                    <i class="bx bx-info-circle" style="font-size: 2rem;"></i>
-                                                    <p class="mt-2 mb-0">No hay elementos disponibles para tu rol.</p>
-                                                </div>
-                                            @endif
-                                        </div>
-                                    </div>
-                                </div>
+{{-- EQUIPOS DE TRABAJO DESTINO --}}
+@can('asignar')
+<div class="row">
+    <div class="col-12">
+        @if($equipos && $equipos->count() != 1)
+        @if (optional(auth()->user()->mainRole)->name != 'operador')
+        <div class="accordion" id="accordionWrapa2">
+            <div class="card collapse-header border-0 overflow-hidden">
+                <div id="heading5" class="card-header" data-toggle="collapse" data-target="#accordion5"
+                    aria-expanded="false" aria-controls="accordion5" role="tablist"
+                    style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); border: none; margin: 0; cursor: pointer; transition: all 0.3s ease;">
+                    <div class="d-flex align-items-center justify-content-between w-100">
+                        <div class="d-flex align-items-center">
+                            <div class="d-flex align-items-center" style="padding: 0.75rem;">
+                                <i class="bx bx-target-lock text-white" style="font-size: 1.1rem;"></i>
+                            </div>
+                            <div class="d-flex flex-column align-items-start justify-content-center">
+                                <h6 class="mb-0 text-white font-weight-500"
+                                    style="font-size: 1rem; letter-spacing: 0.3px;">
+                                    <span class="font-weight-600"></span>
+                                </h6>
+                                <small class="text-white-50" style="font-size: 0.8rem;">
+                                    Selecciona el equipo de trabajo destino para impulsar las solicitudes
+                                </small>
                             </div>
                         </div>
-                    @endif
-                @endif
-            </div>
-        </div>
-    @endcan
-    {{-- TABLEROS KANBAN --}}
-    <div class="row kanban-container {{ optional(auth()->user()->mainRole)->name === 'cliente' ? 'cliente-mode' : '' }}" style="display: flex; align-items: stretch;">
-        <div class="col-md-4"> {{-- Recibidas --}}
-            <div class="card border-0 overflow-hidden">
-                <div class="card-header"
-                    style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); border: none; margin: 0;">
-                    <div class="d-flex align-items-center">
-                        <div class="mr-2">
-                            <i class="bx bx-archive text-white" style="font-size: 0.9rem;"></i>
-                        </div>
-                        <h6 class="mb-0 text-white font-weight-600" style="font-size: 0.9rem;">Recibidas</h6>
-                        <div class="ml-auto d-flex align-items-center">
-                            <span class="badge badge-white text-dark" id="contador-recibidas">{{ count($recibidas) }}</span>
+                        <div>
+                            <i class="bx bx-chevron-down text-white accordion-arrow"
+                                style="font-size: 1rem; transition: transform 0.3s ease;"></i>
                         </div>
                     </div>
                 </div>
-                <div class="card-body kanban-columna" style="background: #f8f9fa; padding: 1rem;">
-                    <div id="columna-recibidas" class="sortable-column">
-                        {{-- Las tarjetas se dibujarán con JavaScript --}}
+                <div id="accordion5" role="tabpanel" data-parent="#accordionWrapa2" aria-labelledby="heading5"
+                    class="collapse">
+                    <div class="card-content">
+                        <div class="card-body" style="background: #f8f9fa; padding: 1rem;">
+                            @if (optional(auth()->user()->mainRole)->name == 'receptor' && isset($equipos))
+                            <div class="row" style="display: flex; align-items: stretch;">
+                                @foreach ($equipos as $equipo)
+                                <div class="col-md-3 mt-1">
+                                    <div class="selectable-item"
+                                        onclick="selectItem('equipo_{{ $equipo->id }}')">
+                                        <div class="item-body">
+                                            <div class="item-info">
+                                                <div class="item-name">{{ $equipo->equipo }}</div>
+                                                <div class="item-desc">Equipo de trabajo</div>
+                                            </div>
+                                            <div class="radio-indicator"></div>
+                                        </div>
+                                        <input type="radio" id="equipo_{{ $equipo->id }}"
+                                            name="equipo_destino" value="{{ $equipo->id }}">
+                                    </div>
+                                </div>
+                                @endforeach
+                            </div>
+                            @else
+                            <div class="text-center text-muted py-4">
+                                <i class="bx bx-info-circle" style="font-size: 2rem;"></i>
+                                <p class="mt-2 mb-0">No hay elementos disponibles para tu rol.</p>
+                            </div>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-4"> {{-- En Progreso --}}
-            <div class="card border-0 overflow-hidden">
-                <div class="card-header"
-                    style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); border: none; margin: 0;">
-                    <div class="d-flex align-items-center">
-                        <div class="mr-2">
-                            <i class="bx bx-time-five text-white" style="font-size: 0.9rem;"></i>
-                        </div>
-                        <h6 class="mb-0 text-white font-weight-600" style="font-size: 0.9rem;">
+        @endif
+        @endif
+    </div>
+</div>
+@endcan
+{{-- TABLEROS KANBAN --}}
+<div class="row kanban-container {{ optional(auth()->user()->mainRole)->name === 'cliente' ? 'cliente-mode' : '' }}" style="display: flex; align-items: stretch;">
+    <div class="col-md-4"> {{-- Recibidas --}}
+        <div class="card border-0 overflow-hidden">
+            <div class="card-header"
+                style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); border: none; margin: 0;">
+                <div class="d-flex align-items-center">
+                    <div class="mr-2">
+                        <i class="bx bx-archive text-white" style="font-size: 0.9rem;"></i>
+                    </div>
+                    <h6 class="mb-0 text-white font-weight-600" style="font-size: 0.9rem;">Recibidas</h6>
+                    <div class="ml-auto d-flex align-items-center">
+                        <span class="badge badge-white text-dark" id="contador-recibidas">{{ count($recibidas) }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body kanban-columna" style="background: #f8f9fa; padding: 1rem;">
+                <div id="columna-recibidas" class="sortable-column">
+                    {{-- Las tarjetas se dibujarán con JavaScript --}}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4"> {{-- En Progreso --}}
+        <div class="card border-0 overflow-hidden">
+            <div class="card-header"
+                style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); border: none; margin: 0;">
+                <div class="d-flex align-items-center">
+                    <div class="mr-2">
+                        <i class="bx bx-time-five text-white" style="font-size: 0.9rem;"></i>
+                    </div>
+                    <h6 class="mb-0 text-white font-weight-600" style="font-size: 0.9rem;">
                         @if(auth()->user()->mainRole->name == 'cliente')
-                            Pendientes de pago
+                        Pendientes de pago
                         @else
-                            En Progreso
+                        En Progreso
                         @endif
-                        </h6>
-                        <span class="badge badge-white ml-auto text-dark"
-                            id="contador-progreso">{{ count($progreso) }}</span>
-                    </div>
-                </div>
-                <div class="card-body kanban-columna" style="background: #f8f9fa; padding: 1rem;">
-                    <div id="columna-progreso" class="sortable-column">
-                        {{-- Las tarjetas se dibujarán con JavaScript --}}
-                    </div>
+                    </h6>
+                    <span class="badge badge-white ml-auto text-dark"
+                        id="contador-progreso">{{ count($progreso) }}</span>
                 </div>
             </div>
-        </div>
-        <div class="col-md-4"> {{-- Resueltas --}}
-            <div class="card border-0 overflow-hidden">
-                <div class="card-header"
-                    style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); border: none; margin: 0;">
-                    <div class="d-flex align-items-center">
-                        <div class="mr-2">
-                            <i class="bx bx-check-circle text-white" style="font-size: 0.9rem;"></i>
-                        </div>
-                        <h6 class="mb-0 text-white font-weight-600" style="font-size: 0.9rem;">Resueltas</h6>
-                        <span class="badge badge-white ml-auto text-dark"
-                            id="contador-resueltas">{{ count($resueltas) }}</span>
-                    </div>
-                </div>
-                <div class="card-body kanban-columna" style="background: #f8f9fa; padding: 1rem;">
-                    <div id="columna-resueltas" class="sortable-column">
-                        {{-- Las tarjetas se dibujarán con JavaScript --}}
-                    </div>
+            <div class="card-body kanban-columna" style="background: #f8f9fa; padding: 1rem;">
+                <div id="columna-progreso" class="sortable-column">
+                    {{-- Las tarjetas se dibujarán con JavaScript --}}
                 </div>
             </div>
         </div>
     </div>
-    <div class="kanban-overlay"></div> {{-- Overlay Kanban --}}
-    <div class="kanban-sidebar">
-        <div class="d-flex justify-content-between align-items-center border-bottom px-1"
-            style="background: linear-gradient(156deg, #221627 0%, #4e2a5d 100%); border: none; margin: 0; padding: 0.75rem 1rem; min-height: 52px;">
-            <h4 id="sidebar-card-title" class="text-white mb-0">Titulo</h4>
-            <button type="button" class="close close-icon">
-                <i class="bx bx-x text-white"></i>
-            </button>
-        </div>
-        <div id="sidebar-card-body">
+    <div class="col-md-4"> {{-- Resueltas --}}
+        <div class="card border-0 overflow-hidden">
+            <div class="card-header"
+                style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); border: none; margin: 0;">
+                <div class="d-flex align-items-center">
+                    <div class="mr-2">
+                        <i class="bx bx-check-circle text-white" style="font-size: 0.9rem;"></i>
+                    </div>
+                    <h6 class="mb-0 text-white font-weight-600" style="font-size: 0.9rem;">Resueltas</h6>
+                    <span class="badge badge-white ml-auto text-dark"
+                        id="contador-resueltas">{{ count($resueltas) }}</span>
+                </div>
+            </div>
+            <div class="card-body kanban-columna" style="background: #f8f9fa; padding: 1rem;">
+                <div id="columna-resueltas" class="sortable-column">
+                    {{-- Las tarjetas se dibujarán con JavaScript --}}
+                </div>
+            </div>
         </div>
     </div>
+</div>
+<div class="kanban-overlay"></div> {{-- Overlay Kanban --}}
+<div class="kanban-sidebar">
+    <div class="d-flex justify-content-between align-items-center border-bottom px-1"
+        style="background: linear-gradient(156deg, #221627 0%, #4e2a5d 100%); border: none; margin: 0; padding: 0.75rem 1rem; min-height: 52px;">
+        <h4 id="sidebar-card-title" class="text-white mb-0">Titulo</h4>
+        <button type="button" class="close close-icon">
+            <i class="bx bx-x text-white"></i>
+        </button>
+    </div>
+    <div id="sidebar-card-body">
+    </div>
+</div>
 @endsection
 
 @section('js')
-    <script src="{{ asset('app-assets/vendors/js/extensions/sweetalert2.all.min.js') }}"></script>
-    <script src="{{ asset('app-assets/vendors/js/jkanban/Sortable.min.js') }}"></script>
-    <script src="{{ asset('app-assets/vendors/js/jkanban/jkanban.min.js') }}"></script>
-    <script>
-        //SELECCIONANDO EL ITEM DESTINATARIO
-        let userRole = @json(optional(auth()->user()->mainRole)->name) || '';
-        const equipos = @json($equipos);
-        function selectItem(radioId) { // Función para seleccionar items
-            document.querySelectorAll('.selectable-item').forEach(selector => { // Desmarcar todos los selectores
-                selector.classList.remove('selected');
-            });
-            const selectedElement = document.querySelector(
-                `[onclick="selectItem('${radioId}')"]`); // Marcar el seleccionado
-            if (selectedElement) {
-                selectedElement.classList.add('selected');
-            }
-            const radio = document.getElementById(radioId); // Marcar el radio button
-            if (radio) {
-                radio.checked = true;
-                $(radio).trigger('change'); // Disparar el evento change para actualizar el título
-            }
+<script src="{{ asset('app-assets/vendors/js/extensions/sweetalert2.all.min.js') }}"></script>
+<script src="{{ asset('app-assets/vendors/js/jkanban/Sortable.min.js') }}"></script>
+<script src="{{ asset('app-assets/vendors/js/jkanban/jkanban.min.js') }}"></script>
+<script>
+    //SELECCIONANDO EL ITEM DESTINATARIO
+    let userRole = @json(optional(auth()->user()->mainRole)->name) || '';
+    const equipos = @json($equipos);
+
+    function selectItem(radioId) { // Función para seleccionar items
+        document.querySelectorAll('.selectable-item').forEach(selector => { // Desmarcar todos los selectores
+            selector.classList.remove('selected');
+        });
+        const selectedElement = document.querySelector(
+            `[onclick="selectItem('${radioId}')"]`); // Marcar el seleccionado
+        if (selectedElement) {
+            selectedElement.classList.add('selected');
         }
-        //INICIALIZAR KANBAN
-        function initKanban() { // Inicializar el kanban
-            @php $esCliente = optional(auth()->user()->mainRole)->name === 'cliente'; @endphp
-            @if(auth()->user()->can('editar') && !$esCliente)
-                const columnas = ['columna-recibidas', 'columna-progreso', 'columna-resueltas'];
-                columnas.forEach(function(columnaId) {
-                    const elemento = document.getElementById(columnaId);
-                    if (!elemento) return;
-                    new Sortable(elemento, {
-                        group: 'kanban',
-                        animation: 150,
-                        ghostClass: 'sortable-ghost',
-                        chosenClass: 'sortable-chosen',
-                        dragClass: 'sortable-drag',
-                        onStart: function(evt) {
-                            $('.text-center.text-muted.py-4')
-                                .remove(); // Remover mensajes de columna vacía al iniciar drag
-                        },
-                        onEnd: function(evt) {
-                            const solicitudId = evt.item.dataset.recepcionId;
-                            const columnaOrigen = evt.from.id;
-                            const columnaDestino = evt.to.id;
-                            if (columnaOrigen !== columnaDestino) {
-                                if (columnaOrigen !== 'columna-recibidas' || columnaDestino !==
-                                    'columna-progreso') {
-                                    toastr.warning('Movimiento reservado para el sistema');
-                                    $(evt.from).append(evt
-                                        .item); // Revertir la tarjeta a su posición original
-                                    actualizarMensajeColumnaVacia
-                                        (); // Restaurar mensajes si se cancela el movimiento
-                                    return;
-                                }
-                                const $colDestino = $('#' +
-                                    columnaDestino
-                                ); // Ordenar inmediatamente la columna destino después del movimiento visual
-                                const itemsDestino = $colDestino.children('.solicitud-card').get();
-                                itemsDestino.sort(function(a, b) {
-                                    return parseInt(a.dataset.atencionId || '0', 10) -
-                                        parseInt(b.dataset.atencionId || '0', 10);
-                                });
-                                itemsDestino.forEach(function(el) {
-                                    $colDestino.append(el);
-                                });
-                                updatePosition(solicitudId, columnaDestino, evt);
-                            } else {
-                                actualizarMensajeColumnaVacia(); // Si no hay movimiento, restaurar mensajes
-                            }
-                            actualizarMensajeColumnaVacia();
+        const radio = document.getElementById(radioId); // Marcar el radio button
+        if (radio) {
+            radio.checked = true;
+            $(radio).trigger('change'); // Disparar el evento change para actualizar el título
+        }
+    }
+    //INICIALIZAR KANBAN
+    function initKanban() { // Inicializar el kanban
+        @php $esCliente = optional(auth()->user()->mainRole)->name === 'cliente';
+        @endphp
+        @if(auth()->user()->can('editar') && !$esCliente)
+        const columnas = ['columna-recibidas','columna-progreso','columna-resueltas'];
+        columnas.forEach(function(columnaId) {
+            const elemento = document.getElementById(columnaId);
+            if (!elemento) return;
+            new Sortable(elemento, {
+                group: 'kanban',
+                animation: 150,
+                ghostClass: 'sortable-ghost',
+                chosenClass: 'sortable-chosen',
+                dragClass: 'sortable-drag',
+                onStart: function(evt) {
+                    $('.text-center.text-muted.py-4')
+                        .remove(); // Remover mensajes de columna vacía al iniciar drag
+                },
+                onEnd: function(evt) {
+                    const solicitudId = evt.item.dataset.recepcionId;
+                    const columnaOrigen = evt.from.id;
+                    const columnaDestino = evt.to.id;
+                    if (columnaOrigen !== columnaDestino) {
+                        if (columnaOrigen !== 'columna-recibidas' || columnaDestino !==
+                            'columna-progreso') {
+                            toastr.warning('Movimiento reservado para el sistema');
+                            $(evt.from).append(evt
+                                .item); // Revertir la tarjeta a su posición original
+                            actualizarMensajeColumnaVacia
+                                (); // Restaurar mensajes si se cancela el movimiento
+                            return;
                         }
-                    });
-                });
-            @else
-                const columnas = ['columna-recibidas', 'columna-progreso',
-                    'columna-resueltas'
-                ]; // Para usuarios sin permisos de asignar, solo inicializar las columnas sin drag & drop
-                columnas.forEach(function(columnaId) {
-                    const elemento = document.getElementById(
-                        columnaId); // Solo crear columnas vacías sin funcionalidad de drag & drop
-                    if (!elemento) return;
-                });
-            @endif
-        }
-        //FUNCIONES PARA ORDENAMIENTO DE LAS TARJETAS
-        function ordenarColumna(columnaId) {
-            const $col = $('#' + columnaId);
-            const items = $col.children('.solicitud-card').get();
-            if (items.length > 0) {
-                items.sort(function(a, b) {
-                    return parseInt(a.dataset.atencionId || '0', 10) - parseInt(b.dataset.atencionId || '0', 10);
-                });
-                items.forEach(function(el) {
-                    $col.append(el);
-                });
-            }
-        }
-        function ordenarColumnas() {
-            const columnas = ['columna-recibidas', 'columna-progreso', 'columna-resueltas'];
-            columnas.forEach(function(columnaId) {
-                ordenarColumna(columnaId);
+                        const $colDestino = $('#' +
+                            columnaDestino
+                        ); // Ordenar inmediatamente la columna destino después del movimiento visual
+                        const itemsDestino = $colDestino.children('.solicitud-card').get();
+                        itemsDestino.sort(function(a, b) {
+                            return parseInt(a.dataset.atencionId || '0', 10) -
+                                parseInt(b.dataset.atencionId || '0', 10);
+                        });
+                        itemsDestino.forEach(function(el) {
+                            $colDestino.append(el);
+                        });
+                        updatePosition(solicitudId, columnaDestino, evt);
+                    } else {
+                        actualizarMensajeColumnaVacia(); // Si no hay movimiento, restaurar mensajes
+                    }
+                    actualizarMensajeColumnaVacia();
+                }
+            });
+        });
+        @else
+        const columnas = ['columna-recibidas', 'columna-progreso',
+            'columna-resueltas'
+        ]; // Para usuarios sin permisos de asignar, solo inicializar las columnas sin drag & drop
+        columnas.forEach(function(columnaId) {
+            const elemento = document.getElementById(
+                columnaId); // Solo crear columnas vacías sin funcionalidad de drag & drop
+            if (!elemento) return;
+        });
+        @endif
+    }
+    //FUNCIONES PARA ORDENAMIENTO DE LAS TARJETAS
+    function ordenarColumna(columnaId) {
+        const $col = $('#' + columnaId);
+        const items = $col.children('.solicitud-card').get();
+        if (items.length > 0) {
+            items.sort(function(a, b) {
+                return parseInt(a.dataset.atencionId || '0', 10) - parseInt(b.dataset.atencionId || '0', 10);
+            });
+            items.forEach(function(el) {
+                $col.append(el);
             });
         }
-        //FUNCIONES PARA LA CARGA INICIAL DE LAS TARJETAS
-        function cargarTarjetasIniciales(tarjetas) {
-            if (tarjetas.recibidas && tarjetas.recibidas.length > 0) { // Cargar tarjetas recibidas
-                tarjetas.recibidas.forEach(function(tarjeta) {
-                    let html = generarTarjetaSolicitud(tarjeta, false, 'recibidas');
-                    $('#columna-recibidas').append(html);
-                });
-            }
-            if (tarjetas.progreso && tarjetas.progreso.length > 0) { // Cargar tarjetas en progreso
-                tarjetas.progreso.forEach(function(tarjeta) {
-                    let html = generarTarjetaSolicitud(tarjeta, false, 'progreso');
-                    $('#columna-progreso').append(html);
-                });
-            }
-            if (tarjetas.resueltas && tarjetas.resueltas.length > 0) { // Cargar tarjetas resueltas
-                tarjetas.resueltas.forEach(function(tarjeta) {
-                    let html = generarTarjetaSolicitud(tarjeta, false, 'resueltas');
-                    $('#columna-resueltas').append(html);
-                });
-            }
-            ordenarColumnas(); // Ordenar todas las columnas después de la carga inicial
-            actualizarContadores(); // Actualizar contadores y mensajes
-            actualizarMensajeColumnaVacia();
-            inicializarPopovers(); // Inicializar popovers para las tarjetas cargadas
+    }
+
+    function ordenarColumnas() {
+        const columnas = ['columna-recibidas', 'columna-progreso', 'columna-resueltas'];
+        columnas.forEach(function(columnaId) {
+            ordenarColumna(columnaId);
+        });
+    }
+    //FUNCIONES PARA LA CARGA INICIAL DE LAS TARJETAS
+    function cargarTarjetasIniciales(tarjetas) {
+        if (tarjetas.recibidas && tarjetas.recibidas.length > 0) { // Cargar tarjetas recibidas
+            tarjetas.recibidas.forEach(function(tarjeta) {
+                let html = generarTarjetaSolicitud(tarjeta, false, 'recibidas');
+                $('#columna-recibidas').append(html);
+            });
         }
-        function generarTarjetaSolicitud(tarjeta, animar = false, tipo = 'recibidas') {
-            const titulo = tarjeta.titulo && tarjeta.detalle ?
-                `${tarjeta.titulo} - ${tarjeta.detalle}` :
-                tarjeta.titulo || tarjeta.detalle || 'Sin título';
-            let borderColor, estadoColor, badgeColor;
-            switch (tipo) {
-                case 'recibidas':
-                    borderColor = 'badge-secondary'; 
-                    estadoColor = '#2c3e50';
-                    badgeColor = 'badge-secondary';
-                    break;
-                case 'progreso':
-                    borderColor = 'badge-primary'; 
-                    estadoColor = '#17a2b8';
-                    badgeColor = 'badge-primary';
-                    break;
-                case 'resueltas':
-                    borderColor = 'badge-success'; 
-                    estadoColor = '#28a745';
-                    badgeColor = 'badge-success';
-                    break;
-                default:
-                    borderColor = 'badge-secondary';
-                    estadoColor = '#2c3e50';
-                    badgeColor = 'badge-secondary';
-            }
-            let usersHtml = generarHtmlUsuarios(tarjeta.users, tarjeta.estado_id, tipo);
-            return `
+        if (tarjetas.progreso && tarjetas.progreso.length > 0) { // Cargar tarjetas en progreso
+            tarjetas.progreso.forEach(function(tarjeta) {
+                let html = generarTarjetaSolicitud(tarjeta, false, 'progreso');
+                $('#columna-progreso').append(html);
+            });
+        }
+        if (tarjetas.resueltas && tarjetas.resueltas.length > 0) { // Cargar tarjetas resueltas
+            tarjetas.resueltas.forEach(function(tarjeta) {
+                let html = generarTarjetaSolicitud(tarjeta, false, 'resueltas');
+                $('#columna-resueltas').append(html);
+            });
+        }
+        ordenarColumnas(); // Ordenar todas las columnas después de la carga inicial
+        actualizarContadores(); // Actualizar contadores y mensajes
+        actualizarMensajeColumnaVacia();
+        inicializarPopovers(); // Inicializar popovers para las tarjetas cargadas
+    }
+
+    function generarTarjetaSolicitud(tarjeta, animar = false, tipo = 'recibidas') {
+        const titulo = tarjeta.titulo && tarjeta.detalle ?
+            `${tarjeta.titulo} - ${tarjeta.detalle}` :
+            tarjeta.titulo || tarjeta.detalle || 'Sin título';
+        let borderColor, estadoColor, badgeColor;
+        switch (tipo) {
+            case 'recibidas':
+                borderColor = 'badge-secondary';
+                estadoColor = '#2c3e50';
+                badgeColor = 'badge-secondary';
+                break;
+            case 'progreso':
+                borderColor = 'badge-primary';
+                estadoColor = '#17a2b8';
+                badgeColor = 'badge-primary';
+                break;
+            case 'resueltas':
+                borderColor = 'badge-success';
+                estadoColor = '#28a745';
+                badgeColor = 'badge-success';
+                break;
+            default:
+                borderColor = 'badge-secondary';
+                estadoColor = '#2c3e50';
+                badgeColor = 'badge-secondary';
+        }
+        let usersHtml = generarHtmlUsuarios(tarjeta.users, tarjeta.estado_id, tipo);
+        return `
             <div class="solicitud-card ${animar ? 'animar-llegada' : ''} border-${borderColor}"
                 style="border-left-color: ${estadoColor};"
                 data-recepcion-id="${tarjeta.recepcion_id}"
@@ -348,268 +352,271 @@
                     </div>
                 @endif
             </div>`;
-        }
-        function obtenerAtencionIdsExistentes() {
-            let ids = [];
-            $('#columna-recibidas .solicitud-card').each(function() { // Solo obtener atencion_ids de la columna recibidas
-                let atencionId = $(this).data('atencion-id');
-                if (atencionId && atencionId !== 'null' && atencionId !== 'undefined') {
-                    ids.push(atencionId);
-                }
-            });
-            return ids;
-        }
-        //INICIALIZAR POPOVERS GLOBALMENTE
-        function inicializarPopovers(selector = '[data-toggle="popover"]') {
-            $(selector).not('[data-popover-initialized]')
-                .popover({ // Solo inicializar popovers que no estén ya inicializados
-                    html: true,
-                    container: 'body',
-                    trigger: 'hover',
-                    placement: 'top',
-                    boundary: 'viewport',
-                    zIndex: 9999,
-                    offset: '0, 8px',
-                    fallbackPlacements: ['bottom', 'left', 'right'],
-                    delay: {
-                        show: 300,
-                        hide: 100
-                    }
-                }).attr('data-popover-initialized', 'true');
-        }
-        //ACTUALIZAR EL MOVIMIENTO DE LA TARJETA, TANTO EN EL BACKEND Y COMO EN EL FRONTEND
-        function updatePosition(solicitudId, nuevaColumna, evt) {
-            let nuevoEstadoId = 1; //Iniciando parametros
-            let nombreEstado = 'Recibida';
-            let colorBorde = 'badge-secondary';
-            let estadoColor = 'rgb(170, 95, 34)'; // Color por defecto
-            switch (nuevaColumna) {
-                case 'columna-recibidas':
-                    nuevoEstadoId = 1;
-                    nombreEstado = 'Recibida';
-                    colorBorde = 'badge-secondary';
-                    estadoColor = '#2c3e50';
-                    break;
-                case 'columna-progreso':
-                    nuevoEstadoId = 2;
-                    nombreEstado = 'En progreso';
-                    colorBorde = 'badge-primary';
-                    estadoColor = '#17a2b8';
-                    break;
-                case 'columna-resueltas':
-                    nuevoEstadoId = 3;
-                    nombreEstado = 'Resuelta';
-                    colorBorde = 'badge-success';
-                    estadoColor = '#28a745';
-                    break;
+    }
+
+    function obtenerAtencionIdsExistentes() {
+        let ids = [];
+        $('#columna-recibidas .solicitud-card').each(function() { // Solo obtener atencion_ids de la columna recibidas
+            let atencionId = $(this).data('atencion-id');
+            if (atencionId && atencionId !== 'null' && atencionId !== 'undefined') {
+                ids.push(atencionId);
             }
-            let url = null; //Seleccionando la ruta a la que se va a enviar la solicitud
-            let selectedValue = null;
-            if (userRole === 'receptor' || userRole === 'operador') {
-                selectedValue = $('input[name="equipo_destino"]:checked').val();
-                if (!selectedValue && equipos && equipos.length === 1) { 
-                    selectedValue = equipos[0].id; // Auto-selección si solo hay un equipo
+        });
+        return ids;
+    }
+    //INICIALIZAR POPOVERS GLOBALMENTE
+    function inicializarPopovers(selector = '[data-toggle="popover"]') {
+        $(selector).not('[data-popover-initialized]')
+            .popover({ // Solo inicializar popovers que no estén ya inicializados
+                html: true,
+                container: 'body',
+                trigger: 'hover',
+                placement: 'top',
+                boundary: 'viewport',
+                zIndex: 9999,
+                offset: '0, 8px',
+                fallbackPlacements: ['bottom', 'left', 'right'],
+                delay: {
+                    show: 300,
+                    hide: 100
                 }
-                if (!selectedValue) {
-                    Swal.fire({
-                        position: 'top-end',
-                        type: 'warning',
-                        title: 'Debes seleccionar un equipo destino',
-                        showConfirmButton: false,
-                        timer: 2000,
-                        confirmButtonClass: 'btn btn-primary',
-                        buttonsStyling: false
-                    });
-                    $(evt.from).append(evt.item);
-                    return;
-                }
-                url = '{{ route('recepcion.asignar', ['recepcion' => ':recepcion_id', 'equipo' => ':equipo_id']) }}'
-                    .replace(':recepcion_id', solicitudId)
-                    .replace(':equipo_id', selectedValue);
+            }).attr('data-popover-initialized', 'true');
+    }
+    //ACTUALIZAR EL MOVIMIENTO DE LA TARJETA, TANTO EN EL BACKEND Y COMO EN EL FRONTEND
+    function updatePosition(solicitudId, nuevaColumna, evt) {
+        let nuevoEstadoId = 1; //Iniciando parametros
+        let nombreEstado = 'Recibida';
+        let colorBorde = 'badge-secondary';
+        let estadoColor = 'rgb(170, 95, 34)'; // Color por defecto
+        switch (nuevaColumna) {
+            case 'columna-recibidas':
+                nuevoEstadoId = 2;
+                nombreEstado = 'Recibida';
+                colorBorde = 'badge-secondary';
+                estadoColor = '#2c3e50';
+                break;
+            case 'columna-progreso':
+                nuevoEstadoId = 3;
+                nombreEstado = 'En progreso';
+                colorBorde = 'badge-primary';
+                estadoColor = '#17a2b8';
+                break;
+            case 'columna-resueltas':
+                nuevoEstadoId = 4;
+                nombreEstado = 'Resuelta';
+                colorBorde = 'badge-success';
+                estadoColor = '#28a745';
+                break;
+        }
+        let url = null; //Seleccionando la ruta a la que se va a enviar la solicitud
+        let selectedValue = null;
+        if (userRole === 'receptor' || userRole === 'operador') {
+            selectedValue = $('input[name="equipo_destino"]:checked').val();
+            if (!selectedValue && equipos && equipos.length === 1) {
+                selectedValue = equipos[0].id; // Auto-selección si solo hay un equipo
             }
-            if (!url) {
+            if (!selectedValue) {
+                Swal.fire({
+                    position: 'top-end',
+                    type: 'warning',
+                    title: 'Debes seleccionar un equipo destino',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    confirmButtonClass: 'btn btn-primary',
+                    buttonsStyling: false
+                });
                 $(evt.from).append(evt.item);
                 return;
             }
-            $.ajax({ //Enviando la solicitud a la ruta seleccionada
-                url: url,
-                method: 'POST',
-                cache: false,
-                data: {
-                    _token: $('meta[name="csrf-token"]').attr('content')
-                },
-                success: function(response) {
-                    if (response.success) {
-                        const tarjeta = $(`.solicitud-card[data-recepcion-id="${solicitudId}"]`);
-                        const tituloTarjeta = tarjeta.find('.solicitud-titulo').text() || 'Sin título';
-                        if (tarjeta.length > 0) {
-                            tarjeta.removeClass( // Actualizar estilos básicos de la tarjeta
-                                'border-badge-secondary border-badge-primary border-badge-success border-badge-danger border-badge-warning'
-                            );
-                            tarjeta.addClass('border-' + colorBorde);
-                            tarjeta.css('border-left-color', estadoColor);
-                            tarjeta.find('.solicitud-estado').text(response.traza || 'Recibida');
-                            tarjeta.find('.solicitud-estado').css({
-                                'color': estadoColor,
-                                'font-size': '11px',
-                                'margin-top': '5px'
-                            });
-                            tarjeta.attr('data-recepcion-estado-id', nuevoEstadoId); // Determinar clase de badge según el nuevo estado
-                            let badgeColor = 'badge-secondary'; // Por defecto
-                            if (nuevoEstadoId == 3) { // Resuelta
-                                badgeColor = 'badge-success';
-                            } else if (nuevoEstadoId == 2) { // En progreso
-                                badgeColor = 'badge-primary';
-                            } else if (nuevoEstadoId == 1) { // Recibida
-                                badgeColor = 'badge-secondary';
-                            }
-                            // Actualizar badges en los popovers
-                            tarjeta.find('[data-toggle="popover"]').each(function() {
-                                let $popover = $(this);
-                                let currentContent = $popover.attr('data-content');
-                                if (currentContent) {
-                                    let newContent = currentContent.replace(/badge-\w+/g, badgeColor);
-                                    $popover.attr('data-content', newContent);
-                                }
-                            });
-                            // Actualizar color de la flecha según el nuevo estado
-                            tarjeta.find('.fas.fa-arrow-right').css('color', estadoColor);
-                        }
-                        toastr.success(response.message);
-                    } else {
-                        Swal.fire({
-                            position: 'top-end',
-                            type: 'error',
-                            title: response.message,
-                            showConfirmButton: true,
-                            timer: 6000,
-                            confirmButtonClass: 'btn btn-danger',
-                            buttonsStyling: false
+            url = '{{ route('recepcion.asignar', ['recepcion' => ':recepcion_id', 'equipo' => ':equipo_id']) }}'
+                .replace(':recepcion_id', solicitudId)
+                .replace(':equipo_id', selectedValue);
+        }
+        if (!url) {
+            $(evt.from).append(evt.item);
+            return;
+        }
+        $.ajax({ //Enviando la solicitud a la ruta seleccionada
+            url: url,
+            method: 'POST',
+            cache: false,
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                if (response.success) {
+                    const tarjeta = $(`.solicitud-card[data-recepcion-id="${solicitudId}"]`);
+                    const tituloTarjeta = tarjeta.find('.solicitud-titulo').text() || 'Sin título';
+                    if (tarjeta.length > 0) {
+                        tarjeta.removeClass( // Actualizar estilos básicos de la tarjeta
+                            'border-badge-secondary border-badge-primary border-badge-success border-badge-danger border-badge-warning'
+                        );
+                        tarjeta.addClass('border-' + colorBorde);
+                        tarjeta.css('border-left-color', estadoColor);
+                        tarjeta.find('.solicitud-estado').text(response.traza || 'Recibida');
+                        tarjeta.find('.solicitud-estado').css({
+                            'color': estadoColor,
+                            'font-size': '11px',
+                            'margin-top': '5px'
                         });
-                        $(evt.from).append(evt.item); // Revertir la tarjeta a su posición original
-                        actualizarMensajeColumnaVacia(); // Actualizar mensaje de columna vacía
+                        tarjeta.attr('data-recepcion-estado-id', nuevoEstadoId); // Determinar clase de badge según el nuevo estado
+                        let badgeColor = 'badge-secondary'; // Por defecto
+                        if (nuevoEstadoId == 3) { // Resuelta
+                            badgeColor = 'badge-success';
+                        } else if (nuevoEstadoId == 2) { // En progreso
+                            badgeColor = 'badge-primary';
+                        } else if (nuevoEstadoId == 1) { // Recibida
+                            badgeColor = 'badge-secondary';
+                        }
+                        // Actualizar badges en los popovers
+                        tarjeta.find('[data-toggle="popover"]').each(function() {
+                            let $popover = $(this);
+                            let currentContent = $popover.attr('data-content');
+                            if (currentContent) {
+                                let newContent = currentContent.replace(/badge-\w+/g, badgeColor);
+                                $popover.attr('data-content', newContent);
+                            }
+                        });
+                        // Actualizar color de la flecha según el nuevo estado
+                        tarjeta.find('.fas.fa-arrow-right').css('color', estadoColor);
                     }
-                },
-                error: function(xhr, status, error) {
-                    let mensaje = '🚨 Error desconocido';
-                    if (xhr.status === 419) {
-                        mensaje = '🚨 Error CSRF - Recarga la página';
-                    } else if (xhr.status === 404) {
-                        mensaje = '🚨 Ruta no encontrada';
-                    } else if (xhr.status === 500) {
-                        mensaje = '🚨 Error del servidor';
-                    } else if (xhr.responseJSON && xhr.responseJSON.message) {
-                        mensaje = '🚨 ' + xhr.responseJSON.message;
-                    }
+                    toastr.success(response.message);
+                } else {
                     Swal.fire({
                         position: 'top-end',
                         type: 'error',
-                        title: mensaje,
+                        title: response.message,
                         showConfirmButton: true,
-                        timer: 60000,
+                        timer: 6000,
                         confirmButtonClass: 'btn btn-danger',
                         buttonsStyling: false
                     });
                     $(evt.from).append(evt.item); // Revertir la tarjeta a su posición original
                     actualizarMensajeColumnaVacia(); // Actualizar mensaje de columna vacía
                 }
-            });
-        }
-        function actualizarMensajeColumnaVacia() { //Mostrar u ocultar mensaje de columna vacía
-            const columnas = [{
-                    id: 'columna-recibidas',
-                    mensaje: '<div class="text-center text-muted py-4" style="pointer-events: none; user-select: none;"><i class="bx bx-archive text-muted" style="font-size: 1.5rem;"></i><div class="mt-2">Sin solicitudes recibidas</div></div>'
-                },
-                {
-                    id: 'columna-progreso',
-                    mensaje: '<div class="text-center text-muted py-4" style="pointer-events: none; user-select: none;"><i class="bx bx-time-five text-muted" style="font-size: 1.5rem;"></i><div class="mt-2">Sin tareas en progreso</div></div>'
-                },
-                {
-                    id: 'columna-resueltas',
-                    mensaje: '<div class="text-center text-muted py-4" style="pointer-events: none; user-select: none;"><i class="bx bx-check-circle text-muted" style="font-size: 1.5rem;"></i><div class="mt-2">Sin tareas completadas</div></div>'
+            },
+            error: function(xhr, status, error) {
+                let mensaje = '🚨 Error desconocido';
+                if (xhr.status === 419) {
+                    mensaje = '🚨 Error CSRF - Recarga la página';
+                } else if (xhr.status === 404) {
+                    mensaje = '🚨 Ruta no encontrada';
+                } else if (xhr.status === 500) {
+                    mensaje = '🚨 Error del servidor';
+                } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                    mensaje = '🚨 ' + xhr.responseJSON.message;
                 }
-            ];
-            columnas.forEach(function(col) {
-                const columna = document.getElementById(col.id);
-                if (!columna) return;
-                $(columna).find('.text-center.text-muted.py-4').remove(); // Eliminar mensajes existentes
-                if ($(columna).find('.solicitud-card').length === 0) { // Si no hay tarjetas, agregar el mensaje
-                    $(columna).append(col.mensaje);
-                }
-            });
-        }
-        //MOSTRAR TAREAS EN SIDEBAR
-        $(document).on('click', '.solicitud-card', function() {
-            const $card = $(this);
-            const estadoId = parseInt($card.attr('data-recepcion-estado-id'));
-            if (estadoId === 3) { // En progreso
-                @if (in_array(auth()->user()->mainRole->name, ['operador', 'receptor']))
-                    const titulo = $card.find('.solicitud-titulo').text().trim();
-                    const atencionId = $card.data('atencion-id');
-                    const recepcionId = $card.data('recepcion-id');
-                    const atencionIdRipped = $card.find('.text-right div[style*="font-weight: 600"]').text().trim();
-                    $('#sidebar-card-title').text(atencionIdRipped + ' - ' + titulo).css('font-size', '1rem');
-                    $('#sidebar-card-body').empty();
-                    cargarTareas(recepcionId, atencionId);
-                    $('.kanban-overlay').addClass('show');
-                    $('.kanban-sidebar').addClass('show');
-                    $('body').addClass('sidebar-open');
-                    limpiarClasesDrag();
-                @endif
-            } else if (estadoId === 2) { // Recibida
-                @if (in_array(auth()->user()->mainRole->name, ['cliente']))
-
-                    // PENDIENTE: Consulta solo lectura de la orden de compra
-                    console.log('Consulta de orden de compra (solo lectura) pendiente de implementar.');
-
-                @endif
+                Swal.fire({
+                    position: 'top-end',
+                    type: 'error',
+                    title: mensaje,
+                    showConfirmButton: true,
+                    timer: 60000,
+                    confirmButtonClass: 'btn btn-danger',
+                    buttonsStyling: false
+                });
+                $(evt.from).append(evt.item); // Revertir la tarjeta a su posición original
+                actualizarMensajeColumnaVacia(); // Actualizar mensaje de columna vacía
             }
         });
-        
-        function cargarTareas(recepcionId, atencionId) {
-            $.ajax({
-                url: '{{ route('recepcion.tareas', ['recepcion_id' => ':id']) }}'.replace(':id', recepcionId),
-                type: 'GET',
-                cache: true,
-                success: function(response) {
-                    const tareas = response.tareas || [];
-                    dibujarTareas(tareas, atencionId, recepcionId);
-                },
-                error: function(xhr, status, error) {
-                    $('#sidebar-card-body').append(
-                        '<div class="text-center text-muted py-3"><i class="bx bx-error-circle text-danger"></i><div class="mt-2">Error al cargar tareas</div></div>'
-                    );
-                }
-            });
-        }
-        function dibujarTareas(tareas, atencionId, recepcionId) {
-            if (tareas.length === 0) {
-                $('#sidebar-card-body').append(
-                    '<div class="text-center text-muted py-3"><i class="bx bx-task text-muted"></i><div class="mt-2">Sin tareas asignadas</div></div>'
-                );
-                return;
+    }
+
+    function actualizarMensajeColumnaVacia() { //Mostrar u ocultar mensaje de columna vacía
+        const columnas = [{
+                id: 'columna-recibidas',
+                mensaje: '<div class="text-center text-muted py-4" style="pointer-events: none; user-select: none;"><i class="bx bx-archive text-muted" style="font-size: 1.5rem;"></i><div class="mt-2">Sin solicitudes recibidas</div></div>'
+            },
+            {
+                id: 'columna-progreso',
+                mensaje: '<div class="text-center text-muted py-4" style="pointer-events: none; user-select: none;"><i class="bx bx-time-five text-muted" style="font-size: 1.5rem;"></i><div class="mt-2">Sin tareas en progreso</div></div>'
+            },
+            {
+                id: 'columna-resueltas',
+                mensaje: '<div class="text-center text-muted py-4" style="pointer-events: none; user-select: none;"><i class="bx bx-check-circle text-muted" style="font-size: 1.5rem;"></i><div class="mt-2">Sin tareas completadas</div></div>'
             }
-            let tareasHtml = '<div><h6 class="font-weight-600 mb-2"></h6>';
-            tareas.forEach(function(tarea) {
-                let esCompletada = tarea.estado == 'Resuelta';
-                let taskId = 'task_' + tarea.actividad_id;
-                let formId = 'form_' + tarea.actividad_id;
-                let formAction = '';
-                let ruta = '';
-                if (tarea.tarea === 'Orden de compra en revisión') { //Definiendo las tareas del tracking
-                    ruta = '{{ route("tienda.carrito-editar") }}';
-                } else if (tarea.tarea === 'Stock físico en revisión') {
-                    ruta = '{{ route("tienda.carrito-editar") }}';
-                } else if (tarea.tarea === 'Pago efectuado') {
-                    ruta = '{{ route("recepcion.confirmar-pago") }}';
-                } else if (tarea.tarea === 'Stock descargado') {
-                    ruta = '{{ route("recepcion.descargar-stock") }}';
-                } else if (tarea.tarea === 'Entrega efectuada') {
-                    ruta = '{{ route("recepcion.efectuar-entrega") }}';
-                }
-                let htmlGenerado = '';
-                if (ruta) {
-                    htmlGenerado = `
+        ];
+        columnas.forEach(function(col) {
+            const columna = document.getElementById(col.id);
+            if (!columna) return;
+            $(columna).find('.text-center.text-muted.py-4').remove(); // Eliminar mensajes existentes
+            if ($(columna).find('.solicitud-card').length === 0) { // Si no hay tarjetas, agregar el mensaje
+                $(columna).append(col.mensaje);
+            }
+        });
+    }
+    //MOSTRAR TAREAS EN SIDEBAR
+    $(document).on('click', '.solicitud-card', function() {
+        const $card = $(this);
+        const estadoId = parseInt($card.attr('data-recepcion-estado-id'));
+        if (estadoId === 3) { // En progreso
+            @if(in_array(auth()->user()->mainRole->name, ['operador', 'receptor']))
+            const titulo = $card.find('.solicitud-titulo').text().trim();
+            const atencionId = $card.data('atencion-id');
+            const recepcionId = $card.data('recepcion-id');
+            const atencionIdRipped = $card.find('.text-right div[style*="font-weight: 600"]').text().trim();
+            $('#sidebar-card-title').text(atencionIdRipped + ' - ' + titulo).css('font-size', '1rem');
+            $('#sidebar-card-body').empty();
+            cargarTareas(recepcionId, atencionId);
+            $('.kanban-overlay').addClass('show');
+            $('.kanban-sidebar').addClass('show');
+            $('body').addClass('sidebar-open');
+            limpiarClasesDrag();
+            @endif
+        } else if (estadoId === 2 || estadoId === 4) { // Recibida o Resuelta
+            @if(in_array(auth()->user()->mainRole->name, ['cliente']))
+
+            // PENDIENTE: Consulta solo lectura de la orden de compra
+            console.log('Consulta de orden de compra (solo lectura) pendiente de implementar.');
+
+            @endif
+        }
+    });
+
+    function cargarTareas(recepcionId, atencionId) {
+        $.ajax({
+            url: '{{ route('recepcion.tareas', ['recepcion_id' => ':id']) }}'.replace(':id', recepcionId),
+            type: 'GET',
+            cache: true,
+            success: function(response) {
+                const tareas = response.tareas || [];
+                dibujarTareas(tareas, atencionId, recepcionId);
+            },
+            error: function(xhr, status, error) {
+                $('#sidebar-card-body').append(
+                    '<div class="text-center text-muted py-3"><i class="bx bx-error-circle text-danger"></i><div class="mt-2">Error al cargar tareas</div></div>'
+                );
+            }
+        });
+    }
+
+    function dibujarTareas(tareas, atencionId, recepcionId) {
+        if (tareas.length === 0) {
+            $('#sidebar-card-body').append(
+                '<div class="text-center text-muted py-3"><i class="bx bx-task text-muted"></i><div class="mt-2">Sin tareas asignadas</div></div>'
+            );
+            return;
+        }
+        let tareasHtml = '<div><h6 class="font-weight-600 mb-2"></h6>';
+        tareas.forEach(function(tarea) {
+            let esCompletada = tarea.estado == 'Resuelta';
+            let taskId = 'task_' + tarea.actividad_id;
+            let formId = 'form_' + tarea.actividad_id;
+            let formAction = '';
+            let ruta = '';
+            if (tarea.tarea === 'Orden de compra en revisión') { //Definiendo las tareas del tracking
+                ruta = '{{ route("tienda.carrito-editar") }}';
+            } else if (tarea.tarea === 'Stock físico en revisión') {
+                ruta = '{{ route("tienda.carrito-editar") }}';
+            } else if (tarea.tarea === 'Pago efectuado') {
+                ruta = '{{ route("recepcion.confirmar-pago") }}';
+            } else if (tarea.tarea === 'Stock descargado') {
+                ruta = '{{ route("recepcion.descargar-stock") }}';
+            } else if (tarea.tarea === 'Entrega efectuada') {
+                ruta = '{{ route("recepcion.efectuar-entrega") }}';
+            }
+            let htmlGenerado = '';
+            if (ruta) {
+                htmlGenerado = `
                         <div class="selectable-item ${esCompletada ? 'selected' : ''}" style="display: flex; align-items: center; padding: 10px;">
                             <form id="${formId}" action="${ruta}" method="POST" style="display: flex; align-items: center; flex: 1; margin: 0;">
                                 @csrf
@@ -631,147 +638,151 @@
                             </form>
                         </div>
                     `;
-                }
-                tareasHtml += htmlGenerado;
-            });
-            tareasHtml += '</div>';
-            $('#sidebar-card-body').append(tareasHtml);
+            }
+            tareasHtml += htmlGenerado;
+        });
+        tareasHtml += '</div>';
+        $('#sidebar-card-body').append(tareasHtml);
+    }
+
+    function limpiarClasesDrag() {
+        $('.solicitud-card').removeClass('dragging sortable-drag sortable-chosen sortable-ghost');
+        $('.sortable-fallback').remove();
+    }
+    $(document).on('keydown', function(e) {
+        if (e.key === 'Escape') {
+            limpiarClasesDrag();
         }
-        function limpiarClasesDrag() {
-            $('.solicitud-card').removeClass('dragging sortable-drag sortable-chosen sortable-ghost');
+    });
+
+    //PROPAGAR CLICK AL FORMULARIO
+    $(document).on('click', '.selectable-item', function(e) {
+        if (!$(e.target).is('input[type="checkbox"]')) {
+            const form = $(this).find('form');
+            const checkbox = $(this).find('input[type="checkbox"]');
+            if (checkbox.length && !checkbox.is(':disabled')) {
+                form.submit();
+            }
+        }
+    });
+
+    //CERRAR SIDEBAR
+    $(document).on('click', '.kanban-overlay, .kanban-sidebar .close-icon',
+        function() {
+            $('.kanban-overlay').removeClass('show');
+            $('.kanban-sidebar').removeClass('show');
+            $('body').removeClass('sidebar-open');
+            $('.solicitud-card').removeClass(
+                'dragging sortable-drag sortable-chosen sortable-ghost'
+            );
             $('.sortable-fallback').remove();
         }
-        $(document).on('keydown', function(e) {
-            if (e.key === 'Escape') {
-                limpiarClasesDrag();
-            }
-        });
-        
-        //PROPAGAR CLICK AL FORMULARIO
-        $(document).on('click', '.selectable-item', function(e) {
-            if (!$(e.target).is('input[type="checkbox"]')) {
-                const form = $(this).find('form');
-                const checkbox = $(this).find('input[type="checkbox"]');
-                if (checkbox.length && !checkbox.is(':disabled')) {
-                    form.submit();
-                }
-            }
-        });
-
-        //CERRAR SIDEBAR
-        $(document).on('click', '.kanban-overlay, .kanban-sidebar .close-icon',
-            function() {
-                $('.kanban-overlay').removeClass('show');
-                $('.kanban-sidebar').removeClass('show');
-                $('body').removeClass('sidebar-open');
-                $('.solicitud-card').removeClass(
-                    'dragging sortable-drag sortable-chosen sortable-ghost'
-                );
-                $('.sortable-fallback').remove();
-            }
-        );
-        //CERRAR EL ACCORDION
-        $(document).on('change', 'input[name="equipo_destino"]', function() {
-            const equipoId = $(this).val();
-            const equipoNombre = $(this).closest('div').find('.item-name').text().trim();
-            $('#heading5 h6 span.font-weight-600').text(equipoNombre);
-            $('#heading5 small.text-white-50').hide();
-            $('#accordion5').collapse('hide');
-        });
-        //FUNCIONES PARA ACTUALIZAR BARRAS DE PROGRESO
-        function updateProgressByPercentage(atencionId, porcentaje) {
-            let naranja, amarillo, verde, celeste;
-            if (porcentaje == 0) {
-                naranja = 65;
-                amarillo = 30;
-                verde = 5;
-                celeste = 0;
-            } else if (porcentaje >= 10 && porcentaje < 30) {
-                naranja = 45;
-                amarillo = 35;
-                verde = 15;
-                celeste = 5;
-            } else if (porcentaje >= 30 && porcentaje < 60) {
-                naranja = 15;
-                amarillo = 45;
-                verde = 25;
-                celeste = 15;
-            } else if (porcentaje >= 60 && porcentaje < 80) {
-                naranja = 0;
-                amarillo = 35;
-                verde = 40;
-                celeste = 35;
-            } else if (porcentaje >= 80 && porcentaje < 90) {
-                naranja = 0;
-                amarillo = 5;
-                verde = 50;
-                celeste = 45;
-            } else if (porcentaje >= 90 && porcentaje < 100) {
-                naranja = 0;
-                amarillo = 0;
-                verde = 15;
-                celeste = 85;
-            } else { // 100%
-                naranja = 0;
-                amarillo = 0;
-                verde = 0;
-                celeste = 100;
-            }
-            const progressBars = $(
-                `[data-atencion-id="${atencionId}"]`); // Actualizar todas las barras de progreso con el mismo atencion_id
-            if (progressBars.length > 0) {
-                progressBars.css({
-                    '--naranja': naranja + '%',
-                    '--amarillo': amarillo + '%',
-                    '--verde': verde + '%'
-                });
-            }
+    );
+    //CERRAR EL ACCORDION
+    $(document).on('change', 'input[name="equipo_destino"]', function() {
+        const equipoId = $(this).val();
+        const equipoNombre = $(this).closest('div').find('.item-name').text().trim();
+        $('#heading5 h6 span.font-weight-600').text(equipoNombre);
+        $('#heading5 small.text-white-50').hide();
+        $('#accordion5').collapse('hide');
+    });
+    //FUNCIONES PARA ACTUALIZAR BARRAS DE PROGRESO
+    function updateProgressByPercentage(atencionId, porcentaje) {
+        let naranja, amarillo, verde, celeste;
+        if (porcentaje == 0) {
+            naranja = 65;
+            amarillo = 30;
+            verde = 5;
+            celeste = 0;
+        } else if (porcentaje >= 10 && porcentaje < 30) {
+            naranja = 45;
+            amarillo = 35;
+            verde = 15;
+            celeste = 5;
+        } else if (porcentaje >= 30 && porcentaje < 60) {
+            naranja = 15;
+            amarillo = 45;
+            verde = 25;
+            celeste = 15;
+        } else if (porcentaje >= 60 && porcentaje < 80) {
+            naranja = 0;
+            amarillo = 35;
+            verde = 40;
+            celeste = 35;
+        } else if (porcentaje >= 80 && porcentaje < 90) {
+            naranja = 0;
+            amarillo = 5;
+            verde = 50;
+            celeste = 45;
+        } else if (porcentaje >= 90 && porcentaje < 100) {
+            naranja = 0;
+            amarillo = 0;
+            verde = 15;
+            celeste = 85;
+        } else { // 100%
+            naranja = 0;
+            amarillo = 0;
+            verde = 0;
+            celeste = 100;
         }
-        function actualizarContadores() { // Función para actualizar los contadores de las columnas
-            const recibidas = $('#columna-recibidas .solicitud-card').length;
-            const progreso = $('#columna-progreso .solicitud-card').length;
-            const resueltas = $('#columna-resueltas .solicitud-card').length;
-            $('#contador-recibidas').text(recibidas);
-            $('#contador-progreso').text(progreso);
-            $('#contador-resueltas').text(resueltas);
-            actualizarMensajeColumnaVacia(); // NUEVO: actualizar mensajes de columnas vacías
-        }
-        function obtenerAtencionIdsTableros() {
-            let ids = [];
-            $('.solicitud-card').each(function() {
-                let atencionId = $(this).attr('data-atencion-id');
-                if (atencionId) {
-                    ids.push(atencionId);
-                }
+        const progressBars = $(
+            `[data-atencion-id="${atencionId}"]`); // Actualizar todas las barras de progreso con el mismo atencion_id
+        if (progressBars.length > 0) {
+            progressBars.css({
+                '--naranja': naranja + '%',
+                '--amarillo': amarillo + '%',
+                '--verde': verde + '%'
             });
-            return [...new Set(ids)]; // Eliminar repetidos usando Set
         }
-        //GENERAR HTML DE PARTICIPANTES
-        function generarHtmlUsuarios(users, estadoId, tipo = 'recibidas') {
-            let usersHtml = '';
-            if (users && users.length > 0) {
-                const cliente = users.find(user => user.tipo ===
-                    'origen'); // Separar cliente (origen) de otros participantes (destino)
-                const participantes = users.filter(user => user.tipo === 'destino');
-                function generarAvatar(user) { // Función para generar avatar
-                    return user.profile_photo_url ?
-                        `<img src="${user.profile_photo_url}" alt="Usuario" class="avatar" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;">` :
-                        `<div class="avatar" style="width: 32px; height: 32px; border-radius: 50%; background: #e9ecef; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #6c757d;">${user.name ? user.name[0] : '?'}</div>`;
-                }
-                let badgeColor = 'badge-secondary'; // Determinar colores basados en el estado
-                let estadoColor = '#2c3e50';
-                if (estadoId == 3) { // Resuelta
-                    badgeColor = 'badge-success';
-                    estadoColor = '#28a745';
-                } else if (estadoId == 2) { // En progreso
-                    badgeColor = 'badge-primary';
-                    estadoColor = '#17a2b8';
-                } else if (estadoId == 1) { // Recibida
-                    badgeColor = 'badge-secondary';
-                    estadoColor = '#2c3e50';
-                }
-                if (cliente) { // Mostrar cliente primero
-                    usersHtml += `
+    }
+
+    function actualizarContadores() { // Función para actualizar los contadores de las columnas
+        const recibidas = $('#columna-recibidas .solicitud-card').length;
+        const progreso = $('#columna-progreso .solicitud-card').length;
+        const resueltas = $('#columna-resueltas .solicitud-card').length;
+        $('#contador-recibidas').text(recibidas);
+        $('#contador-progreso').text(progreso);
+        $('#contador-resueltas').text(resueltas);
+        actualizarMensajeColumnaVacia(); // NUEVO: actualizar mensajes de columnas vacías
+    }
+
+    function obtenerAtencionIdsTableros() {
+        let ids = [];
+        $('.solicitud-card').each(function() {
+            let atencionId = $(this).attr('data-atencion-id');
+            if (atencionId) {
+                ids.push(atencionId);
+            }
+        });
+        return [...new Set(ids)]; // Eliminar repetidos usando Set
+    }
+    //GENERAR HTML DE PARTICIPANTES
+    function generarHtmlUsuarios(users, estadoId, tipo = 'recibidas') {
+        let usersHtml = '';
+        if (users && users.length > 0) {
+            const cliente = users.find(user => user.tipo ===
+                'origen'); // Separar cliente (origen) de otros participantes (destino)
+            const participantes = users.filter(user => user.tipo === 'destino');
+
+            function generarAvatar(user) { // Función para generar avatar
+                return user.profile_photo_url ?
+                    `<img src="${user.profile_photo_url}" alt="Usuario" class="avatar" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;">` :
+                    `<div class="avatar" style="width: 32px; height: 32px; border-radius: 50%; background: #e9ecef; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #6c757d;">${user.name ? user.name[0] : '?'}</div>`;
+            }
+            let badgeColor = 'badge-secondary'; // Determinar colores basados en el estado
+            let estadoColor = '#2c3e50';
+            if (estadoId == 3) { // Resuelta
+                badgeColor = 'badge-success';
+                estadoColor = '#28a745';
+            } else if (estadoId == 2) { // En progreso
+                badgeColor = 'badge-primary';
+                estadoColor = '#17a2b8';
+            } else if (estadoId == 1) { // Recibida
+                badgeColor = 'badge-secondary';
+                estadoColor = '#2c3e50';
+            }
+            if (cliente) { // Mostrar cliente primero
+                usersHtml += `
                         <div style="margin: 0;" data-toggle="popover" 
                             data-title="${cliente.name || 'Cliente'}" 
                             data-content="<span class='badge badge-pill ${badgeColor}'>Cliente</span>"
@@ -780,16 +791,16 @@
                             ${generarAvatar(cliente)}
                         </div>
                     `;
-                    if (participantes.length > 0) { // Agregar flecha si hay participantes
-                        usersHtml += `
+                if (participantes.length > 0) { // Agregar flecha si hay participantes
+                    usersHtml += `
                     <div style="margin: 0 8px; display: flex; align-items: center; justify-content: center; width: 20px; height: 32px;">
                         <i class="fas fa-arrow-right" style="color: ${estadoColor}; font-size: 14px;"></i>
                     </div>
                 `;
-                    }
                 }
-                participantes.forEach(function(user) { // Mostrar participantes
-                    usersHtml += `
+            }
+            participantes.forEach(function(user) { // Mostrar participantes
+                usersHtml += `
                 <div style="margin: 0;" data-toggle="popover" 
                     data-title="${user.name || 'Sin asignar'}" 
                     data-content="<span class='badge badge-pill ${badgeColor}'>${user.recepcion_role_name || 'Sin rol'}</span>"
@@ -798,217 +809,218 @@
                     ${generarAvatar(user)}
                 </div>
             `;
-                });
-            }
-            return usersHtml;
-        }
-        //FUNCIÓN AUXILIAR PARA ACTUALIZAR ESTILOS DE TARJETA
-        function actualizarEstilosTarjeta($card, estadoId) {
-            let color, borderClass, nombreEstado;
-            switch (estadoId) {
-                case 1: // Recibida
-                    color = '#2c3e50';
-                    borderClass = 'border-badge-secondary';
-                    nombreEstado = 'Recibida';
-                    break;
-                case 2: // En progreso
-                    color = '#17a2b8';
-                    borderClass = 'border-badge-primary';
-                    nombreEstado = 'En progreso';
-                    break;
-                case 3: // Resuelta
-                    color = '#28a745';
-                    borderClass = 'border-badge-success';
-                    nombreEstado = 'Resuelta';
-                    break;
-                default:
-                    color = '#2c3e50';
-                    borderClass = 'border-badge-secondary';
-                    nombreEstado = 'Recibida';
-            }
-            $card.css('border-left-color', color);
-            $card.removeClass(
-                'border-badge-secondary border-badge-primary border-badge-success border-badge-danger border-badge-warning'
-            );
-            $card.addClass(borderClass);
-            $card.find('.solicitud-estado').text(nombreEstado);
-            $card.find('.solicitud-estado').css({
-                'color': color,
-                'font-size': '11px',
-                'margin-top': '5px'
             });
-            $card.find('.fas.fa-arrow-right').css('color', color);
         }
-        //ACTUALIZAR AVANCE
-        function actualizarAvance() {
-            let atencionIds = obtenerAtencionIdsTableros();
-            if (atencionIds.length === 0) { // No hay tarjetas en los tableros
+        return usersHtml;
+    }
+    //FUNCIÓN AUXILIAR PARA ACTUALIZAR ESTILOS DE TARJETA
+    function actualizarEstilosTarjeta($card, estadoId) {
+        let color, borderClass, nombreEstado;
+        switch (estadoId) {
+            case 2: // Recibida
+                color = '#2c3e50';
+                borderClass = 'border-badge-secondary';
+                nombreEstado = 'Recibida';
+                break;
+            case 3: // En progreso
+                color = '#17a2b8';
+                borderClass = 'border-badge-primary';
+                nombreEstado = 'En progreso';
+                break;
+            case 4: // Resuelta
+                color = '#28a745';
+                borderClass = 'border-badge-success';
+                nombreEstado = 'Resuelta';
+                break;
+            default:
+                color = '#2c3e50';
+                borderClass = 'border-badge-secondary';
+                nombreEstado = 'Recibida';
+        }
+        $card.css('border-left-color', color);
+        $card.removeClass(
+            'border-badge-secondary border-badge-primary border-badge-success border-badge-danger border-badge-warning'
+        );
+        $card.addClass(borderClass);
+        $card.find('.solicitud-estado').text(nombreEstado);
+        $card.find('.solicitud-estado').css({
+            'color': color,
+            'font-size': '11px',
+            'margin-top': '5px'
+        });
+        $card.find('.fas.fa-arrow-right').css('color', color);
+    }
+    //ACTUALIZAR AVANCE
+    function actualizarAvance() {
+        let atencionIds = obtenerAtencionIdsTableros();
+        if (atencionIds.length === 0) { // No hay tarjetas en los tableros
+            return;
+        }
+        $.post({
+            url: '{{ route('recepcion.consultar-avance') }}',
+            data: {
+                atencion_ids: atencionIds,
+                _token: $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(items) {
+                items.forEach(function(item) {
+                    let $divider = $('.progress-divider[data-atencion-id="' + item.atencion_id +
+                        '"]');
+                    let $card = $('.solicitud-card[data-atencion-id="' + item.atencion_id + '"]');
+                    if ($divider.length > 0 && $card.length > 0) {
+                        let avanceFrontend = parseFloat($divider.attr('data-avance') || '0');
+                        let avanceBackend = parseFloat(item.avance || '0');
+                        if (avanceFrontend !== avanceBackend) {
+                            $divider.attr('data-avance', avanceBackend);
+                            updateProgressByPercentage(item.atencion_id, avanceBackend);
+                        }
+                        let estadoFrontend = parseInt($card.attr('data-recepcion-estado-id'), 10);
+                        let estadoBackend = parseInt(item.estado_id, 10);
+                        if (item.traza) {
+                            $card.find('.solicitud-estado').text(item.traza);
+                        }
+                        if (estadoFrontend !== estadoBackend) {
+                            $card.attr('data-recepcion-estado-id', estadoBackend);
+                            let columnaDestino; // Determinar columna destino según el estado
+                            switch (estadoBackend) {
+                                case 2: // Recibida
+                                    columnaDestino = '#columna-recibidas';
+                                    break;
+                                case 3: // En progreso
+                                    columnaDestino = '#columna-progreso';
+                                    break;
+                                case 4: // Resuelta
+                                    columnaDestino = '#columna-resueltas';
+                                    break;
+                                default:
+                                    columnaDestino = '#columna-recibidas';
+                            }
+                            $card.addClass('animar-traslado'); // Trasladar tarjeta al tablero correspondiente
+                            setTimeout(function() {
+                                $card.removeClass('animar-traslado');
+                                $(columnaDestino).append($card);
+                                $card.addClass('animar-llegada');
+                                setTimeout(function() {
+                                    $card.removeClass('animar-llegada');
+                                }, 500);
+                                actualizarEstilosTarjeta($card, estadoBackend); // Actualizar estilos usando la función auxiliar
+                                actualizarContadores();
+                                ordenarColumna(columnaDestino.replace('#', '')); // Ordenar la columna después del traslado
+                            }, 500);
+                        }
+                        if (item.recepciones && item.recepciones.length > 0) {
+                            let $usersContainer = $card.find('.users-container');
+                            if ($usersContainer.length > 0) {
+                                let usersHtml = generarHtmlUsuarios(item.recepciones, item
+                                    .estado_id);
+                                $usersContainer.find('[data-toggle="popover"]').popover('dispose');
+                                $usersContainer.html(usersHtml);
+                                setTimeout(() => { // Esperar un momento antes de reinicializar
+                                    inicializarPopovers($usersContainer.find(
+                                        '[data-toggle="popover"]'));
+                                }, 50);
+                            }
+                        }
+                    }
+                });
+                ordenarColumnas(); // Ordenar todas las columnas después de las actualizaciones
+            },
+            error: function(xhr, status, error) {
+                console.error('Error al consultar avances:', {
+                    status: xhr.status,
+                    statusText: xhr.statusText,
+                    responseText: xhr.responseText,
+                    error: error
+                });
+                if (xhr.status !== 0) {
+                    console.error('Error al consultar avances:', status);
+                }
+            }
+        });
+    }
+    //CARGAR NUEVAS RECIBIDAS
+    function cargarNuevasRecibidas() {
+        let atencionIdsExistentes = obtenerAtencionIdsExistentes();
+        let data = {
+            _token: $('meta[name="csrf-token"]').attr('content'),
+            atencion_ids: atencionIdsExistentes
+        };
+        $.post({
+            url: '{{ route('recepcion.nuevas-recibidas') }}',
+            data: data,
+            success: function(nuevas) {
+                if (!Array.isArray(nuevas)) {
+                    nuevas = Object.values(nuevas);
+                }
+                if (nuevas && nuevas.length > 0) {
+                    let tarjetasAgregadas = 0;
+                    nuevas.forEach(function(tarjeta) {
+                        let html = generarTarjetaSolicitud(tarjeta, true, 'recibidas');
+                        let $nueva = $(html);
+                        $('#columna-recibidas').prepend($nueva);
+                        updateProgressByPercentage(tarjeta.atencion_id, tarjeta
+                            .porcentaje_progreso);
+                        setTimeout(function() {
+                            $nueva.removeClass('animar-llegada');
+                        }, 500);
+                        tarjetasAgregadas++;
+                    });
+                    if (tarjetasAgregadas > 0) { // Solo actualizar contadores si se agregaron tarjetas
+                        ordenarColumna(
+                            'columna-recibidas'); // Ordenar tablero después de agregar nuevas tarjetas
+                        actualizarContadores();
+                        inicializarPopovers(); // Inicializar popovers para las nuevas tarjetas
+                    }
+                }
+            },
+            error: function(xhr, status, error) {
+                if (xhr.status !== 0) { // Solo log si no es error de red
+                    console.error('Error cargando nuevas recibidas:', status);
+                }
+            }
+        });
+    }
+
+    //CONTROL PRINCIPAL
+    $(document).ready(function() {
+        inicializarPopovers();
+        const tarjetasIniciales = { // Datos iniciales de las tarjetas
+            recibidas: @json($recibidas),
+            progreso: @json($progreso),
+            resueltas: @json($resueltas)
+        };
+        cargarTarjetasIniciales(tarjetasIniciales);
+
+        function initializeProgressBars() {
+            $('.progress-divider').each(function() {
+                let atencionId = $(this).data('atencion-id');
+                let avance = $(this).data('avance');
+                if (atencionId && avance !== undefined) {
+                    updateProgressByPercentage(atencionId, avance);
+                }
+            });
+        }
+        setTimeout(initializeProgressBars, 100); // Inicializar barras de progreso inmediatamente no es timer
+        initKanban();
+
+        /*
+        let isUpdating = false; // Sistema inteligente de polling para evitar saturación
+        let updateInterval = ({{ $frecuencia_actualizacion }} * 1000) * 60;
+        function safeUpdate() {
+            if (isUpdating) {
                 return;
             }
-            $.post({
-                url: '{{ route('recepcion.consultar-avance') }}',
-                data: {
-                    atencion_ids: atencionIds,
-                    _token: $('meta[name="csrf-token"]').attr('content')
-                },
-                success: function(items) {
-                    items.forEach(function(item) {
-                        let $divider = $('.progress-divider[data-atencion-id="' + item.atencion_id +
-                            '"]');
-                        let $card = $('.solicitud-card[data-atencion-id="' + item.atencion_id + '"]');
-                        if ($divider.length > 0 && $card.length > 0) {
-                            let avanceFrontend = parseFloat($divider.attr('data-avance') || '0');
-                            let avanceBackend = parseFloat(item.avance || '0');
-                            if (avanceFrontend !== avanceBackend) {
-                                $divider.attr('data-avance', avanceBackend);
-                                updateProgressByPercentage(item.atencion_id, avanceBackend);
-                            }
-                            let estadoFrontend = parseInt($card.attr('data-recepcion-estado-id'), 10);
-                            let estadoBackend = parseInt(item.estado_id, 10);
-                            if (item.traza) {
-                                $card.find('.solicitud-estado').text(item.traza);
-                            }
-                            if (estadoFrontend !== estadoBackend) {
-                                $card.attr('data-recepcion-estado-id', estadoBackend);
-                                let columnaDestino; // Determinar columna destino según el estado
-                                switch (estadoBackend) {
-                                    case 1: // Recibida
-                                        columnaDestino = '#columna-recibidas';
-                                        break;
-                                    case 2: // En progreso
-                                        columnaDestino = '#columna-progreso';
-                                        break;
-                                    case 3: // Resuelta
-                                        columnaDestino = '#columna-resueltas';
-                                        break;
-                                    default:
-                                        columnaDestino = '#columna-recibidas';
-                                }
-                                $card.addClass('animar-traslado'); // Trasladar tarjeta al tablero correspondiente
-                                setTimeout(function() {
-                                    $card.removeClass('animar-traslado');
-                                    $(columnaDestino).append($card);
-                                    $card.addClass('animar-llegada');
-                                    setTimeout(function() {
-                                        $card.removeClass('animar-llegada');
-                                    }, 500);
-                                    actualizarEstilosTarjeta($card, estadoBackend); // Actualizar estilos usando la función auxiliar
-                                    actualizarContadores();
-                                    ordenarColumna(columnaDestino.replace('#','')); // Ordenar la columna después del traslado
-                                }, 500);
-                            }
-                            if (item.recepciones && item.recepciones.length > 0) {
-                                let $usersContainer = $card.find('.users-container');
-                                if ($usersContainer.length > 0) {
-                                    let usersHtml = generarHtmlUsuarios(item.recepciones, item
-                                        .estado_id);
-                                    $usersContainer.find('[data-toggle="popover"]').popover('dispose');
-                                    $usersContainer.html(usersHtml);
-                                    setTimeout(() => { // Esperar un momento antes de reinicializar
-                                        inicializarPopovers($usersContainer.find(
-                                            '[data-toggle="popover"]'));
-                                    }, 50);
-                                }
-                            }
-                        }
-                    });
-                    ordenarColumnas(); // Ordenar todas las columnas después de las actualizaciones
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error al consultar avances:', {
-                        status: xhr.status,
-                        statusText: xhr.statusText,
-                        responseText: xhr.responseText,
-                        error: error
-                    });
-                    if (xhr.status !== 0) {
-                        console.error('Error al consultar avances:', status);
-                    }
-                }
-            });
+            isUpdating = true;
+            actualizarAvance(); // Actualizar avances primero
+            setTimeout(function() { // Luego cargar nuevas recibidas con delay
+                cargarNuevasRecibidas();
+                isUpdating = false;
+            }, 10000);
         }
-        //CARGAR NUEVAS RECIBIDAS
-        function cargarNuevasRecibidas() {
-            let atencionIdsExistentes = obtenerAtencionIdsExistentes();
-            let data = {
-                _token: $('meta[name="csrf-token"]').attr('content'),
-                atencion_ids: atencionIdsExistentes
-            };
-            $.post({
-                url: '{{ route('recepcion.nuevas-recibidas') }}',
-                data: data,
-                success: function(nuevas) {
-                    if (!Array.isArray(nuevas)) {
-                        nuevas = Object.values(nuevas);
-                    }
-                    if (nuevas && nuevas.length > 0) {
-                        let tarjetasAgregadas = 0;
-                        nuevas.forEach(function(tarjeta) {
-                            let html = generarTarjetaSolicitud(tarjeta, true, 'recibidas');
-                            let $nueva = $(html);
-                            $('#columna-recibidas').prepend($nueva);
-                            updateProgressByPercentage(tarjeta.atencion_id, tarjeta
-                                .porcentaje_progreso);
-                            setTimeout(function() {
-                                $nueva.removeClass('animar-llegada');
-                            }, 500);
-                            tarjetasAgregadas++;
-                        });
-                        if (tarjetasAgregadas > 0) { // Solo actualizar contadores si se agregaron tarjetas
-                            ordenarColumna(
-                                'columna-recibidas'); // Ordenar tablero después de agregar nuevas tarjetas
-                            actualizarContadores();
-                            inicializarPopovers(); // Inicializar popovers para las nuevas tarjetas
-                        }
-                    }
-                },
-                error: function(xhr, status, error) {
-                    if (xhr.status !== 0) { // Solo log si no es error de red
-                        console.error('Error cargando nuevas recibidas:', status);
-                    }
-                }
-            });
-        }
-        
-        //CONTROL PRINCIPAL
-        $(document).ready(function() {
-            inicializarPopovers();
-            const tarjetasIniciales = { // Datos iniciales de las tarjetas
-                recibidas: @json($recibidas),
-                progreso: @json($progreso),
-                resueltas: @json($resueltas)
-            };
-            cargarTarjetasIniciales(tarjetasIniciales);
-            function initializeProgressBars() {
-                $('.progress-divider').each(function() {
-                    let atencionId = $(this).data('atencion-id');
-                    let avance = $(this).data('avance');
-                    if (atencionId && avance !== undefined) {
-                        updateProgressByPercentage(atencionId, avance);
-                    }
-                });
-            }
-            setTimeout(initializeProgressBars, 100); // Inicializar barras de progreso inmediatamente no es timer
-            initKanban();
-            
-            /*
-            let isUpdating = false; // Sistema inteligente de polling para evitar saturación
-            let updateInterval = ({{ $frecuencia_actualizacion }} * 1000) * 60;
-            function safeUpdate() {
-                if (isUpdating) {
-                    return;
-                }
-                isUpdating = true;
-                actualizarAvance(); // Actualizar avances primero
-                setTimeout(function() { // Luego cargar nuevas recibidas con delay
-                    cargarNuevasRecibidas();
-                    isUpdating = false;
-                }, 10000);
-            }
-            safeUpdate();
-            setInterval(safeUpdate, updateInterval);
-            */
+        safeUpdate();
+        setInterval(safeUpdate, updateInterval);
+        */
 
-        });
-    </script>
+    });
+</script>
 @endsection

@@ -222,11 +222,20 @@ class TiendaController extends Controller
         try {
             DB::beginTransaction();
             $atencion = Atencion::with('ordenes')->find($orden->atencion_id);
-            if ($atencion && $atencion->ordenes->count() === 1) {
-                return response()->json(['success' => false, 'message' => 'No se autoriza dejar vacío el carrito porque crearía una inconsistencia: la solicitud quedaría en el tablero de trabajo de manera permanente']);
+            if(!in_array(auth()->user()->mainRole->name, ['cliente', 'superadmin'])){
+                if ($atencion && $atencion->ordenes->count() === 1) {
+                    return response()->json(['success' => false, 'message' => 'No se autoriza eliminar el último item de la última orden, ya que se eliminaría completamente la solicitud del cliente']);
+                }
             }
             $orden->detalle()->delete();
             $orden->delete();
+            if ($atencion && $atencion->ordenes()->count() === 0) {
+                foreach ($atencion->recepciones as $recepcion) {
+                    $recepcion->actividades()->delete();
+                }
+                $atencion->recepciones()->delete();
+                $atencion->delete();
+            }
             DB::commit();
             return response()->json(['success' => true, 'message' => 'Kit retirado del carrito correctamente', 'orden_vacia' => true]);
         } catch (Exception $e) {
@@ -323,7 +332,7 @@ class TiendaController extends Controller
 
     public function retirarItem(Request $request)
     {
-        if (auth()->user()->mainRole->name !== 'cliente') {
+        if (!in_array(auth()->user()->mainRole->name, ['cliente', 'superadmin'])) {
             $orden = Orden::with('atencion.ordenes')->find($request->orden_id);
             if ($orden && $orden->detalle()->count() === 1 && $orden->atencion->ordenes->count() === 1) {
                 return response()->json([

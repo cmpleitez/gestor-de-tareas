@@ -103,7 +103,7 @@ class UserController extends Controller
 
     public function rolesEdit(User $user)
     {
-        $roles = Role::where('name', '!=', 'SuperAdmin')->get();
+        $roles = Role::where('name', '!=', 'superadmin')->get();
         return view('modelos.user.roles-edit', ['user' => $user, 'roles' => $roles]);
     }
 
@@ -126,17 +126,17 @@ class UserController extends Controller
                     throw new Exception('No esta disponible la funcionalidad de ser cliente y otro rol a la vez');
                 }
             }
-            if ($user->hasRole('SuperAdmin')) {
-                if (! in_array('SuperAdmin', $submittedRoles)) {
-                    $submittedRoles[] = 'SuperAdmin';
+            if ($user->hasRole('superadmin')) {
+                if (! in_array('superadmin', $submittedRoles)) {
+                    $submittedRoles[] = 'superadmin';
                 }
             }
-            if ($user->hasRole('Admin')) {
-                if (! in_array('Admin', $submittedRoles)) {
-                    $submittedRoles[] = 'Admin';
+            if ($user->hasRole('admin')) {
+                if (! in_array('admin', $submittedRoles)) {
+                    $submittedRoles[] = 'admin';
                 }
             }
-            if (in_array($user->mainRole->name, ['SuperAdmin', 'Admin']) && $validated['role_id'] != $user->role_id) {
+            if (in_array($user->mainRole->name, ['superadmin', 'admin']) && $validated['role_id'] != $user->role_id) {
                 throw new Exception('No se puede cambiar el rol principal de un usuario ' . $user->mainRole->name);
             }
             //PROCESO

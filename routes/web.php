@@ -49,7 +49,7 @@ Route::middleware([
     })->name('dashboard');
 
     //ADMINISTRACIÓN
-    Route::group(['middleware' => ['role:admin|superadmin']], function () {
+    Route::group(['middleware' => ['can:administrar']], function () {
         Route::group(['prefix' => 'user'], function () { //Usuarios
             Route::get('/', [userController::class, 'index'])->name('user');
             Route::get('edit/{user}', [userController::class, 'edit'])->name('user.edit');
@@ -161,7 +161,7 @@ Route::middleware([
     Route::get('operadores/{solicitud}', [RecepcionController::class, 'operadores'])->name('recepcion.operadores');
     Route::post('avance-tablero', [RecepcionController::class, 'consultarAvance'])->name('recepcion.consultar-avance');
     Route::post('nuevas-recibidas', [RecepcionController::class, 'nuevasRecibidas'])->name('recepcion.nuevas-recibidas');
-    Route::group(['middleware' => ['role:receptor|operador']], function () {
+    Route::group(['middleware' => ['can:gestionar']], function () {
         Route::group(['prefix' => 'recepcion'], function () {
             Route::post('asignar/{recepcion}/{equipo}', [RecepcionController::class, 'asignar'])->name('recepcion.asignar');
             Route::get('tareas/{recepcion_id}', [RecepcionController::class, 'tareas'])->name('recepcion.tareas');
@@ -175,7 +175,7 @@ Route::middleware([
     });
 
     //TIENDA
-    Route::group(['middleware' => ['role:cliente|receptor|operador']], function () {
+    Route::group(['middleware' => ['can:ver-tienda']], function () {
         Route::group(['prefix' => 'tienda'], function () {
             Route::get('/', [TiendaController::class, 'index'])->name('tienda');
             Route::get('carrito', [TiendaController::class, 'carritoIndex'])->name('tienda.carrito');

@@ -40,6 +40,9 @@ class UserSeeder extends Seeder
             'eliminar',
             'activar',
             'autorizar',
+            'gestionar-tienda',
+            'gestionar',
+            'administrar',
         ];
         foreach ($permissions as $permission) {
             Permission::firstOrCreate(['name' => $permission]);
@@ -47,11 +50,8 @@ class UserSeeder extends Seeder
 
         //ROLES Y ASIGNACIÓN DE PERMISOS
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
-        $role = Role::create(['name' => 'superadmin']);
-        $role->givePermissionTo(['ver', 'crear', 'editar', 'activar', 'eliminar', 'autorizar']);
-
         $role = Role::create(['name' => 'admin']);
-        $role->givePermissionTo(['ver', 'crear', 'editar', 'activar', 'eliminar', 'autorizar']);
+        $role->givePermissionTo(['ver', 'crear', 'editar', 'activar', 'eliminar', 'autorizar', 'administrar']);
 
         $role = Role::create(['name' => 'receptor']);
         $role->givePermissionTo(['ver', 'crear', 'editar', 'activar', 'asignar']);
@@ -66,7 +66,7 @@ class UserSeeder extends Seeder
         $role->givePermissionTo(['ver', 'crear', 'editar', 'asignar']);
 
         $role = Role::create(['name' => 'cliente']);
-        $role->givePermissionTo(['ver', 'crear']);
+        $role->givePermissionTo(['ver', 'crear', 'gestionar-tienda']);
 
         //SUPERADMINISTRADOR
         DB::table('users')->insert([
