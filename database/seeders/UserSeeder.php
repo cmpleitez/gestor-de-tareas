@@ -58,19 +58,28 @@ class UserSeeder extends Seeder
         // Nota: 'superadmin' se crea SOLO en las tablas de Spatie, no en la tabla 'roles' personalizada
         
         $role = Role::firstOrCreate(['name' => 'admin']);
-        $role->syncPermissions(['ver', 'crear', 'editar', 'activar', 'eliminar', 'autorizar', 'administrar', 'tienda']);
+        $role->syncPermissions(['ver', 'crear', 'editar', 'activar', 'eliminar', 'autorizar', 'administrar', 'tienda', 'vaciar_carrito']);
 
         $role = Role::firstOrCreate(['name' => 'receptor']);
-        $role->syncPermissions(['ver', 'crear', 'editar', 'activar', 'asignar', 'gestionar']);
+        $role->syncPermissions([
+            'ver',
+            'crear',
+            'editar',
+            'asignar',
+            'eliminar',
+            'autorizar',
+            'gestionar',
+            'tienda',
+        ]);
 
         $role = Role::firstOrCreate(['name' => 'supervisor']);
-        $role->syncPermissions(['ver', 'asignar']);
+        $role->syncPermissions(['ver']);
 
         $role = Role::firstOrCreate(['name' => 'gestor']);
         $role->syncPermissions(['ver']);
 
         $role = Role::firstOrCreate(['name' => 'operador']);
-        $role->syncPermissions(['ver', 'crear', 'editar', 'asignar']);
+        $role->syncPermissions(['ver', 'crear', 'editar', 'asignar', 'gestionar', 'tienda']);
 
         $role = Role::firstOrCreate(['name' => 'cliente']);
         $role->syncPermissions(['ver', 'crear', 'tienda', 'vaciar_carrito']);

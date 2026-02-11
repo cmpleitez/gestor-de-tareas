@@ -191,67 +191,54 @@
         }
     }
     //INICIALIZAR KANBAN
-    function initKanban() { // Inicializar el kanban
-        @php $esCliente = optional(auth()->user()->mainRole)->name === 'cliente';
-        @endphp
-        @if(auth()->user()->can('editar') && !$esCliente)
-        const columnas = ['columna-recibidas','columna-progreso','columna-resueltas'];
-        columnas.forEach(function(columnaId) {
-            const elemento = document.getElementById(columnaId);
-            if (!elemento) return;
-            new Sortable(elemento, {
-                group: 'kanban',
-                animation: 150,
-                ghostClass: 'sortable-ghost',
-                chosenClass: 'sortable-chosen',
-                dragClass: 'sortable-drag',
-                onStart: function(evt) {
-                    $('.text-center.text-muted.py-4')
-                        .remove(); // Remover mensajes de columna vacía al iniciar drag
-                },
-                onEnd: function(evt) {
-                    const solicitudId = evt.item.dataset.recepcionId;
-                    const columnaOrigen = evt.from.id;
-                    const columnaDestino = evt.to.id;
-                    if (columnaOrigen !== columnaDestino) {
-                        if (columnaOrigen !== 'columna-recibidas' || columnaDestino !==
-                            'columna-progreso') {
-                            toastr.warning('Movimiento reservado para el sistema');
-                            $(evt.from).append(evt
-                                .item); // Revertir la tarjeta a su posición original
-                            actualizarMensajeColumnaVacia
-                                (); // Restaurar mensajes si se cancela el movimiento
-                            return;
+    function initKanban() {
+        const columnas = ['columna-recibidas', 'columna-progreso', 'columna-resueltas'];
+        @can('asignar') // Solo usuarios con permiso de asignar pueden mover tarjetas
+            columnas.forEach(function(columnaId) {
+                const elemento = document.getElementById(columnaId);
+                if (!elemento) return;
+                new Sortable(elemento, {
+                    group: 'kanban',
+                    animation: 150,
+                    ghostClass: 'sortable-ghost',
+                    chosenClass: 'sortable-chosen',
+                    dragClass: 'sortable-drag',
+                    onStart: function(evt) {
+                        $('.text-center.text-muted.py-4').remove(); 
+                    },
+                    onEnd: function(evt) {
+                        const solicitudId = evt.item.dataset.recepcionId;
+                        const columnaOrigen = evt.from.id;
+                        const columnaDestino = evt.to.id;
+                        if (columnaOrigen !== columnaDestino) {
+                            if (columnaOrigen !== 'columna-recibidas' || columnaDestino !== 'columna-progreso') {
+                                toastr.warning('Movimiento reservado para el sistema');
+                                $(evt.from).append(evt.item); 
+                                actualizarMensajeColumnaVacia(); 
+                                return;
+                            }
+                            const $colDestino = $('#' + columnaDestino); 
+                            const itemsDestino = $colDestino.children('.solicitud-card').get();
+                            itemsDestino.sort(function(a, b) {
+                                return parseInt(a.dataset.atencionId || '0', 10) - parseInt(b.dataset.atencionId || '0', 10);
+                            });
+                            itemsDestino.forEach(function(el) {
+                                $colDestino.append(el);
+                            });
+                            updatePosition(solicitudId, columnaDestino, evt);
+                        } else {
+                            actualizarMensajeColumnaVacia(); 
                         }
-                        const $colDestino = $('#' +
-                            columnaDestino
-                        ); // Ordenar inmediatamente la columna destino después del movimiento visual
-                        const itemsDestino = $colDestino.children('.solicitud-card').get();
-                        itemsDestino.sort(function(a, b) {
-                            return parseInt(a.dataset.atencionId || '0', 10) -
-                                parseInt(b.dataset.atencionId || '0', 10);
-                        });
-                        itemsDestino.forEach(function(el) {
-                            $colDestino.append(el);
-                        });
-                        updatePosition(solicitudId, columnaDestino, evt);
-                    } else {
-                        actualizarMensajeColumnaVacia(); // Si no hay movimiento, restaurar mensajes
+                        actualizarMensajeColumnaVacia();
                     }
-                    actualizarMensajeColumnaVacia();
-                }
+                });
             });
-        });
         @else
-        const columnas = ['columna-recibidas', 'columna-progreso',
-            'columna-resueltas'
-        ]; // Para usuarios sin permisos de asignar, solo inicializar las columnas sin drag & drop
-        columnas.forEach(function(columnaId) {
-            const elemento = document.getElementById(
-                columnaId); // Solo crear columnas vacías sin funcionalidad de drag & drop
-            if (!elemento) return;
-        });
-        @endif
+            columnas.forEach(function(columnaId) { // Para usuarios sin permisos, las columnas existen pero no son drag and drop
+                const elemento = document.getElementById(columnaId);
+                if (!elemento) return;
+            });
+        @endcan
     }
     //FUNCIONES PARA ORDENAMIENTO DE LAS TARJETAS
     function ordenarColumna(columnaId) {
@@ -266,7 +253,6 @@
             });
         }
     }
-
     function ordenarColumnas() {
         const columnas = ['columna-recibidas', 'columna-progreso', 'columna-resueltas'];
         columnas.forEach(function(columnaId) {
@@ -298,7 +284,6 @@
         actualizarMensajeColumnaVacia();
         inicializarPopovers(); // Inicializar popovers para las tarjetas cargadas
     }
-
     function generarTarjetaSolicitud(tarjeta, animar = false, tipo = 'recibidas') {
         const titulo = tarjeta.titulo && tarjeta.detalle ?
             `${tarjeta.titulo} - ${tarjeta.detalle}` :
@@ -353,7 +338,6 @@
                 @endif
             </div>`;
     }
-
     function obtenerAtencionIdsExistentes() {
         let ids = [];
         $('#columna-recibidas .solicitud-card').each(function() { // Solo obtener atencion_ids de la columna recibidas
@@ -549,26 +533,26 @@
         const $card = $(this);
         const estadoId = parseInt($card.attr('data-recepcion-estado-id'));
         if (estadoId === 3) { // En progreso
-            @if(in_array(auth()->user()->mainRole->name, ['operador', 'receptor']))
-            const titulo = $card.find('.solicitud-titulo').text().trim();
-            const atencionId = $card.data('atencion-id');
-            const recepcionId = $card.data('recepcion-id');
-            const atencionIdRipped = $card.find('.text-right div[style*="font-weight: 600"]').text().trim();
-            $('#sidebar-card-title').text(atencionIdRipped + ' - ' + titulo).css('font-size', '1rem');
-            $('#sidebar-card-body').empty();
-            cargarTareas(recepcionId, atencionId);
-            $('.kanban-overlay').addClass('show');
-            $('.kanban-sidebar').addClass('show');
-            $('body').addClass('sidebar-open');
-            limpiarClasesDrag();
-            @endif
+            @can('ver')
+                const titulo = $card.find('.solicitud-titulo').text().trim();
+                const atencionId = $card.data('atencion-id');
+                const recepcionId = $card.data('recepcion-id');
+                const atencionIdRipped = $card.find('.text-right div[style*="font-weight: 600"]').text().trim();
+                $('#sidebar-card-title').text(atencionIdRipped + ' - ' + titulo).css('font-size', '1rem');
+                $('#sidebar-card-body').empty();
+                cargarTareas(recepcionId, atencionId);
+                $('.kanban-overlay').addClass('show');
+                $('.kanban-sidebar').addClass('show');
+                $('body').addClass('sidebar-open');
+                limpiarClasesDrag();
+            @endcan
         } else if (estadoId === 2 || estadoId === 4) { // Recibida o Resuelta
-            @if(in_array(auth()->user()->mainRole->name, ['cliente']))
+            @can('ver')
 
             // PENDIENTE: Consulta solo lectura de la orden de compra
             console.log('Consulta de orden de compra (solo lectura) pendiente de implementar.');
 
-            @endif
+            @endcan
         }
     });
 
