@@ -222,7 +222,7 @@ class TiendaController extends Controller
         try {
             DB::beginTransaction();
             $atencion = Atencion::with('ordenes')->find($orden->atencion_id);
-            if(!in_array(auth()->user()->mainRole->name, ['cliente', 'superadmin'])){
+            if(!auth()->user()->can('vaciar_carrito')){
                 if ($atencion && $atencion->ordenes->count() === 1) {
                     return response()->json(['success' => false, 'message' => 'No se autoriza eliminar el último item de la última orden, ya que se eliminaría completamente la solicitud del cliente']);
                 }
@@ -332,7 +332,7 @@ class TiendaController extends Controller
 
     public function retirarItem(Request $request)
     {
-        if (!in_array(auth()->user()->mainRole->name, ['cliente', 'superadmin'])) {
+        if (!auth()->user()->can('vaciar_carrito')) {
             $orden = Orden::with('atencion.ordenes')->find($request->orden_id);
             if ($orden && $orden->detalle()->count() === 1 && $orden->atencion->ordenes->count() === 1) {
                 return response()->json([

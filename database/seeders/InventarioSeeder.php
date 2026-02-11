@@ -7,6 +7,7 @@ use App\Models\Marca;
 use App\Models\Modelo;
 use App\Models\Producto;
 use App\Models\Entrada;
+use Illuminate\Support\Facades\DB;
 
 class InventarioSeeder extends Seeder
 {
@@ -19,7 +20,7 @@ class InventarioSeeder extends Seeder
             ['id' => 3, 'tipo' => 'Camping para vehículos'],
         ];
         foreach ($tipos as $tipo) {
-            Tipo::firstOrCreate(['id' => $tipo['id'], 'tipo' => $tipo['tipo']]);
+            DB::table('tipos')->updateOrInsert(['id' => $tipo['id']], ['tipo' => $tipo['tipo']]);
         }
 
         //CREACION DE MARCAS
@@ -36,7 +37,7 @@ class InventarioSeeder extends Seeder
             ['id' => 10, 'marca' => 'Volkswagen'],
         ];
         foreach ($marcas as $marca) {
-            Marca::firstOrCreate(['id' => $marca['id'], 'marca' => $marca['marca']]);
+            DB::table('marcas')->updateOrInsert(['id' => $marca['id']], ['marca' => $marca['marca']]);
         }
         
         //CREACION DE MODELOS
@@ -53,11 +54,13 @@ class InventarioSeeder extends Seeder
             ['id' => 10, 'marca_id' => 10, 'modelo' => 'Volkswagen Amarok'],
         ];
         foreach ($modelos as $modelo) {
-            Modelo::firstOrCreate([
-                'id' => $modelo['id'],
-                'marca_id' => $modelo['marca_id'],
-                'modelo' => $modelo['modelo']
-            ]);
+            DB::table('modelos')->updateOrInsert(
+                ['id' => $modelo['id']],
+                [
+                    'marca_id' => $modelo['marca_id'],
+                    'modelo' => $modelo['modelo']
+                ]
+            );
         }
 
         //CREACION DE PRODUCTOS
@@ -94,14 +97,15 @@ class InventarioSeeder extends Seeder
             ['id' => 30, 'tipo_id' => 3, 'modelo_id' => 1, 'producto' => 'Panel solar flexible con batería integrada', 'precio' => 690.00],
         ];
         foreach ($productos as $producto) {
-            Producto::firstOrCreate([
-                'id' => $producto['id'],
-                'tipo_id' => $producto['tipo_id'],
-                'modelo_id' => $producto['modelo_id'],
-                'producto' => $producto['producto'],
-                'producto' => $producto['producto'],
-                'precio' => $producto['precio'],
-            ]);
+            DB::table('productos')->updateOrInsert(
+                ['id' => $producto['id']],
+                [
+                    'tipo_id' => $producto['tipo_id'],
+                    'modelo_id' => $producto['modelo_id'],
+                    'producto' => $producto['producto'],
+                    'precio' => $producto['precio'],
+                ]
+            );
         }
 
         //CREACION DE STOCKS
@@ -112,10 +116,10 @@ class InventarioSeeder extends Seeder
             ['id' => 4, 'stock' => 'Reservados en tránsito'],
         ];
         foreach ($stocks as $stock) {
-            Stock::firstOrCreate([
-                'id'    => $stock['id'],
-                'stock' => $stock['stock'],
-            ]);
+            DB::table('stocks')->updateOrInsert(
+                ['id'    => $stock['id']],
+                ['stock' => $stock['stock']]
+            );
         }
 
     }

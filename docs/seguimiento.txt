@@ -90,6 +90,7 @@ CLIENTE:
                 
                 
                 . hacer que el superadmin tenga acceso a todo
+                . revisar la seguridad de los permisos en todo el proyecto
                 
                 . agregar este comportamiento a los botones que realicen procesos extensos: cuando el usario da clic a un boton 
                 para que realice una acción, éste último se deshabilitará, y así deshabilitado mostrará un icono de reloj

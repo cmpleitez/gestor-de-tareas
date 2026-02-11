@@ -137,18 +137,6 @@ Route::middleware([
             Route::get('destroy/{kit}', [KitController::class, 'destroy'])->name('kit.destroy');
             Route::post('activate/{kit}', [KitController::class, 'activate'])->name('kit.activate');
         });
-
-        Route::group(['prefix' => 'solicitud'], function () { //Solicitudes
-            Route::get('/', [solicitudController::class, 'index'])->name('solicitud');
-            Route::get('create', [solicitudController::class, 'create'])->name('solicitud.create');
-            Route::post('store', [solicitudController::class, 'store'])->name('solicitud.store');
-            Route::get('edit/{solicitud}', [solicitudController::class, 'edit'])->name('solicitud.edit');
-            Route::put('update/{solicitud}', [solicitudController::class, 'update'])->name('solicitud.update');
-            Route::get('asignar-tareas/{solicitud}', [solicitudController::class, 'asignarTareas'])->name('solicitud.asignar-tareas');
-            Route::put('actualizar-tareas/{solicitud}', [solicitudController::class, 'actualizarTareas'])->name('solicitud.actualizar-tareas');
-            Route::get('destroy/{solicitud}', [solicitudController::class, 'destroy'])->name('solicitud.destroy');
-            Route::post('activate/{solicitud}', [solicitudController::class, 'activate'])->name('solicitud.activate');
-        });
     });
 
     //GESTIÓN
@@ -162,6 +150,17 @@ Route::middleware([
     Route::post('avance-tablero', [RecepcionController::class, 'consultarAvance'])->name('recepcion.consultar-avance');
     Route::post('nuevas-recibidas', [RecepcionController::class, 'nuevasRecibidas'])->name('recepcion.nuevas-recibidas');
     Route::group(['middleware' => ['can:gestionar']], function () {
+        Route::group(['prefix' => 'solicitud'], function () { //Solicitudes
+            Route::get('/', [solicitudController::class, 'index'])->name('solicitud');
+            Route::get('create', [solicitudController::class, 'create'])->name('solicitud.create');
+            Route::post('store', [solicitudController::class, 'store'])->name('solicitud.store');
+            Route::get('edit/{solicitud}', [solicitudController::class, 'edit'])->name('solicitud.edit');
+            Route::put('update/{solicitud}', [solicitudController::class, 'update'])->name('solicitud.update');
+            Route::get('asignar-tareas/{solicitud}', [solicitudController::class, 'asignarTareas'])->name('solicitud.asignar-tareas');
+            Route::put('actualizar-tareas/{solicitud}', [solicitudController::class, 'actualizarTareas'])->name('solicitud.actualizar-tareas');
+            Route::get('destroy/{solicitud}', [solicitudController::class, 'destroy'])->name('solicitud.destroy');
+            Route::post('activate/{solicitud}', [solicitudController::class, 'activate'])->name('solicitud.activate');
+        });
         Route::group(['prefix' => 'recepcion'], function () {
             Route::post('asignar/{recepcion}/{equipo}', [RecepcionController::class, 'asignar'])->name('recepcion.asignar');
             Route::get('tareas/{recepcion_id}', [RecepcionController::class, 'tareas'])->name('recepcion.tareas');
@@ -175,7 +174,7 @@ Route::middleware([
     });
 
     //TIENDA
-    Route::group(['middleware' => ['can:ver-tienda']], function () {
+    Route::group(['middleware' => ['can:tienda']], function () {
         Route::group(['prefix' => 'tienda'], function () {
             Route::get('/', [TiendaController::class, 'index'])->name('tienda');
             Route::get('carrito', [TiendaController::class, 'carritoIndex'])->name('tienda.carrito');
@@ -189,6 +188,8 @@ Route::middleware([
             Route::post('retirar-orden/{orden}', [TiendaController::class, 'retirarOrden'])->name('tienda.retirar-orden');
             Route::post('retirar-item', [TiendaController::class, 'retirarItem'])->name('tienda.retirar-item');
             Route::get('kit-cantidad', [TiendaController::class, 'kitCantidad'])->name('tienda.kit-cantidad');
+
+            //->middleware('can:ver-stock')
         });
     });
 });

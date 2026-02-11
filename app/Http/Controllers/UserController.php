@@ -126,17 +126,12 @@ class UserController extends Controller
                     throw new Exception('No esta disponible la funcionalidad de ser cliente y otro rol a la vez');
                 }
             }
-            if ($user->hasRole('superadmin')) {
-                if (! in_array('superadmin', $submittedRoles)) {
-                    $submittedRoles[] = 'superadmin';
-                }
-            }
             if ($user->hasRole('admin')) {
                 if (! in_array('admin', $submittedRoles)) {
                     $submittedRoles[] = 'admin';
                 }
             }
-            if (in_array($user->mainRole->name, ['superadmin', 'admin']) && $validated['role_id'] != $user->role_id) {
+            if (in_array($user->mainRole->name, ['admin']) && $validated['role_id'] != $user->role_id) {
                 throw new Exception('No se puede cambiar el rol principal de un usuario ' . $user->mainRole->name);
             }
             //PROCESO

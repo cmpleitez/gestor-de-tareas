@@ -204,7 +204,7 @@
         <div class="main-menu-content mt-3">
             <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation"
                 data-icon-style="">
-                @role('admin|superadmin')
+                @can('administrar')
                     <li class="nav-item has-sub open"><a href="#"><i class="bx bxs-cog"></i><span class="menu-title"
                                 data-i18n="Menu Levels">Administración</span></a>
                         <ul class="menu-content" style="display: block;">
@@ -253,24 +253,24 @@
                                 </a></li>
                         </ul>
                     </li>
-                @endrole
+                @endcan
 
                 <li class="nav-item has-sub open"><a href="#"><i class="bx bx-list-ul"></i><span class="menu-title"
                             data-i18n="Menu Levels">Servicios</span></a>
                     <ul class="menu-content" style="display: block;">
-                        @role('superadmin|admin|receptor')
+                        @can('activar')
                         <li><a href="{{ route('tienda.create-stock') }}">
                                 <i class="bx bx-right-arrow-alt"></i>
                                 <span class="menu-item" data-i18n="Second Level">Stocks</span>
                             </a></li>
-                        @endrole
+                        @endcan
 
-                        @role('cliente|superadmin|admin')
+                        @can('tienda')
                         <li><a href="{{ Route('tienda') }}">
                                 <i class="bx bx-right-arrow-alt"></i>
                                 <span class="menu-item" data-i18n="Second Level">Tienda</span>
                             </a></li>
-                        @endrole
+                        @endcan
                     </ul>
                 </li>
 
