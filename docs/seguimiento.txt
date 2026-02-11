@@ -100,9 +100,7 @@ CLIENTE:
                 o algun efecto de "procesando", sin delays adicionales, sino el tiempo puro en que se tarde el proceso en sí
                 
                 
-                10/feb->... formula para el calculo del total de la orden de compra
-                    . cuando se elimina un item debe actualizar el precio del kit
-                    . cuando se cambia a un equivalente debe hacer lo mismo que el punto anterior
+                10/feb->... 
                 
                 
                 . ordenar las etiquetas del codigo fuente de carrito.blade.php 

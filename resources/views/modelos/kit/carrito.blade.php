@@ -282,7 +282,7 @@
                 @php $headingId = 'heading' . $orden->id; $accordionId = 'accordion' . $orden->id; $ordenIndex = $loop->index; @endphp
                 <div class="row mb-1 py-2 align-items-center"> <!--Kits-->
                     <div class="col-12 col-md-8 mb-2 {{ $loop->index % 2 == 0 ? 'marcador_fila_par' : 'marcador_fila_impar' }}">
-                        <div class="accordion" id="{{ $accordionId }}">
+                        <div class="accordion" id="{{ $accordionId }}" data-orden-id="{{ $orden->id }}">
                             <div class="accordion-item">
                                 <span class="accordion-header" id="{{ $headingId }}">
                                     <button class="accordion-button collapsed" style="padding: 0.5em; font-size: 0.8rem;" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ $orden->id }}" aria-expanded="false" aria-controls="collapse{{ $orden->id }}">
@@ -399,7 +399,7 @@
                                                                                     </div>
                                                                                     <div class="card-body p-2 d-flex flex-column align-items-center">
                                                                                         <div class="mb-2">
-                                                                                            <input type="radio" name="radio_{{ $detAccordionId }}" value="{{ $kitProducto->producto->id }}" data-name-target="#productName_{{ $detAccordionId }}" data-id-target="#productId_{{ $detAccordionId }}" data-badge-target="#badgeId_{{ $detAccordionId }}" data-product-name="{{ $kitProducto->producto->producto }}" {{ $detalle->producto_id == $kitProducto->producto->id ? 'checked' : '' }} onchange="updateProductName(this)">
+                                                                                            <input type="radio" name="radio_{{ $detAccordionId }}" value="{{ $kitProducto->producto->id }}" data-name-target="#productName_{{ $detAccordionId }}" data-id-target="#productId_{{ $detAccordionId }}" data-badge-target="#badgeId_{{ $detAccordionId }}" data-product-name="{{ $kitProducto->producto->producto }}" data-precio="{{ $kitProducto->producto->precio }}" data-es-estandar="true" {{ $detalle->producto_id == $kitProducto->producto->id ? 'checked' : '' }} onfocus="this.setAttribute('data-prev', this.checked ? this.value : '')" onchange="updateProductName(this)">
                                                                                         </div>
                                                                                         <div class="text-center d-flex flex-column justify-content-center flex-grow-1">
                                                                                             <span class="d-block">{{ $kitProducto->producto->producto }}</span>
@@ -419,7 +419,7 @@
                                                                                         </div>
                                                                                         <div class="card-body p-2 d-flex flex-column align-items-center">
                                                                                             <div class="mb-2">
-                                                                                                <input type="radio" name="radio_{{ $detAccordionId }}" value="{{ $equivalente->producto->id }}" data-name-target="#productName_{{ $detAccordionId }}" data-id-target="#productId_{{ $detAccordionId }}" data-badge-target="#badgeId_{{ $detAccordionId }}" data-product-name="{{ $equivalente->producto->producto }}" {{ $detalle->producto_id == $equivalente->producto->id ? 'checked' : '' }} {{ $stock == 0 ? 'disabled' : '' }} onchange="updateProductName(this)">
+                                                                                                <input type="radio" name="radio_{{ $detAccordionId }}" value="{{ $equivalente->producto->id }}" data-name-target="#productName_{{ $detAccordionId }}" data-id-target="#productId_{{ $detAccordionId }}" data-badge-target="#badgeId_{{ $detAccordionId }}" data-product-name="{{ $equivalente->producto->producto }}" data-precio="{{ $equivalente->producto->precio }}" {{ $detalle->producto_id == $equivalente->producto->id ? 'checked' : '' }} {{ $stock == 0 ? 'disabled' : '' }} onfocus="this.setAttribute('data-prev', this.checked ? this.value : '')" onchange="updateProductName(this)">
                                                                                             </div>
                                                                                             <div class="text-center d-flex flex-column justify-content-center flex-grow-1">
                                                                                                 <span class="d-block">{{ $equivalente->producto->producto }}</span>
@@ -700,12 +700,24 @@
                                     $('#empty-cart-msg').removeClass('d-none').hide().fadeIn();
                                 });
                             }
-                            $('.input-unidades').first().trigger('input');
+                            recalcularTotales();
                         });
                     } else {
                         accordionItem.fadeOut(400, function() {
                             $(this).remove();
-                            $('.input-unidades').first().trigger('input');
+                            if (response.nuevo_precio !== undefined) { // Actualizar precio y subtotal si vienen en la respuesta
+                                const ordenInput = $(`.input-unidades[data-orden-id="${ordenId}"]`);
+                                ordenInput.data('precio', response.nuevo_precio);
+                                ordenInput.attr('data-precio', response.nuevo_precio);
+                                
+                                const formattedSubtotal = new Intl.NumberFormat('en-US', {
+                                    style: 'currency',
+                                    currency: 'USD',
+                                    minimumFractionDigits: 2
+                                }).format(response.nuevo_subtotal);
+                                $(`#subtotal_${ordenId}`).text(formattedSubtotal);
+                            }
+                            recalcularTotales();
                         });
                     }
                 } else {
@@ -744,7 +756,7 @@
                                 $('#empty-cart-msg').removeClass('d-none').hide().fadeIn();
                             });
                         }
-                        $('.input-unidades').first().trigger('input');
+                        recalcularTotales();
                     });
                 } else {
                     toastr.error(response.message);
@@ -762,6 +774,7 @@
         const idSelector = radio.getAttribute('data-id-target');
         const badgeSelector = radio.getAttribute('data-badge-target');
         const productId = radio.value;
+        
         if (targetSelector && productName) {  // Actualizar Nombre Visual
             const targetElement = document.querySelector(targetSelector);
             if (targetElement) {
@@ -780,6 +793,93 @@
                 badgeElement.textContent = productId;
             }
         }
+
+        // Recalcular el precio del kit completo
+        // Buscar el acordeón padre del radio que contenga el data-orden-id (para evitar acordeones anidados)
+        const accordionContainer = $(radio).closest('.accordion[data-orden-id]');
+        const ordenId = accordionContainer.data('orden-id');
+
+        if (ordenId) {
+            let nuevoPrecioKit = 0;
+            // Sumar los precios de todos los radios seleccionados dentro de ESTE acordeón de orden
+            let duplicadoEncontrado = false;
+            let radiosSeleccionados = accordionContainer.find('input[type="radio"]:checked');
+            
+            // Validar duplicados antes de calcular
+            let productosSeleccionados = [];
+            radiosSeleccionados.each(function() {
+                const val = $(this).val();
+                if (productosSeleccionados.includes(val)) {
+                    duplicadoEncontrado = true;
+                    return false; // break loop
+                }
+                productosSeleccionados.push(val);
+            });
+
+            if (duplicadoEncontrado) {
+                toastr.warning('Este producto ya forma parte del kit. Por favor selecciona otro.');
+                
+                // Revertir selección al producto estándar
+                const nombreGrupo = radio.name;
+                const radioEstandar = $(`input[name="${nombreGrupo}"][data-es-estandar="true"]`);
+                
+                if (radioEstandar.length > 0) {
+                    // Si el estándar NO es el que causó el duplicado (lógica de seguridad), hacemos click
+                    if (radioEstandar[0] !== radio) {
+                        radioEstandar.prop('checked', true).trigger('change');
+                    }
+                } else {
+                    // Fallback si no hay estándar (raro): desmarcar
+                    $(radio).prop('checked', false); 
+                }
+                
+                return; // Salir, el trigger('change') volverá a ejecutar esta función para actualizar todo correctamente
+            }
+
+            radiosSeleccionados.each(function() {
+                // Asegurarse de sumar solo si tiene precio (para ignorar radios de stock si los hubiera)
+                const precio = parseFloat($(this).data('precio'));
+                if (!isNaN(precio)) {
+                    nuevoPrecioKit += precio;
+                }
+            });
+
+            // Actualizar el data-precio del input de unidades
+            const ordenInput = $(`.input-unidades[data-orden-id="${ordenId}"]`);
+            if (ordenInput.length > 0) {
+                ordenInput.data('precio', nuevoPrecioKit);
+                ordenInput.attr('data-precio', nuevoPrecioKit);
+
+                // Calcular nuevo subtotal
+                const unidades = parseInt(ordenInput.val()) || 0;
+                const nuevoSubtotal = nuevoPrecioKit * unidades;
+                
+                // Actualizar texto del subtotal
+                const formattedSubtotal = new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                    minimumFractionDigits: 2
+                }).format(nuevoSubtotal);
+                $(`#subtotal_${ordenId}`).text(formattedSubtotal);
+                
+                // Recalcular total global
+                recalcularTotales();
+            }
+        }
+    }
+    function recalcularTotales() { // Recalcular el total global después de eliminar items
+        let totalGlobal = 0;
+        $('.input-unidades').each(function() {
+            const precio = parseFloat($(this).data('precio')) || 0;
+            const unidades = parseInt($(this).val()) || 0;
+            totalGlobal += precio * unidades;
+        });
+        const formattedTotal = new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: 2
+        }).format(totalGlobal);
+        $('#total-global').text(formattedTotal);
     }
     $(document).on('click', '#revisar-stock', function() {
         const btn = $(this);
