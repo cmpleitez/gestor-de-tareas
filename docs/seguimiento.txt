@@ -92,7 +92,6 @@ CLIENTE:
 
 
                 11/feb... luego seguiría reportar tarea, pero hay que corregir primero la siguiente lista de errores y falencias:
-                    . al validar orden enviar correo adjuntando la orden de compra corregida para validación del cliente
 
 
 
