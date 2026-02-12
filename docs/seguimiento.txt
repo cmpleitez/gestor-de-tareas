@@ -81,23 +81,25 @@ CLIENTE:
             . Sistema: Abre la edición del carrito mostrando todas las ordenes y sus items
         
         . Operador: Confirma en cada item si hay stock físico disponible o no lo hay
-            
-
-
-
-
-            . luego seguiría reportar tarea, pero hay que corregir primero la siguiente lista de errores y falencias:
-                . agregar este comportamiento a los botones que realicen procesos extensos: cuando el usario da clic a un boton 
-                para que realice una acción, éste último se deshabilitará, y así deshabilitado mostrará un icono de reloj
-                o algun efecto de "procesando", sin delays adicionales, sino el tiempo puro en que se tarde el proceso en sí
-                . ordenar las etiquetas del codigo fuente de carrito.blade.php 
-                . al validar orden enviar correo adjuntando la orden de compra corregida para validación del cliente
-                
-
-
 
         . Receptor:
             . Realiza las lista de tareas operativas asignadas (Revisión de la orden de compra, Descarga del stock, Pago verificado, Mercadería enviada)
+
+
+
+
+
+
+
+                11/feb... luego seguiría reportar tarea, pero hay que corregir primero la siguiente lista de errores y falencias:
+                    . al validar orden enviar correo adjuntando la orden de compra corregida para validación del cliente
+
+
+
+
+
+
+
             . Sistema: 
                 . En cuanto el receptor y el operador han realizado dichas tareas, establece el estado de "Resuelta" a todas las copias de la solicitud y a su solicitud principal <Atencion>, 
                 en consecuencia la solicitud se coloca en el tablero de resueltas.

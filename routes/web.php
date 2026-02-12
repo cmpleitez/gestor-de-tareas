@@ -179,7 +179,7 @@ Route::middleware([
             Route::get('/', [TiendaController::class, 'index'])->name('tienda')->middleware('can:ver');
             Route::get('carrito', [TiendaController::class, 'carritoIndex'])->name('tienda.carrito')->middleware('can:ver');
             Route::post('carrito-editar', [TiendaController::class, 'carritoEditar'])->name('tienda.carrito-editar')->middleware('can:editar');
-            Route::post('carrito-enviar', [TiendaController::class, 'carritoEnviar'])->name('tienda.carrito-enviar')->middleware('can:editar');
+            Route::post('carrito-enviar', [TiendaController::class, 'carritoEnviar'])->name('tienda.carrito-enviar')->middleware('can:crear');
             Route::get('stock', [TiendaController::class, 'createStock'])->name('tienda.create-stock')->middleware('can:crear');
             Route::post('stock', [TiendaController::class, 'storeStock'])->name('tienda.store-stock')->middleware('can:editar');
             Route::get('get-stocks-producto/{productoId}', [TiendaController::class, 'getStocksProducto'])->name('tienda.get-stocks-producto')->middleware('can:ver');

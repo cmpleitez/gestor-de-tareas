@@ -68,7 +68,7 @@
         border-color: rgba(0,0,0,.125);
     }
 
-    .accordion-flush .accordion-item, /* Eliminar bordes y sombras de los acordeones internos (flush) */
+    .accordion-flush .accordion-item, 
     .accordion-flush .accordion-header,
     .accordion-flush .accordion-button,
     .accordion-flush .accordion-collapse {
@@ -119,7 +119,6 @@
         transform: scale(0.9);
     }
 
-    /* ===== ESTILOS ELEGANTES PARA CONTROL DE RADIO DE STOCK ===== */
     .btn-check-stock {
         position: absolute;
         clip: rect(0,0,0,0);
@@ -165,11 +164,10 @@
         z-index: 1;
     }
 
-    /* Estado: Verificado (Success) */
     .btn-stock-verified {
         background-color: var(--color-success-light);
         color: var(--text-success-dark);
-        border: 2px solid transparent; /* Asegurar base sin borde visible pero con espacio */
+        border: 2px solid transparent; 
     }
 
     .btn-stock-verified:hover {
@@ -181,7 +179,7 @@
     .btn-check-stock:checked + .btn-stock-verified {
         background-color: var(--color-success);
         color: #ffffff;
-        border-color: transparent; /* Quitar borde al estar seleccionado */
+        border-color: transparent; 
         transform: scale(1.05);
         transform: scale(1.05);
     }
@@ -214,9 +212,6 @@
         transform: scale(1.2) rotate(360deg);
     }
 
-
-
-    /* Efecto de brillo al hacer clic */
     .btn-stock-status::before {
         content: '';
         position: absolute;
@@ -247,8 +242,6 @@
             padding: 0.4rem 0.8rem;
         }
     }
-
-
 </style>
 @endpush
 
@@ -275,7 +268,6 @@
 </div>
 
 <div id="orders-container" class="{{ !$hasOrders ? 'd-none' : '' }}">
-    {{-- El rol ya está definido al inicio del archivo --}}
     @if($hasOrders)
         @if($currentAtencion && $currentAtencion->ordenes)
             @foreach($currentAtencion->ordenes as $orden)
@@ -560,9 +552,6 @@
 
 @push('scripts')
 <script>
-    /** @var \App\Models\Atencion $atencion */
-    /** @var \App\Models\Orden $orden */
-    /** @var \App\Models\Detalle $detalle */
     window.cartDetails = { ordenes: [] }; //Lectura de las ordenes de compras
     @if($hasOrders)
         @foreach($currentAtencion->ordenes as $orden)
@@ -652,7 +641,7 @@
             const precio = parseFloat($(this).data('precio'));
             const unidades = parseInt($(this).val()) || 0;
             const subtotal = precio * unidades;
-            const formatted = new Intl.NumberFormat('en-US', { // Formatear a moneda (USD standard)
+            const formatted = new Intl.NumberFormat('en-US', { 
                 style: 'currency',
                 currency: 'USD',
                 minimumFractionDigits: 2
@@ -672,12 +661,10 @@
             $('#total-global').text(formattedTotal);
         });
 
-                                    });
-
-    // Retirar producto vía AJAX identificado por ID
+    });
     function retirarItemAJAX(elemento) {
         const btn = $(elemento);
-        const elementoId = elemento.id; // Referencia al ID solicitada
+        const elementoId = elemento.id; 
         const ordenId = btn.data('orden-id');
         const kitId = btn.data('kit-id');
         const productoId = btn.data('producto-id');
@@ -698,7 +685,6 @@
                         const orderRow = $('#accordion' + ordenId).closest('.row');
                         orderRow.fadeOut(400, function() {
                             $(this).remove();
-                            // Contar solo las filas que tienen un acordeón (ordenes reales)
                             if ($('#orders-container').find('.row:has(.accordion)').length === 0) {
                                 $('#orders-container').fadeOut(400, function() {
                                     $('#empty-cart-msg').removeClass('d-none').hide().fadeIn();
@@ -709,11 +695,10 @@
                     } else {
                         accordionItem.fadeOut(400, function() {
                             $(this).remove();
-                            if (response.nuevo_precio !== undefined) { // Actualizar precio y subtotal si vienen en la respuesta
+                            if (response.nuevo_precio !== undefined) { 
                                 const ordenInput = $(`.input-unidades[data-orden-id="${ordenId}"]`);
                                 ordenInput.data('precio', response.nuevo_precio);
                                 ordenInput.attr('data-precio', response.nuevo_precio);
-                                
                                 const formattedSubtotal = new Intl.NumberFormat('en-US', {
                                     style: 'currency',
                                     currency: 'USD',
@@ -734,11 +719,9 @@
             }
         });
     }
-
-    // Retirar orden completa vía AJAX
     function retirarOrdenAJAX(elemento) {
         const btn = $(elemento);
-        const elementoId = elemento.id; // Referencia al ID solicitada
+        const elementoId = elemento.id; 
         const url = btn.data('url');
         const ordenId = btn.data('orden-id');
         const orderRow = btn.closest('.row');
@@ -754,7 +737,6 @@
                     toastr.success(response.message);
                     orderRow.fadeOut(400, function() {
                         $(this).remove();
-                        // Contar solo las filas que tienen un acordeón (ordenes reales)
                         if ($('#orders-container').find('.row:has(.accordion)').length === 0) {
                             $('#orders-container').fadeOut(400, function() {
                                 $('#empty-cart-msg').removeClass('d-none').hide().fadeIn();
@@ -772,101 +754,77 @@
             }
         });
     }
-    function updateProductName(radio) { // Update product name and ID in specific elements
+    function updateProductName(radio) { 
         const productName = radio.getAttribute('data-product-name');
         const targetSelector = radio.getAttribute('data-name-target');
         const idSelector = radio.getAttribute('data-id-target');
         const badgeSelector = radio.getAttribute('data-badge-target');
         const productId = radio.value;
-        
-        if (targetSelector && productName) {  // Actualizar Nombre Visual
+        if (targetSelector && productName) { 
             const targetElement = document.querySelector(targetSelector);
             if (targetElement) {
                 targetElement.textContent = productName;
             }
         }
-        if (idSelector && productId) { // Actualizar ID en Hidden Input
+        if (idSelector && productId) { 
             const idElement = document.querySelector(idSelector);
             if (idElement) {
                 idElement.value = productId;
             }
         }
-        if (badgeSelector && productId) { // Actualizar Badge Visual de ID
+        if (badgeSelector && productId) { 
             const badgeElement = document.querySelector(badgeSelector);
             if (badgeElement) {
                 badgeElement.textContent = productId;
             }
         }
-
-        // Recalcular el precio del kit completo
-        // Buscar el acordeón padre del radio que contenga el data-orden-id (para evitar acordeones anidados)
         const accordionContainer = $(radio).closest('.accordion[data-orden-id]');
         const ordenId = accordionContainer.data('orden-id');
-
         if (ordenId) {
             let nuevoPrecioKit = 0;
-            // Sumar los precios de todos los radios seleccionados dentro de ESTE acordeón de orden
             let duplicadoEncontrado = false;
             let radiosSeleccionados = accordionContainer.find('input[type="radio"]:checked');
-            
-            // Validar duplicados antes de calcular
             let productosSeleccionados = [];
             radiosSeleccionados.each(function() {
                 const val = $(this).val();
                 if (productosSeleccionados.includes(val)) {
                     duplicadoEncontrado = true;
-                    return false; // break loop
+                    return false;
                 }
                 productosSeleccionados.push(val);
             });
 
             if (duplicadoEncontrado) {
                 toastr.warning('Este producto ya forma parte del kit. Por favor selecciona otro.');
-                
-                // Revertir selección al producto estándar
                 const nombreGrupo = radio.name;
                 const radioEstandar = $(`input[name="${nombreGrupo}"][data-es-estandar="true"]`);
-                
                 if (radioEstandar.length > 0) {
-                    // Si el estándar NO es el que causó el duplicado (lógica de seguridad), hacemos click
                     if (radioEstandar[0] !== radio) {
                         radioEstandar.prop('checked', true).trigger('change');
                     }
                 } else {
-                    // Fallback si no hay estándar (raro): desmarcar
                     $(radio).prop('checked', false); 
                 }
-                
-                return; // Salir, el trigger('change') volverá a ejecutar esta función para actualizar todo correctamente
+                return;
             }
-
             radiosSeleccionados.each(function() {
-                // Asegurarse de sumar solo si tiene precio (para ignorar radios de stock si los hubiera)
                 const precio = parseFloat($(this).data('precio'));
                 if (!isNaN(precio)) {
                     nuevoPrecioKit += precio;
                 }
             });
-
-            // Actualizar el data-precio del input de unidades
             const ordenInput = $(`.input-unidades[data-orden-id="${ordenId}"]`);
             if (ordenInput.length > 0) {
                 ordenInput.data('precio', nuevoPrecioKit);
                 ordenInput.attr('data-precio', nuevoPrecioKit);
-
-                // Calcular nuevo subtotal
                 const unidades = parseInt(ordenInput.val()) || 0;
                 const nuevoSubtotal = nuevoPrecioKit * unidades;
-                
-                // Actualizar texto del subtotal
                 const formattedSubtotal = new Intl.NumberFormat('en-US', {
                     style: 'currency',
                     currency: 'USD',
                     minimumFractionDigits: 2
                 }).format(nuevoSubtotal);
                 $(`#subtotal_${ordenId}`).text(formattedSubtotal);
-                
-                // Recalcular total global
                 recalcularTotales();
             }
         }
@@ -906,7 +864,6 @@
                 producto_id: productoId,
                 stock_fisico_existencias: null
             };
-
             if (radioSeleccionado.length > 0) {
                 itemData.stock_fisico_existencias = radioSeleccionado.val();
                 stockData.push(itemData);
@@ -1035,7 +992,6 @@
             }
         });
     });
-
     $(document).on('click', '#corregir-orden', function() { // Corregir Orden (Receptor)
         const btn = $(this);
         const atencionId = btn.data('atencion-id');
@@ -1116,6 +1072,5 @@
             }
         });
     });
-
 </script>
 @endpush
