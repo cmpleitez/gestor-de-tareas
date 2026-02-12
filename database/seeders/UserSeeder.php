@@ -82,7 +82,7 @@ class UserSeeder extends Seeder
         $role->syncPermissions(['ver', 'crear', 'editar', 'asignar', 'gestionar', 'tienda']);
 
         $role = Role::firstOrCreate(['name' => 'cliente']);
-        $role->syncPermissions(['ver', 'crear', 'tienda', 'vaciar_carrito']);
+        $role->syncPermissions(['ver', 'crear', 'tienda', 'vaciar_carrito', 'eliminar']);
 
         //SUPERADMINISTRADOR
         DB::table('users')->updateOrInsert(

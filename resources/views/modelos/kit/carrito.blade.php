@@ -292,18 +292,20 @@
                                             <div class="accordion accordion-flush" id="{{ $detAccordionId }}">
                                                 <div class="accordion-item">
                                                     <h2 class="accordion-header d-flex align-items-center" id="{{ $detHeadingId }}">
-                                                        @if($rol_usuario_actual == 'cliente' || $rol_usuario_actual == 'receptor') 
-                                                            <div class="ps-2 pe-1">
-                                                                <i id="btn_retirar_{{ $detalle->orden_id }}_{{ $detalle->kit_id }}_{{ $detalle->producto_id }}"
-                                                                    class="fas fa-trash text-danger-dark" 
-                                                                    onclick="retirarItemAJAX(this)"
-                                                                    data-orden-id="{{ $detalle->orden_id }}"
-                                                                    data-kit-id="{{ $detalle->kit_id }}"
-                                                                    data-producto-id="{{ $detalle->producto_id }}"
-                                                                    data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="Eliminar item">
-                                                                </i>
-                                                            </div>
-                                                        @endif
+                                                        @can('tienda')
+                                                            @can('eliminar')
+                                                                <div class="ps-2 pe-1">
+                                                                    <i id="btn_retirar_{{ $detalle->orden_id }}_{{ $detalle->kit_id }}_{{ $detalle->producto_id }}"
+                                                                        class="fas fa-trash text-danger-dark" 
+                                                                        onclick="retirarItemAJAX(this)"
+                                                                        data-orden-id="{{ $detalle->orden_id }}"
+                                                                        data-kit-id="{{ $detalle->kit_id }}"
+                                                                        data-producto-id="{{ $detalle->producto_id }}"
+                                                                        data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="Eliminar item">
+                                                                    </i>
+                                                                </div>
+                                                            @endcan
+                                                        @endcan
                                                         <div class="w-100 d-flex flex-column gap-2 p-2">
                                                             <button class="d-flex justify-content-start align-items-center text-start flex-grow-1 {{ ($rol_usuario_actual == 'cliente' || $rol_usuario_actual == 'receptor') ? 'accordion-button collapsed' : 'border-0 bg-transparent' }}" 
                                                                 style="padding: 0.5em; font-size: 0.8rem;" 
