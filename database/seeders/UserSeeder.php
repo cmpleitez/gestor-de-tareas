@@ -148,8 +148,7 @@ class UserSeeder extends Seeder
         DB::table('estados')->updateOrInsert(['id' => 4], ['estado' => 'Resuelta', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
 
         //CREACION DE PARAMETROS
-        DB::table('parametros')->updateOrInsert(['id' => 1], ['parametro' => 'Frecuencia de refresco', 'valor' => '1', 'unidad_medida' => 'minutos', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
-        DB::table('parametros')->updateOrInsert(['id' => 2], ['parametro' => 'Nombres de kits automáticos', 'valor' => '1', 'unidad_medida' => 'boolean', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
-
+        DB::table('parametros')->updateOrInsert(['parametro' => 'Frecuencia de refresco'], ['valor' => '1', 'unidad_medida' => 'minutos', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
+        DB::table('parametros')->updateOrInsert(['parametro' => 'Nombres de kits automáticos'], ['valor' => '1', 'unidad_medida' => 'boolean', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
     }
 }

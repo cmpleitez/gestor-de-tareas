@@ -400,6 +400,47 @@
     @show
     <!-- End custom js for this page -->
 
+    <livewire:check-notifications />
+
+    <style>
+        /* Personalización de Toastr según requerimientos */
+        #toast-container > .toast-info {
+            background-color: var(--color-primary) !important;
+            opacity: 1 !important; /* Para que el color se vea sólido y vibrante */
+        }
+        #toast-container > .toast-info:hover {
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.35);
+            opacity: 1 !important;
+        }
+    </style>
+
+    <script>
+        document.addEventListener('livewire:init', () => {
+            Livewire.on('notification-received', (data) => {
+                if (typeof toastr !== 'undefined') {
+                    // Mensaje con salto de línea y botón Enterado
+                    const message = `
+                        ${data.mensaje}
+                        <br><br>
+                        <button type="button" class="btn bg-primary-light text-dark btn-sm btn-block" style="width: 100%; margin-top: 10px; font-weight: bold;" onclick="$(this).closest('.toast').find('.toast-close-button').click()">Enterado</button>
+                    `;
+                    
+                    toastr.info(message, data.titulo, {
+                        "closeButton": true,
+                        "progressBar": false,
+                        "positionClass": "toast-top-right",
+                        // "toastClass" eliminado para no romper estilos base
+                        "timeOut": "0",          // Persistente
+                        "extendedTimeOut": "0",  // Persistente al hover
+                        "tapToDismiss": false,   // Evita cerrar al clickear el cuerpo
+                        "preventDuplicates": false, // Permitir múltiples
+                        "enableHtml": true,      // HTML habilitado
+                    });
+                }
+            });
+        });
+    </script>
+
 </body>
 <!-- END: Body-->
 

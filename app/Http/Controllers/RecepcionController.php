@@ -318,7 +318,6 @@ class RecepcionController extends Controller
                 ->with(['tarea', 'estado'])
                 ->get();
 
-            Log::info('$actividades ' . $actividades);
 
             $tareas = $actividades->map(function ($actividad) {
                 return [
@@ -556,6 +555,12 @@ class RecepcionController extends Controller
                     $recepcion->save();
                 }
             DB::commit();
+            
+            // Cargar relaciones para el correo si no están cargadas
+            $recepcion->load('atencion.ordenes.detalle.kit', 'atencion.ordenes.detalle.producto');
+            // Enviar notificación al usuario origen (Cliente)
+            $recepcion->usuarioOrigen->notify(new \App\Notifications\OrdenRevisadaNotification($recepcion));
+
             //RESULTADO
             return response()->json([
                 'success' => true,
