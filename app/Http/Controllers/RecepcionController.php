@@ -430,12 +430,7 @@ class RecepcionController extends Controller
                     $recepcion->validada_destino = true;
                     $recepcion->save();
                 }
-            
-            
-            //REPORTAR TAREA
-            $this->actualizarTarea('Stock físico en revisión', $recepcion_id, $atencion_id);
-            
-            
+            $this->reportarTarea('Stock revisado', $recepcion_id, $atencion_id); //Reportar tarea
             DB::commit();
             //RESULTADO
             return response()->json([
@@ -557,11 +552,7 @@ class RecepcionController extends Controller
                     $recepcion->validada_destino = true;
                     $recepcion->save();
                 }
-
-                //REPORTAR TAREA
-                $this->actualizarTarea('Orden de compra en revisión', $recepcion_id, $atencion_id);
-
-
+                $this->reportarTarea('Orden Revisada', $recepcion_id, $atencion_id); //Reportar tarea
             DB::commit();
             
             //ENVIO
@@ -601,71 +592,36 @@ class RecepcionController extends Controller
         //ejecutar la funcion privada: reportarTarea
     }
 
-    private function reportarTarea(Request $request, $actividad_id)
+    /*
+    private function tmp(Request $request, $actividad_id)
     {
         try {
             DB::beginTransaction();
-            //LECTURA
-            $actividad             = Actividad::find($actividad_id);
-            $atencion              = $actividad->recepcion->atencion;
-            $recepcion             = $actividad->recepcion->load('role');
-            $recepciones           = Recepcion::with('role')->where('atencion_id', $atencion->id)->get();
-            $nuevoEstado           = $request->input('estado');
-            $estado_resuelta_id    = Estado::where('estado', 'Resuelta')->first()->id;
-            $estado_en_progreso_id = Estado::where('estado', 'En progreso')->first()->id;
+
             //PROCESO
-            if ($nuevoEstado === 'Resuelta') { //Actualizar actividad
-                $actividad->estado_id = Estado::where('estado', 'Resuelta')->first()->id;
-            } elseif ($nuevoEstado === 'En progreso') {
-                $actividad->estado_id = Estado::where('estado', 'En progreso')->first()->id;
-            } else {
-                return response()->json(['success' => false, 'message' => 'Estado no válido'], 422);
-            }
-            $actividad->save();
-            $total_actividades     = Actividad::where('recepcion_id', $recepcion->id)->count();
+            $total_actividades     = Actividad::where('recepcion_id', $recepcion->id)->count(); //Actualizar atención
             $actividades_resueltas = Actividad::where('recepcion_id', $recepcion->id)
                 ->where('estado_id', Estado::where('estado', 'Resuelta')->first()->id)
                 ->count();
             $procentaje_progreso = $total_actividades > 0
                 ? round(($actividades_resueltas / $total_actividades) * 100, 2)
                 : 0;
-            $recepcion->estado_id = $estado_en_progreso_id; //Actualizar recepción
-            $recepcion->save();
-            $atencion = $actividad->recepcion->atencion; //Actualizar atención
+            $atencion = $actividad->recepcion->atencion; 
             if ($atencion) {
                 $atencion->avance    = $procentaje_progreso;
-                $atencion->estado_id = $estado_en_progreso_id;
                 $atencion->save();
             }
-            $todas_resueltas       = ($actividades_resueltas === $total_actividades); // Verificar si todas las tareas están resueltas
-            $solicitud_actualizada = false;
-            if ($todas_resueltas && $nuevoEstado === 'Resuelta') {
-                foreach ($recepciones as $recepcion) { // Actualizar recepciones
-                    $recepcion->estado_id = $estado_resuelta_id;
-                    $recepcion->save();
-                }
-                $solicitud_actualizada = true;
-                if ($atencion) { //Actualizar atención
-                    $atencion->estado_id = $estado_resuelta_id;
-                    $atencion->save();
-                }
-            }
+            
             $traza = $this->obtenerTraza($recepcion);
             DB::commit();
             //RESULTADO
             return response()->json([
-                'success'               => true,
-                'message'               => 'Estado de la tarea actualizado correctamente',
-                'recepcion_id'          => $recepcion->id,
-                'atencion_id'           => $atencion->id,
                 'traza'                 => $traza,
                 'progreso'              => [
                     'total_actividades'     => $total_actividades,
                     'actividades_resueltas' => $actividades_resueltas,
                     'porcentaje'            => $procentaje_progreso,
                 ],
-                'todas_resueltas'       => $todas_resueltas,
-                'solicitud_actualizada' => $solicitud_actualizada,
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -675,7 +631,7 @@ class RecepcionController extends Controller
             ], 500);
         }
     }
-
+*/
     private function obtenerTraza($tarjeta)
     {
         $estado_resuelta_id = Estado::where('estado', 'Resuelta')->first()->id;
@@ -701,7 +657,8 @@ class RecepcionController extends Controller
         return $traza;
     }
 
-        private function obtenerUsuariosParticipantes($atencionIds)
+    
+    private function obtenerUsuariosParticipantes($atencionIds)
     {
         $usuariosDestino = Recepcion::with(['usuarioDestino', 'role']) // Consulta separada para usuarios destino
             ->whereIn('atencion_id', $atencionIds)
@@ -741,16 +698,12 @@ class RecepcionController extends Controller
             });
     }
 
-    /**
-     * Actualiza el estado de una tarea y propaga cambios en cascada
-     * 
-     * @param string $nombre_tarea Nombre exacto de la tarea en la tabla tareas
-     * @param string $recepcion_id ID de la recepción actual
-     * @param string $atencion_id ID de la atención actual
-     * @return void
-     */
-    private function actualizarTarea($nombre_tarea, $recepcion_id, $atencion_id)
+    private function reportarTarea($nombre_tarea, $recepcion_id, $atencion_id)
     {
+
+
+Log::info("llego a reportar tarea");
+
         $estado_resuelta_id = Estado::where('estado', 'Resuelta')->first()->id;
         
         // 1. Obtener la actividad de la tarea especificada para esta recepción
@@ -765,33 +718,28 @@ class RecepcionController extends Controller
             $actividad->estado_id = $estado_resuelta_id;
             $actividad->save();
             
-            // 3. Verificar si todas las actividades de esta recepción están resueltas
-            $total_actividades = Actividad::where('recepcion_id', $recepcion_id)->count();
-            $actividades_resueltas = Actividad::where('recepcion_id', $recepcion_id)
-                ->where('estado_id', $estado_resuelta_id)
-                ->count();
-            
-            // 4. Si todas las actividades están resueltas, actualizar recepcion.estado_id = 4
-            if ($total_actividades > 0 && $actividades_resueltas === $total_actividades) {
-                $recepcion = Recepcion::find($recepcion_id);
-                if ($recepcion) {
-                    $recepcion->estado_id = $estado_resuelta_id;
-                    $recepcion->save();
-                    
-                    // 5. Verificar si todas las recepciones de la atención están resueltas
-                    $total_recepciones = Recepcion::where('atencion_id', $atencion_id)->count();
-                    $recepciones_resueltas = Recepcion::where('atencion_id', $atencion_id)
-                        ->where('estado_id', $estado_resuelta_id)
-                        ->count();
-                    
-                    // 6. Si todas las recepciones están resueltas, actualizar atencion.estado_id = 4
-                    if ($total_recepciones > 0 && $recepciones_resueltas === $total_recepciones) {
-                        $atencion = $recepcion->atencion;
-                        if ($atencion) {
-                            $atencion->estado_id = $estado_resuelta_id;
-                            $atencion->save();
-                        }
-                    }
+            // 3. GLOBALLY: Verificar si existen actividades pendientes en CUALQUIER recepción de esta atención
+            $pendientes_globales = Actividad::whereHas('recepcion', function($query) use ($atencion_id) {
+                $query->where('atencion_id', $atencion_id);
+            })
+            ->where('estado_id', '<>', $estado_resuelta_id)
+            ->count();
+
+            // DEBUG LOGS
+            Log::info("ReportarTarea (Global Check): Atencion ID: $atencion_id");
+            Log::info("Pendientes Globales: $pendientes_globales");
+
+            // 4. Si NO hay actividades pendientes en toda la atención, actualizar TODO a Resuelta
+            if ($pendientes_globales === 0) {
+                // Actualizar todas las recepciones de la atención
+                Recepcion::where('atencion_id', $atencion_id)
+                    ->update(['estado_id' => $estado_resuelta_id]);
+
+                // Actualizar la atención
+                $recepcion = Recepcion::find($recepcion_id); // Recuperar modelo para acceder a relación si es necesario o usar Atencion directamente
+                if ($recepcion && $recepcion->atencion) {
+                    $recepcion->atencion->estado_id = $estado_resuelta_id;
+                    $recepcion->atencion->save();
                 }
             }
         }

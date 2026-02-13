@@ -558,7 +558,7 @@
 
     function cargarTareas(recepcionId, atencionId) {
         $.ajax({
-            url: '{{ route('recepcion.tareas', ['recepcion_id' => ':id']) }}'.replace(':id', recepcionId),
+            url: '{{ route('recepcion.tareas',['recepcion_id'=>':id']) }}'.replace(':id', recepcionId),
             type: 'GET',
             cache: true,
             success: function(response) {
@@ -587,9 +587,9 @@
             let formId = 'form_' + tarea.actividad_id;
             let formAction = '';
             let ruta = '';
-            if (tarea.tarea === 'Orden de compra en revisión') { //Definiendo las tareas del tracking
+            if (tarea.tarea === 'Orden Revisada') { //Definiendo las tareas del tracking
                 ruta = '{{ route("tienda.carrito-editar") }}';
-            } else if (tarea.tarea === 'Stock físico en revisión') {
+            } else if (tarea.tarea === 'Stock revisado') {
                 ruta = '{{ route("tienda.carrito-editar") }}';
             } else if (tarea.tarea === 'Pago efectuado') {
                 ruta = '{{ route("recepcion.confirmar-pago") }}';
@@ -601,27 +601,27 @@
             let htmlGenerado = '';
             if (ruta) {
                 htmlGenerado = `
-                        <div class="selectable-item ${esCompletada ? 'selected' : ''}" style="display: flex; align-items: center; padding: 10px;">
-                            <form id="${formId}" action="${ruta}" method="POST" style="display: flex; align-items: center; flex: 1; margin: 0;">
-                                @csrf
-                                <input type="hidden" name="recepcion_id" value="${recepcionId || tarea.recepcion_id}">
-                                <input type="hidden" name="atencion_id" value="${atencionId}">
-                                <input type="checkbox" 
-                                    id="${taskId}"
-                                    name="tarea_completada" 
-                                    value="${tarea.actividad_id}" 
-                                    ${esCompletada ? 'checked disabled' : ''}
-                                    onclick="event.preventDefault(); if(!this.disabled) document.getElementById('${formId}').submit();"
-                                    style="width: 20px; height: 20px; margin-right: 12px; cursor: ${esCompletada ? 'not-allowed' : 'pointer'};">
-                                <div class="item-body" style="flex: 1;">
-                                    <div class="item-info">
-                                        <div class="item-name">${tarea.tarea}</div>
-                                        <div class="item-desc">T-${tarea.actividad_id_ripped}</div>
-                                    </div>
+                    <div class="selectable-item ${esCompletada ? 'selected' : ''}" style="display: flex; align-items: center; padding: 10px;">
+                        <form id="${formId}" action="${ruta}" method="POST" style="display: flex; align-items: center; flex: 1; margin: 0;">
+                            @csrf
+                            <input type="hidden" name="recepcion_id" value="${recepcionId || tarea.recepcion_id}">
+                            <input type="hidden" name="atencion_id" value="${atencionId}">
+                            <input type="checkbox" 
+                                id="${taskId}"
+                                name="tarea_completada" 
+                                value="${tarea.actividad_id}" 
+                                ${esCompletada ? 'checked disabled' : ''}
+                                onclick="event.preventDefault(); if(!this.disabled) document.getElementById('${formId}').submit();"
+                                style="width: 20px; height: 20px; margin-right: 12px; cursor: ${esCompletada ? 'not-allowed' : 'pointer'};">
+                            <div class="item-body" style="flex: 1;">
+                                <div class="item-info">
+                                    <div class="item-name">${tarea.tarea}</div>
+                                    <div class="item-desc">T-${tarea.actividad_id_ripped}</div>
                                 </div>
-                            </form>
-                        </div>
-                    `;
+                            </div>
+                        </form>
+                    </div>
+                `;
             }
             tareasHtml += htmlGenerado;
         });

@@ -91,7 +91,9 @@ CLIENTE:
 
 
 
-                11/feb... reportar tarea después de revisar
+                13/feb... reportar tarea después de revisar stock
+                    . tratamiento de errores en el reporte de tareas
+                    . 
 
 
 

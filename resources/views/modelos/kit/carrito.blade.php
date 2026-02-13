@@ -913,6 +913,9 @@
                             }
                         });
                     }
+                    if (typeof cargarTareas === 'function') {
+                        cargarTareas(recepcionId, atencionId);
+                    }
                 } else {
                     toastr.error(response.message || 'Error al procesar el lote');
                 }
@@ -987,6 +990,9 @@
                     }
                 });
                 btn.prop('disabled', false).html('<i class="fas fa-check"></i> Revisado');
+                if (typeof cargarTareas === 'function') {
+                    cargarTareas(recepcionId, atencionId);
+                }
             },
             error: function(xhr) {
                 btn.prop('disabled', false).html('<i class="fas fa-clipboard-check"></i> Revisar');
