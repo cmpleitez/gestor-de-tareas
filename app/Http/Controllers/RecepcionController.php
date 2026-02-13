@@ -431,7 +431,10 @@ class RecepcionController extends Controller
                     $recepcion->save();
                 }
             
-            //aqui va el llamado a la funcion privada: reportarTarea
+            
+            //REPORTAR TAREA
+            $this->actualizarTarea('Stock físico en revisión', $recepcion_id, $atencion_id);
+            
             
             DB::commit();
             //RESULTADO
@@ -554,11 +557,15 @@ class RecepcionController extends Controller
                     $recepcion->validada_destino = true;
                     $recepcion->save();
                 }
+
+                //REPORTAR TAREA
+                $this->actualizarTarea('Orden de compra en revisión', $recepcion_id, $atencion_id);
+
+
             DB::commit();
             
-            // Cargar relaciones para el correo si no están cargadas
+            //ENVIO
             $recepcion->load('atencion.ordenes.detalle.kit', 'atencion.ordenes.detalle.producto');
-            // Enviar notificación al usuario origen (Cliente)
             $recepcion->usuarioOrigen->notify(new \App\Notifications\OrdenRevisadaNotification($recepcion));
 
             //RESULTADO
@@ -732,6 +739,62 @@ class RecepcionController extends Controller
                     return $usuario['recepcion_id'] . '_' . $usuario['tipo'];
                 })->values();
             });
+    }
+
+    /**
+     * Actualiza el estado de una tarea y propaga cambios en cascada
+     * 
+     * @param string $nombre_tarea Nombre exacto de la tarea en la tabla tareas
+     * @param string $recepcion_id ID de la recepción actual
+     * @param string $atencion_id ID de la atención actual
+     * @return void
+     */
+    private function actualizarTarea($nombre_tarea, $recepcion_id, $atencion_id)
+    {
+        $estado_resuelta_id = Estado::where('estado', 'Resuelta')->first()->id;
+        
+        // 1. Obtener la actividad de la tarea especificada para esta recepción
+        $actividad = Actividad::where('recepcion_id', $recepcion_id)
+            ->whereHas('tarea', function($q) use ($nombre_tarea) {
+                $q->where('tarea', $nombre_tarea);
+            })
+            ->first();
+        
+        if ($actividad) {
+            // 2. Actualizar actividad.estado_id = 4 (Resuelta)
+            $actividad->estado_id = $estado_resuelta_id;
+            $actividad->save();
+            
+            // 3. Verificar si todas las actividades de esta recepción están resueltas
+            $total_actividades = Actividad::where('recepcion_id', $recepcion_id)->count();
+            $actividades_resueltas = Actividad::where('recepcion_id', $recepcion_id)
+                ->where('estado_id', $estado_resuelta_id)
+                ->count();
+            
+            // 4. Si todas las actividades están resueltas, actualizar recepcion.estado_id = 4
+            if ($total_actividades > 0 && $actividades_resueltas === $total_actividades) {
+                $recepcion = Recepcion::find($recepcion_id);
+                if ($recepcion) {
+                    $recepcion->estado_id = $estado_resuelta_id;
+                    $recepcion->save();
+                    
+                    // 5. Verificar si todas las recepciones de la atención están resueltas
+                    $total_recepciones = Recepcion::where('atencion_id', $atencion_id)->count();
+                    $recepciones_resueltas = Recepcion::where('atencion_id', $atencion_id)
+                        ->where('estado_id', $estado_resuelta_id)
+                        ->count();
+                    
+                    // 6. Si todas las recepciones están resueltas, actualizar atencion.estado_id = 4
+                    if ($total_recepciones > 0 && $recepciones_resueltas === $total_recepciones) {
+                        $atencion = $recepcion->atencion;
+                        if ($atencion) {
+                            $atencion->estado_id = $estado_resuelta_id;
+                            $atencion->save();
+                        }
+                    }
+                }
+            }
+        }
     }
 
 }
