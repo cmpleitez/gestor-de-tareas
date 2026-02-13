@@ -91,10 +91,9 @@ CLIENTE:
 
 
 
-                13/feb... reportar tarea después de revisar stock
-                    . tratamiento de errores en el reporte de tareas
-                    . 
-
+                13/feb... pendiente construccion del proceso: descarga de stock, pero antes hacer las siguientes tareas.
+                    . la tarjeta no pasa automaticamente a la bandeja de resueltas al ser marcada como resuelta
+                    . eliminar etiquetas de documentacion innecesarias o que no se entienden
 
 
 
@@ -105,6 +104,9 @@ CLIENTE:
                 . En cuanto el receptor y el operador han realizado dichas tareas, establece el estado de "Resuelta" a todas las copias de la solicitud y a su solicitud principal <Atencion>, 
                 en consecuencia la solicitud se coloca en el tablero de resueltas.
                 . Envía un correo al cliente con la <orden de compra/reserva> revisada
+
+
+    🔵 tratamiento de errores en el reporte de tareas
 
     🔵 procesos: Cada cierta cantidad de días se debe correr una tarea programada para borrar todas las solicitudes no validadas por el cliente
 
@@ -169,6 +171,8 @@ SEGURIDAD:
     si los enviamos en los mensajes toastr como estamos haciendo actualmente es un tema de seguridad
     tambien debe incluirse aquó el módulo gestor de tareas porque hay tambien unos popups que se usan
     para mostrar los errores
+    
+    🔵 Revision general de los permisos en rutas y vistas
 
 
 PLATAFORMA:

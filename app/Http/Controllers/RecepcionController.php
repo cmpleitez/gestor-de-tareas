@@ -13,6 +13,7 @@ use App\Models\Solicitud;
 use App\Models\User;
 use App\Models\Detalle;
 use App\Models\Orden;
+use App\Models\Atencion;
 use App\Services\KeyMaker;
 use App\Services\KeyRipper;
 use Spatie\Permission\Models\Role;
@@ -22,6 +23,8 @@ use Spatie\Permission\Models\Role;
 
 
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\StockRevisadoNotification;
 
 
 
@@ -63,10 +66,9 @@ class RecepcionController extends Controller
             ->whereHas('atencion.oficina', function ($query) use ($user) {
                 $query->where('id', $user->oficina_id);
             })
-            ->where('estado_id', '<>', Estado::where('estado', 'Resuelta')->first()->id)
             ->where('activo', true)
-            ->orderBy('atencion_id', 'asc')
-            ->take(10)
+            ->orderBy('atencion_id', 'desc')
+            ->take(15)
             ->get();
             $atencionIds = $recepciones->pluck('atencion_id')->unique();
             $usuariosParticipantes = $this->obtenerUsuariosParticipantes($atencionIds); //Obtener usuarios participantes
@@ -432,13 +434,27 @@ class RecepcionController extends Controller
                 }
             $this->reportarTarea('Stock revisado', $recepcion_id, $atencion_id); //Reportar tarea
             DB::commit();
+            try {
+                if ($recepcion) {
+                    $oficina_id = auth()->user()->oficina_id;
+                    $receptores = User::where('oficina_id', $oficina_id)
+                        ->whereHas('roles', function($q) {
+                            $q->where('name', 'receptor');
+                        })
+                        ->get();
+                    if ($receptores->isNotEmpty()) {
+                        Notification::send($receptores, new StockRevisadoNotification($recepcion));
+                    }
+                }
+            } catch (\Exception $e) {
+                Log::error("Log:: Error al enviar notificación StockRevisadoNotification: " . $e->getMessage());
+            }
             //RESULTADO
             return response()->json([
                 'success' => true,
                 'message' => 'Stock revisado correctamente',
                 'items_validados' => $itemsValidados
             ]);
-
         } catch (\Exception $e) {
             Log::error("Log:: error en confirmarStock (batch): " . $e->getMessage());
             return response()->json([
@@ -555,7 +571,7 @@ class RecepcionController extends Controller
                 $this->reportarTarea('Orden Revisada', $recepcion_id, $atencion_id); //Reportar tarea
             DB::commit();
             
-            //ENVIO
+            // ENVIO: Notificar al cliente (Este ya existe, no tocar)
             $recepcion->load('atencion.ordenes.detalle.kit', 'atencion.ordenes.detalle.producto');
             $recepcion->usuarioOrigen->notify(new \App\Notifications\OrdenRevisadaNotification($recepcion));
 
@@ -576,62 +592,73 @@ class RecepcionController extends Controller
 
     public function confirmarPago(Request $request)
     {
-        return 'efectuarPago';
-        //ejecutar la funcion privada: reportarTarea
+        $recepcion_id = $request->input('recepcion_id');
+        $atencion_id = $request->input('atencion_id');
+        $this->reportarTarea('Pago efectuado', $recepcion_id, $atencion_id);
+        return response()->json([
+            'success' => true,
+            'message' => 'Pago confirmado correctamente'
+        ]);
     }
 
     public function descargarStock(Request $request)
     {
-        return 'descargarStock';
-        //ejecutar la funcion privada: reportarTarea
+        $recepcion_id = $request->input('recepcion_id');
+        $atencion_id = $request->input('atencion_id');
+        $this->reportarTarea('Stock descargado', $recepcion_id, $atencion_id);
+        return response()->json([
+            'success' => true,
+            'message' => 'Stock descargado correctamente'
+        ]);
     }
 
     public function efectuarEntrega(Request $request)
     {
-        return 'efectuarEntrega';
-        //ejecutar la funcion privada: reportarTarea
+        $recepcion_id = $request->input('recepcion_id');
+        $atencion_id = $request->input('atencion_id');
+        $this->reportarTarea('Entrega efectuada', $recepcion_id, $atencion_id);
+        return response()->json([
+            'success' => true,
+            'message' => 'Entrega efectuada correctamente'
+        ]);
     }
 
-    /*
-    private function tmp(Request $request, $actividad_id)
+    private function reportarTarea($nombre_tarea, $recepcion_id, $atencion_id)
     {
-        try {
-            DB::beginTransaction();
-
-            //PROCESO
-            $total_actividades     = Actividad::where('recepcion_id', $recepcion->id)->count(); //Actualizar atención
-            $actividades_resueltas = Actividad::where('recepcion_id', $recepcion->id)
-                ->where('estado_id', Estado::where('estado', 'Resuelta')->first()->id)
-                ->count();
-            $procentaje_progreso = $total_actividades > 0
-                ? round(($actividades_resueltas / $total_actividades) * 100, 2)
+        $estado_resuelta_id = Estado::where('estado', 'Resuelta')->first()->id;
+        $actividad = Actividad::where('recepcion_id', $recepcion_id)
+            ->whereHas('tarea', function($q) use ($nombre_tarea) {
+                $q->where('tarea', $nombre_tarea);
+            })
+            ->first();
+        if ($actividad) {
+            $actividad->estado_id = $estado_resuelta_id;
+            $actividad->save();
+            $total_actividades_globales = Actividad::whereHas('recepcion', function($query) use ($atencion_id) {
+                $query->where('atencion_id', $atencion_id);
+            })->count();
+            $actividades_resueltas_globales = Actividad::whereHas('recepcion', function($query) use ($atencion_id) {
+                $query->where('atencion_id', $atencion_id);
+            })
+            ->where('estado_id', $estado_resuelta_id)
+            ->count();
+            $porcentaje_avance = $total_actividades_globales > 0 
+                ? round(($actividades_resueltas_globales / $total_actividades_globales) * 100, 2) 
                 : 0;
-            $atencion = $actividad->recepcion->atencion; 
+            $atencion = Atencion::find($atencion_id);
             if ($atencion) {
-                $atencion->avance    = $procentaje_progreso;
+                $atencion->avance = $porcentaje_avance;
                 $atencion->save();
             }
-            
-            $traza = $this->obtenerTraza($recepcion);
-            DB::commit();
-            //RESULTADO
-            return response()->json([
-                'traza'                 => $traza,
-                'progreso'              => [
-                    'total_actividades'     => $total_actividades,
-                    'actividades_resueltas' => $actividades_resueltas,
-                    'porcentaje'            => $procentaje_progreso,
-                ],
-            ]);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'success' => false,
-                'message' => 'Error al actualizar la tarea: ' . $e->getMessage(),
-            ], 500);
+            if ($porcentaje_avance >= 100) {
+                Recepcion::where('atencion_id', $atencion_id)
+                    ->update(['estado_id' => $estado_resuelta_id]);
+                $atencion->estado_id = $estado_resuelta_id;
+                $atencion->save();
+            }
         }
     }
-*/
+
     private function obtenerTraza($tarjeta)
     {
         $estado_resuelta_id = Estado::where('estado', 'Resuelta')->first()->id;
@@ -698,51 +725,6 @@ class RecepcionController extends Controller
             });
     }
 
-    private function reportarTarea($nombre_tarea, $recepcion_id, $atencion_id)
-    {
 
-
-Log::info("llego a reportar tarea");
-
-        $estado_resuelta_id = Estado::where('estado', 'Resuelta')->first()->id;
-        
-        // 1. Obtener la actividad de la tarea especificada para esta recepción
-        $actividad = Actividad::where('recepcion_id', $recepcion_id)
-            ->whereHas('tarea', function($q) use ($nombre_tarea) {
-                $q->where('tarea', $nombre_tarea);
-            })
-            ->first();
-        
-        if ($actividad) {
-            // 2. Actualizar actividad.estado_id = 4 (Resuelta)
-            $actividad->estado_id = $estado_resuelta_id;
-            $actividad->save();
-            
-            // 3. GLOBALLY: Verificar si existen actividades pendientes en CUALQUIER recepción de esta atención
-            $pendientes_globales = Actividad::whereHas('recepcion', function($query) use ($atencion_id) {
-                $query->where('atencion_id', $atencion_id);
-            })
-            ->where('estado_id', '<>', $estado_resuelta_id)
-            ->count();
-
-            // DEBUG LOGS
-            Log::info("ReportarTarea (Global Check): Atencion ID: $atencion_id");
-            Log::info("Pendientes Globales: $pendientes_globales");
-
-            // 4. Si NO hay actividades pendientes en toda la atención, actualizar TODO a Resuelta
-            if ($pendientes_globales === 0) {
-                // Actualizar todas las recepciones de la atención
-                Recepcion::where('atencion_id', $atencion_id)
-                    ->update(['estado_id' => $estado_resuelta_id]);
-
-                // Actualizar la atención
-                $recepcion = Recepcion::find($recepcion_id); // Recuperar modelo para acceder a relación si es necesario o usar Atencion directamente
-                if ($recepcion && $recepcion->atencion) {
-                    $recepcion->atencion->estado_id = $estado_resuelta_id;
-                    $recepcion->atencion->save();
-                }
-            }
-        }
-    }
 
 }

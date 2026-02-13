@@ -167,7 +167,7 @@ Route::middleware([
             Route::post('corregir-orden', [RecepcionController::class, 'corregirOrden'])->name('recepcion.corregir-orden')->middleware('can:editar');
             Route::post('revisar-orden', [RecepcionController::class, 'revisarOrden'])->name('recepcion.revisar-orden')->middleware('can:editar');
             Route::post('revisar-stock', [RecepcionController::class, 'revisarStock'])->name('recepcion.revisar-stock')->middleware('can:editar');
-            Route::post('confirmar-pago', [RecepcionController::class, 'efectuarPago'])->name('recepcion.confirmar-pago')->middleware('can:autorizar');
+            Route::post('confirmar-pago', [RecepcionController::class, 'confirmarPago'])->name('recepcion.confirmar-pago')->middleware('can:autorizar');
             Route::post('descargar-stock', [RecepcionController::class, 'descargarStock'])->name('recepcion.descargar-stock')->middleware('can:editar');
             Route::post('efectuar-entrega', [RecepcionController::class, 'efectuarEntrega'])->name('recepcion.efectuar-entrega')->middleware('can:autorizar');
         });

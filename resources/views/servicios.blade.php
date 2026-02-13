@@ -200,6 +200,33 @@
         });
 
     </script>
+    <livewire:check-notifications />
+
+    <script>
+        document.addEventListener('livewire:init', () => {
+            Livewire.on('notification-received', (data) => {
+                if (typeof toastr !== 'undefined') {
+                    // Mensaje con salto de línea y botón Enterado
+                    const message = `
+                        ${data.mensaje}
+                        <br><br>
+                        <button type="button" class="btn bg-primary-light text-dark btn-sm btn-block" style="width: 100%; margin-top: 10px; font-weight: bold;" onclick="$(this).closest('.toast').find('.toast-close-button').click()">Enterado</button>
+                    `;
+                    
+                    toastr.info(message, data.titulo, {
+                        "closeButton": true,
+                        "progressBar": false,
+                        "positionClass": "toast-top-right",
+                        "timeOut": "0",          // Persistente
+                        "extendedTimeOut": "0",  // Persistente al hover
+                        "tapToDismiss": false,   // Evita cerrar al clickear el cuerpo
+                        "preventDuplicates": false, // Permitir múltiples
+                        "enableHtml": true,      // HTML habilitado
+                    });
+                }
+            });
+        });
+    </script>
     @stack('scripts')
 </body>
 

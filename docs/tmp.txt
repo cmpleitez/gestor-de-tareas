@@ -1,102 +1,37 @@
-
-
-
-
-
-        //ACTUALIZAR EL ESTADO DE LA TAREA
-        /*
-        function selectTask(taskId) { // Función para seleccionar tareas
-            const checkbox = document.getElementById(taskId); // Marcar/desmarcar el checkbox
-            const visualCheckbox = document.querySelector(`[onclick="selectTask('${taskId}')"] .checkbox-indicator`);
-            const selectableItem = document.querySelector(`[onclick="selectTask('${taskId}')"]`);
-            if (checkbox && visualCheckbox && selectableItem) {
-                checkbox.checked = !checkbox.checked;
-                if (checkbox.checked) {
-                    visualCheckbox.classList.add('checked');
-                    selectableItem.classList.add('selected');
-                } else {
-                    visualCheckbox.classList.remove('checked');
-                    selectableItem.classList.remove('selected');
-                }
-                const actividadId = taskId.replace('task_', ''); // AJAX para actualizar estado
-                const nuevoEstado = checkbox.checked ? 'Resuelta' : 'En progreso';
-                $.ajax({
-                    url: '{{ route('recepcion.reportar-tarea', [':id']) }}'.replace(':id', actividadId),
-                    method: 'POST',
-                    data: {
-                        _token: $('meta[name="csrf-token"]').attr('content'),
-                        estado: nuevoEstado
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            const tarjeta = $(
-                                `.solicitud-card[data-recepcion-id="${response.recepcion_id}"]`
-                            ); // Actualizar la traza en la tarjeta
-                            if (tarjeta.length > 0 && response.traza) {
-                                tarjeta.find('.solicitud-estado').text(response.traza);
-                            }
-                            updateProgressByPercentage(response.atencion_id, response.progreso.porcentaje);
-                            if (response.todas_resueltas && response
-                                .solicitud_actualizada) { // Verificar si todas las tareas están resueltas
-                                const tarjeta = $(
-                                    `.solicitud-card[data-recepcion-id="${response.recepcion_id}"]`
-                                ); // Mover la tarjeta al tablero de resueltas
-                                if (tarjeta.length > 0) {
-                                    // Actualizar estilos usando la función auxiliar
-                                    actualizarEstilosTarjeta(tarjeta, 3);
-                                    tarjeta.attr('data-recepcion-estado-id', 3);
-                                    $('#columna-resueltas').append(tarjeta);
-                                    actualizarContadores();
-                                    Swal.fire({
-                                        position: 'top-end',
-                                        type: 'success',
-                                        title: '¡Se completaron todas las tareas! Solicitud movida a Resueltas',
-                                        showConfirmButton: false,
-                                        timer: 3000,
-                                        confirmButtonClass: 'btn btn-primary',
-                                        buttonsStyling: false
-                                    });
-                                }
-                            } else {
-                                Swal.fire({
-                                    position: 'top-end',
-                                    type: 'success',
-                                    title: 'Tarea ' + String(actividadId).slice(-4) +
-                                        ' se reportó como ' + nuevoEstado,
-                                    showConfirmButton: false,
-                                    timer: 500,
-                                    confirmButtonClass: 'btn btn-primary',
-                                    buttonsStyling: false
-                                });
-                            }
-                        } else {
-                            Swal.fire({
-                                position: 'top-end',
-                                type: 'error',
-                                title: response.message,
-                                showConfirmButton: true,
-                                timer: 60000,
-                                confirmButtonClass: 'btn btn-danger',
-                                buttonsStyling: false
-                            });
-                        }
-                    },
-                    error: function(xhr) {
-                        let mensaje = 'Error desconocido';
-                        if (xhr.responseJSON && xhr.responseJSON.message) {
-                            mensaje = xhr.responseJSON.message;
-                        }
-                        Swal.fire({
-                            position: 'top-end',
-                            type: 'error',
-                            title: mensaje,
-                            showConfirmButton: true,
-                            timer: 60000,
-                            confirmButtonClass: 'btn btn-danger',
-                            buttonsStyling: false
-                        });
-                    }
-                });
-            }
-        }
-        */
+﻿
+[2026-02-13 10:16:16] local.INFO: llego a reportar tarea  
+[2026-02-13 10:16:16] local.INFO: ReportarTarea Debug: Recepcion ID: 202600100004  
+[2026-02-13 10:16:16] local.INFO: Total Actividades: 1  
+[2026-02-13 10:16:16] local.INFO: Pendientes: 0  
+[2026-02-13 10:16:16] local.INFO: Actividades encontradas: [{"id":"202600100010","tarea_id":2,"estado_id":4}]  
+[2026-02-13 10:25:39] local.INFO: llego a reportar tarea  
+[2026-02-13 10:25:39] local.INFO: ReportarTarea (Global Check): Atencion ID: 202600100003  
+[2026-02-13 10:25:39] local.INFO: Pendientes Globales: 4  
+[2026-02-13 10:26:59] local.INFO: llego a reportar tarea  
+[2026-02-13 10:26:59] local.INFO: ReportarTarea (Global Check): Atencion ID: 202600100003  
+[2026-02-13 10:26:59] local.INFO: Pendientes Globales: 3  
+[2026-02-13 13:34:17] local.ERROR: Class "App\Http\Controllers\Atencion" not found {"userId":5,"exception":"[object] (Error(code: 0): Class \"App\\Http\\Controllers\\Atencion\" not found at C:\\laragon\\www\\gestor-de-tareas\\app\\Http\\Controllers\\RecepcionController.php:632)"} 
+[2026-02-13 13:36:22] local.ERROR: Log:: error en confirmarStock (batch): SQLSTATE[42S22]: Column not found: 1054 Unknown column 'traza' in 'field list' (Connection: mysql, SQL: update `recepciones` set `traza` = Stock revisado, `recepciones`.`updated_at` = 2026-02-13 13:36:22 where `id` = 202600100010)  
+[2026-02-13 13:36:38] local.ERROR: Log:: error en confirmarStock (batch): SQLSTATE[42S22]: Column not found: 1054 Unknown column 'traza' in 'field list' (Connection: mysql, SQL: update `recepciones` set `traza` = Stock revisado, `recepciones`.`updated_at` = 2026-02-13 13:36:38 where `id` = 202600100010)  
+[2026-02-13 14:37:09] local.ERROR: PHP Parse error: Syntax error, unexpected T_OBJECT_OPERATOR on line 1 {"exception":"[object] (Psy\\Exception\\ParseErrorException(code: 0): PHP Parse error: Syntax error, unexpected T_OBJECT_OPERATOR on line 1 at C:\\laragon\\www\\gestor-de-tareas\\vendor\\psy\\psysh\\src\\Exception\\ParseErrorException.php:44)"} 
+[2026-02-13 14:38:28] local.ERROR: PHP Parse error: Syntax error, unexpected T_OBJECT_OPERATOR on line 1 {"exception":"[object] (Psy\\Exception\\ParseErrorException(code: 0): PHP Parse error: Syntax error, unexpected T_OBJECT_OPERATOR on line 1 at C:\\laragon\\www\\gestor-de-tareas\\vendor\\psy\\psysh\\src\\Exception\\ParseErrorException.php:44)"} 
+[2026-02-13 14:42:05] local.ERROR: PHP Parse error: Syntax error, unexpected ')' on line 1 {"exception":"[object] (Psy\\Exception\\ParseErrorException(code: 0): PHP Parse error: Syntax error, unexpected ')' on line 1 at C:\\laragon\\www\\gestor-de-tareas\\vendor\\psy\\psysh\\src\\Exception\\ParseErrorException.php:44)"} 
+[2026-02-13 14:46:38] local.INFO: Log:: Enviando StockRevisadoNotification a los receptores de la oficina 1: 4  
+[2026-02-13 14:54:37] local.ERROR: PHP Parse error: Syntax error, unexpected T_OBJECT_OPERATOR on line 1 {"exception":"[object] (Psy\\Exception\\ParseErrorException(code: 0): PHP Parse error: Syntax error, unexpected T_OBJECT_OPERATOR on line 1 at C:\\laragon\\www\\gestor-de-tareas\\vendor\\psy\\psysh\\src\\Exception\\ParseErrorException.php:44)"} 
+[2026-02-13 14:54:52] local.ERROR: PHP Parse error: Syntax error, unexpected ')' on line 1 {"exception":"[object] (Psy\\Exception\\ParseErrorException(code: 0): PHP Parse error: Syntax error, unexpected ')' on line 1 at C:\\laragon\\www\\gestor-de-tareas\\vendor\\psy\\psysh\\src\\Exception\\ParseErrorException.php:44)"} 
+[2026-02-13 14:56:06] local.INFO: Log:: Enviando StockRevisadoNotification a los receptores de la oficina 1: 4  
+[2026-02-13 15:00:35] local.INFO: Log:: Enviando StockRevisadoNotification a los receptores de la oficina 1: 4  
+[2026-02-13 15:01:26] local.INFO: Log:: Livewire detectó 1 notificaciones para el usuario 4  
+[2026-02-13 15:01:26] local.INFO: Log:: Despachando evento notification-received para notificación ID: e4e1defc-096f-4828-8091-f1a7d0498cd1  
+[2026-02-13 15:02:27] local.INFO: Log:: Livewire detectó 1 notificaciones para el usuario 3  
+[2026-02-13 15:02:27] local.INFO: Log:: Despachando evento notification-received para notificación ID: 767565bd-44ba-4383-b6b5-1d56a82b32a5  
+[2026-02-13 15:19:37] local.INFO: Log:: Renderizando CheckNotifications para el usuario 3  
+[2026-02-13 15:20:27] local.ERROR: PHP Parse error: Syntax error, unexpected T_NS_SEPARATOR, expecting T_VARIABLE on line 1 {"exception":"[object] (Psy\\Exception\\ParseErrorException(code: 0): PHP Parse error: Syntax error, unexpected T_NS_SEPARATOR, expecting T_VARIABLE on line 1 at C:\\laragon\\www\\gestor-de-tareas\\vendor\\psy\\psysh\\src\\Exception\\ParseErrorException.php:44)"} 
+[2026-02-13 15:20:36] local.INFO: Log:: Renderizando CheckNotifications para el usuario 3  
+[2026-02-13 15:21:37] local.INFO: Log:: Renderizando CheckNotifications para el usuario 3  
+[2026-02-13 15:22:37] local.INFO: Log:: Renderizando CheckNotifications para el usuario 3  
+[2026-02-13 15:22:53] local.ERROR: PHP Parse error: Syntax error, unexpected T_NS_SEPARATOR on line 1 {"exception":"[object] (Psy\\Exception\\ParseErrorException(code: 0): PHP Parse error: Syntax error, unexpected T_NS_SEPARATOR on line 1 at C:\\laragon\\www\\gestor-de-tareas\\vendor\\psy\\psysh\\src\\Exception\\ParseErrorException.php:44)"} 
+[2026-02-13 15:23:37] local.INFO: Log:: Renderizando CheckNotifications para el usuario 3  
+[2026-02-13 15:24:36] local.INFO: Log:: Renderizando CheckNotifications para el usuario 3  
+[2026-02-13 15:25:36] local.INFO: Log:: Renderizando CheckNotifications para el usuario 3  
+[2026-02-13 15:25:44] local.INFO: Log:: Renderizando CheckNotifications para el usuario 4  

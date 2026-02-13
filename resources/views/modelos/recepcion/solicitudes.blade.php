@@ -50,20 +50,20 @@
                             @if (optional(auth()->user()->mainRole)->name == 'receptor' && isset($equipos))
                             <div class="row" style="display: flex; align-items: stretch;">
                                 @foreach ($equipos as $equipo)
-                                <div class="col-md-3 mt-1">
-                                    <div class="selectable-item"
-                                        onclick="selectItem('equipo_{{ $equipo->id }}')">
-                                        <div class="item-body">
-                                            <div class="item-info">
-                                                <div class="item-name">{{ $equipo->equipo }}</div>
-                                                <div class="item-desc">Equipo de trabajo</div>
+                                    <div class="col-md-3 mt-1">
+                                        <div class="selectable-item"
+                                            onclick="selectItem('equipo_{{ $equipo->id }}')">
+                                            <div class="item-body">
+                                                <div class="item-info">
+                                                    <div class="item-name">{{ $equipo->equipo }}</div>
+                                                    <div class="item-desc">Equipo de trabajo</div>
+                                                </div>
+                                                <div class="radio-indicator"></div>
                                             </div>
-                                            <div class="radio-indicator"></div>
+                                            <input type="radio" id="equipo_{{ $equipo->id }}"
+                                                name="equipo_destino" value="{{ $equipo->id }}">
                                         </div>
-                                        <input type="radio" id="equipo_{{ $equipo->id }}"
-                                            name="equipo_destino" value="{{ $equipo->id }}">
                                     </div>
-                                </div>
                                 @endforeach
                             </div>
                             @else
@@ -533,26 +533,22 @@
         const $card = $(this);
         const estadoId = parseInt($card.attr('data-recepcion-estado-id'));
         if (estadoId === 3) { // En progreso
-            @can('ver')
-                const titulo = $card.find('.solicitud-titulo').text().trim();
-                const atencionId = $card.data('atencion-id');
-                const recepcionId = $card.data('recepcion-id');
-                const atencionIdRipped = $card.find('.text-right div[style*="font-weight: 600"]').text().trim();
-                $('#sidebar-card-title').text(atencionIdRipped + ' - ' + titulo).css('font-size', '1rem');
-                $('#sidebar-card-body').empty();
-                cargarTareas(recepcionId, atencionId);
-                $('.kanban-overlay').addClass('show');
-                $('.kanban-sidebar').addClass('show');
-                $('body').addClass('sidebar-open');
-                limpiarClasesDrag();
-            @endcan
+            const titulo = $card.find('.solicitud-titulo').text().trim();
+            const atencionId = $card.data('atencion-id');
+            const recepcionId = $card.data('recepcion-id');
+            const atencionIdRipped = $card.find('.text-right div[style*="font-weight: 600"]').text().trim();
+            $('#sidebar-card-title').text(atencionIdRipped + ' - ' + titulo).css('font-size', '1rem');
+            $('#sidebar-card-body').empty();
+            cargarTareas(recepcionId, atencionId);
+            $('.kanban-overlay').addClass('show');
+            $('.kanban-sidebar').addClass('show');
+            $('body').addClass('sidebar-open');
+            limpiarClasesDrag();
         } else if (estadoId === 2 || estadoId === 4) { // Recibida o Resuelta
-            @can('ver')
 
             // PENDIENTE: Consulta solo lectura de la orden de compra
             console.log('Consulta de orden de compra (solo lectura) pendiente de implementar.');
 
-            @endcan
         }
     });
 
@@ -601,25 +597,26 @@
             let htmlGenerado = '';
             if (ruta) {
                 htmlGenerado = `
-                    <div class="selectable-item ${esCompletada ? 'selected' : ''}" style="display: flex; align-items: center; padding: 10px;">
-                        <form id="${formId}" action="${ruta}" method="POST" style="display: flex; align-items: center; flex: 1; margin: 0;">
-                            @csrf
-                            <input type="hidden" name="recepcion_id" value="${recepcionId || tarea.recepcion_id}">
-                            <input type="hidden" name="atencion_id" value="${atencionId}">
+                    <div class="selectable-item ${esCompletada ? 'selected' : ''}" 
+                        data-ruta="${ruta}"
+                        data-recepcion-id="${recepcionId || tarea.recepcion_id}"
+                        data-atencion-id="${atencionId}"
+                        data-actividad-id="${tarea.actividad_id}"
+                        style="display: flex; align-items: center; padding: 10px; cursor: ${esCompletada ? 'not-allowed' : 'pointer'};">
+                        <div style="display: flex; align-items: center; flex: 1; margin: 0;">
                             <input type="checkbox" 
                                 id="${taskId}"
                                 name="tarea_completada" 
                                 value="${tarea.actividad_id}" 
                                 ${esCompletada ? 'checked disabled' : ''}
-                                onclick="event.preventDefault(); if(!this.disabled) document.getElementById('${formId}').submit();"
-                                style="width: 20px; height: 20px; margin-right: 12px; cursor: ${esCompletada ? 'not-allowed' : 'pointer'};">
+                                style="width: 20px; height: 20px; margin-right: 12px; cursor: ${esCompletada ? 'not-allowed' : 'pointer'}; pointer-events: none;">
                             <div class="item-body" style="flex: 1;">
                                 <div class="item-info">
                                     <div class="item-name">${tarea.tarea}</div>
                                     <div class="item-desc">T-${tarea.actividad_id_ripped}</div>
                                 </div>
                             </div>
-                        </form>
+                        </div>
                     </div>
                 `;
             }
@@ -628,7 +625,6 @@
         tareasHtml += '</div>';
         $('#sidebar-card-body').append(tareasHtml);
     }
-
     function limpiarClasesDrag() {
         $('.solicitud-card').removeClass('dragging sortable-drag sortable-chosen sortable-ghost');
         $('.sortable-fallback').remove();
@@ -639,15 +635,60 @@
         }
     });
 
-    //PROPAGAR CLICK AL FORMULARIO
+    // MANEJAR CLIC EN TAREA (AJAX O NAVEGACIÓN DINÁMICA)
     $(document).on('click', '.selectable-item', function(e) {
-        if (!$(e.target).is('input[type="checkbox"]')) {
-            const form = $(this).find('form');
-            const checkbox = $(this).find('input[type="checkbox"]');
-            if (checkbox.length && !checkbox.is(':disabled')) {
-                form.submit();
-            }
+        if ($(e.target).is('input[type="checkbox"]')) return;
+        const item = $(this);
+        const checkbox = item.find('input[type="checkbox"]');
+        if (checkbox.is(':disabled') || item.hasClass('selected')) {
+            return;
         }
+        const actionUrl = item.data('ruta');
+        const recepcionId = item.data('recepcion-id');
+        const atencionId = item.data('atencion-id');
+        const actividadId = item.data('actividad-id');
+        const csrfToken = $('meta[name="csrf-token"]').attr('content');
+        if (actionUrl.includes('carrito-editar')) { //Con navegación
+            let form = $('<form action="' + actionUrl + '" method="POST">' +
+                '<input type="hidden" name="_token" value="' + csrfToken + '">' +
+                '<input type="hidden" name="recepcion_id" value="' + recepcionId + '">' +
+                '<input type="hidden" name="atencion_id" value="' + atencionId + '">' +
+                '<input type="hidden" name="tarea_completada" value="' + actividadId + '">' +
+                '</form>');
+            $('body').append(form);
+            form.submit();
+            return;
+        }
+        e.preventDefault(); 
+        $.ajax({ //Sin navegación
+            url: actionUrl,
+            type: 'POST',
+            data: {
+                _token: csrfToken,
+                recepcion_id: recepcionId,
+                atencion_id: atencionId,
+                tarea_completada: actividadId
+            },
+            success: function(response) {
+                if (response && response.success) {
+                    toastr.success(response.message);
+                    checkbox.prop('checked', true).prop('disabled', true);
+                    checkbox.css('cursor', 'not-allowed');
+                    item.addClass('selected');
+                    item.css('cursor', 'not-allowed');
+                    actualizarAvance();
+                } else {
+                    toastr.error(response ? response.message : 'Error al actualizar la tarea');
+                }
+            },
+            error: function(xhr) {
+                let msg = 'Error al procesar la solicitud';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    msg = xhr.responseJSON.message;
+                }
+                toastr.error(msg);
+            }
+        });
     });
 
     //CERRAR SIDEBAR
@@ -798,7 +839,7 @@
         return usersHtml;
     }
     //FUNCIÓN AUXILIAR PARA ACTUALIZAR ESTILOS DE TARJETA
-    function actualizarEstilosTarjeta($card, estadoId) {
+    function actualizarEstilosTarjeta($card, estadoId, avance = null) {
         let color, borderClass, nombreEstado;
         switch (estadoId) {
             case 2: // Recibida
@@ -833,6 +874,10 @@
             'margin-top': '5px'
         });
         $card.find('.fas.fa-arrow-right').css('color', color);
+        if (avance !== null) {
+            let atencionId = $card.attr('data-atencion-id');
+            updateProgressByPercentage(atencionId, avance);
+        }
     }
     //ACTUALIZAR AVANCE
     function actualizarAvance() {
@@ -887,10 +932,13 @@
                                 setTimeout(function() {
                                     $card.removeClass('animar-llegada');
                                 }, 500);
-                                actualizarEstilosTarjeta($card, estadoBackend); // Actualizar estilos usando la función auxiliar
+                                actualizarEstilosTarjeta($card, estadoBackend, avanceBackend); // Actualizar estilos y barra de progreso
                                 actualizarContadores();
                                 ordenarColumna(columnaDestino.replace('#', '')); // Ordenar la columna después del traslado
                             }, 500);
+                        } else {
+                            // Si el estado no cambió pero el avance sí, actualizamos solo los estilos (barra de progreso incluida)
+                            actualizarEstilosTarjeta($card, estadoBackend, avanceBackend);
                         }
                         if (item.recepciones && item.recepciones.length > 0) {
                             let $usersContainer = $card.find('.users-container');
@@ -986,8 +1034,6 @@
         }
         setTimeout(initializeProgressBars, 100); // Inicializar barras de progreso inmediatamente no es timer
         initKanban();
-
-        /*
         let isUpdating = false; // Sistema inteligente de polling para evitar saturación
         let updateInterval = ({{ $frecuencia_actualizacion }} * 1000) * 60;
         function safeUpdate() {
@@ -1003,8 +1049,6 @@
         }
         safeUpdate();
         setInterval(safeUpdate, updateInterval);
-        */
-
     });
 </script>
 @endsection
