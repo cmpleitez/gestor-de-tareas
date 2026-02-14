@@ -91,11 +91,12 @@ CLIENTE:
 
 
 
-                13/feb... pendiente construccion del proceso: descarga de stock, pero antes hacer las siguientes tareas.
-                    . la tarjeta no pasa automaticamente a la bandeja de resueltas al ser marcada como resuelta
-                    . eliminar etiquetas de documentacion innecesarias o que no se entienden
+                . construccion del proceso: descarga de stock, pero antes hacer las siguientes tareas.
+                
+                    14/feb... clic en progreso rol cliente trata de mostrar las tareas y falla, no deberia mostrar nada
+                    
 
-
+                    . formato de miles en la orden de compra que se va por correo
 
 
 
@@ -104,6 +105,7 @@ CLIENTE:
                 . En cuanto el receptor y el operador han realizado dichas tareas, establece el estado de "Resuelta" a todas las copias de la solicitud y a su solicitud principal <Atencion>, 
                 en consecuencia la solicitud se coloca en el tablero de resueltas.
                 . Envía un correo al cliente con la <orden de compra/reserva> revisada
+                . rol operador y receptor: cerrar edicion.carrito en cuanto se aplique clic en el boton revisar
 
 
     🔵 tratamiento de errores en el reporte de tareas
@@ -170,7 +172,8 @@ SEGURIDAD:
     🔵 hay que analizar como se va manejar el sistema de errores que recibe el usuario porque 
     si los enviamos en los mensajes toastr como estamos haciendo actualmente es un tema de seguridad
     tambien debe incluirse aquó el módulo gestor de tareas porque hay tambien unos popups que se usan
-    para mostrar los errores
+    para mostrar los errores, usar el log de errores para todos los errores de sistema en general, para los
+    errores de usuario simples usar el toastr y para las confirmaciones el sweety algo
     
     🔵 Revision general de los permisos en rutas y vistas
 

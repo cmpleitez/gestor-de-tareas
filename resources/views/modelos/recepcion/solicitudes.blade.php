@@ -452,8 +452,7 @@
                         } else if (nuevoEstadoId == 1) { // Recibida
                             badgeColor = 'badge-secondary';
                         }
-                        // Actualizar badges en los popovers
-                        tarjeta.find('[data-toggle="popover"]').each(function() {
+                        tarjeta.find('[data-toggle="popover"]').each(function() { // Actualizar badges en los popovers
                             let $popover = $(this);
                             let currentContent = $popover.attr('data-content');
                             if (currentContent) {
@@ -461,8 +460,7 @@
                                 $popover.attr('data-content', newContent);
                             }
                         });
-                        // Actualizar color de la flecha según el nuevo estado
-                        tarjeta.find('.fas.fa-arrow-right').css('color', estadoColor);
+                        tarjeta.find('.fas.fa-arrow-right').css('color', estadoColor); // Actualizar color de la flecha según el nuevo estado
                     }
                     toastr.success(response.message);
                 } else {
@@ -504,7 +502,6 @@
             }
         });
     }
-
     function actualizarMensajeColumnaVacia() { //Mostrar u ocultar mensaje de columna vacía
         const columnas = [{
                 id: 'columna-recibidas',
@@ -545,13 +542,18 @@
             $('body').addClass('sidebar-open');
             limpiarClasesDrag();
         } else if (estadoId === 2 || estadoId === 4) { // Recibida o Resuelta
-
-            // PENDIENTE: Consulta solo lectura de la orden de compra
-            console.log('Consulta de orden de compra (solo lectura) pendiente de implementar.');
-
+            const titulo = $card.find('.solicitud-titulo').text().trim();
+            const recepcionId = $card.data('recepcion-id');
+            const atencionIdRipped = $card.find('.text-right div[style*="font-weight: 600"]').text().trim();
+            $('#sidebar-card-title').text(atencionIdRipped + ' - ' + titulo).css('font-size', '1rem');
+            $('#sidebar-card-body').empty();
+            cargarOrdenCompra(recepcionId);
+            $('.kanban-overlay').addClass('show');
+            $('.kanban-sidebar').addClass('show');
+            $('body').addClass('sidebar-open');
+            limpiarClasesDrag();
         }
     });
-
     function cargarTareas(recepcionId, atencionId) {
         $.ajax({
             url: '{{ route('recepcion.tareas',['recepcion_id'=>':id']) }}'.replace(':id', recepcionId),
@@ -568,7 +570,70 @@
             }
         });
     }
-
+    function cargarOrdenCompra(recepcionId) {
+        $.ajax({
+            url: '{{ route("recepcion.orden-compra") }}',
+            type: 'POST',
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                recepcion_id: recepcionId
+            },
+            success: function(response) {
+                if (response.success) {
+                    let totalGlobal = 0;
+                    let filasHtml = '';
+                    response.ordenes.forEach(function(orden) {
+                        let subtotal = orden.unidades * orden.precio;
+                        totalGlobal += subtotal;
+                        filasHtml += `
+                            <tr>
+                                <td>${orden.kit}</td>
+                                <td class="text-center">${orden.unidades}</td>
+                                <td class="text-center">$${parseFloat(orden.precio).toFixed(2)}</td>
+                                <td class="text-center">$${subtotal.toFixed(2)}</td>
+                            </tr>`;
+                    });
+                    let html = `
+                        <div style="padding: 15px;">
+                            <p style="font-size: 0.85rem; color: #6c757d; margin-bottom: 12px;">
+                                Cliente: <strong>${response.cliente}</strong>
+                            </p>
+                            <table class="table table-sm table-bordered" style="font-size: 0.85rem;">
+                                <thead style="background: #f8f9fa;">
+                                    <tr>
+                                        <th>Kit</th>
+                                        <th class="text-center">Cantidad</th>
+                                        <th class="text-center">Precio Unitario</th>
+                                        <th class="text-center">Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${filasHtml}
+                                    <tr style="font-weight: 700; background: #f8f9fa;">
+                                        <td colspan="3" class="text-right">TOTAL</td>
+                                        <td class="text-center">$${totalGlobal.toFixed(2)}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>`;
+                    $('#sidebar-card-body').html(html);
+                } else {
+                    $('#sidebar-card-body').html(
+                        '<div class="text-center text-muted py-3"><i class="bx bx-error-circle text-danger"></i><div class="mt-2">' + (response.message || 'Error al cargar la orden') + '</div></div>'
+                    );
+                }
+            },
+            error: function(xhr) {
+                let msg = 'Error al obtener la orden de compra';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    msg = xhr.responseJSON.message;
+                }
+                $('#sidebar-card-body').html(
+                    '<div class="text-center text-muted py-3"><i class="bx bx-error-circle text-danger"></i><div class="mt-2">' + msg + '</div></div>'
+                );
+            }
+        });
+    }
     function dibujarTareas(tareas, atencionId, recepcionId) {
         if (tareas.length === 0) {
             $('#sidebar-card-body').append(
@@ -634,7 +699,6 @@
             limpiarClasesDrag();
         }
     });
-
     // MANEJAR CLIC EN TAREA (AJAX O NAVEGACIÓN DINÁMICA)
     $(document).on('click', '.selectable-item', function(e) {
         if ($(e.target).is('input[type="checkbox"]')) return;
@@ -690,7 +754,6 @@
             }
         });
     });
-
     //CERRAR SIDEBAR
     $(document).on('click', '.kanban-overlay, .kanban-sidebar .close-icon',
         function() {
@@ -998,8 +1061,7 @@
                         tarjetasAgregadas++;
                     });
                     if (tarjetasAgregadas > 0) { // Solo actualizar contadores si se agregaron tarjetas
-                        ordenarColumna(
-                            'columna-recibidas'); // Ordenar tablero después de agregar nuevas tarjetas
+                        ordenarColumna('columna-recibidas'); // Ordenar tablero después de agregar nuevas tarjetas
                         actualizarContadores();
                         inicializarPopovers(); // Inicializar popovers para las nuevas tarjetas
                     }
@@ -1012,7 +1074,6 @@
             }
         });
     }
-
     //CONTROL PRINCIPAL
     $(document).ready(function() {
         inicializarPopovers();

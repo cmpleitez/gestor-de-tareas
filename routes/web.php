@@ -149,6 +149,7 @@ Route::middleware([
     Route::get('operadores/{solicitud}', [RecepcionController::class, 'operadores'])->name('recepcion.operadores')->middleware('can:ver');
     Route::post('avance-tablero', [RecepcionController::class, 'consultarAvance'])->name('recepcion.consultar-avance')->middleware('can:editar');
     Route::post('nuevas-recibidas', [RecepcionController::class, 'nuevasRecibidas'])->name('recepcion.nuevas-recibidas')->middleware('can:editar');
+    Route::post('orden-compra', [RecepcionController::class, 'ordenCompra'])->name('recepcion.orden-compra');
     Route::group(['middleware' => ['can:gestionar']], function () {
         Route::group(['prefix' => 'solicitud'], function () { //Solicitudes
             Route::get('/', [solicitudController::class, 'index'])->name('solicitud')->middleware('can:ver');

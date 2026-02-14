@@ -3,6 +3,8 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\StockRevisadoNotification;
 
 use App\Models\Actividad;
 use App\Models\Equipo;
@@ -17,19 +19,6 @@ use App\Models\Atencion;
 use App\Services\KeyMaker;
 use App\Services\KeyRipper;
 use Spatie\Permission\Models\Role;
-
-
-
-
-
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Notification;
-use App\Notifications\StockRevisadoNotification;
-
-
-
-
-
 
 class RecepcionController extends Controller
 {
@@ -98,7 +87,7 @@ class RecepcionController extends Controller
             $progreso                 = $tarjetas->where('estado_id', Estado::where('estado', 'En progreso')->first()->id)->sortBy('created_at')->values()->toArray();
             $resueltas                = $tarjetas->where('estado_id', Estado::where('estado', 'Resuelta')->first()->id)->sortBy('created_at')->values()->toArray();
             $parametro                = Parametro::where('parametro', 'Frecuencia de refresco')->first();
-            $frecuencia_actualizacion = $parametro ? $parametro->valor : 30; // Valor por defecto: 30 segundos
+            $frecuencia_actualizacion = $parametro ? $parametro->valor : 1; // Valor por defecto: 1 minuto
             $data                     = [
                 'recibidas'                => $recibidas,
                 'progreso'                 => $progreso,
@@ -189,7 +178,6 @@ class RecepcionController extends Controller
                     $new_recepcion->origen_user_id = $usuario->id;
                     $new_recepcion->destino_user_id = $operador->id;
                     $new_recepcion->user_destino_role_id = Role::where('name', 'Operador')->first()->id;
-                    //$new_recepcion->validada_origen = true;
                     $new_recepcion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
                     $new_recepcion->save();
                     $recepcion->estado_id = $estado_en_progreso_id; //Validando de <copia receptor> y cambiando estado local
@@ -260,7 +248,7 @@ class RecepcionController extends Controller
                 $traza = $this->obtenerTraza($tarjeta);
                 return [
                     'atencion_id' => $tarjeta->atencion_id,
-                    'avance'      => optional($tarjeta->atencion)->avance ?? 0, // Acceder al avance de la atención relacionada
+                    'avance'      => optional($tarjeta->atencion)->avance ?? 0, 
                     'estado_id'   => $tarjeta->estado_id,
                     'traza'       => $traza,
                     'recepciones' => $usuariosParticipantes->get($tarjeta->atencion_id, collect()),
@@ -319,8 +307,6 @@ class RecepcionController extends Controller
             $actividades = Actividad::where('recepcion_id', $recepcion_id)
                 ->with(['tarea', 'estado'])
                 ->get();
-
-
             $tareas = $actividades->map(function ($actividad) {
                 return [
                     'recepcion_id'        => $actividad->recepcion_id,
@@ -363,7 +349,7 @@ class RecepcionController extends Controller
 
     public function parametrosActivate(Parametro $parametro)
     {
-        $parametro->activo = ! $parametro->activo; // Guardado por unidad, no masivo
+        $parametro->activo = ! $parametro->activo; 
         $parametro->save();
         return redirect()->route('recepcion.parametros')->with('success', 'Parámetro actualizado correctamente');
     }
@@ -471,7 +457,7 @@ class RecepcionController extends Controller
             $atencion_id = $request->input('atencion_id');
             $ordenes_recibidas = $request->input('ordenes', []);
             // VALIDACIÓN
-            if (empty($atencion_id) || empty($ordenes_recibidas)) { //Colecciones vacías
+            if (empty($atencion_id) || empty($ordenes_recibidas)) { 
                 return response()->json([
                     'success' => false,
                     'message' => 'Información incompleta para la corrección'
@@ -570,11 +556,8 @@ class RecepcionController extends Controller
                 }
                 $this->reportarTarea('Orden Revisada', $recepcion_id, $atencion_id); //Reportar tarea
             DB::commit();
-            
-            // ENVIO: Notificar al cliente (Este ya existe, no tocar)
             $recepcion->load('atencion.ordenes.detalle.kit', 'atencion.ordenes.detalle.producto');
             $recepcion->usuarioOrigen->notify(new \App\Notifications\OrdenRevisadaNotification($recepcion));
-
             //RESULTADO
             return response()->json([
                 'success' => true,
@@ -682,6 +665,32 @@ class RecepcionController extends Controller
             }
         }
         return $traza;
+    }
+
+    public function ordenCompra(Request $request)
+    {
+        try {
+            $recepcion = Recepcion::with(['atencion.ordenes.kit', 'usuarioOrigen'])
+                ->findOrFail($request->input('recepcion_id'));
+            $ordenes = $recepcion->atencion->ordenes->map(function ($orden) {
+                return [
+                    'kit'      => $orden->kit->kit,
+                    'unidades' => $orden->unidades,
+                    'precio'   => $orden->precio,
+                ];
+            });
+            return response()->json([
+                'success'    => true,
+                'cliente'    => $recepcion->usuarioOrigen->name,
+                'atencion_id_ripped' => KeyRipper::rip($recepcion->atencion_id),
+                'ordenes'    => $ordenes,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al obtener la orden de compra: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     
