@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\StockRevisadoNotification;
 
@@ -455,9 +456,10 @@ class RecepcionController extends Controller
         try {
             // LECTURA
             $atencion_id = $request->input('atencion_id');
+            $recepcion_id = $request->input('recepcion_id'); // Añadido recepcion_id
             $ordenes_recibidas = $request->input('ordenes', []);
             // VALIDACIÓN
-            if (empty($atencion_id) || empty($ordenes_recibidas)) { 
+            if (empty($atencion_id) || empty($recepcion_id) || empty($ordenes_recibidas)) { 
                 return response()->json([
                     'success' => false,
                     'message' => 'Información incompleta para la corrección'
@@ -488,7 +490,57 @@ class RecepcionController extends Controller
                                 'kit_id' => $kit_id,
                                 'producto_id' => $producto_id_nuevo
                             ];
+                        } else {
+                            // Si no cambió el producto, igual reseteamos existencias según requerimiento
+                            Detalle::where('orden_id', $orden_id)
+                                ->where('kit_id', $kit_id)
+                                ->where('producto_id', $producto_id_original)
+                                ->update([
+                                    'stock_fisico_existencias' => null
+                                ]);
                         }
+                    }
+                }
+
+                // REVERTIR TAREA "Stock revisado" (Y opcionalmente "Orden Revisada" si se requiere, pero enfocado en Stock)
+                $estado_en_progreso_id = Estado::where('estado', 'En progreso')->first()->id;
+                $actividadStock = Actividad::whereHas('recepcion', function($q) use ($atencion_id) {
+                        $q->where('atencion_id', $atencion_id);
+                    })
+                    ->whereHas('tarea', function($q) {
+                        $q->where('tarea', 'Stock revisado');
+                    })
+                    ->first();
+
+                if ($actividadStock) {
+                    $actividadStock->estado_id = $estado_en_progreso_id;
+                    $actividadStock->save();
+                    Log::info("Log:: Tarea 'Stock revisado' revertida a 'En progreso' para atención $atencion_id");
+
+                    // Forzar actualización de progreso de la atención (restando esta tarea)
+                    $total_actividades = Actividad::whereHas('recepcion', function($query) use ($atencion_id) {
+                        $query->where('atencion_id', $atencion_id);
+                    })->count();
+                    
+                    $actividades_resueltas = Actividad::whereHas('recepcion', function($query) use ($atencion_id) {
+                        $query->where('atencion_id', $atencion_id);
+                    })
+                    ->where('estado_id', Estado::where('estado', 'Resuelta')->first()->id)
+                    ->count();
+
+                    $porcentaje_avance = $total_actividades > 0 
+                        ? round(($actividades_resueltas / $total_actividades) * 100, 2) 
+                        : 0;
+
+                    $atencion = Atencion::find($atencion_id);
+                    if ($atencion) {
+                        $atencion->avance = $porcentaje_avance;
+                        // Si retrocede del 100%, bajamos el estado a "En progreso" si estaba resuelta
+                        if ($porcentaje_avance < 100) {
+                            $atencion->estado_id = $estado_en_progreso_id;
+                            Recepcion::where('atencion_id', $atencion_id)->update(['estado_id' => $estado_en_progreso_id]);
+                        }
+                        $atencion->save();
                     }
                 }
             DB::commit();
@@ -586,13 +638,47 @@ class RecepcionController extends Controller
 
     public function descargarStock(Request $request)
     {
-        $recepcion_id = $request->input('recepcion_id');
-        $atencion_id = $request->input('atencion_id');
-        $this->reportarTarea('Stock descargado', $recepcion_id, $atencion_id);
-        return response()->json([
-            'success' => true,
-            'message' => 'Stock descargado correctamente'
-        ]);
+        DB::beginTransaction();
+        try {
+            //Descargando Stock
+            $recepcion_id = $request->input('recepcion_id');
+            $atencion_id = $request->input('atencion_id');
+            $oficina_id = auth()->user()->oficina_id;
+            $stockBodegaId = \App\Models\Stock::where('stock', 'Bodega')->value('id');
+            if (!$stockBodegaId) {
+                throw new \Exception("No se encontró el stock 'Bodega' configurado en el sistema.");
+            }
+            $recepcion = Recepcion::with(['atencion.ordenes.detalle'])->find($recepcion_id);
+            if (!$recepcion || !$recepcion->atencion) {
+                throw new \Exception("No se pudo localizar la atención asociada a la recepción.");
+            }
+            foreach ($recepcion->atencion->ordenes as $orden) {
+                $cantidadKits = $orden->unidades;
+                foreach ($orden->detalle as $detalle) {
+                    $productoId = $detalle->producto_id;
+                    $unidadesPorKit = $detalle->unidades;
+                    $totalDescontar = $cantidadKits * $unidadesPorKit;
+                    $stockItem = \App\Models\OficinaStock::where('oficina_id', $oficina_id)
+                        ->where('producto_id', $productoId)
+                        ->where('stock_id', $stockBodegaId)
+                        ->first();
+                    if (!$stockItem) {
+                        throw new \Exception("No existe registro de stock en Bodega para el producto con ID {$productoId} en esta oficina.");
+                    }
+                    if ($stockItem->unidades < $totalDescontar) {
+                        throw new \Exception("Stock insuficiente en Bodega para el producto con ID {$productoId}. Requerido: {$totalDescontar}, Disponible: {$stockItem->unidades}");
+                    }
+                    $stockItem->decrement('unidades', $totalDescontar);
+                }
+            }
+            // Reportando Tarea
+            $this->reportarTarea('Stock descargado', $recepcion_id, $atencion_id);
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Stock descargado del inventario de Bodega correctamente.']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => 'Error al descargar stock: ' . $e->getMessage()]);
+        }
     }
 
     public function efectuarEntrega(Request $request)

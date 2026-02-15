@@ -530,30 +530,39 @@
         const $card = $(this);
         const estadoId = parseInt($card.attr('data-recepcion-estado-id'));
         if (estadoId === 3) { // En progreso
-            const titulo = $card.find('.solicitud-titulo').text().trim();
-            const atencionId = $card.data('atencion-id');
-            const recepcionId = $card.data('recepcion-id');
-            const atencionIdRipped = $card.find('.text-right div[style*="font-weight: 600"]').text().trim();
-            $('#sidebar-card-title').text(atencionIdRipped + ' - ' + titulo).css('font-size', '1rem');
-            $('#sidebar-card-body').empty();
-            cargarTareas(recepcionId, atencionId);
-            $('.kanban-overlay').addClass('show');
-            $('.kanban-sidebar').addClass('show');
-            $('body').addClass('sidebar-open');
-            limpiarClasesDrag();
+            @can('gestionar')
+                const titulo = $card.find('.solicitud-titulo').text().trim();
+                const atencionId = $card.data('atencion-id');
+                const recepcionId = $card.data('recepcion-id');
+                const atencionIdRipped = $card.find('.text-right div[style*="font-weight: 600"]').text().trim();
+                $('#sidebar-card-title').text(atencionIdRipped + ' - ' + titulo).css('font-size', '1rem');
+                $('#sidebar-card-body').empty();
+                cargarTareas(recepcionId, atencionId);
+                $('.kanban-overlay').addClass('show');
+                $('.kanban-sidebar').addClass('show');
+                $('body').addClass('sidebar-open');
+                limpiarClasesDrag();
+            @else
+                mostrarOrdenCompra($card);
+            @endcan
         } else if (estadoId === 2 || estadoId === 4) { // Recibida o Resuelta
-            const titulo = $card.find('.solicitud-titulo').text().trim();
-            const recepcionId = $card.data('recepcion-id');
-            const atencionIdRipped = $card.find('.text-right div[style*="font-weight: 600"]').text().trim();
-            $('#sidebar-card-title').text(atencionIdRipped + ' - ' + titulo).css('font-size', '1rem');
-            $('#sidebar-card-body').empty();
-            cargarOrdenCompra(recepcionId);
-            $('.kanban-overlay').addClass('show');
-            $('.kanban-sidebar').addClass('show');
-            $('body').addClass('sidebar-open');
-            limpiarClasesDrag();
+            mostrarOrdenCompra($card);
         }
     });
+
+    function mostrarOrdenCompra($card) {
+        const titulo = $card.find('.solicitud-titulo').text().trim();
+        const recepcionId = $card.data('recepcion-id');
+        const atencionIdRipped = $card.find('.text-right div[style*="font-weight: 600"]').text().trim();
+        $('#sidebar-card-title').text(atencionIdRipped + ' - ' + titulo).css('font-size', '1rem');
+        $('#sidebar-card-body').empty();
+        cargarOrdenCompra(recepcionId);
+        $('.kanban-overlay').addClass('show');
+        $('.kanban-sidebar').addClass('show');
+        $('body').addClass('sidebar-open');
+        limpiarClasesDrag();
+    }
+
     function cargarTareas(recepcionId, atencionId) {
         $.ajax({
             url: '{{ route('recepcion.tareas',['recepcion_id'=>':id']) }}'.replace(':id', recepcionId),
@@ -589,8 +598,8 @@
                             <tr>
                                 <td>${orden.kit}</td>
                                 <td class="text-center">${orden.unidades}</td>
-                                <td class="text-center">$${parseFloat(orden.precio).toFixed(2)}</td>
-                                <td class="text-center">$${subtotal.toFixed(2)}</td>
+                                <td class="text-center">${formatCurrency(orden.precio)}</td>
+                                <td class="text-center">${formatCurrency(subtotal)}</td>
                             </tr>`;
                     });
                     let html = `
@@ -611,7 +620,7 @@
                                     ${filasHtml}
                                     <tr style="font-weight: 700; background: #f8f9fa;">
                                         <td colspan="3" class="text-right">TOTAL</td>
-                                        <td class="text-center">$${totalGlobal.toFixed(2)}</td>
+                                        <td class="text-center">${formatCurrency(totalGlobal)}</td>
                                     </tr>
                                 </tbody>
                             </table>

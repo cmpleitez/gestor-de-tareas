@@ -18,9 +18,9 @@ Su orden de compra #{{ \App\Services\KeyRipper::rip($recepcion->atencion_id) }} 
     $subtotal = $orden->unidades * $orden->precio;
     $totalGlobal += $subtotal;
 @endphp
-| {{ $orden->kit->kit }} | {{ $orden->unidades }} | ${{ number_format($orden->precio, 2) }} | ${{ number_format($subtotal, 2) }} |
+| {{ $orden->kit->kit }} | {{ $orden->unidades }} | ${{ number_format($orden->precio, 2, '.', ',') }} | ${{ number_format($subtotal, 2, '.', ',') }} |
 @endforeach
-| | | **TOTAL** | **${{ number_format($totalGlobal, 2) }}** |
+| | | **TOTAL** | **${{ number_format($totalGlobal, 2, '.', ',') }}** |
 @endcomponent
 
 Para ver más detalles, puede acceder a su cuenta haciendo clic en el siguiente botón:

@@ -348,20 +348,17 @@ class TiendaController extends Controller
                 ->where('kit_id', $request->kit_id)
                 ->where('producto_id', $request->producto_id)
                 ->delete();
-
             if ($eliminado) {
                 $orden = Orden::with('detalle')->find($request->orden_id);
                 $ordenVacia = false;
                 $nuevoPrecio = 0;
                 $nuevoSubtotal = 0;
-
                 if ($orden) {
                     if ($orden->detalle->count() === 0) {
                         $orden->delete();
                         $ordenVacia = true;
                     } else {
-                        // Recalcular el precio de la orden sumando los precios de los detalles
-                        $nuevoPrecio = $orden->detalle->sum(function ($det) {
+                        $nuevoPrecio = $orden->detalle->sum(function ($det) { // Recalcular el precio de la orden sumando los precios de los detalles
                             return $det->precio; // Asumiendo que el precio en detalle es unitario y las unidades son del producto en el kit
                         });
                         $orden->precio = $nuevoPrecio;
@@ -369,7 +366,6 @@ class TiendaController extends Controller
                         $nuevoSubtotal = $nuevoPrecio * $orden->unidades;
                     }
                 }
-                
                 DB::commit();
                 return response()->json([
                     'success' => true, 

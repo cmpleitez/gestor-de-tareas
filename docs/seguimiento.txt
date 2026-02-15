@@ -90,13 +90,10 @@ CLIENTE:
 
 
 
+                . Insertar código local en crud de productos, luego agregarlo a las dependencias donde màs se use
+                14/feb... verificar si con la notficación puede enviarse una actualización de pagina
+                . Verificar si el procedimiento escrito hace match completo con el mismo en diagrama.
 
-                . construccion del proceso: descarga de stock, pero antes hacer las siguientes tareas.
-                
-                    14/feb... clic en progreso rol cliente trata de mostrar las tareas y falla, no deberia mostrar nada
-                    
-
-                    . formato de miles en la orden de compra que se va por correo
 
 
 

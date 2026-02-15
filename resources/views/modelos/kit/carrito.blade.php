@@ -916,6 +916,9 @@
                     if (typeof cargarTareas === 'function') {
                         cargarTareas(recepcionId, atencionId);
                     }
+                    setTimeout(function() {
+                        window.location.href = "{{ route('recepcion.solicitudes') }}";
+                    }, 1500);
                 } else {
                     toastr.error(response.message || 'Error al procesar el lote');
                 }
@@ -993,6 +996,9 @@
                 if (typeof cargarTareas === 'function') {
                     cargarTareas(recepcionId, atencionId);
                 }
+                setTimeout(function() {
+                    window.location.href = "{{ route('recepcion.solicitudes') }}";
+                }, 1500);
             },
             error: function(xhr) {
                 btn.prop('disabled', false).html('<i class="fas fa-clipboard-check"></i> Revisar');
@@ -1003,6 +1009,7 @@
     $(document).on('click', '#corregir-orden', function() { // Corregir Orden (Receptor)
         const btn = $(this);
         const atencionId = btn.data('atencion-id');
+        const recepcionId = $('#revisar-orden').data('recepcion-id'); // Obteniendo recepcionId del otro botón
         let ordenes = [];
         $('.main-kit-collapse').each(function() {
             const collapseDiv = $(this);
@@ -1050,6 +1057,7 @@
             data: { 
                 _token: '{{ csrf_token() }}', 
                 atencion_id: atencionId,
+                recepcion_id: recepcionId, // Enviando el id de recepción
                 ordenes: ordenes
             },
             beforeSend: function() {
@@ -1072,6 +1080,9 @@
                         }
                     });
                 }
+                setTimeout(function() {
+                    window.location.href = "{{ route('recepcion.solicitudes') }}";
+                }, 1500);
                 btn.prop('disabled', false).html('<i class="fas fa-pencil-alt"></i> Corregir');
             },
             error: function(xhr) {
