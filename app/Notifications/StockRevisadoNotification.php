@@ -13,11 +13,14 @@ class StockRevisadoNotification extends Notification implements ShouldQueue
     use Queueable;
 
     public $recepcion;
+    public $detalles;
 
-    public function __construct(Recepcion $recepcion)
+    public function __construct(Recepcion $recepcion, array $detalles = [])
     {
         $this->recepcion = $recepcion;
+        $this->detalles = $detalles;
     }
+
 
     public function via(object $notifiable): array
     {
@@ -41,6 +44,8 @@ class StockRevisadoNotification extends Notification implements ShouldQueue
             'titulo' => 'Stock Físico Revisado',
             'mensaje' => 'El stock físico de la orden #' . $ordenId . ' ha sido revisado: implica que pueden o no haber items sin stock.',
             'atencion_id' => $this->recepcion->atencion_id,
+            'detalles' => $this->detalles,
         ];
+
     }
 }

@@ -17,10 +17,12 @@ class CheckNotifications extends Component
                 $this->dispatch('notification-received',
                     titulo: $notification->data['titulo'] ?? 'Notificación',
                     mensaje: $notification->data['mensaje'] ?? '',
-                    tipo: 'info'
+                    tipo: 'info',
+                    payload: $notification->data
                 );
                 $notification->markAsRead();
             }
+
         }
     }
 

@@ -430,7 +430,7 @@ class RecepcionController extends Controller
                         })
                         ->get();
                     if ($receptores->isNotEmpty()) {
-                        Notification::send($receptores, new StockRevisadoNotification($recepcion));
+                        Notification::send($receptores, new StockRevisadoNotification($recepcion, $itemsValidados));
                     }
                 }
             } catch (\Exception $e) {
@@ -822,4 +822,6 @@ class RecepcionController extends Controller
 
 
 
+
 }
+

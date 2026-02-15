@@ -1091,5 +1091,48 @@
             }
         });
     });
+
+    // --- ACTUALIZACIÓN EN TIEMPO REAL (VÍA NOTIFICACIONES CON CARGA ÚTIL) ---
+    function procesarActualizacionStock(detalles) {
+        if (!detalles || !Array.isArray(detalles)) return;
+        
+        detalles.forEach(item => {
+            const $btn = $(`button[data-orden-id="${item.orden_id}"][data-kit-id="${item.kit_id}"]`).filter(function() {
+                return $(this).find('input[id^="productId_"]').val() == item.producto_id;
+            });
+
+            if ($btn.length) {
+                const $icon = $btn.find('span.px-1 i.fas');
+                if ($icon.length) {
+                    let newClass = 'fa-clock text-muted';
+                    let title = 'Pendiente de revisión';
+
+                    if (item.stock_existencias == 1 || item.stock_fisico_existencias == 1) {
+                        newClass = 'fa-check text-success';
+                        title = 'Existencias verificadas';
+                    } else if (item.stock_existencias == 0 || item.stock_fisico_existencias == 0) {
+                        newClass = 'fa-times text-danger';
+                        title = 'Sin existencias';
+                    }
+
+                    if (!$icon.hasClass(newClass.split(' ')[0]) || !$icon.hasClass(newClass.split(' ')[1])) {
+                        $icon.attr('class', 'fas ' + newClass).attr('title', title);
+                        console.log(`Icono actualizado vía notificación: Orden ${item.orden_id}, Producto ${item.producto_id}`);
+                    }
+                }
+            }
+        });
+    }
+
+    document.addEventListener('livewire:init', () => {
+        Livewire.on('notification-received', (data) => {
+            if (data.payload && data.payload.detalles) {
+                console.log('Recibida carga útil de stock, actualizando vista...');
+                procesarActualizacionStock(data.payload.detalles);
+            }
+        });
+    });
 </script>
+
+
 @endpush

@@ -172,6 +172,7 @@ Route::middleware([
             Route::post('descargar-stock', [RecepcionController::class, 'descargarStock'])->name('recepcion.descargar-stock')->middleware('can:editar');
             Route::post('efectuar-entrega', [RecepcionController::class, 'efectuarEntrega'])->name('recepcion.efectuar-entrega')->middleware('can:autorizar');
         });
+
     });
 
     //TIENDA

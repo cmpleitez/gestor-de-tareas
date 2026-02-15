@@ -93,6 +93,7 @@ CLIENTE:
                 . Insertar código local en crud de productos, luego agregarlo a las dependencias donde màs se use
                 14/feb... verificar si con la notficación puede enviarse una actualización de pagina
                 . Verificar si el procedimiento escrito hace match completo con el mismo en diagrama.
+                . verificar si se esta refrescando el paso de tarjetas de un estado a otro cambiando asi de tablero de control
 
 
 
@@ -104,6 +105,7 @@ CLIENTE:
                 . Envía un correo al cliente con la <orden de compra/reserva> revisada
                 . rol operador y receptor: cerrar edicion.carrito en cuanto se aplique clic en el boton revisar
 
+    🔵 editar.carrito: Control para reestablecer los items originales del kit
 
     🔵 tratamiento de errores en el reporte de tareas
 
