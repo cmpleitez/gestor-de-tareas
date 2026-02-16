@@ -1,37 +1,21 @@
-﻿
-[2026-02-13 10:16:16] local.INFO: llego a reportar tarea  
-[2026-02-13 10:16:16] local.INFO: ReportarTarea Debug: Recepcion ID: 202600100004  
-[2026-02-13 10:16:16] local.INFO: Total Actividades: 1  
-[2026-02-13 10:16:16] local.INFO: Pendientes: 0  
-[2026-02-13 10:16:16] local.INFO: Actividades encontradas: [{"id":"202600100010","tarea_id":2,"estado_id":4}]  
-[2026-02-13 10:25:39] local.INFO: llego a reportar tarea  
-[2026-02-13 10:25:39] local.INFO: ReportarTarea (Global Check): Atencion ID: 202600100003  
-[2026-02-13 10:25:39] local.INFO: Pendientes Globales: 4  
-[2026-02-13 10:26:59] local.INFO: llego a reportar tarea  
-[2026-02-13 10:26:59] local.INFO: ReportarTarea (Global Check): Atencion ID: 202600100003  
-[2026-02-13 10:26:59] local.INFO: Pendientes Globales: 3  
-[2026-02-13 13:34:17] local.ERROR: Class "App\Http\Controllers\Atencion" not found {"userId":5,"exception":"[object] (Error(code: 0): Class \"App\\Http\\Controllers\\Atencion\" not found at C:\\laragon\\www\\gestor-de-tareas\\app\\Http\\Controllers\\RecepcionController.php:632)"} 
-[2026-02-13 13:36:22] local.ERROR: Log:: error en confirmarStock (batch): SQLSTATE[42S22]: Column not found: 1054 Unknown column 'traza' in 'field list' (Connection: mysql, SQL: update `recepciones` set `traza` = Stock revisado, `recepciones`.`updated_at` = 2026-02-13 13:36:22 where `id` = 202600100010)  
-[2026-02-13 13:36:38] local.ERROR: Log:: error en confirmarStock (batch): SQLSTATE[42S22]: Column not found: 1054 Unknown column 'traza' in 'field list' (Connection: mysql, SQL: update `recepciones` set `traza` = Stock revisado, `recepciones`.`updated_at` = 2026-02-13 13:36:38 where `id` = 202600100010)  
-[2026-02-13 14:37:09] local.ERROR: PHP Parse error: Syntax error, unexpected T_OBJECT_OPERATOR on line 1 {"exception":"[object] (Psy\\Exception\\ParseErrorException(code: 0): PHP Parse error: Syntax error, unexpected T_OBJECT_OPERATOR on line 1 at C:\\laragon\\www\\gestor-de-tareas\\vendor\\psy\\psysh\\src\\Exception\\ParseErrorException.php:44)"} 
-[2026-02-13 14:38:28] local.ERROR: PHP Parse error: Syntax error, unexpected T_OBJECT_OPERATOR on line 1 {"exception":"[object] (Psy\\Exception\\ParseErrorException(code: 0): PHP Parse error: Syntax error, unexpected T_OBJECT_OPERATOR on line 1 at C:\\laragon\\www\\gestor-de-tareas\\vendor\\psy\\psysh\\src\\Exception\\ParseErrorException.php:44)"} 
-[2026-02-13 14:42:05] local.ERROR: PHP Parse error: Syntax error, unexpected ')' on line 1 {"exception":"[object] (Psy\\Exception\\ParseErrorException(code: 0): PHP Parse error: Syntax error, unexpected ')' on line 1 at C:\\laragon\\www\\gestor-de-tareas\\vendor\\psy\\psysh\\src\\Exception\\ParseErrorException.php:44)"} 
-[2026-02-13 14:46:38] local.INFO: Log:: Enviando StockRevisadoNotification a los receptores de la oficina 1: 4  
-[2026-02-13 14:54:37] local.ERROR: PHP Parse error: Syntax error, unexpected T_OBJECT_OPERATOR on line 1 {"exception":"[object] (Psy\\Exception\\ParseErrorException(code: 0): PHP Parse error: Syntax error, unexpected T_OBJECT_OPERATOR on line 1 at C:\\laragon\\www\\gestor-de-tareas\\vendor\\psy\\psysh\\src\\Exception\\ParseErrorException.php:44)"} 
-[2026-02-13 14:54:52] local.ERROR: PHP Parse error: Syntax error, unexpected ')' on line 1 {"exception":"[object] (Psy\\Exception\\ParseErrorException(code: 0): PHP Parse error: Syntax error, unexpected ')' on line 1 at C:\\laragon\\www\\gestor-de-tareas\\vendor\\psy\\psysh\\src\\Exception\\ParseErrorException.php:44)"} 
-[2026-02-13 14:56:06] local.INFO: Log:: Enviando StockRevisadoNotification a los receptores de la oficina 1: 4  
-[2026-02-13 15:00:35] local.INFO: Log:: Enviando StockRevisadoNotification a los receptores de la oficina 1: 4  
-[2026-02-13 15:01:26] local.INFO: Log:: Livewire detectó 1 notificaciones para el usuario 4  
-[2026-02-13 15:01:26] local.INFO: Log:: Despachando evento notification-received para notificación ID: e4e1defc-096f-4828-8091-f1a7d0498cd1  
-[2026-02-13 15:02:27] local.INFO: Log:: Livewire detectó 1 notificaciones para el usuario 3  
-[2026-02-13 15:02:27] local.INFO: Log:: Despachando evento notification-received para notificación ID: 767565bd-44ba-4383-b6b5-1d56a82b32a5  
-[2026-02-13 15:19:37] local.INFO: Log:: Renderizando CheckNotifications para el usuario 3  
-[2026-02-13 15:20:27] local.ERROR: PHP Parse error: Syntax error, unexpected T_NS_SEPARATOR, expecting T_VARIABLE on line 1 {"exception":"[object] (Psy\\Exception\\ParseErrorException(code: 0): PHP Parse error: Syntax error, unexpected T_NS_SEPARATOR, expecting T_VARIABLE on line 1 at C:\\laragon\\www\\gestor-de-tareas\\vendor\\psy\\psysh\\src\\Exception\\ParseErrorException.php:44)"} 
-[2026-02-13 15:20:36] local.INFO: Log:: Renderizando CheckNotifications para el usuario 3  
-[2026-02-13 15:21:37] local.INFO: Log:: Renderizando CheckNotifications para el usuario 3  
-[2026-02-13 15:22:37] local.INFO: Log:: Renderizando CheckNotifications para el usuario 3  
-[2026-02-13 15:22:53] local.ERROR: PHP Parse error: Syntax error, unexpected T_NS_SEPARATOR on line 1 {"exception":"[object] (Psy\\Exception\\ParseErrorException(code: 0): PHP Parse error: Syntax error, unexpected T_NS_SEPARATOR on line 1 at C:\\laragon\\www\\gestor-de-tareas\\vendor\\psy\\psysh\\src\\Exception\\ParseErrorException.php:44)"} 
-[2026-02-13 15:23:37] local.INFO: Log:: Renderizando CheckNotifications para el usuario 3  
-[2026-02-13 15:24:36] local.INFO: Log:: Renderizando CheckNotifications para el usuario 3  
-[2026-02-13 15:25:36] local.INFO: Log:: Renderizando CheckNotifications para el usuario 3  
-[2026-02-13 15:25:44] local.INFO: Log:: Renderizando CheckNotifications para el usuario 4  
+﻿El problema: 
+php_upstream.conf
+conf
+upstream php_upstream {
+    server 127.0.0.1:9003 weight=1 max_fails=1 fail_timeout=1;
+    server 127.0.0.1:9004 weight=1 max_fails=1 fail_timeout=1;
+}
+Solo tienes 2 workers PHP (puertos 9003 y 9004) con max_fails=1 y fail_timeout=1. Esto significa:
+
+Si un worker falla una sola vez, Nginx lo marca como caído por 1 segundo
+Con solo 2 workers, 3 usuarios haciendo peticiones concurrentes pueden saturarlos fácilmente
+Cuando ambos están ocupados procesando las peticiones Livewire 
+update
+ de los otros usuarios, la tercera petición recibe 502 Bad Gateway
+💡 Solución recomendada
+Aumentar el número de procesos PHP upstream. Según el comentario del propio archivo, se configura en usr/laragon.ini:
+
+ini
+[nginx]
+Upstream=5
+Esto sube a 5 workers PHP, lo que daría margen suficiente para 3+ usuarios concurrentes. Para aplicar el cambio necesitarías reiniciar Laragon.

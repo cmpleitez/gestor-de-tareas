@@ -5,6 +5,11 @@ PAUTAS:
         123456784
         234567890
         456789012
+    🟠 Tasas de refresco: Prueba de 40 minutos de estres
+        Nuevas recibidas: 60 segundos
+        Actualizar avance: 60 segundos
+        Notificaciones limewire: 60 segundos
+
 
 PROCEDIMIENTO: perfil cpleitez.2024@gmail.com https://miro.com/app/board/uXjVJy6iRzE=/
         ✨. Cliente: Entra a la <Tienda>, selecciona en el catálogo el kit y da clic en <agregar al carrito>
@@ -71,6 +76,10 @@ SERVICIOS:
 
     🟢 Reportes para el receptor y el administrador: 
         . historial de entradas y salidas en stocks
+    🟢 Revisiones:
+        . Encontrar la tasa de refresco optima
+        . Asegurar los envios de correos
+        . Cuadrar la formula de la orden
 
 CLIENTE:
 
