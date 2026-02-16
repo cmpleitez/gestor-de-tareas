@@ -357,7 +357,7 @@ class RecepcionController extends Controller
             }
             $faltantes = array_diff($clavesRequeridas, $clavesRecibidas);
             if (!empty($faltantes)) {
-                Log::warning("Log:: Intento de confirmación incompleta para atención $atencion_id. Faltan items.");
+                // Log::warning("Log:: Intento de confirmación incompleta para atención $atencion_id. Faltan items.");
                 return response()->json([
                     'success' => false,
                     'message' => 'Error: El lote enviado no contiene todos los ítems de la solicitud.'
@@ -372,7 +372,7 @@ class RecepcionController extends Controller
                 }
             }
             //PROCESO
-            Log::info("Log:: Iniciando proceso de revisión de stock para atención $atencion_id");
+            // Log::info("Log:: Iniciando proceso de revisión de stock para atención $atencion_id");
             DB::beginTransaction();
                 $itemsValidados = [];
                 foreach ($orden as $item) {
@@ -387,18 +387,18 @@ class RecepcionController extends Controller
                         'stock_existencias' => $item['stock_fisico_existencias']
                     ];
                 }
-                Log::info("Log:: Items actualizados: " . count($itemsValidados));
+                // Log::info("Log:: Items actualizados: " . count($itemsValidados));
                 $recepcion = Recepcion::find($recepcion_id); // Validar copia operador
                 if ($recepcion) {
                     $recepcion->validada_origen = true;
                     $recepcion->validada_destino = true;
                     $recepcion->save();
-                    Log::info("Log:: Recepción $recepcion_id actualizada");
+                    // Log::info("Log:: Recepción $recepcion_id actualizada");
                 }
             $this->reportarTarea('Stock revisado', $recepcion_id, $atencion_id); //Reportar tarea
-            Log::info("Log:: Tarea reportada");
+            // Log::info("Log:: Tarea reportada");
             DB::commit();
-            Log::info("Log:: Transacción confirmada");
+            // Log::info("Log:: Transacción confirmada");
             try {
                 if ($recepcion) {
                     $oficina_id = auth()->user()->oficina_id;
@@ -408,9 +408,9 @@ class RecepcionController extends Controller
                         })
                         ->get();
                     if ($receptores->isNotEmpty()) {
-                        Log::info("Log:: Enviando notificaciones a " . $receptores->count() . " receptores");
+                        // Log::info("Log:: Enviando notificaciones a " . $receptores->count() . " receptores");
                         Notification::send($receptores, new StockRevisadoNotification($recepcion, $itemsValidados));
-                        Log::info("Log:: Notificaciones enviadas");
+                        // Log::info("Log:: Notificaciones enviadas");
                     }
                 }
             } catch (\Exception $e) {
@@ -495,10 +495,7 @@ class RecepcionController extends Controller
                 if ($actividadStock) {
                     $actividadStock->estado_id = $estado_en_progreso_id;
                     $actividadStock->save();
-                    Log::info("Log:: Tarea 'Stock revisado' revertida a 'En progreso' para atención $atencion_id");
-
-                    // Forzar actualización de progreso de la atención (restando esta tarea)
-                    $total_actividades = Actividad::whereHas('recepcion', function($query) use ($atencion_id) {
+                    $total_actividades = Actividad::whereHas('recepcion', function($query) use ($atencion_id) { // Forzar actualización de progreso de la atención (restando esta tarea)
                         $query->where('atencion_id', $atencion_id);
                     })->count();
                     

@@ -90,9 +90,9 @@ CLIENTE:
 
 
 
-                15/feb... Insertar código local en crud de productos, luego agregarlo a las dependencias donde màs se use
+                 
                 
-                . Verificar si el procedimiento escrito hace match completo con el mismo en diagrama.
+                15/feb... Verificar si el procedimiento escrito hace match completo con el mismo en diagrama.
                 
                 
 
