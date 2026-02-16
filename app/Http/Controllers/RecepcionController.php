@@ -126,7 +126,7 @@ class RecepcionController extends Controller
                 ->whereHas('atencion.oficina', function ($query) use ($user) {
                     $query->where('id', $user->oficina_id);
                 })
-                ->where('estado_id', Estado::where('estado', 'Recibida')->first()->id)
+                ->where('estado_id', \Illuminate\Support\Facades\Cache::remember('estado_recibida_id', 3600, fn() => Estado::where('estado', 'Recibida')->first()->id))
                 ->where('activo', true)
                 ->orderBy('atencion_id')
                 ->take(5)

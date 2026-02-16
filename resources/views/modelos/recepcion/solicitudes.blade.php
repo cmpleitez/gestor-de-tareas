@@ -952,9 +952,10 @@
         }
     }
     //ACTUALIZAR AVANCE
-    function actualizarAvance() {
+    function actualizarAvance(callback) {
         let atencionIds = obtenerAtencionIdsTableros();
         if (atencionIds.length === 0) { // No hay tarjetas en los tableros
+            if (typeof callback === 'function') callback();
             return;
         }
         $.post({
@@ -1028,6 +1029,7 @@
                     }
                 });
                 ordenarColumnas(); // Ordenar todas las columnas después de las actualizaciones
+                if (typeof callback === 'function') callback();
             },
             error: function(xhr, status, error) {
                 console.error('Error al consultar avances:', {
@@ -1039,6 +1041,7 @@
                 if (xhr.status !== 0) {
                     console.error('Error al consultar avances:', status);
                 }
+                if (typeof callback === 'function') callback();
             }
         });
     }
@@ -1107,8 +1110,7 @@
                 return;
             }
             isUpdating = true;
-            actualizarAvance(); // Actualizar avances primero
-            setTimeout(function() { // Luego cargar nuevas recibidas con delay
+            actualizarAvance(function() { // Al completar avances, cargar nuevas recibidas
                 try {
                     if (typeof cargarNuevasRecibidas === "function") {
                         cargarNuevasRecibidas();
@@ -1118,7 +1120,7 @@
                 } finally {
                     isUpdating = false;
                 }
-            }, 10000);
+            });
         }
         safeUpdate();
         setInterval(safeUpdate, updateInterval);

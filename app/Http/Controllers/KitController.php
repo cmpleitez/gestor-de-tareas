@@ -260,6 +260,13 @@ class KitController extends Controller
         }
         $productosAEliminar = array_diff(array_keys($kitProductosActuales), $kitProductosNuevosIds);
         if (!empty($productosAEliminar)) {
+            // Eliminar primero los equivalentes asociados a los productos que se van a eliminar
+            DB::table('equivalentes')
+                ->where('kit_id', $kit->id)
+                ->whereIn('kit_producto_id', $productosAEliminar)
+                ->delete();
+            
+            // Ahora sí eliminar los productos del kit
             DB::table('kit_producto')
                 ->where('kit_id', $kit->id)
                 ->whereIn('id', $productosAEliminar)
