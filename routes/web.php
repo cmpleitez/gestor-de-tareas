@@ -147,9 +147,8 @@ Route::middleware([
     Route::get('solicitudes', [RecepcionController::class, 'solicitudes'])->name('recepcion.solicitudes')->middleware('can:ver');
     Route::get('equipos/{solicitud}', [RecepcionController::class, 'equipos'])->name('recepcion.equipos')->middleware('can:ver');
     Route::get('operadores/{solicitud}', [RecepcionController::class, 'operadores'])->name('recepcion.operadores')->middleware('can:ver');
-    Route::post('avance-tablero', [RecepcionController::class, 'consultarAvance'])->name('recepcion.consultar-avance')->middleware('can:editar');
-    Route::post('nuevas-recibidas', [RecepcionController::class, 'nuevasRecibidas'])->name('recepcion.nuevas-recibidas')->middleware('can:editar');
     Route::post('orden-compra', [RecepcionController::class, 'ordenCompra'])->name('recepcion.orden-compra');
+    
     Route::group(['middleware' => ['can:gestionar']], function () {
         Route::group(['prefix' => 'solicitud'], function () { //Solicitudes
             Route::get('/', [solicitudController::class, 'index'])->name('solicitud')->middleware('can:ver');
@@ -171,8 +170,8 @@ Route::middleware([
             Route::post('confirmar-pago', [RecepcionController::class, 'confirmarPago'])->name('recepcion.confirmar-pago')->middleware('can:autorizar');
             Route::post('descargar-stock', [RecepcionController::class, 'descargarStock'])->name('recepcion.descargar-stock')->middleware('can:editar');
             Route::post('efectuar-entrega', [RecepcionController::class, 'efectuarEntrega'])->name('recepcion.efectuar-entrega')->middleware('can:autorizar');
+            Route::post('nuevas-recibidas', [RecepcionController::class, 'nuevasRecibidas'])->name('tienda.nuevas-recibidas')->middleware('can:autorefrescar');
         });
-
     });
 
     //TIENDA
@@ -190,6 +189,7 @@ Route::middleware([
             Route::post('retirar-orden/{orden}', [TiendaController::class, 'retirarOrden'])->name('tienda.retirar-orden')->middleware('can:eliminar');
             Route::post('retirar-item', [TiendaController::class, 'retirarItem'])->name('tienda.retirar-item')->middleware('can:eliminar');
             Route::get('kit-cantidad', [TiendaController::class, 'kitCantidad'])->name('tienda.kit-cantidad')->middleware('can:ver');
+            Route::post('avance-tablero', [TiendaController::class, 'consultarAvance'])->name('tienda.consultar-avance')->middleware('can:autorefrescar');
         });
     });
 });

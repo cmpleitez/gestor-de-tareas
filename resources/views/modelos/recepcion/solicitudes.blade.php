@@ -958,7 +958,7 @@
             return;
         }
         $.post({
-            url: '{{ route('recepcion.consultar-avance') }}',
+            url: '{{ route('tienda.consultar-avance') }}',
             data: {
                 atencion_ids: atencionIds,
                 _token: $('meta[name="csrf-token"]').attr('content')
@@ -1043,46 +1043,48 @@
         });
     }
     //CARGAR NUEVAS RECIBIDAS
-    function cargarNuevasRecibidas() {
-        let atencionIdsExistentes = obtenerAtencionIdsExistentes();
-        let data = {
-            _token: $('meta[name="csrf-token"]').attr('content'),
-            atencion_ids: atencionIdsExistentes
-        };
-        $.post({
-            url: '{{ route('recepcion.nuevas-recibidas') }}',
-            data: data,
-            success: function(nuevas) {
-                if (!Array.isArray(nuevas)) {
-                    nuevas = Object.values(nuevas);
-                }
-                if (nuevas && nuevas.length > 0) {
-                    let tarjetasAgregadas = 0;
-                    nuevas.forEach(function(tarjeta) {
-                        let html = generarTarjetaSolicitud(tarjeta, true, 'recibidas');
-                        let $nueva = $(html);
-                        $('#columna-recibidas').prepend($nueva);
-                        updateProgressByPercentage(tarjeta.atencion_id, tarjeta
-                            .porcentaje_progreso);
-                        setTimeout(function() {
-                            $nueva.removeClass('animar-llegada');
-                        }, 500);
-                        tarjetasAgregadas++;
-                    });
-                    if (tarjetasAgregadas > 0) { // Solo actualizar contadores si se agregaron tarjetas
-                        ordenarColumna('columna-recibidas'); // Ordenar tablero después de agregar nuevas tarjetas
-                        actualizarContadores();
-                        inicializarPopovers(); // Inicializar popovers para las nuevas tarjetas
+    @can('autorefrescar')
+        function cargarNuevasRecibidas() {
+            let atencionIdsExistentes = obtenerAtencionIdsExistentes();
+            let data = {
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                atencion_ids: atencionIdsExistentes
+            };
+            $.post({
+                url: '{{ route('tienda.nuevas-recibidas') }}',
+                data: data,
+                success: function(nuevas) {
+                    if (!Array.isArray(nuevas)) {
+                        nuevas = Object.values(nuevas);
+                    }
+                    if (nuevas && nuevas.length > 0) {
+                        let tarjetasAgregadas = 0;
+                        nuevas.forEach(function(tarjeta) {
+                            let html = generarTarjetaSolicitud(tarjeta, true, 'recibidas');
+                            let $nueva = $(html);
+                            $('#columna-recibidas').prepend($nueva);
+                            updateProgressByPercentage(tarjeta.atencion_id, tarjeta
+                                .porcentaje_progreso);
+                            setTimeout(function() {
+                                $nueva.removeClass('animar-llegada');
+                            }, 500);
+                            tarjetasAgregadas++;
+                        });
+                        if (tarjetasAgregadas > 0) { // Solo actualizar contadores si se agregaron tarjetas
+                            ordenarColumna('columna-recibidas'); // Ordenar tablero después de agregar nuevas tarjetas
+                            actualizarContadores();
+                            inicializarPopovers(); // Inicializar popovers para las nuevas tarjetas
+                        }
+                    }
+                },
+                error: function(xhr, status, error) {
+                    if (xhr.status !== 0) { // Solo log si no es error de red
+                        console.error('Error cargando nuevas recibidas:', status);
                     }
                 }
-            },
-            error: function(xhr, status, error) {
-                if (xhr.status !== 0) { // Solo log si no es error de red
-                    console.error('Error cargando nuevas recibidas:', status);
-                }
-            }
-        });
-    }
+            });
+        }
+    @endcan
     //CONTROL PRINCIPAL
     $(document).ready(function() {
         inicializarPopovers();
@@ -1105,7 +1107,7 @@
         setTimeout(initializeProgressBars, 100); // Inicializar barras de progreso inmediatamente no es timer
         initKanban();
         let isUpdating = false; // Sistema inteligente de polling para evitar saturación
-        let updateInterval = ({{ $frecuencia_actualizacion }} * 1000) * 60;
+        let updateInterval = ({{ $frecuencia_actualizacion }} * 1000);
         function safeUpdate() {
             if (isUpdating) {
                 return;
@@ -1113,8 +1115,15 @@
             isUpdating = true;
             actualizarAvance(); // Actualizar avances primero
             setTimeout(function() { // Luego cargar nuevas recibidas con delay
-                cargarNuevasRecibidas();
-                isUpdating = false;
+                try {
+                    if (typeof cargarNuevasRecibidas === "function") {
+                        cargarNuevasRecibidas();
+                    }
+                } catch (e) {
+                    console.error("Error en polling:", e);
+                } finally {
+                    isUpdating = false;
+                }
             }, 10000);
         }
         safeUpdate();

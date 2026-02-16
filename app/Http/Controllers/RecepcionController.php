@@ -20,10 +20,11 @@ use App\Models\Atencion;
 use App\Services\KeyMaker;
 use App\Services\KeyRipper;
 use Spatie\Permission\Models\Role;
+use App\Services\GestionService;
 
 class RecepcionController extends Controller
 {
-    public function solicitudes()
+    public function solicitudes(GestionService $gestionService)
     {
         try {
             //VALIDACIÓN
@@ -61,10 +62,10 @@ class RecepcionController extends Controller
             ->take(15)
             ->get();
             $atencionIds = $recepciones->pluck('atencion_id')->unique();
-            $usuariosParticipantes = $this->obtenerUsuariosParticipantes($atencionIds); //Obtener usuarios participantes
-            $tarjetas = $recepciones->map(function ($tarjeta) use ($usuariosParticipantes) {
+            $usuariosParticipantes = $gestionService->obtenerUsuariosParticipantes($atencionIds); //Obtener usuarios participantes
+            $tarjetas = $recepciones->map(function ($tarjeta) use ($usuariosParticipantes, $gestionService) {
                 $usuariosParticipantesAtencion = $usuariosParticipantes->get($tarjeta->atencion_id, collect());
-                $traza = $this->obtenerTraza($tarjeta);
+                $traza = $gestionService->obtenerTraza($tarjeta);
                 return [
                     'atencion_id'         => $tarjeta->atencion_id,
                     'created_at'          => $tarjeta->created_at->toISOString(),
@@ -103,7 +104,7 @@ class RecepcionController extends Controller
         }
     }
 
-    public function nuevasRecibidas(Request $request)
+    public function nuevasRecibidas(Request $request, GestionService $gestionService)
     {
         try {
             //PROCESO
@@ -126,7 +127,7 @@ class RecepcionController extends Controller
                 ->take(5)
                 ->get();
             $atencionIds = $recepciones->pluck('atencion_id')->unique();
-            $usuariosParticipantes = $this->obtenerUsuariosParticipantes($atencionIds); //Obtener usuarios participantes
+            $usuariosParticipantes = $gestionService->obtenerUsuariosParticipantes($atencionIds); //Obtener usuarios participantes
             if (! empty($atencionesIdsEnFrontend)) {
                 $recepciones = $recepciones->whereNotIn('atencion_id', $atencionesIdsEnFrontend);
             }
@@ -154,7 +155,8 @@ class RecepcionController extends Controller
         }
     }
 
-    public function asignar(Recepcion $recepcion, Equipo $equipo)
+
+    public function asignar(Recepcion $recepcion, Equipo $equipo, GestionService $gestionService)
     {
         $operadores = User::whereHas('equipos', function ($q1) use ($equipo) {
             $q1->where('equipo_id', $equipo->id);
@@ -213,7 +215,7 @@ class RecepcionController extends Controller
                 $atencion->save();
             //RESULTADO
             DB::commit();
-            $traza = $this->obtenerTraza($recepcion); // Obtener la traza actualizada
+            $traza = $gestionService->obtenerTraza($recepcion); // Obtener la traza actualizada
             return response()->json([
                 'success' => true,
                 'message' => 'La solicitud "' . (new KeyRipper())->rip($atencion->id) . '" ha sido asignada al operador',
@@ -225,41 +227,7 @@ class RecepcionController extends Controller
         }
     }
 
-    public function consultarAvance(Request $request)
-    {
-        try {
-            $user        = auth()->user();
-            $tarjetasIds = $request->input('atencion_ids', []);   //Tarjetas en el frontend
-            if (! is_array($tarjetasIds) || empty($tarjetasIds)) { //Validación: si no hay tarjetas en el frontendya no se ejecuta el proceso
-                return response()->json([]);
-            }
-            $tarjetas = Recepcion::with(['usuarioOrigen', 'usuarioDestino', 'atencion', 'actividades.tarea']) //Consulta de las tarjetas recopiladas
-                ->whereIn('atencion_id', $tarjetasIds)
-                ->where(function ($query) use ($user) {
-                    if ($user->mainRole && $user->mainRole->name === 'cliente') {
-                        $query->where('origen_user_id', $user->id);
-                    } else {
-                        $query->where('destino_user_id', $user->id);
-                    }
-                })
-                ->select('atencion_id', 'estado_id', 'origen_user_id', 'destino_user_id')
-                ->get();
-            $usuariosParticipantes = $this->obtenerUsuariosParticipantes($tarjetas->pluck('atencion_id')->unique()); //Obtener usuarios participantes
-            $resultado             = $tarjetas->map(function ($tarjeta) use ($usuariosParticipantes) {
-                $traza = $this->obtenerTraza($tarjeta);
-                return [
-                    'atencion_id' => $tarjeta->atencion_id,
-                    'avance'      => optional($tarjeta->atencion)->avance ?? 0, 
-                    'estado_id'   => $tarjeta->estado_id,
-                    'traza'       => $traza,
-                    'recepciones' => $usuariosParticipantes->get($tarjeta->atencion_id, collect()),
-                ];
-            });
-            return response()->json($resultado);
-        } catch (\Exception $e) {
-            return back()->with('error', 'Error al obtener el avance del tablero: ' . $e->getMessage());
-        }
-    }
+
 
     public function equipos(Solicitud $solicitud)
     {
@@ -728,31 +696,6 @@ class RecepcionController extends Controller
         }
     }
 
-    private function obtenerTraza($tarjeta)
-    {
-        $estado_resuelta_id = Estado::where('estado', 'Resuelta')->first()->id;
-        $actividades = Actividad::whereHas('recepcion', function ($query) use ($tarjeta) {
-            $query->where('atencion_id', $tarjeta->atencion_id);
-        })
-        ->with(['tarea', 'estado'])
-        ->get()
-        ->sortByDesc('updated_at');
-        if ($actividades->isEmpty()) {
-            $traza = 'Solicitada';
-        } else {
-            $todasResueltas = $actividades->every(function ($actividad) use ($estado_resuelta_id) {
-                return $actividad->estado_id == $estado_resuelta_id;
-            });
-            if ($todasResueltas) {
-                $traza = 'Resuelta';
-            } else {
-                $ultimaActividad = $actividades->first();
-                $traza           = $ultimaActividad->tarea->tarea;
-            }
-        }
-        return $traza;
-    }
-
     public function ordenCompra(Request $request)
     {
         try {
@@ -778,50 +721,6 @@ class RecepcionController extends Controller
             ], 500);
         }
     }
-
-    
-    private function obtenerUsuariosParticipantes($atencionIds)
-    {
-        $usuariosDestino = Recepcion::with(['usuarioDestino', 'role']) // Consulta separada para usuarios destino
-            ->whereIn('atencion_id', $atencionIds)
-            ->get()
-            ->map(function ($recepcion) {
-                return [
-                    'recepcion_id'        => $recepcion->id,
-                    'atencion_id'         => $recepcion->atencion_id,
-                    'name'                => $recepcion->usuarioDestino->name,
-                    'profile_photo_url'   => $recepcion->usuarioDestino->profile_photo_url,
-                    'recepcion_role_name' => $recepcion->role->name,
-                    'tipo'                => 'destino',
-                ];
-            });
-        $usuariosOrigen = Recepcion::with(['usuarioOrigen', 'role']) // Consulta separada para usuarios origen
-            ->whereIn('atencion_id', $atencionIds)
-            ->whereHas('role', function ($query) {
-                $query->where('name', 'Receptor');
-            })
-            ->get()
-            ->map(function ($recepcion) {
-                return [
-                    'recepcion_id'        => $recepcion->id,
-                    'atencion_id'         => $recepcion->atencion_id,
-                    'name'                => $recepcion->usuarioOrigen->name,
-                    'profile_photo_url'   => $recepcion->usuarioOrigen->profile_photo_url,
-                    'recepcion_role_name' => $recepcion->usuarioOrigen->mainRole->name,
-                    'tipo'                => 'origen',
-                ];
-            });
-        return $usuariosDestino->merge($usuariosOrigen) // Combinar y agrupar por atencion_id
-            ->groupBy('atencion_id')
-            ->map(function ($grupo) {
-                return $grupo->unique(function ($usuario) {
-                    return $usuario['recepcion_id'] . '_' . $usuario['tipo'];
-                })->values();
-            });
-    }
-
-
-
-
 }
+
 

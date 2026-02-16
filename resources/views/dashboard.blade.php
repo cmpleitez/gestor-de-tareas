@@ -425,7 +425,6 @@
                         <br><br>
                         <button type="button" class="btn bg-primary-light text-dark btn-sm btn-block" style="width: 100%; margin-top: 10px; font-weight: bold;" onclick="$(this).closest('.toast').find('.toast-close-button').click()">Enterado</button>
                     `;
-                    
                     toastr.info(message, data.titulo, {
                         "closeButton": true,
                         "progressBar": false,

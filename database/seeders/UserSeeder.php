@@ -48,6 +48,7 @@ class UserSeeder extends Seeder
             'administrar',
             'tienda',
             'vaciar_carrito',
+            'autorefrescar',
         ];
         foreach ($permissions as $permission) {
             Permission::firstOrCreate(['name' => $permission]);
@@ -61,16 +62,7 @@ class UserSeeder extends Seeder
         $role->syncPermissions(['ver', 'crear', 'editar', 'activar', 'eliminar', 'autorizar', 'administrar', 'tienda', 'vaciar_carrito']);
 
         $role = Role::firstOrCreate(['name' => 'receptor']);
-        $role->syncPermissions([
-            'ver',
-            'crear',
-            'editar',
-            'asignar',
-            'eliminar',
-            'autorizar',
-            'gestionar',
-            'tienda',
-        ]);
+        $role->syncPermissions(['ver', 'crear', 'editar', 'asignar', 'eliminar', 'autorizar', 'gestionar', 'tienda', 'autorefrescar']);
 
         $role = Role::firstOrCreate(['name' => 'supervisor']);
         $role->syncPermissions(['ver']);
@@ -79,10 +71,10 @@ class UserSeeder extends Seeder
         $role->syncPermissions(['ver']);
 
         $role = Role::firstOrCreate(['name' => 'operador']);
-        $role->syncPermissions(['ver', 'crear', 'editar', 'asignar', 'gestionar', 'tienda']);
+        $role->syncPermissions(['ver', 'crear', 'editar', 'asignar', 'gestionar', 'tienda', 'autorefrescar']);
 
         $role = Role::firstOrCreate(['name' => 'cliente']);
-        $role->syncPermissions(['ver', 'crear', 'tienda', 'vaciar_carrito', 'eliminar']);
+        $role->syncPermissions(['ver', 'crear', 'tienda', 'vaciar_carrito', 'eliminar', 'autorefrescar']);
 
         //SUPERADMINISTRADOR
         DB::table('users')->updateOrInsert(
@@ -148,7 +140,7 @@ class UserSeeder extends Seeder
         DB::table('estados')->updateOrInsert(['id' => 4], ['estado' => 'Resuelta', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
 
         //CREACION DE PARAMETROS
-        DB::table('parametros')->updateOrInsert(['parametro' => 'Frecuencia de refresco'], ['valor' => '1', 'unidad_medida' => 'minutos', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
+        DB::table('parametros')->updateOrInsert(['parametro' => 'Frecuencia de refresco'], ['valor' => '60', 'unidad_medida' => 'segundos', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
         DB::table('parametros')->updateOrInsert(['parametro' => 'Nombres de kits automáticos'], ['valor' => '1', 'unidad_medida' => 'boolean', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
     }
 }

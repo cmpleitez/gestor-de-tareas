@@ -3,7 +3,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\QueryException;
+use Carbon\Carbon;
 use Exception;
+use App\Services\GestionService;
+
 
 use App\Models\Stock;
 use App\Models\OficinaStock;
@@ -551,4 +554,50 @@ class TiendaController extends Controller
             'kit' => $kit
         ]);
     }
+
+    public function consultarAvance(Request $request, GestionService $gestionService)
+    {
+        try {
+            $user        = auth()->user();
+            $tarjetasIds = $request->input('atencion_ids', []);   //Tarjetas en el frontend
+            if (! is_array($tarjetasIds) || empty($tarjetasIds)) { //Validación: si no hay tarjetas en el frontendya no se ejecuta el proceso
+                return response()->json([]);
+            }
+            $tarjetas = Recepcion::with(['usuarioOrigen', 'usuarioDestino', 'atencion', 'actividades.tarea']) //Consulta de las tarjetas recopiladas
+                ->whereIn('atencion_id', $tarjetasIds)
+                ->where(function ($query) use ($user) {
+                    if ($user->mainRole && $user->mainRole->name === 'cliente') {
+                        $query->where('origen_user_id', $user->id);
+                    } else {
+                        $query->where('destino_user_id', $user->id);
+                    }
+                })
+                ->select('atencion_id', 'estado_id', 'origen_user_id', 'destino_user_id')
+                ->get();
+            $usuariosParticipantes = $gestionService->obtenerUsuariosParticipantes($tarjetas->pluck('atencion_id')->unique()); //Obtener usuarios participantes
+            $resultado             = $tarjetas->map(function ($tarjeta) use ($usuariosParticipantes, $gestionService, $user) {
+                $traza = $gestionService->obtenerTraza($tarjeta);
+                
+                // Si es cliente, priorizamos el estado global de la atención para asegurar sincronización con el tablero de Resueltas
+                $estadoId = ($user->mainRole && $user->mainRole->name === 'cliente') 
+                    ? (optional($tarjeta->atencion)->estado_id ?? $tarjeta->estado_id)
+                    : $tarjeta->estado_id;
+
+                return [
+                    'atencion_id' => $tarjeta->atencion_id,
+                    'avance'      => optional($tarjeta->atencion)->avance ?? 0, 
+                    'estado_id'   => $estadoId,
+                    'traza'       => $traza,
+                    'recepciones' => $usuariosParticipantes->get($tarjeta->atencion_id, collect()),
+                ];
+            });
+            return response()->json($resultado);
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error al obtener el avance del tablero: ' . $e->getMessage());
+        }
+    }
+
+
 }
+
+

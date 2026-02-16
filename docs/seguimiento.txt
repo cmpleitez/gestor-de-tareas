@@ -91,10 +91,10 @@ CLIENTE:
 
 
                 . Insertar código local en crud de productos, luego agregarlo a las dependencias donde màs se use
-                14/feb... verificar si con la notficación puede enviarse una actualización de pagina
                 . Verificar si el procedimiento escrito hace match completo con el mismo en diagrama.
-                . verificar si se esta refrescando el paso de tarjetas de un estado a otro cambiando asi de tablero de control
+                
 
+15/feb... verificar si se esta refrescando el paso de tarjetas de un estado a otro cambiando asi de tablero de control
 
 
 
