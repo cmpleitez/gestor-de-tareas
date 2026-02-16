@@ -77,7 +77,6 @@ SERVICIOS:
     🟢 Reportes para el receptor y el administrador: 
         . historial de entradas y salidas en stocks
     🟢 Revisiones:
-        . Encontrar la tasa de refresco optima
         . Asegurar los envios de correos
         . Cuadrar la formula de la orden
 
