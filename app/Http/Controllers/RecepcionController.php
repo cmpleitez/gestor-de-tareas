@@ -28,17 +28,22 @@ class RecepcionController extends Controller
     {
         try {
             //VALIDACIÓN
-            $equipos = Equipo::where('oficina_id', auth()->user()->oficina_id)->get();
-            if ($equipos->isEmpty()) {
-                return back()->with('warning', 'No hay equipos de trabajo disponibles para asignar las solicitudes');
-            }
-            $operadores = User::whereHas('roles', function ($query) {
-                $query->where('name', 'Operador');
-            })->whereHas('oficina', function ($query) {
-                $query->where('id', auth()->user()->oficina_id);
-            })->where('activo', true)->get();
-            if ($operadores->isEmpty()) {
-                return back()->with('warning', 'No hay operadores disponibles para asignar las solicitudes');
+            $equipos = collect();
+            $operadores = collect();
+            $user = auth()->user();
+            if ($user->mainRole->name != 'cliente') {
+                $equipos = Equipo::where('oficina_id', $user->oficina_id)->get();
+                if ($equipos->isEmpty()) {
+                    return back()->with('warning', 'No hay equipos de trabajo disponibles para asignar las solicitudes');
+                }
+                $operadores = User::whereHas('roles', function ($query) {
+                    $query->where('name', 'Operador');
+                })->whereHas('oficina', function ($query) use ($user) {
+                    $query->where('id', $user->oficina_id);
+                })->where('activo', true)->get();
+                if ($operadores->isEmpty()) {
+                    return back()->with('warning', 'No hay operadores disponibles para asignar las solicitudes');
+                }
             }
             $solicitudes = Solicitud::has('tareas')->get();
             if ($solicitudes->isEmpty()) {
@@ -367,6 +372,7 @@ class RecepcionController extends Controller
                 }
             }
             //PROCESO
+            Log::info("Log:: Iniciando proceso de revisión de stock para atención $atencion_id");
             DB::beginTransaction();
                 $itemsValidados = [];
                 foreach ($orden as $item) {
@@ -381,14 +387,18 @@ class RecepcionController extends Controller
                         'stock_existencias' => $item['stock_fisico_existencias']
                     ];
                 }
+                Log::info("Log:: Items actualizados: " . count($itemsValidados));
                 $recepcion = Recepcion::find($recepcion_id); // Validar copia operador
                 if ($recepcion) {
                     $recepcion->validada_origen = true;
                     $recepcion->validada_destino = true;
                     $recepcion->save();
+                    Log::info("Log:: Recepción $recepcion_id actualizada");
                 }
             $this->reportarTarea('Stock revisado', $recepcion_id, $atencion_id); //Reportar tarea
+            Log::info("Log:: Tarea reportada");
             DB::commit();
+            Log::info("Log:: Transacción confirmada");
             try {
                 if ($recepcion) {
                     $oficina_id = auth()->user()->oficina_id;
@@ -398,7 +408,9 @@ class RecepcionController extends Controller
                         })
                         ->get();
                     if ($receptores->isNotEmpty()) {
+                        Log::info("Log:: Enviando notificaciones a " . $receptores->count() . " receptores");
                         Notification::send($receptores, new StockRevisadoNotification($recepcion, $itemsValidados));
+                        Log::info("Log:: Notificaciones enviadas");
                     }
                 }
             } catch (\Exception $e) {

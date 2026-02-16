@@ -47,6 +47,27 @@
                             @enderror
                         </div>
                     </div>
+
+                    <div class="col-md-12">
+                        <div class="form-group"> {{-- Código --}}
+                            <label for="codigo">Código</label>
+                            <input type="text" name="codigo" id="codigo"
+                                class="form-control {{ $errors->has('codigo') ? 'is-invalid' : '' }}"
+                                style="text-transform: uppercase;"
+                                oninput="this.value = this.value.toUpperCase()"
+                                data-validation-regex-regex="^[A-Z0-9ÁÉÍÓÚÑ]+( [A-Z0-9ÁÉÍÓÚÑ]+)*$"
+                                data-validation-regex-message="Solo se permiten letras mayúsculas y números, sin espacios al inicio/final ni dobles espacios"
+                                data-validation-minlength-message="El código debe tener al menos 3 caracteres"
+                                data-clear="true" minlength="3" placeholder="Código del producto"
+                                value="{{ old('codigo') }}">
+                            <div class="help-block"></div>
+                            @error('codigo')
+                                <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                    {{ $errors->first('codigo') }}
+                                </div>
+                            @enderror
+                        </div>
+                    </div>
                     <div class="col-md-12">
                         <div class="form-group"> {{-- Modelo --}}
                             <label for="modelo_id">Modelo</label>

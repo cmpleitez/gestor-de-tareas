@@ -335,7 +335,7 @@
                                                                     @endif
                                                                 @endif
                                                                 <div class="p-2">
-                                                                    <span id="badgeId_{{ $detAccordionId }}" class="badge bg-secondary-dark">{{ $detalle->producto_id }}</span>
+                                                                    <p id="badgeId_{{ $detAccordionId }}" class="badge bg-secondary-dark text-white mb-1" style="font-size: 0.7rem;">{{ $detalle->producto->codigo ?? 'S/C' }}</p>
                                                                 </div>
 
                                                                 <span id="productName_{{ $detAccordionId }}">{{ $detalle->producto->producto }}</span>

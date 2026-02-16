@@ -28,6 +28,7 @@
                             <thead>
                                 <tr>
                                     <th class="text-center">ID</th>
+                                    <th>Codigo</th>
                                     <th>Producto</th>
                                     <th>Modelo</th>
                                     <th>Tipo</th>
@@ -45,6 +46,7 @@
                                 <tr>
                                     {{-- CAMPOS --}}
                                     <td class="text-center">{{ $producto->id }}</td>
+                                    <td>{{ $producto->codigo }}</td>
                                     <td>{{ $producto->producto }}</td>
                                     <td>{{ $producto->modelo->modelo }}</td>
                                     <td>{{ $producto->tipo->tipo }}</td>
@@ -101,6 +103,7 @@
                             <tfoot>
                                 <tr>
                                     <th class="text-center">ID</th>
+                                    <th>Codigo</th>
                                     <th>Producto</th>
                                     <th>Modelo</th>
                                     <th>Tipo</th>

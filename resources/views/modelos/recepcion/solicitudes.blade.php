@@ -1042,48 +1042,42 @@
             }
         });
     }
-    //CARGAR NUEVAS RECIBIDAS
-    @can('autorefrescar')
-        function cargarNuevasRecibidas() {
-            let atencionIdsExistentes = obtenerAtencionIdsExistentes();
-            let data = {
-                _token: $('meta[name="csrf-token"]').attr('content'),
-                atencion_ids: atencionIdsExistentes
-            };
-            $.post({
-                url: '{{ route('tienda.nuevas-recibidas') }}',
-                data: data,
-                success: function(nuevas) {
-                    if (!Array.isArray(nuevas)) {
-                        nuevas = Object.values(nuevas);
-                    }
-                    if (nuevas && nuevas.length > 0) {
-                        let tarjetasAgregadas = 0;
-                        nuevas.forEach(function(tarjeta) {
-                            let html = generarTarjetaSolicitud(tarjeta, true, 'recibidas');
-                            let $nueva = $(html);
-                            $('#columna-recibidas').prepend($nueva);
-                            updateProgressByPercentage(tarjeta.atencion_id, tarjeta
-                                .porcentaje_progreso);
-                            setTimeout(function() {
-                                $nueva.removeClass('animar-llegada');
-                            }, 500);
-                            tarjetasAgregadas++;
-                        });
-                        if (tarjetasAgregadas > 0) { // Solo actualizar contadores si se agregaron tarjetas
-                            ordenarColumna('columna-recibidas'); // Ordenar tablero después de agregar nuevas tarjetas
-                            actualizarContadores();
-                            inicializarPopovers(); // Inicializar popovers para las nuevas tarjetas
+    {{-- CARGAR NUEVAS RECIBIDAS (Solo para personal de gestión) --}}
+    @can('gestionar')
+        @can('autorefrescar')
+            function cargarNuevasRecibidas() {
+                let atencionIdsExistentes = obtenerAtencionIdsExistentes();
+                $.post({
+                    url: '{{ route('tienda.nuevas-recibidas') }}',
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        atencion_ids: atencionIdsExistentes
+                    },
+                    success: function(nuevas) {
+                        if (!Array.isArray(nuevas)) nuevas = Object.values(nuevas);
+                        if (nuevas && nuevas.length > 0) {
+                            let tarjetasAgregadas = 0;
+                            nuevas.forEach(function(tarjeta) {
+                                let html = generarTarjetaSolicitud(tarjeta, true, 'recibidas');
+                                let $nueva = $(html);
+                                $('#columna-recibidas').prepend($nueva);
+                                updateProgressByPercentage(tarjeta.atencion_id, tarjeta.porcentaje_progreso);
+                                setTimeout(() => $nueva.removeClass('animar-llegada'), 500);
+                                tarjetasAgregadas++;
+                            });
+                            if (tarjetasAgregadas > 0) {
+                                ordenarColumna('columna-recibidas');
+                                actualizarContadores();
+                                inicializarPopovers();
+                            }
                         }
+                    },
+                    error: function(xhr, status, error) {
+                        if (xhr.status !== 0) console.error('Error cargando nuevas recibidas:', status);
                     }
-                },
-                error: function(xhr, status, error) {
-                    if (xhr.status !== 0) { // Solo log si no es error de red
-                        console.error('Error cargando nuevas recibidas:', status);
-                    }
-                }
-            });
-        }
+                });
+            }
+        @endcan
     @endcan
     //CONTROL PRINCIPAL
     $(document).ready(function() {

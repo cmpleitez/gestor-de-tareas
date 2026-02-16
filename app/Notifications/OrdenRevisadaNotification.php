@@ -21,15 +21,9 @@ class OrdenRevisadaNotification extends Notification implements ShouldQueue
 
     public function via(object $notifiable): array
     {
-        return ['mail', 'database'];
+        return ['database'];
     }
 
-    public function toMail(object $notifiable): MailMessage
-    {
-        return (new MailMessage)
-                    ->subject('Orden Revisada: ' . $this->recepcion->solicitud->solicitud)
-                    ->markdown('mail.orden-revisada', ['recepcion' => $this->recepcion]);
-    }
 
     public function toArray(object $notifiable): array
     {

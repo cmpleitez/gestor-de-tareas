@@ -24,18 +24,9 @@ class StockRevisadoNotification extends Notification implements ShouldQueue
 
     public function via(object $notifiable): array
     {
-        // Por ahora enviamos por base de datos y mail para asegurar visibilidad
-        return ['mail', 'database'];
+        return ['database'];
     }
 
-    public function toMail(object $notifiable): MailMessage
-    {
-        $ordenId = \App\Services\KeyRipper::rip($this->recepcion->atencion_id);
-        return (new MailMessage)
-            ->subject('Stock Revisado: Orden #' . $ordenId)
-            ->line('El stock físico ha sido revisado: implica que pueden o no haber items sin stock.')
-            ->action('Ver Solicitudes', route('recepcion.solicitudes'));
-    }
 
     public function toArray(object $notifiable): array
     {

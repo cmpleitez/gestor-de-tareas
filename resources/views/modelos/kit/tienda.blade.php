@@ -194,6 +194,7 @@
                                 if (sinStock) kitDisponible = false;
                                 html += `
                                 <div class="col-12 col-sm-3 p-2 d-flex flex-column align-items-center mb-2">
+                                    <p class="badge bg-secondary-dark text-white mb-1" style="font-size: 0.7rem;">${producto.codigo || 'S/C'}</p>
                                     <p class="text-center mb-2 ${textClass}">${producto.producto}</p>
                                     <p class="badge ${badgeClass} mb-0">${badgeText}</p> <span class="text-muted small">Unidad(es)</span>
                                 </div>
