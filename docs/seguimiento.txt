@@ -1,33 +1,12 @@
 PAUTAS:
-    🟠 El uso de combos debería resolver el problema de las equivocaciones entre los codigos de un producto y otro producto
     🟠 Duis validos:
         012345678
         023456783
         123456784
         234567890
         456789012
-    🟠 Cada usuario de la app participante en el procedimiento, tendrá una copia de la solicitud u orden de compra
-CLIENTE:
 
-    🔵 Construir el proceso de revisión
-
-    🔵 Construir el proceso de verificación física
-
-    🔵 Los precios de los productos inciden en el precio del kit en la orden de compra, el precio del kit es el resultado de sumar los precios de sus productos, 
-    cuando un producto cambie por su equivalente es posible que varíe el total general.
-
-    🔵 Revelación del stock actual en tienda (stock bodega exclusivamente), solo mostrar la frase "Hay existencias" o "No hay existencias" 
-    y cuando hayan menos o igual a 3 revelar la cantidad exacta disponible
-
-    🔵 En la confirmacion de stock físico: agregar un dato llamado "existencias" en el detalle de la orden para el reporte "Stock físico confirmado", 
-    la orden de compra para el receptor y para el operador debe mostrar dicho campo indicando "Stock físico disponible" o "No hay existencias" en su caso.
-        .modificar el editor de la orden de compra
-
-    🔵 El cliente al dar clic sobre cualquier tarjeta podría ver la orden de compra en estado de lectura
-        
-    🔵 Actualizar el nuevo tracking en la vista sidebar donde están las tareas
-        
-    🔵 Procedimiento: perfil cpleitez.2024@gmail.com https://miro.com/app/board/uXjVJy6iRzE=/
+PROCEDIMIENTO: perfil cpleitez.2024@gmail.com https://miro.com/app/board/uXjVJy6iRzE=/
         ✨. Cliente: Entra a la <Tienda>, selecciona en el catálogo el kit y da clic en <agregar al carrito>
             . Sistema: En respuesta al cliente (<recepcion.user_id_origen>), crea el registro de <Atención>, el detalle de la <Atencion>, 
             y <copia solicitud receptor>; pendiente de validar por el mismo (<recepcion.validada_origen = false>)
@@ -45,72 +24,73 @@ CLIENTE:
         ✨. Receptor: Entra al servicio <Mis ordenes de compra>
             . Sistema: Brinda la vista de tableros <kanvan> con <autorefrescado> en intervalos de N minutos
         
-        . Receptor: Ubica en el tablero de <recibidas> y selecciona la solicitud a revisar <copia solicitud receptor>, dando clic sobre ella
-            . Sistema: Muestra en el <sidebar> el número de gestión y las tareas asignadas para dicha solicitud.
-                
-                ... La revision sucedería en el tablero "en progreso", 
-                cuando el receptor de clic sobre "Revisión" se abrirá la orden de compra en estado de edición para 
-                ser corregida, luego el usuario dara clic sobre el control llamado "Revisada", para que la tarea se establezca
-                como hecha: actividad.estado_id = 4 (Resuelta).
-
-        . Receptor:
-            . Realiza y reporta las tareas asignadas: 
-                . Revisa y corrige la <orden de compra> 
-                . Define la orden como <compra> o como <reserva> (Marca de agua inclinada: Reserva)
-                . Revisa <stocks digitales> para la <orden de compra/reserva>
-                . Valida la <orden de compra>
-                    . Sistema: 
-                        . Crea <copia solicitud operador> ya validada (<recepcion.validada_origen = true>) por el receptor (<recepcion.user_id_origen>) 
-                        y pendiente de validar (<recepcion.validada_destino=false>) por el operador (<recepcion.user_id_destino>)
-                        . En atención al usuario envía un correo con la <orden de compra validada>
+        ✨. Receptor: 
+            . Prioriza la solicitud y la arrastra al tablero de En progreso
+                . Sistema: Crea <copia solicitud operador>
+            . Ubica la solicitud en el tablero de <En progreso> y selecciona la solicitud a revisar <copia solicitud receptor>, dando clic sobre ella
+                . Sistema: Muestra en el <sidebar> el número de gestión y las tareas asignadas para dicha solicitud.
+            . Corrige la <orden de compra> 
+                . revisa las unidades solicitadas, los items que conformarán la orden de compra y Revisa <stocks digitales>
         
-        . Operador: Entra al servicio <Mis ordenes de compra>
-            . Sistema: Brinda la vista <kanvan> con <autorefrescado> en intervalos de 5 minutos
+        ✨. Operador: Entra al servicio <Mis ordenes de compra>
+                . Sistema: Brinda la vista <kanvan> con <autorefrescado> en intervalos de 5 minutos
         
-        . Operador: 
+        ✨. Operador: 
             . En el tablero de <recibidas> ubica visualmente la <copia solicitud operador> que va procesar y la arrastra hacia el tablero "En Progreso"
-            . A petición del usuario, actualiza en la <copia solicitud operador> el campo (<recepcion.validada_destino = true>), 
-            para dar dicha solicitud como validada.
-            
-        . Operador:
             . Ubica la <copia solicitud operador> en el tablero "En Progreso" y da clic sobre ella
-            . Sistema: Muestra en el sidebar las tareas asignadas al operador
+                . Sistema: Muestra en el sidebar las tareas asignadas al operador
         
-        . Operador: 
+        ✨. Operador: 
             . Da clic sobre su única tarea 
-            . Sistema: Abre la edición del carrito mostrando todas las ordenes y sus items
+                . Sistema: Abre la edición del carrito mostrando todas las ordenes y sus items
+            . Revisa para cada item el stock físico
+                . Confirma el stock físico: hay o no hay stock físico
+            . Clic al boton Revisar
         
-        . Operador: Confirma en cada item si hay stock físico disponible o no lo hay
+        ✨. Receptor:
+            . Revisa las verificaciones de stock físico en la orden de compra
+            . Clic a control Revisar
+                . Sistema: Envía un correo al cliente informando que la orden de compra ha sido revisada
 
-        . Receptor:
-            . Realiza las lista de tareas operativas asignadas (Revisión de la orden de compra, Descarga del stock, Pago verificado, Mercadería enviada)
-
-
-
-
-
-
-                 
-                
-                15/feb... Verificar si el procedimiento escrito hace match completo con el mismo en diagrama.
-                
-                
+        ✨. Cliente:
+            . Confirma telefonicamente que la orden esta bien
 
 
-
-
-
+        ✨. Receptor:
+            . Procesa el resto de las las tareas asignadas
             . Sistema: 
-                . En cuanto el receptor y el operador han realizado dichas tareas, establece el estado de "Resuelta" a todas las copias de la solicitud y a su solicitud principal <Atencion>, 
-                en consecuencia la solicitud se coloca en el tablero de resueltas.
-                . Envía un correo al cliente con la <orden de compra/reserva> revisada
-                . rol operador y receptor: cerrar edicion.carrito en cuanto se aplique clic en el boton revisar
+                . En cuanto el receptor y el operador han realizado todas las tareas, establece el estado de "Resuelta" a todas las copias de la solicitud 
+                y a su solicitud principal <Atencion>, en consecuencia la solicitud se coloca en el tablero de resueltas.
 
-    🔵 editar.carrito: Control para reestablecer los items originales del kit
+SEGURIDAD:
 
-    🔵 tratamiento de errores en el reporte de tareas
+    🔵 Registrar usuario y errores del sistema en el log de laravel
 
-    🔵 procesos: Cada cierta cantidad de días se debe correr una tarea programada para borrar todas las solicitudes no validadas por el cliente
+PLATAFORMA:
+    
+    🟢 construir la funcionalidad para cambiar nombres a los registros de catálogos y aplicar la regla de las dependencias
+
+SERVICIOS:
+
+    🟢 Reportes para el receptor y el administrador: 
+        . historial de entradas y reversiones en stocks
+
+    🟢 calificacion de productos y kits:
+        . para calificar el producto que sea en base a cantidad de descargas en el mes anterior, 
+        por lo que cada vez que se descargue del inventario acumular en un campo de Kits
+        cuantas veces se han descargado y calcular en base a esto la cantidad de estrellas
+        que serán mostradas en cada kit de la tienda.
+        . se puede hacer lo mismo con un campo en productos para la calificación de los mismos
+        incluso se podría parametrizar cuantos meses se usarían para el barrido de datos, ademas 
+        se puede usar el like de la tienda, para abonar al calculo de alguna forma.
+
+    🟢 editar.carrito: Control para reestablecer los items originales del kit
+
+    🟢 tratamiento de errores
+
+    🟢 Tarea programada para limpiar el carrito de solicitudes vencidas
+
+CLIENTE:
 
     🔵 Que el cliente brinde la información del dominio
         Pasos básicos para enlazar IP pública con dominio:
@@ -142,84 +122,5 @@ CLIENTE:
         Opción 3: Ambos (recomendado):
             Registro A: @ → IP del servidor
             Registro A: www → IP del servidor
-    🔵 Reglas técnicas del negocio:
-        . Se manejarán 4 stocks: 
-            Bodega
-            Estante de reservados
-            Reservados en tránsito
-            Recién comprados
-        . Las ordenes de reserva se quedarán en el paso de "Recibidos", mientras que las ordenes de compra podrán pasar a iniciar su despacho, 
-        técnicamente podrán pasar a iniciar despacho en el caso que los productos en tránsito ya hayan llegado a los stocks
-        . A las tarjetas se les agregará un distintivo de "orden de reserva" cuando tengan esta condición
-        . Los roles que se utilizarán para el proceso son: Cliente, Receptor y Operador, si se necesita asignar los dos últimos roles a una misma persona, se deben crear dos cuentas de usuario una para cada rol
-    🔵 definir las reglas de cuantas unidades de cada producto segun el kit y las demás reglas que se necesiten
-    🔵 reglas técnicas para la creación de kits
-    🔵 reglas técnicas para creación de ordenes de compra para cada kit
-    ¿Qué significa esto para ti (con tu app)?
 
-
-SEGURIDAD:
-    🔵 Implementación de la seguridad
-    . Si quieres que tus clientes (los ~25 usuarios) accedan a tu web app como si estuvieran dentro de una red privada (VPN), puedes configurar un servidor VPN en un Droplet y darles acceso con clientes VPN.
-    . Usar Netmaker es una opción moderna y robusta para crear una VPN corporativa (o red privada) con WireGuard, lo que es bastante seguro y tiene buen rendimiento.
-    . La otra opcion es que los clientes se conecten desde internet empresarial porque con esa no cambia la IP, pues es fija, asi que se puede dar permiso solo a las IP fijas
-
-    🔵 Revisar todos las inserciones porque se cambio la llave automática por una manual, para evitar las pérdidas de números correlativos cuando falla el guardado
-        .hay que revisar todos los controladores y otros procesos y corregirlos
-
-    🔵 Retirar todos los servicios de seguridad que estan dentro de la App, solo dejar uno.
-
-    🔵 hay que analizar como se va manejar el sistema de errores que recibe el usuario porque 
-    si los enviamos en los mensajes toastr como estamos haciendo actualmente es un tema de seguridad
-    tambien debe incluirse aquó el módulo gestor de tareas porque hay tambien unos popups que se usan
-    para mostrar los errores, usar el log de errores para todos los errores de sistema en general, para los
-    errores de usuario simples usar el toastr y para las confirmaciones el sweety algo
-    
-    🔵 Revision general de los permisos en rutas y vistas
-
-
-PLATAFORMA:
-    🟢 construir la funcionalidad para cambiar nombres a los registros de catálogos y aplicar la regla de las dependencias
-    🟢 regular el color nivel de advertencia en toda la app
-            se estandarizaron los colores de texto, de fondo y de borde 
-                recrear las clases de manera que contengan color de fondo, color de texto y color de borde
-                pendiente revisar toda la aplicación para que lo utilice en general
-                    solo queda pendiente el catalogo de productos
-    🟢 Vacíar seeders de prueba
-    🟢 Estandarizar tamaño y tipo de letra
-    🟢 al parecer las librarías de los data tables se estan inicializando dos veces: dashboard y el index respectivo
-    🟢 hacer que el boton guardar y el boton retroceder se muestren flotantes, mejorando la experiencia del usuario
-SERVICIOS:
-
-    🪒 Visualizador del carrito y editor del kit
-    🪒 enlace tienda gestor
-        . Construcción de la herramienta para poder realizar el paso "Revisión de la Orden/Reserva" por parte del receptor
-    🪒 consultas para el receptor y el administrador: 
-        . historial de entradas y reversiones en stocks
-
-    ...🟢 Crear inventario de servicios a construir y la lista debe estar en orden "consecuencial", es decir en secuencia causal o causa y efecto, 
-    sería según procedimiento establecido
-
-    🟢 Los datatables: en sus encabezados se desordenan los iconos de ordenamiento de datos cuando la ventana cambia de tamaño
-    🟢 calificacion de productos y kits:
-        . para calificar el producto que sea en base a cantidad de descargas en el mes anterior, 
-        por lo que cada vez que se descargue del inventario acumular en un campo de Kits
-        cuantas veces se han descargado y calcular en base a esto la cantidad de estrellas
-        que serán mostradas en cada kit de la tienda.
-        . se puede hacer lo mismo con un campo en productos para la calificación de los mismos
-        incluso se podría parametrizar cuantos meses se usarían para el barrido de datos, ademas 
-        se puede usar el like de la tienda, para abonar al calculo de alguna forma.
-    🟢 Los botones agregar o nuevo de los datatables debe ser azul no naranja
-    🟢 Número de atención va ser validado cuando se complete todo el procedimiento, cada copia de las "recepciones iran siendo validadas por el usuario destino"
-    🟢 En el Kanban el receptor podrá escribir en la <orden de compra/reserva> en el tablero de <recibidas> pero no en el resto de tableros
-    🟢 En el Kanban el operador podrá escribir en la <orden de compra/reserva> en el tablero de <en progreso> pero no en el resto de tableros
-    🟢 Si el sistema va envíar la Orden de compra/reserva revisada por correo sera necesario implementar SendGrid como servicio gratuito y que el usuario revise su bandeja de spam
-    🟢 Revisar que las aperturas y cierres de escritura estén funcionando correctamente en cada impulso (envío) de <copia solicitud destinatario>
-    🟢 construir catalogo de productos: nombre de la orden será un estadístico segun los nombres de los combos
-    🟢 agregar un campo para el codigo físico del producto y mantenerlo visible en el catalogo de productos
-    🟢 crear funcionalidad de combos personalizables
-    🟢 revisar si se mantendrá el dui o se retira
-    🟢 agregar en el equipo.editar un selector de oficina
-    🟢 funcionalidad de acceso al carrito al Receptor y al Operador desde la zona de revisión de la orden
-    🟢 mensaje de advertencia "Revise el stock de disponibles" cuando el Receptor intente impulsar una Orden de reservas
-
+    🔵 revisar si se mantendrá el dui o se retira
