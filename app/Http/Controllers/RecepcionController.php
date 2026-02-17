@@ -105,7 +105,7 @@ class RecepcionController extends Controller
             ];
             return view('modelos.recepcion.solicitudes', $data);
         } catch (\Exception $e) {
-            Log::error('Log:: Ocurrió un error cuando se intentaba obtener las tarjetas: ' . $e->getMessage(), ['exception' => $e]);
+            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Ocurrió un error cuando se intentaba obtener las tarjetas: ' . $e->getMessage(), ['exception' => $e]);
             return back()->with('error', 'Ocurrió un error al cargar las solicitudes en el tablero.');
         }
     }
@@ -157,7 +157,7 @@ class RecepcionController extends Controller
             });
             return response()->json($nuevas);
         } catch (\Exception $e) {
-            Log::error('Log:: Ocurrió un error al obtener las nuevas solicitudes recibidas: ' . $e->getMessage(), ['exception' => $e]);
+            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Ocurrió un error al obtener las nuevas solicitudes recibidas: ' . $e->getMessage(), ['exception' => $e]);
             return response()->json(['success' => false, 'message' => 'Error al obtener nuevas solicitudes.'], 500);
         }
     }
@@ -230,7 +230,7 @@ class RecepcionController extends Controller
             ], 200);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Log:: Ocurrió un error al asignar la solicitud: ' . $e->getMessage(), ['exception' => $e]);
+            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Ocurrió un error al asignar la solicitud: ' . $e->getMessage(), ['exception' => $e]);
             return response()->json(['success' => false, 'message' => 'Ocurrió un error al asignar la solicitud.']);
         }
     }
@@ -250,7 +250,7 @@ class RecepcionController extends Controller
                 'unidades' => $equipos->count(),
             ]);
         } catch (\Exception $e) {
-            Log::error('Log:: Ocurrió un error al obtener los equipos: ' . $e->getMessage(), ['exception' => $e]);
+            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Ocurrió un error al obtener los equipos: ' . $e->getMessage(), ['exception' => $e]);
             return back()->with('error', 'Ocurrió un error al obtener los equipos disponibles.');
         }
     }
@@ -275,7 +275,7 @@ class RecepcionController extends Controller
                 'operadores_activos' => $operadores_activos,
             ]);
         } catch (\Exception $e) {
-            Log::error('Log:: Ocurrió un error al obtener los operadores: ' . $e->getMessage(), ['exception' => $e]);
+            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Ocurrió un error al obtener los operadores: ' . $e->getMessage(), ['exception' => $e]);
             return back()->with('error', 'Ocurrió un error al obtener los operadores disponibles.');
         }
     }
@@ -297,7 +297,7 @@ class RecepcionController extends Controller
             });
             return response()->json(['tareas' => $tareas]);
         } catch (\Exception $e) {
-            Log::error('Log:: Ocurrió un error al obtener las tareas: ' . $e->getMessage(), ['exception' => $e]);
+            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Ocurrió un error al obtener las tareas: ' . $e->getMessage(), ['exception' => $e]);
             return response()->json(['success' => false, 'message' => 'Ocurrió un error al obtener el listado de tareas.'], 500);
         }
     }
@@ -420,7 +420,7 @@ class RecepcionController extends Controller
                     }
                 }
             } catch (\Exception $e) {
-                Log::error("Log:: Error al enviar notificación StockRevisadoNotification: " . $e->getMessage(), ['exception' => $e]);
+                Log::error("Log:: [Usuario: " . auth()->user()->name . "] Error al enviar notificación StockRevisadoNotification: " . $e->getMessage(), ['exception' => $e]);
             }
             //RESULTADO
             return response()->json([
@@ -429,7 +429,7 @@ class RecepcionController extends Controller
                 'items_validados' => $itemsValidados
             ]);
         } catch (\Exception $e) {
-            Log::error("Log:: Error en revisarStock: " . $e->getMessage(), ['exception' => $e]);
+            Log::error("Log:: [Usuario: " . auth()->user()->name . "] Error en revisarStock: " . $e->getMessage(), ['exception' => $e]);
             return response()->json([
                 'success' => false, 
                 'message' => 'Error al validar el lote de stock.'
@@ -536,7 +536,7 @@ class RecepcionController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error("Log:: Error en corregirOrden: " . $e->getMessage(), ['exception' => $e]);
+            Log::error("Log:: [Usuario: " . auth()->user()->name . "] Error en corregirOrden: " . $e->getMessage(), ['exception' => $e]);
             return response()->json([
                 'success' => false, 
                 'message' => 'Error al corregir la orden.'
@@ -599,7 +599,7 @@ class RecepcionController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error("Log:: Error en revisarOrden: " . $e->getMessage(), ['exception' => $e]);
+            Log::error("Log:: [Usuario: " . auth()->user()->name . "] Error en revisarOrden: " . $e->getMessage(), ['exception' => $e]);
             return response()->json([
                 'success' => false, 
                 'message' => 'Error al revisar la orden.'
@@ -659,7 +659,7 @@ class RecepcionController extends Controller
             return response()->json(['success' => true, 'message' => 'Stock descargado del inventario de Bodega correctamente.']);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Log:: Error al descargar stock: ' . $e->getMessage(), ['exception' => $e]);
+            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Error al descargar stock: ' . $e->getMessage(), ['exception' => $e]);
             return response()->json(['success' => false, 'message' => 'Ocurrió un error al intentar descargar el stock del inventario.']);
         }
     }
@@ -730,7 +730,7 @@ class RecepcionController extends Controller
                 'ordenes'    => $ordenes,
             ]);
         } catch (\Exception $e) {
-            Log::error('Log:: Error al obtener la orden de compra: ' . $e->getMessage(), ['exception' => $e]);
+            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Error al obtener la orden de compra: ' . $e->getMessage(), ['exception' => $e]);
             return response()->json([
                 'success' => false,
                 'message' => 'Ocurrió un error al obtener la información de la orden.'

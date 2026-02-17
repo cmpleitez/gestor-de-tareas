@@ -63,7 +63,7 @@ class CreateNewUser implements CreatesNewUsers
             return $user;
         } catch (Exception $e) {
             DB::rollBack();
-            Log::error('Log:: Error al crear el nuevo usuario (Fortify): ' . $e->getMessage(), ['exception' => $e]);
+            Log::error('Log:: [Usuario: ' . (auth()->check() ? auth()->user()->name : 'Invitado') . '] Error al crear el nuevo usuario (Fortify): ' . $e->getMessage(), ['exception' => $e]);
             throw new Exception('Ocurrió un error al intentar crear la cuenta de usuario.');
         }
     }

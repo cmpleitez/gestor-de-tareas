@@ -51,7 +51,7 @@ class TareaController extends Controller
         try {
             $tarea->delete();
         } catch (\Exception $e) {
-            Log::error('Log:: Ocurrió un error cuando se intentaba eliminar la tarea: ' . $e->getMessage(), ['exception' => $e]);
+            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Ocurrió un error cuando se intentaba eliminar la tarea: ' . $e->getMessage(), ['exception' => $e]);
             return back()->with('error', 'Ocurrió un error cuando se intentaba eliminar la tarea.');
         }
         return redirect()->route('tarea')->with('success', 'La tarea "' . $tarea->tarea . '" ha sido eliminada correctamente');

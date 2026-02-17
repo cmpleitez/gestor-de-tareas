@@ -55,7 +55,7 @@ class TipoController extends Controller
         try {
             $tipo->delete();
         } catch (\Exception $e) {
-            Log::error('Log:: Ocurrió un error cuando se intentaba eliminar el tipo: ' . $e->getMessage(), ['exception' => $e]);
+            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Ocurrió un error cuando se intentaba eliminar el tipo: ' . $e->getMessage(), ['exception' => $e]);
             return back()->with('error', 'Ocurrió un error cuando se intentaba eliminar el tipo.');
         }
         return redirect()->route('tipo')->with('success', 'El tipo "' . $tipo->tipo . '" ha sido eliminado correctamente');

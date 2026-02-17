@@ -625,6 +625,7 @@
                     }, 2000);
                 },
                 error: function(xhr) {
+                    console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error en carrito-enviar:", xhr);
                     $btn.prop('disabled', false).html('<i class="fas fa-shopping-cart me-2"></i> Enviar');
                     const errorMessage = xhr.responseJSON && xhr.responseJSON.message 
                         ? xhr.responseJSON.message 
@@ -716,6 +717,7 @@
                 }
             },
             error: function(xhr) {
+                console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error en retirarItemAJAX:", xhr);
                 const errorMsg = xhr.responseJSON ? xhr.responseJSON.message : 'Error al retirar el producto';
                 toastr.error(errorMsg);
             }
@@ -751,6 +753,7 @@
                 }
             },
             error: function(xhr) {
+                console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error en retirarOrdenAJAX:", xhr);
                 const errorMsg = xhr.responseJSON ? xhr.responseJSON.message : 'Error al retirar la orden';
                 toastr.error(errorMsg);
             }
@@ -924,6 +927,7 @@
                 }
             },
             error: function(xhr) {
+                console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error en revisar-stock click:", xhr);
                 btn.prop('disabled', false).html('<i class="fas fa-clipboard-check"></i> Revisar');
                 const errorMsg = xhr.responseJSON ? xhr.responseJSON.message : 'Error de conexión';
                 toastr.error(errorMsg);
@@ -1001,6 +1005,7 @@
                 }, 1500);
             },
             error: function(xhr) {
+                console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error en revisar-orden click:", xhr);
                 btn.prop('disabled', false).html('<i class="fas fa-clipboard-check"></i> Revisar');
                 toastr.error(xhr.responseJSON?.message || 'Error al revisar');
             }
@@ -1086,6 +1091,7 @@
                 btn.prop('disabled', false).html('<i class="fas fa-pencil-alt"></i> Corregir');
             },
             error: function(xhr) {
+                console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error en corregir-orden click:", xhr);
                 btn.prop('disabled', false).html('<i class="fas fa-pencil-alt"></i> Corregir');
                 toastr.error(xhr.responseJSON?.message || 'Error al corregir la orden');
             }

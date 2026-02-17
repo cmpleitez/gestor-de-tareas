@@ -69,27 +69,14 @@ PROCEDIMIENTO: perfil cpleitez.2024@gmail.com https://miro.com/app/board/uXjVJy6
 
 SEGURIDAD:
 
+    Sin puntos pendientes
 
-    
-    
-    
-    
-    14.feb.⌛...🔵 Registrar usuario y errores del sistema en el log de laravel
-
-
-
-
-
-
-
-    🔵 construir la funcionalidad para cambiar nombres a los registros de catálogos y aplicar la regla de las dependencias
 
 SERVICIOS:
 
     🟢 Reportes para el receptor y el administrador: 
         . historial de entradas y salidas en stocks
     🟢 Revisiones:
-        . Asegurar los envios de correos
         . Cuadrar la formula de la orden
         . el tracking 'en progreso' tapa la verdadera traza de la orden
 

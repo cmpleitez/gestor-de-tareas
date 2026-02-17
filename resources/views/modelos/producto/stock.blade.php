@@ -319,7 +319,8 @@
                             );
                         }
                     },
-                    error: function() {
+                    error: function(xhr, status, error) {
+                        console.error("Log:: [Usuario: {{ auth()->user()->name }}] No fue posible cargar los stocks:", error);
                         stocksWrapper.empty().append(
                             $('<div>', { class: 'col-12 text-center text-warning' }).text('No fue posible cargar los stocks.')
                         );

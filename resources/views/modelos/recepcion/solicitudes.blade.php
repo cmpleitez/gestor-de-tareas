@@ -478,6 +478,7 @@
                 }
             },
             error: function(xhr, status, error) {
+                console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error en updatePosition:", error);
                 let mensaje = '🚨 Error desconocido';
                 if (xhr.status === 419) {
                     mensaje = '🚨 Error CSRF - Recarga la página';
@@ -573,6 +574,7 @@
                 dibujarTareas(tareas, atencionId, recepcionId);
             },
             error: function(xhr, status, error) {
+                console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error en cargarTareas:", error);
                 $('#sidebar-card-body').append(
                     '<div class="text-center text-muted py-3"><i class="bx bx-error-circle text-danger"></i><div class="mt-2">Error al cargar tareas</div></div>'
                 );
@@ -633,6 +635,7 @@
                 }
             },
             error: function(xhr) {
+                console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error en cargarOrdenCompra:", xhr);
                 let msg = 'Error al obtener la orden de compra';
                 if (xhr.responseJSON && xhr.responseJSON.message) {
                     msg = xhr.responseJSON.message;
@@ -755,6 +758,7 @@
                 }
             },
             error: function(xhr) {
+                console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error en selectable-item click:", xhr);
                 let msg = 'Error al procesar la solicitud';
                 if (xhr.responseJSON && xhr.responseJSON.message) {
                     msg = xhr.responseJSON.message;
@@ -1032,14 +1036,14 @@
                 if (typeof callback === 'function') callback();
             },
             error: function(xhr, status, error) {
-                console.error('Error al consultar avances:', {
+                console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error al consultar avances:", {
                     status: xhr.status,
                     statusText: xhr.statusText,
                     responseText: xhr.responseText,
                     error: error
                 });
                 if (xhr.status !== 0) {
-                    console.error('Error al consultar avances:', status);
+                    console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error al consultar avances (status):", status);
                 }
                 if (typeof callback === 'function') callback();
             }
@@ -1076,7 +1080,7 @@
                         }
                     },
                     error: function(xhr, status, error) {
-                        if (xhr.status !== 0) console.error('Error cargando nuevas recibidas:', status);
+                        if (xhr.status !== 0) console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error cargando nuevas recibidas:", status);
                     }
                 });
             }
@@ -1091,7 +1095,6 @@
             resueltas: @json($resueltas)
         };
         cargarTarjetasIniciales(tarjetasIniciales);
-
         function initializeProgressBars() {
             $('.progress-divider').each(function() {
                 let atencionId = $(this).data('atencion-id');
@@ -1116,7 +1119,7 @@
                         cargarNuevasRecibidas();
                     }
                 } catch (e) {
-                    console.error("Error en polling:", e);
+                    console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error en polling:", e);
                 } finally {
                     isUpdating = false;
                 }

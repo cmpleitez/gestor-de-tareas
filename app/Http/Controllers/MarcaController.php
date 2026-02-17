@@ -55,7 +55,7 @@ class MarcaController extends Controller
         try {
             $marca->delete();
         } catch (\Exception $e) {
-            Log::error('Log:: Ocurrió un error cuando se intentaba eliminar la marca: ' . $e->getMessage(), ['exception' => $e]);
+            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Ocurrió un error cuando se intentaba eliminar la marca: ' . $e->getMessage(), ['exception' => $e]);
             return back()->with('error', 'Ocurrió un error cuando se intentaba eliminar la marca.');
         }
         return redirect()->route('marca')->with('success', 'La marca "' . $marca->marca . '" ha sido eliminada correctamente');

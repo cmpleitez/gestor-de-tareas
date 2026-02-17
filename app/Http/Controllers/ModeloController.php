@@ -58,7 +58,7 @@ class ModeloController extends Controller
         try {
             $modelo->delete();
         } catch (\Exception $e) {
-            Log::error('Log:: Ocurrió un error cuando se intentaba eliminar el modelo: ' . $e->getMessage(), ['exception' => $e]);
+            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Ocurrió un error cuando se intentaba eliminar el modelo: ' . $e->getMessage(), ['exception' => $e]);
             return back()->with('error', 'Ocurrió un error cuando se intentaba eliminar el modelo.');
         }
         return redirect()->route('modelo')->with('success', 'El modelo "' . $modelo->modelo . '" ha sido eliminado correctamente');

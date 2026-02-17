@@ -79,7 +79,7 @@ class ProductoController extends Controller
         try {
             $producto->delete();
         } catch (\Exception $e) {
-            Log::error('Log:: Ocurrió un error cuando se intentaba eliminar el producto: ' . $e->getMessage(), ['exception' => $e]);
+            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Ocurrió un error cuando se intentaba eliminar el producto: ' . $e->getMessage(), ['exception' => $e]);
             return back()->with('error', 'Ocurrió un error cuando se intentaba eliminar el producto.');
         }
         return redirect()->route('producto')->with('success', 'El producto "' . $producto->producto . '" ha sido eliminado correctamente');

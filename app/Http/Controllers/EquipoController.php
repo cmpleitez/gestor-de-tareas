@@ -52,7 +52,7 @@ class EquipoController extends Controller
         try {
             $equipo->delete();
         } catch (\Exception $e) {
-            Log::error('Log:: Ocurrió un error cuando se intentaba eliminar el equipo: ' . $e->getMessage(), ['exception' => $e]);
+            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Ocurrió un error cuando se intentaba eliminar el equipo: ' . $e->getMessage(), ['exception' => $e]);
             return back()->with('error', 'Ocurrió un error cuando se intentaba eliminar el equipo.');
         }
         return redirect()->route('equipo')->with('success', 'El equipo "' . $equipo->equipo . '" ha sido eliminado correctamente');

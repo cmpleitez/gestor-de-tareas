@@ -89,7 +89,7 @@ class RegisterController extends Controller
             return redirect('user')->with('success', 'Nuevo usuario registrado con éxito.');
         } catch (\Exception $e) {
             DB::rollback();
-            Log::error('Log:: Error en registro de usuario: ' . $e->getMessage(), ['exception' => $e]);
+            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Error en registro de usuario: ' . $e->getMessage(), ['exception' => $e]);
             return back()->withErrors(['email' => 'Ocurrió un error al procesar el registro del usuario.'])->withInput();
         }
     }

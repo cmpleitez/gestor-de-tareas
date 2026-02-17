@@ -90,11 +90,11 @@ class UserController extends Controller
             return redirect()->route('user')->with('success', $mensaje);
         } catch (QueryException $e) {
             DB::rollBack();
-            Log::error('Log:: Error al guardar el usuario: ' . $e->getMessage(), ['exception' => $e]);
+            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Error al guardar el usuario: ' . $e->getMessage(), ['exception' => $e]);
             return back()->withErrors(['error' => 'Ocurrió un error al guardar la información del usuario en la base de datos.']);
         } catch (Exception $e) {
             DB::rollBack();
-            Log::error('Log:: Error al guardar la imagen de usuario: ' . $e->getMessage(), ['exception' => $e]);
+            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Error al guardar la imagen de usuario: ' . $e->getMessage(), ['exception' => $e]);
             return back()->withErrors(['error' => 'Ocurrió un error al procesar la imagen del usuario.']);
         }
     }
@@ -148,7 +148,7 @@ class UserController extends Controller
             DB::commit();
         } catch (Exception $e) {
             DB::rollback();
-            Log::error('Log:: Ocurrió un error cuando se intentaba guardar los cambios de roles: ' . $e->getMessage(), ['exception' => $e]);
+            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Ocurrió un error cuando se intentaba guardar los cambios de roles: ' . $e->getMessage(), ['exception' => $e]);
             return back()->with('error', 'Ocurrió un error cuando se intentaba actualizar los roles del usuario.');
         }
         return redirect()->route("user")->with('success', 'Los roles para el usuario ' . $user->name . ' han sido actualizados efectivamente.');
@@ -204,7 +204,7 @@ class UserController extends Controller
             DB::commit();
         } catch (Exception $e) {
             DB::rollback();
-            Log::error('Log:: Ocurrió un error cuando se intentaba eliminar el usuario: ' . $e->getMessage(), ['exception' => $e]);
+            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Ocurrió un error cuando se intentaba eliminar el usuario: ' . $e->getMessage(), ['exception' => $e]);
             return back()->with('error', 'Ocurrió un error cuando se intentaba eliminar el usuario.');
         }
         return redirect()->route('user')->with('success', 'El usuario "' . $user->name . '" ha sido eliminado con éxito.');

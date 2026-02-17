@@ -194,7 +194,7 @@
                     }
                 }
                 , error: function(xhr, status, error) {
-                    console.error('Error al cargar cantidad del carrito:', error);
+                    console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error al cargar cantidad del carrito:", error);
                 }
             });
         });

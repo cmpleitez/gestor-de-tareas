@@ -73,7 +73,7 @@ class SolicitudController extends Controller
         try {
             $solicitud->delete();
         } catch (\Exception $e) {
-            Log::error('Log:: Ocurrió un error cuando se intentaba eliminar la solicitud: ' . $e->getMessage(), ['exception' => $e]);
+            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Ocurrió un error cuando se intentaba eliminar la solicitud: ' . $e->getMessage(), ['exception' => $e]);
             return back()->with('error', 'Ocurrió un error cuando se intentaba eliminar la solicitud.');
         }
         return redirect()->route('solicitud')->with('success', 'La solicitud "' . $solicitud->solicitud . '" ha sido eliminada correctamente');
