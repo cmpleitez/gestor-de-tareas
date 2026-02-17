@@ -57,8 +57,8 @@ class UserSeeder extends Seeder
 
         //ROLES Y ASIGNACIÓN DE PERMISOS
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
-        // Nota: 'superadmin' se crea SOLO en las tablas de Spatie, no en la tabla 'roles' personalizada
         
+        $role = Role::firstOrCreate(['name' => 'superadmin']);
         $role = Role::firstOrCreate(['name' => 'admin']);
         $role->syncPermissions(['ver', 'crear', 'editar', 'activar', 'eliminar', 'autorizar', 'administrar', 'tienda', 'vaciar_carrito']);
 
@@ -135,13 +135,12 @@ class UserSeeder extends Seeder
         );
 
         //CREACION DE ESTADOS
-        DB::table('estados')->updateOrInsert(['id' => 1], ['estado' => 'Solicitada', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
-        DB::table('estados')->updateOrInsert(['id' => 2], ['estado' => 'Recibida', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
-        DB::table('estados')->updateOrInsert(['id' => 3], ['estado' => 'En progreso', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
-        DB::table('estados')->updateOrInsert(['id' => 4], ['estado' => 'Resuelta', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
+        DB::table('estados')->updateOrInsert(['id' => 1], ['estado' => 'Recibida', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
+        DB::table('estados')->updateOrInsert(['id' => 2], ['estado' => 'En progreso', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
+        DB::table('estados')->updateOrInsert(['id' => 3], ['estado' => 'Resuelta', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
 
         //CREACION DE PARAMETROS
-        DB::table('parametros')->updateOrInsert(['parametro' => 'Frecuencia de refresco'], ['valor' => '60', 'unidad_medida' => 'segundos', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
-        DB::table('parametros')->updateOrInsert(['parametro' => 'Nombres de kits automáticos'], ['valor' => '1', 'unidad_medida' => 'boolean', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
+        DB::table('parametros')->updateOrInsert(['id' => 1], ['parametro' => 'Frecuencia de refresco', 'valor' => '60', 'unidad_medida' => 'segundos', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
+        DB::table('parametros')->updateOrInsert(['id' => 2], ['parametro' => 'Nombres de kits automáticos', 'valor' => '1', 'unidad_medida' => 'boolean', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
     }
 }
