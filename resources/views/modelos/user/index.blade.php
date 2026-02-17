@@ -13,15 +13,15 @@
                         <p class="card-text">Las personas autorizadas para operar el sistema desempeñando roles
                             específicos</p>
                     </div>
-                    @if (auth()->user()->mainRole->name == 'admin')
-                    <div class="col-1 d-flex justify-content-end" style="padding: 0;">
-                        <a href="{!! route('register') !!}">
-                            <div class="badge-circle badge-circle-md bg-primary">
-                                <i class="bx bx-plus-medical font-small-3"></i>
-                            </div>
-                        </a>
-                    </div>
-                    @endif
+                    @can('create')
+                        <div class="col-1 d-flex justify-content-end" style="padding: 0;">
+                            <a href="{!! route('register') !!}">
+                                <div class="badge-circle badge-circle-md bg-primary">
+                                    <i class="bx bx-plus-medical font-small-3"></i>
+                                </div>
+                            </a>
+                        </div>
+                    @endcan
                 </div>
             </div>
             <div class="card-content">
