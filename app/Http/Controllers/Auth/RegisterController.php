@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Laravel\Jetstream\Jetstream;
@@ -88,7 +89,8 @@ class RegisterController extends Controller
             return redirect('user')->with('success', 'Nuevo usuario registrado con éxito.');
         } catch (\Exception $e) {
             DB::rollback();
-            return back()->withErrors(['email' => $e->getMessage()])->withInput();
+            Log::error('Log:: Error en registro de usuario: ' . $e->getMessage(), ['exception' => $e]);
+            return back()->withErrors(['email' => 'Ocurrió un error al procesar el registro del usuario.'])->withInput();
         }
     }
 }

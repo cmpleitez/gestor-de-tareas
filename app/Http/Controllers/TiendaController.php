@@ -215,8 +215,8 @@ class TiendaController extends Controller
             return response()->json(['success' => true, 'message' => 'Orden recibida. Redireccionando a la Tienda']);
         } catch (\Throwable $e) {
             DB::rollBack();
-            Log::error('Error en carritoEnviar: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString());
-            return response()->json(['success' => false, 'message' => 'Error al procesar la orden: ' . $e->getMessage()], 500);
+            Log::error('Log:: Error en carritoEnviar: ' . $e->getMessage(), ['exception' => $e]);
+            return response()->json(['success' => false, 'message' => 'Ocurrió un error al procesar la orden.'], 500);
         }
     }
 
@@ -243,8 +243,8 @@ class TiendaController extends Controller
             return response()->json(['success' => true, 'message' => 'Kit retirado del carrito correctamente', 'orden_vacia' => true]);
         } catch (Exception $e) {
             DB::rollBack();
-            Log::error("Error al retirar orden {$orden->id}: " . $e->getMessage());
-            return response()->json(['success' => false, 'message' => 'Error al procesar la solicitud: ' . $e->getMessage()], 500);
+            Log::error("Log:: Error al retirar orden {$orden->id}: " . $e->getMessage(), ['exception' => $e]);
+            return response()->json(['success' => false, 'message' => 'Ocurrió un error al procesar la solicitud.'], 500);
         }
     }
     
@@ -328,7 +328,8 @@ class TiendaController extends Controller
             return $request->ajax() ? response()->json(['success' => true, 'message' => $message, 'type' => 'success']) : back()->with('success', $message);
         } catch (Exception $e) {
             DB::rollBack();
-            $message = 'Ocurrió un error cuando se intentaba agregar el kit a la tienda: ' . $e->getMessage();
+            Log::error('Log:: Ocurrió un error cuando se intentaba agregar el kit a la tienda: ' . $e->getMessage(), ['exception' => $e]);
+            $message = 'Ocurrió un error cuando se intentaba agregar el kit a la tienda.';
             return $request->ajax() ? response()->json(['success' => false, 'message' => $message, 'type' => 'error']) : back()->with('error', $message);
         }
     }
@@ -381,7 +382,8 @@ class TiendaController extends Controller
             throw new Exception('No se encontró el producto especificado');
         } catch (Exception $e) {
             DB::rollBack();
-            return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()], 500);
+            Log::error('Log:: Ocurrió un error en retirarItem: ' . $e->getMessage(), ['exception' => $e]);
+            return response()->json(['success' => false, 'message' => 'Ocurrió un error al intentar retirar el ítem.'], 500);
         }
     }
 
@@ -407,7 +409,8 @@ class TiendaController extends Controller
                 'unidades'         => 'required|integer|min:1',
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return back()->with('error', 'Error en la validación: ' . $e->getMessage());
+            Log::error('Log:: Error en la validación de stock: ' . $e->getMessage(), ['exception' => $e]);
+            return back()->with('error', 'La información proporcionada no es válida.');
         }
         if ($validated['origen_stock_id'] == 1 && $validated['destino_stock_id'] == 5) { //Compras
             $origenStockUnidades = 0;
@@ -486,10 +489,12 @@ class TiendaController extends Controller
             return back()->with('success', 'Movimiento ' . $movimiento->movimiento . ' efectuado correctamente');
         } catch (QueryException $e) {
             DB::rollBack();
-            return back()->with('error', 'Error en la consulta: ' . $e->getMessage());
+            Log::error('Log:: Error de base de datos en storeStock: ' . $e->getMessage(), ['exception' => $e]);
+            return back()->with('error', 'Ocurrió un error al procesar el movimiento en la base de datos.');
         } catch (Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Error en la transacción: ' . $e->getMessage());
+            Log::error('Log:: Error en storeStock (transacción): ' . $e->getMessage(), ['exception' => $e]);
+            return back()->with('error', 'Ocurrió un error al efectuar el movimiento de stock.');
         }
     }
 
@@ -593,7 +598,8 @@ class TiendaController extends Controller
             });
             return response()->json($resultado);
         } catch (\Exception $e) {
-            return back()->with('error', 'Error al obtener el avance del tablero: ' . $e->getMessage());
+            Log::error('Log:: Error en consultarAvance: ' . $e->getMessage(), ['exception' => $e]);
+            return response()->json(['success' => false, 'message' => 'Ocurrió un error al consultar el avance.'], 500);
         }
     }
 

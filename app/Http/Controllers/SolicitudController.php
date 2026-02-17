@@ -8,6 +8,7 @@ use App\Models\Tarea;
 use App\Models\User;
 use App\Services\CorrelativeIdGenerator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class SolicitudController extends Controller
 {
@@ -72,7 +73,8 @@ class SolicitudController extends Controller
         try {
             $solicitud->delete();
         } catch (\Exception $e) {
-            return back()->with('error', 'Ocurrió un error cuando se intentaba eliminar la solicitud: ' . $e->getMessage());
+            Log::error('Log:: Ocurrió un error cuando se intentaba eliminar la solicitud: ' . $e->getMessage(), ['exception' => $e]);
+            return back()->with('error', 'Ocurrió un error cuando se intentaba eliminar la solicitud.');
         }
         return redirect()->route('solicitud')->with('success', 'La solicitud "' . $solicitud->solicitud . '" ha sido eliminada correctamente');
     }

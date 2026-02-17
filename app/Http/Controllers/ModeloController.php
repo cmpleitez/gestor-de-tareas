@@ -5,6 +5,7 @@ use App\Http\Requests\ModeloUpdateRequest;
 use App\Models\Marca;
 use App\Models\Modelo;
 use App\Services\CorrelativeIdGenerator;
+use Illuminate\Support\Facades\Log;
 
 class ModeloController extends Controller
 {
@@ -57,7 +58,8 @@ class ModeloController extends Controller
         try {
             $modelo->delete();
         } catch (\Exception $e) {
-            return back()->with('error', 'Ocurrió un error cuando se intentaba eliminar el modelo: ' . $e->getMessage());
+            Log::error('Log:: Ocurrió un error cuando se intentaba eliminar el modelo: ' . $e->getMessage(), ['exception' => $e]);
+            return back()->with('error', 'Ocurrió un error cuando se intentaba eliminar el modelo.');
         }
         return redirect()->route('modelo')->with('success', 'El modelo "' . $modelo->modelo . '" ha sido eliminado correctamente');
     }

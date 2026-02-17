@@ -4,6 +4,7 @@ use App\Models\Tipo;
 use App\Http\Requests\TipoStoreRequest;
 use App\Http\Requests\TipoUpdateRequest;
 use App\Services\CorrelativeIdGenerator;
+use Illuminate\Support\Facades\Log;
 
 class TipoController extends Controller
 {
@@ -54,7 +55,8 @@ class TipoController extends Controller
         try {
             $tipo->delete();
         } catch (\Exception $e) {
-            return back()->with('error', 'Ocurrió un error cuando se intentaba eliminar el tipo: ' . $e->getMessage());
+            Log::error('Log:: Ocurrió un error cuando se intentaba eliminar el tipo: ' . $e->getMessage(), ['exception' => $e]);
+            return back()->with('error', 'Ocurrió un error cuando se intentaba eliminar el tipo.');
         }
         return redirect()->route('tipo')->with('success', 'El tipo "' . $tipo->tipo . '" ha sido eliminado correctamente');
     }

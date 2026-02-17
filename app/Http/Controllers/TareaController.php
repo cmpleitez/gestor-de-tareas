@@ -5,6 +5,7 @@ use App\Http\Requests\TareaStoreRequest;
 use App\Http\Requests\TareaUpdateRequest;
 use App\Models\Tarea;
 use App\Services\CorrelativeIdGenerator;
+use Illuminate\Support\Facades\Log;
 
 class TareaController extends Controller
 {
@@ -50,7 +51,8 @@ class TareaController extends Controller
         try {
             $tarea->delete();
         } catch (\Exception $e) {
-            return back()->with('error', 'Ocurrió un error cuando se intentaba eliminar la tarea: ' . $e->getMessage());
+            Log::error('Log:: Ocurrió un error cuando se intentaba eliminar la tarea: ' . $e->getMessage(), ['exception' => $e]);
+            return back()->with('error', 'Ocurrió un error cuando se intentaba eliminar la tarea.');
         }
         return redirect()->route('tarea')->with('success', 'La tarea "' . $tarea->tarea . '" ha sido eliminada correctamente');
     }

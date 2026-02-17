@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Exception;
 
 use App\Http\Requests\KitStoreRequest;
@@ -53,7 +54,8 @@ class KitController extends Controller
             return redirect()->route('kit')->with('success', 'Kit creado correctamente');
         } catch (Exception $e) {
             DB::rollback();
-            return back()->with('error', 'Ocurrió un error cuando se intentaba registrar el Kit: '.$e->getMessage());
+            Log::error('Log:: Ocurrió un error cuando se intentaba registrar el Kit: ' . $e->getMessage(), ['exception' => $e]);
+            return back()->with('error', 'Ocurrió un error cuando se intentaba registrar el Kit.');
         }
     }
 
@@ -109,7 +111,8 @@ class KitController extends Controller
             return redirect()->route('kit')->with('success', 'Kit actualizado correctamente');
         } catch (Exception $e) {
             DB::rollback();
-            return back()->with('error', 'Ocurrió un error cuando se intentaba actualizar el Kit: '.$e->getMessage());
+            Log::error('Log:: Ocurrió un error cuando se intentaba actualizar el Kit: ' . $e->getMessage(), ['exception' => $e]);
+            return back()->with('error', 'Ocurrió un error cuando se intentaba actualizar el Kit.');
         }
     }
 
@@ -158,9 +161,10 @@ class KitController extends Controller
             $kit->save();
             DB::commit();
             return redirect()->route('kit')->with('success', 'Kit actualizado correctamente');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollback();
-            return redirect()->back()->with('info', 'Ocurrió un error al intentar actualizar el Kit: '.$e->getMessage());
+            Log::error('Log:: Ocurrió un error al intentar actualizar el Kit: ' . $e->getMessage(), ['exception' => $e]);
+            return redirect()->back()->with('error', 'Ocurrió un error al intentar actualizar el Kit.');
         }
     }
 
@@ -185,9 +189,10 @@ class KitController extends Controller
                 $equivalente->save();
             DB::commit();
             return redirect()->back()->with('success', 'El producto se agregó como equivalente');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollback();
-            return redirect()->back()->with('error', 'Ocurrió un error cuando se intentaba actualizar el producto equivalente: '.$e->getMessage());
+            Log::error('Log:: Ocurrió un error cuando se intentaba actualizar el producto equivalente: ' . $e->getMessage(), ['exception' => $e]);
+            return redirect()->back()->with('error', 'Ocurrió un error cuando se intentaba actualizar el producto equivalente.');
         }
     }
 
@@ -200,8 +205,9 @@ class KitController extends Controller
                 ->first();
             $equivalente->delete();
             return back()->with('success', 'El producto equivalente <'.$equivalente->producto->producto.'> se eliminó correctamente');
-        } catch (\Exception $e) {
-            return back()->with('error', 'Ocurrió un error cuando se intentaba eliminar el producto equivalente: '.$e->getMessage());
+        } catch (Exception $e) {
+            Log::error('Log:: Ocurrió un error cuando se intentaba eliminar el producto equivalente: ' . $e->getMessage(), ['exception' => $e]);
+            return back()->with('error', 'Ocurrió un error cuando se intentaba eliminar el producto equivalente.');
         }
     }
 
@@ -218,7 +224,8 @@ class KitController extends Controller
             $kit->delete();
             return redirect()->route('kit')->with('success', 'Kit eliminado correctamente');
         } catch (Exception $e) {
-            return back()->with('error', 'Ocurrió un error cuando se intentaba eliminar el kit: '.$e->getMessage());
+            Log::error('Log:: Ocurrió un error cuando se intentaba eliminar el kit: ' . $e->getMessage(), ['exception' => $e]);
+            return back()->with('error', 'Ocurrió un error cuando se intentaba eliminar el kit.');
         }
     }
 

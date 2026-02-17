@@ -7,6 +7,7 @@ use App\Services\ImageWeightStabilizer;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
@@ -62,7 +63,8 @@ class CreateNewUser implements CreatesNewUsers
             return $user;
         } catch (Exception $e) {
             DB::rollBack();
-            throw new Exception('Error al crear el usuario: ' . $e->getMessage());
+            Log::error('Log:: Error al crear el nuevo usuario (Fortify): ' . $e->getMessage(), ['exception' => $e]);
+            throw new Exception('Ocurrió un error al intentar crear la cuenta de usuario.');
         }
     }
 }

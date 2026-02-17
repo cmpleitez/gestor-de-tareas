@@ -21,7 +21,15 @@ class OrdenRevisadaNotification extends Notification implements ShouldQueue
 
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['database', 'mail'];
+    }
+
+    public function toMail(object $notifiable): MailMessage
+    {
+        $ordenId = \App\Services\KeyRipper::rip($this->recepcion->atencion_id);
+        return (new MailMessage)
+            ->subject('Orden #' . $ordenId . ' Revisada')
+            ->markdown('mail.orden-revisada', ['recepcion' => $this->recepcion]);
     }
 
 

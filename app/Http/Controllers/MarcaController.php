@@ -4,6 +4,7 @@ use App\Http\Requests\MarcaStoreRequest;
 use App\Http\Requests\MarcaUpdateRequest;
 use App\Models\Marca;
 use App\Services\CorrelativeIdGenerator;
+use Illuminate\Support\Facades\Log;
 
 class MarcaController extends Controller
 {
@@ -54,7 +55,8 @@ class MarcaController extends Controller
         try {
             $marca->delete();
         } catch (\Exception $e) {
-            return back()->with('error', 'Ocurrió un error cuando se intentaba eliminar la marca: ' . $e->getMessage());
+            Log::error('Log:: Ocurrió un error cuando se intentaba eliminar la marca: ' . $e->getMessage(), ['exception' => $e]);
+            return back()->with('error', 'Ocurrió un error cuando se intentaba eliminar la marca.');
         }
         return redirect()->route('marca')->with('success', 'La marca "' . $marca->marca . '" ha sido eliminada correctamente');
     }

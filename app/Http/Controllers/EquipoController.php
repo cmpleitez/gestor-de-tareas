@@ -6,6 +6,7 @@ use App\Http\Requests\EquipoUpdateRequest;
 use App\Models\Equipo;
 use App\Models\Oficina;
 use App\Services\CorrelativeIdGenerator;
+use Illuminate\Support\Facades\Log;
 
 class EquipoController extends Controller
 {
@@ -51,7 +52,8 @@ class EquipoController extends Controller
         try {
             $equipo->delete();
         } catch (\Exception $e) {
-            return back()->with('error', 'Ocurrió un error cuando se intentaba eliminar el equipo: ' . $e->getMessage());
+            Log::error('Log:: Ocurrió un error cuando se intentaba eliminar el equipo: ' . $e->getMessage(), ['exception' => $e]);
+            return back()->with('error', 'Ocurrió un error cuando se intentaba eliminar el equipo.');
         }
         return redirect()->route('equipo')->with('success', 'El equipo "' . $equipo->equipo . '" ha sido eliminado correctamente');
     }

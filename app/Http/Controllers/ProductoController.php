@@ -8,6 +8,7 @@ use App\Models\Tipo;
 use App\Services\CorrelativeIdGenerator;
 use App\Http\Requests\ProductoStoreRequest;
 use App\Http\Requests\ProductoUpdateRequest;
+use Illuminate\Support\Facades\Log;
 
 class ProductoController extends Controller
 {
@@ -78,7 +79,8 @@ class ProductoController extends Controller
         try {
             $producto->delete();
         } catch (\Exception $e) {
-            return back()->with('error', 'Ocurrió un error cuando se intentaba eliminar el producto: ' . $e->getMessage());
+            Log::error('Log:: Ocurrió un error cuando se intentaba eliminar el producto: ' . $e->getMessage(), ['exception' => $e]);
+            return back()->with('error', 'Ocurrió un error cuando se intentaba eliminar el producto.');
         }
         return redirect()->route('producto')->with('success', 'El producto "' . $producto->producto . '" ha sido eliminado correctamente');
     }
