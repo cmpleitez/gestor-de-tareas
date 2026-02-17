@@ -7,6 +7,7 @@ use App\Models\Marca;
 use App\Models\Modelo;
 use App\Models\Producto;
 use App\Models\Entrada;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class InventarioSeeder extends Seeder
@@ -20,7 +21,14 @@ class InventarioSeeder extends Seeder
             ['id' => 3, 'tipo' => 'Camping para vehículos'],
         ];
         foreach ($tipos as $tipo) {
-            DB::table('tipos')->updateOrInsert(['id' => $tipo['id']], ['tipo' => $tipo['tipo']]);
+            DB::table('tipos')->updateOrInsert(
+                ['id' => $tipo['id']],
+                [
+                    'tipo' => $tipo['tipo'],
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ]
+            );
         }
 
         //CREACION DE MARCAS
@@ -37,7 +45,14 @@ class InventarioSeeder extends Seeder
             ['id' => 10, 'marca' => 'Volkswagen'],
         ];
         foreach ($marcas as $marca) {
-            DB::table('marcas')->updateOrInsert(['id' => $marca['id']], ['marca' => $marca['marca']]);
+            DB::table('marcas')->updateOrInsert(
+                ['id' => $marca['id']],
+                [
+                    'marca' => $marca['marca'],
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ]
+            );
         }
         
         //CREACION DE MODELOS
@@ -58,7 +73,9 @@ class InventarioSeeder extends Seeder
                 ['id' => $modelo['id']],
                 [
                     'marca_id' => $modelo['marca_id'],
-                    'modelo' => $modelo['modelo']
+                    'modelo' => $modelo['modelo'],
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
                 ]
             );
         }
@@ -104,6 +121,8 @@ class InventarioSeeder extends Seeder
                     'modelo_id' => $producto['modelo_id'],
                     'producto' => $producto['producto'],
                     'precio' => $producto['precio'],
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
                 ]
             );
         }
@@ -118,7 +137,11 @@ class InventarioSeeder extends Seeder
         foreach ($stocks as $stock) {
             DB::table('stocks')->updateOrInsert(
                 ['id'    => $stock['id']],
-                ['stock' => $stock['stock']]
+                [
+                    'stock' => $stock['stock'],
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ]
             );
         }
 
