@@ -135,9 +135,10 @@ class UserSeeder extends Seeder
         );
 
         //CREACION DE ESTADOS
-        DB::table('estados')->updateOrInsert(['id' => 1], ['estado' => 'Recibida', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
-        DB::table('estados')->updateOrInsert(['id' => 2], ['estado' => 'En progreso', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
-        DB::table('estados')->updateOrInsert(['id' => 3], ['estado' => 'Resuelta', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
+        DB::table('estados')->updateOrInsert(['id' => 1], ['estado' => 'Solicitada', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
+        DB::table('estados')->updateOrInsert(['id' => 2], ['estado' => 'Recibida', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
+        DB::table('estados')->updateOrInsert(['id' => 3], ['estado' => 'En progreso', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
+        DB::table('estados')->updateOrInsert(['id' => 4], ['estado' => 'Resuelta', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
 
         //CREACION DE PARAMETROS
         DB::table('parametros')->updateOrInsert(['id' => 1], ['parametro' => 'Frecuencia de refresco', 'valor' => '60', 'unidad_medida' => 'segundos', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
