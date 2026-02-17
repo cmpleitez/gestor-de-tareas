@@ -79,7 +79,7 @@ SERVICIOS:
     🟢 Revisiones:
         . Cuadrar la formula de la orden
         . el tracking 'en progreso' tapa la verdadera traza de la orden
-        . Rol receptor control revisar: No se encontraron ordens para corregir
+        . Rol receptor control revisar: No se encontraron ordenes para corregir
 
 CLIENTE:
 
