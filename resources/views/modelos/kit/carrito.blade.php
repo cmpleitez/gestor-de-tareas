@@ -1,6 +1,6 @@
 @extends('servicios')
 
-@section('header') 
+@section('header')
     @php //Calculo Temporal
         $rol_usuario_actual = auth()->user()->mainRole->name;
         $total = 0;
@@ -68,7 +68,7 @@
         border-color: rgba(0,0,0,.125);
     }
 
-    .accordion-flush .accordion-item, 
+    .accordion-flush .accordion-item,
     .accordion-flush .accordion-header,
     .accordion-flush .accordion-button,
     .accordion-flush .accordion-collapse {
@@ -110,11 +110,11 @@
         transform: scale(1.1);
         filter: brightness(0.8);
     }
-    
+
     .btn-scale-hover:hover {
         transform: scale(1.2);
     }
-    
+
     .btn-scale-hover:active {
         transform: scale(0.9);
     }
@@ -167,7 +167,7 @@
     .btn-stock-verified {
         background-color: var(--color-success-light);
         color: var(--text-success-dark);
-        border: 2px solid transparent; 
+        border: 2px solid transparent;
     }
 
     .btn-stock-verified:hover {
@@ -179,7 +179,7 @@
     .btn-check-stock:checked + .btn-stock-verified {
         background-color: var(--color-success);
         color: #ffffff;
-        border-color: transparent; 
+        border-color: transparent;
         transform: scale(1.05);
         transform: scale(1.05);
     }
@@ -236,7 +236,7 @@
         .btn-group-stock-status {
             flex-direction: row;
         }
-        
+
         .btn-stock-status {
             font-size: 0.7rem;
             padding: 0.4rem 0.8rem;
@@ -296,7 +296,7 @@
                                                             @can('eliminar')
                                                                 <div class="ps-2 pe-1">
                                                                     <i id="btn_retirar_{{ $detalle->orden_id }}_{{ $detalle->kit_id }}_{{ $detalle->producto_id }}"
-                                                                        class="fas fa-trash text-danger-dark" 
+                                                                        class="fas fa-trash text-danger-dark"
                                                                         onclick="retirarItemAJAX(this)"
                                                                         data-orden-id="{{ $detalle->orden_id }}"
                                                                         data-kit-id="{{ $detalle->kit_id }}"
@@ -307,19 +307,19 @@
                                                             @endcan
                                                         @endcan
                                                         <div class="w-100 d-flex flex-column gap-2 p-2">
-                                                            <button class="d-flex justify-content-start align-items-center text-start flex-grow-1 {{ ($rol_usuario_actual == 'cliente' || $rol_usuario_actual == 'receptor') ? 'accordion-button collapsed' : 'border-0 bg-transparent' }}" 
-                                                                style="padding: 0.5em; font-size: 0.8rem;" 
-                                                                type="button" 
+                                                            <button class="d-flex justify-content-start align-items-center text-start flex-grow-1 {{ ($rol_usuario_actual == 'cliente' || $rol_usuario_actual == 'receptor') ? 'accordion-button collapsed' : 'border-0 bg-transparent' }}"
+                                                                style="padding: 0.5em; font-size: 0.8rem;"
+                                                                type="button"
                                                                 data-orden-id="{{ $detalle->orden_id }}"
                                                                 data-kit-id="{{ $detalle->kit_id }}"
                                                                 @if($rol_usuario_actual == 'cliente' || $rol_usuario_actual == 'receptor')
-                                                                    data-bs-toggle="collapse" 
-                                                                    data-bs-target="#{{ $detCollapseId }}" 
-                                                                    aria-expanded="false" 
+                                                                    data-bs-toggle="collapse"
+                                                                    data-bs-target="#{{ $detCollapseId }}"
+                                                                    aria-expanded="false"
                                                                     aria-controls="{{ $detCollapseId }}"
                                                                 @endif>
                                                                 <span>{{ $detalle->unidades }}</span>
-                                                                @if($rol_usuario_actual == 'receptor' || $rol_usuario_actual == 'operador') 
+                                                                @if($rol_usuario_actual == 'receptor' || $rol_usuario_actual == 'operador')
                                                                     @if(is_null($detalle->stock_fisico_existencias))
                                                                         <span class="px-1">
                                                                             <i class="fas fa-clock text-muted" title="Pendiente de revisión"></i>
@@ -343,11 +343,11 @@
                                                             </button>
                                                             @if($rol_usuario_actual == 'operador')
                                                                 <div class="btn-group-stock-status d-flex justify-content-end" role="group" aria-label="Estado de stock físico">
-                                                                    <input type="radio" 
-                                                                        class="btn-check-stock" 
-                                                                        name="stock_status_{{ $detAccordionId }}" 
-                                                                        id="stock_verificado_{{ $detAccordionId }}" 
-                                                                        value="1" 
+                                                                    <input type="radio"
+                                                                        class="btn-check-stock"
+                                                                        name="stock_status_{{ $detAccordionId }}"
+                                                                        id="stock_verificado_{{ $detAccordionId }}"
+                                                                        value="1"
                                                                         {{ $detalle->stock_fisico_existencias === true ? 'checked' : '' }}
                                                                         data-route="{{ route('recepcion.revisar-stock') }}"
                                                                         data-orden-id="{{ $detalle->orden_id }}"
@@ -357,11 +357,11 @@
                                                                         <i class="fas fa-check-circle me-1"></i>
                                                                         <span>Existencias verificadas</span>
                                                                     </label>
-                                                                    <input type="radio" 
-                                                                        class="btn-check-stock" 
-                                                                        name="stock_status_{{ $detAccordionId }}" 
-                                                                        id="stock_sin_existencias_{{ $detAccordionId }}" 
-                                                                        value="0" 
+                                                                    <input type="radio"
+                                                                        class="btn-check-stock"
+                                                                        name="stock_status_{{ $detAccordionId }}"
+                                                                        id="stock_sin_existencias_{{ $detAccordionId }}"
+                                                                        value="0"
                                                                         {{ $detalle->stock_fisico_existencias === false ? 'checked' : '' }}
                                                                         data-route="{{ route('recepcion.revisar-stock') }}"
                                                                         data-orden-id="{{ $detalle->orden_id }}"
@@ -389,11 +389,11 @@
                                                                             <div class="col">
                                                                                 <label class="card rounded border m-0 shadow-none h-100" style="cursor: pointer;">
                                                                                     <div class="card-header text-center p-1">
-                                                                                        <small class="fw-bold">{{ $kitProducto->producto->id }}</small>
+                                                                                        <small class="fw-bold">{{ $kitProducto->producto->codigo ?? 'S/C' }}</small>
                                                                                     </div>
                                                                                     <div class="card-body p-2 d-flex flex-column align-items-center">
                                                                                         <div class="mb-2">
-                                                                                            <input type="radio" name="radio_{{ $detAccordionId }}" value="{{ $kitProducto->producto->id }}" data-name-target="#productName_{{ $detAccordionId }}" data-id-target="#productId_{{ $detAccordionId }}" data-badge-target="#badgeId_{{ $detAccordionId }}" data-product-name="{{ $kitProducto->producto->producto }}" data-precio="{{ $kitProducto->producto->precio }}" data-es-estandar="true" {{ $detalle->producto_id == $kitProducto->producto->id ? 'checked' : '' }} onfocus="this.setAttribute('data-prev', this.checked ? this.value : '')" onchange="updateProductName(this)">
+                                                                                            <input type="radio" name="radio_{{ $detAccordionId }}" value="{{ $kitProducto->producto->id }}" data-name-target="#productName_{{ $detAccordionId }}" data-id-target="#productId_{{ $detAccordionId }}" data-badge-target="#badgeId_{{ $detAccordionId }}" data-product-name="{{ $kitProducto->producto->producto }}" data-product-code="{{ $kitProducto->producto->codigo ?? 'S/C' }}" data-precio="{{ $kitProducto->producto->precio }}" data-es-estandar="true" {{ $detalle->producto_id == $kitProducto->producto->id ? 'checked' : '' }} onfocus="this.setAttribute('data-prev', this.checked ? this.value : '')" onchange="updateProductName(this)">
                                                                                         </div>
                                                                                         <div class="text-center d-flex flex-column justify-content-center flex-grow-1">
                                                                                             <span class="d-block">{{ $kitProducto->producto->producto }}</span>
@@ -404,16 +404,16 @@
                                                                             </div>
                                                                             @foreach($kitProducto->equivalentes as $equivalente)
                                                                                 <div class="col">
-                                                                                    @php 
+                                                                                    @php
                                                                                         $stock = $equivalente->producto->oficinaStock->first()->unidades ?? 0;
-                                                                                    @endphp 
+                                                                                    @endphp
                                                                                     <label class="card rounded border m-0 shadow-none h-100 {{ $stock == 0 ? 'bg-light' : '' }}" style="cursor: {{ $stock == 0 ? 'not-allowed' : 'pointer' }}; opacity: {{ $stock == 0 ? '0.5' : '1' }};">
                                                                                         <div class="card-header text-center p-1">
-                                                                                            <small class="fw-bold">{{ $equivalente->producto->id }}</small>
+                                                                                            <small class="fw-bold">{{ $equivalente->producto->codigo ?? 'S/C' }}</small>
                                                                                         </div>
                                                                                         <div class="card-body p-2 d-flex flex-column align-items-center">
                                                                                             <div class="mb-2">
-                                                                                                <input type="radio" name="radio_{{ $detAccordionId }}" value="{{ $equivalente->producto->id }}" data-name-target="#productName_{{ $detAccordionId }}" data-id-target="#productId_{{ $detAccordionId }}" data-badge-target="#badgeId_{{ $detAccordionId }}" data-product-name="{{ $equivalente->producto->producto }}" data-precio="{{ $equivalente->producto->precio }}" {{ $detalle->producto_id == $equivalente->producto->id ? 'checked' : '' }} {{ $stock == 0 ? 'disabled' : '' }} onfocus="this.setAttribute('data-prev', this.checked ? this.value : '')" onchange="updateProductName(this)">
+                                                                                                <input type="radio" name="radio_{{ $detAccordionId }}" value="{{ $equivalente->producto->id }}" data-name-target="#productName_{{ $detAccordionId }}" data-id-target="#productId_{{ $detAccordionId }}" data-badge-target="#badgeId_{{ $detAccordionId }}" data-product-name="{{ $equivalente->producto->producto }}" data-product-code="{{ $equivalente->producto->codigo ?? 'S/C' }}" data-precio="{{ $equivalente->producto->precio }}" {{ $detalle->producto_id == $equivalente->producto->id ? 'checked' : '' }} {{ $stock == 0 ? 'disabled' : '' }} onfocus="this.setAttribute('data-prev', this.checked ? this.value : '')" onchange="updateProductName(this)">
                                                                                             </div>
                                                                                             <div class="text-center d-flex flex-column justify-content-center flex-grow-1">
                                                                                                 <span class="d-block">{{ $equivalente->producto->producto }}</span>
@@ -448,16 +448,16 @@
                     @if($rol_usuario_actual == 'receptor' || $rol_usuario_actual == 'cliente' || $rol_usuario_actual == 'operador')
                         @if($rol_usuario_actual != 'operador')
                             <div class="col-6 col-md-2 d-flex align-items-center justify-content-center">
-                                <button type="button" class="btn btn-primary-light shadow-sm rounded-circle d-flex align-items-center justify-content-center p-0 btn-scale-hover btn-spinner" 
+                                <button type="button" class="btn btn-primary-light shadow-sm rounded-circle d-flex align-items-center justify-content-center p-0 btn-scale-hover btn-spinner"
                                     data-type="minus" data-target="#unidades_{{ $orden->id }}" data-step="1"
                                     style="width: 1.5rem; height: 1.5rem; cursor: pointer;">
                                     <i class="fas fa-minus text-danger" style="font-size: 0.9rem;"></i>
                                 </button>
                                 <div class="d-flex flex-column align-items-center justify-content-center mx-2" style="width: 4.5rem;">
                                     <input id="unidades_{{ $orden->id }}" type="number" min="1" step="1"
-                                        class="form-control text-center no-spinners input-unidades {{ $errors->has('ordenes.' . $orden->id) ? 'is-invalid' : '' }}" 
+                                        class="form-control text-center no-spinners input-unidades {{ $errors->has('ordenes.' . $orden->id) ? 'is-invalid' : '' }}"
                                         name="unidades" data-orden-id="{{ $orden->id }}" data-precio="{{ $orden->precio }}"
-                                        aria-label="unidades" value="{{ old('ordenes.' . $orden->id, $orden->unidades) }}" 
+                                        aria-label="unidades" value="{{ old('ordenes.' . $orden->id, $orden->unidades) }}"
                                         required
                                         style="width: 100%;">
                                     <div class="invalid-feedback">
@@ -469,7 +469,7 @@
                                         </div>
                                     @enderror
                                 </div>
-                                <button type="button" class="btn btn-primary-light shadow-sm rounded-circle d-flex align-items-center justify-content-center p-0 btn-scale-hover btn-spinner" 
+                                <button type="button" class="btn btn-primary-light shadow-sm rounded-circle d-flex align-items-center justify-content-center p-0 btn-scale-hover btn-spinner"
                                     data-type="plus" data-target="#unidades_{{ $orden->id }}" data-step="1"
                                     style="width: 1.5rem; height: 1.5rem; cursor: pointer;">
                                     <i class="fas fa-plus text-success" style="font-size: 0.9rem;"></i>
@@ -486,7 +486,7 @@
                             </div>
                             <div class="col-3 col-md-1 text-center d-flex align-items-center justify-content-center">
                                 <i id="btn_retirar_orden_{{ $orden->id }}"
-                                    class="fas fa-trash text-danger-dark" 
+                                    class="fas fa-trash text-danger-dark"
                                 onclick="retirarOrdenAJAX(this)"
                                 data-url="{{ route('tienda.retirar-orden', $orden) }}"
                                 data-orden-id="{{ $orden->id }}"
@@ -523,8 +523,8 @@
                         </button>
                     @endif
                     @if($rol_usuario_actual == 'operador')
-                        <button type="button" 
-                            id="revisar-stock" 
+                        <button type="button"
+                            id="revisar-stock"
                             class="btn btn-primary"
                             @if($atencion && $atencion->count() > 0)
                                 data-atencion-id="{{ $atencion->first()->id }}"
@@ -572,7 +572,7 @@
             };
         @endforeach
     @endif
-    $(document).ready(function() { 
+    $(document).ready(function() {
         $('.main-kit-collapse').on('show.bs.collapse hidden.bs.collapse', function (e) { //Lógica del acordión y el alto de fila
             if (e.target === this) {
                 const isShowing = e.type === 'show';
@@ -614,7 +614,7 @@
                 url: '{{ route('tienda.carrito-enviar') }}',
                 method: 'POST',
                 contentType: 'application/json',
-                data: JSON.stringify({ 
+                data: JSON.stringify({
                     _token: '{{ csrf_token() }}',
                     cart: window.cartDetails
                 }),
@@ -627,8 +627,8 @@
                 error: function(xhr) {
                     console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error en carrito-enviar:", xhr);
                     $btn.prop('disabled', false).html('<i class="fas fa-shopping-cart me-2"></i> Enviar');
-                    const errorMessage = xhr.responseJSON && xhr.responseJSON.message 
-                        ? xhr.responseJSON.message 
+                    const errorMessage = xhr.responseJSON && xhr.responseJSON.message
+                        ? xhr.responseJSON.message
                         : 'Error al procesar la orden';
                     toastr.error(errorMessage, null, { "progressBar": true, "timeOut": 10000, "extendedTimeOut": 5000 });
                 }
@@ -644,7 +644,7 @@
             const precio = parseFloat($(this).data('precio'));
             const unidades = parseInt($(this).val()) || 0;
             const subtotal = precio * unidades;
-            const formatted = new Intl.NumberFormat('en-US', { 
+            const formatted = new Intl.NumberFormat('en-US', {
                 style: 'currency',
                 currency: 'USD',
                 minimumFractionDigits: 2
@@ -667,7 +667,7 @@
     });
     function retirarItemAJAX(elemento) {
         const btn = $(elemento);
-        const elementoId = elemento.id; 
+        const elementoId = elemento.id;
         const ordenId = btn.data('orden-id');
         const kitId = btn.data('kit-id');
         const productoId = btn.data('producto-id');
@@ -698,7 +698,7 @@
                     } else {
                         accordionItem.fadeOut(400, function() {
                             $(this).remove();
-                            if (response.nuevo_precio !== undefined) { 
+                            if (response.nuevo_precio !== undefined) {
                                 const ordenInput = $(`.input-unidades[data-orden-id="${ordenId}"]`);
                                 ordenInput.data('precio', response.nuevo_precio);
                                 ordenInput.attr('data-precio', response.nuevo_precio);
@@ -725,7 +725,7 @@
     }
     function retirarOrdenAJAX(elemento) {
         const btn = $(elemento);
-        const elementoId = elemento.id; 
+        const elementoId = elemento.id;
         const url = btn.data('url');
         const ordenId = btn.data('orden-id');
         const orderRow = btn.closest('.row');
@@ -759,28 +759,30 @@
             }
         });
     }
-    function updateProductName(radio) { 
+    function updateProductName(radio) {
         const productName = radio.getAttribute('data-product-name');
         const targetSelector = radio.getAttribute('data-name-target');
         const idSelector = radio.getAttribute('data-id-target');
         const badgeSelector = radio.getAttribute('data-badge-target');
+        const productCode = radio.getAttribute('data-product-code');
         const productId = radio.value;
-        if (targetSelector && productName) { 
+        const badgeValue = productCode || 'S/C';
+        if (targetSelector && productName) {
             const targetElement = document.querySelector(targetSelector);
             if (targetElement) {
                 targetElement.textContent = productName;
             }
         }
-        if (idSelector && productId) { 
+        if (idSelector && productId) {
             const idElement = document.querySelector(idSelector);
             if (idElement) {
                 idElement.value = productId;
             }
         }
-        if (badgeSelector && productId) { 
+        if (badgeSelector && badgeValue) {
             const badgeElement = document.querySelector(badgeSelector);
             if (badgeElement) {
-                badgeElement.textContent = productId;
+                badgeElement.textContent = badgeValue;
             }
         }
         const accordionContainer = $(radio).closest('.accordion[data-orden-id]');
@@ -808,7 +810,7 @@
                         radioEstandar.prop('checked', true).trigger('change');
                     }
                 } else {
-                    $(radio).prop('checked', false); 
+                    $(radio).prop('checked', false);
                 }
                 return;
             }
@@ -899,7 +901,7 @@
                         response.items_validados.forEach(function(item) {
                             const $detalleContainer = $(`input[id^="productId_"][value="${item.producto_id}"]`)
                                 .filter(function() {
-                                    return true; 
+                                    return true;
                                 })
                                 .closest('.accordion-item');
                             const $stockRadio = $(`input.btn-check-stock[data-orden-id="${item.orden_id}"][data-kit-id="${item.kit_id}"][data-producto-id="${item.producto_id}"]`).first();
@@ -979,9 +981,9 @@
         $.ajax({
             url: ruta,
             method: 'POST',
-            data: { 
-                _token: '{{ csrf_token() }}', 
-                atencion_id: atencionId, 
+            data: {
+                _token: '{{ csrf_token() }}',
+                atencion_id: atencionId,
                 recepcion_id: recepcionId,
                 ordenes: ordenes
             },
@@ -1059,8 +1061,8 @@
         $.ajax({
             url: '{{ route('recepcion.corregir-orden') }}',
             method: 'POST',
-            data: { 
-                _token: '{{ csrf_token() }}', 
+            data: {
+                _token: '{{ csrf_token() }}',
                 atencion_id: atencionId,
                 recepcion_id: recepcionId, // Enviando el id de recepción
                 ordenes: ordenes
@@ -1101,7 +1103,7 @@
     // --- ACTUALIZACIÓN EN TIEMPO REAL (VÍA NOTIFICACIONES CON CARGA ÚTIL) ---
     function procesarActualizacionStock(detalles) {
         if (!detalles || !Array.isArray(detalles)) return;
-        
+
         detalles.forEach(item => {
             const $btn = $(`button[data-orden-id="${item.orden_id}"][data-kit-id="${item.kit_id}"]`).filter(function() {
                 return $(this).find('input[id^="productId_"]').val() == item.producto_id;
