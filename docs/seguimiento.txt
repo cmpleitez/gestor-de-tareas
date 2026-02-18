@@ -13,10 +13,10 @@ PAUTAS:
 
 PROCEDIMIENTO: perfil cpleitez.2024@gmail.com https://miro.com/app/board/uXjVJy6iRzE=/
         ✨. Cliente: Entra a la <Tienda>, selecciona en el catálogo el kit y da clic en <agregar al carrito>
-            . Sistema: En respuesta al cliente (<recepcion.user_id_origen>), crea el registro de <Atención>, el detalle de la <Atencion>, 
+            . Sistema: En respuesta al cliente (<recepcion.user_id_origen>), crea el registro de <Atención>, el detalle de la <Atencion>,
             y <copia solicitud receptor>; pendiente de validar por el mismo (<recepcion.validada_origen = false>)
             y pendiente de validar (<recepcion.validada_destino=false>) por el receptor (<recepcion.user_id_destino>)
-        
+
         ✨. Cliente:
             . Entra al <formulario del carrito> y agrega o cambia los <kits y sus productos>
             . Sistema: En atención a la orden (<Enviar>), del cliente:
@@ -25,33 +25,33 @@ PROCEDIMIENTO: perfil cpleitez.2024@gmail.com https://miro.com/app/board/uXjVJy6
                 . Desactiva la <escritura> (<recepcion.validada_origen = true>) para el cliente (<recepcion.user_id_origen>) de la <copia solicitud receptor>
                 . Activa la escritura (<recepcion.validada_destino = false>) para el receptor (<recepcion.user_id_destino>) en la <copia solicitud receptor>
                 . Establece <copia solicitud receptor> en estado de <Recibida>
-        
+
         ✨. Receptor: Entra al servicio <Mis ordenes de compra>
             . Sistema: Brinda la vista de tableros <kanvan> con <autorefrescado> en intervalos de N minutos
-        
-        ✨. Receptor: 
+
+        ✨. Receptor:
             . Prioriza la solicitud y la arrastra al tablero de En progreso
                 . Sistema: Crea <copia solicitud operador>
             . Ubica la solicitud en el tablero de <En progreso> y selecciona la solicitud a revisar <copia solicitud receptor>, dando clic sobre ella
                 . Sistema: Muestra en el <sidebar> el número de gestión y las tareas asignadas para dicha solicitud.
-            . Corrige la <orden de compra> 
+            . Corrige la <orden de compra>
                 . revisa las unidades solicitadas, los items que conformarán la orden de compra y Revisa <stocks digitales>
-        
+
         ✨. Operador: Entra al servicio <Mis ordenes de compra>
                 . Sistema: Brinda la vista <kanvan> con <autorefrescado> en intervalos de 5 minutos
-        
-        ✨. Operador: 
+
+        ✨. Operador:
             . En el tablero de <recibidas> ubica visualmente la <copia solicitud operador> que va procesar y la arrastra hacia el tablero "En Progreso"
             . Ubica la <copia solicitud operador> en el tablero "En Progreso" y da clic sobre ella
                 . Sistema: Muestra en el sidebar las tareas asignadas al operador
-        
-        ✨. Operador: 
-            . Da clic sobre su única tarea 
+
+        ✨. Operador:
+            . Da clic sobre su única tarea
                 . Sistema: Abre la edición del carrito mostrando todas las ordenes y sus items
             . Revisa para cada item el stock físico
                 . Confirma el stock físico: hay o no hay stock físico
             . Clic al boton Revisar
-        
+
         ✨. Receptor:
             . Revisa las verificaciones de stock físico en la orden de compra
             . Clic a control Revisar
@@ -63,8 +63,8 @@ PROCEDIMIENTO: perfil cpleitez.2024@gmail.com https://miro.com/app/board/uXjVJy6
 
         ✨. Receptor:
             . Procesa el resto de las las tareas asignadas
-            . Sistema: 
-                . En cuanto el receptor y el operador han realizado todas las tareas, establece el estado de "Resuelta" a todas las copias de la solicitud 
+            . Sistema:
+                . En cuanto el receptor y el operador han realizado todas las tareas, establece el estado de "Resuelta" a todas las copias de la solicitud
                 y a su solicitud principal <Atencion>, en consecuencia la solicitud se coloca en el tablero de resueltas.
 
 SEGURIDAD:
@@ -74,23 +74,30 @@ SEGURIDAD:
 
 SERVICIOS:
 
-    🟢 Reportes para el receptor y el administrador: 
+    🟢 Reportes para el receptor y el administrador:
         . historial de entradas y salidas en stocks
     🟢 Revisiones:
-        . Cuadrar la formula de la orden
-        
-        
-        
-        
-        
-        
-        
-        ⏳18.feb... el tracking 'en progreso' tapa la verdadera traza de la orden
 
-        
-        
-        
-         
+
+
+
+
+
+
+        ⏳18.feb... Cuadrar la formula de la orden
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

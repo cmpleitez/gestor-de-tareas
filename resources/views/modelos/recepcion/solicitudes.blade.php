@@ -201,7 +201,7 @@
                     chosenClass: 'sortable-chosen',
                     dragClass: 'sortable-drag',
                     onStart: function(evt) {
-                        $('.text-center.text-muted.py-4').remove(); 
+                        $('.text-center.text-muted.py-4').remove();
                     },
                     onEnd: function(evt) {
                         const solicitudId = evt.item.dataset.recepcionId;
@@ -210,11 +210,11 @@
                         if (columnaOrigen !== columnaDestino) {
                             if (columnaOrigen !== 'columna-recibidas' || columnaDestino !== 'columna-progreso') {
                                 toastr.warning('Movimiento reservado para el sistema');
-                                $(evt.from).append(evt.item); 
-                                actualizarMensajeColumnaVacia(); 
+                                $(evt.from).append(evt.item);
+                                actualizarMensajeColumnaVacia();
                                 return;
                             }
-                            const $colDestino = $('#' + columnaDestino); 
+                            const $colDestino = $('#' + columnaDestino);
                             const itemsDestino = $colDestino.children('.solicitud-card').get();
                             itemsDestino.sort(function(a, b) {
                                 return parseInt(a.dataset.atencionId || '0', 10) - parseInt(b.dataset.atencionId || '0', 10);
@@ -224,7 +224,7 @@
                             });
                             updatePosition(solicitudId, columnaDestino, evt);
                         } else {
-                            actualizarMensajeColumnaVacia(); 
+                            actualizarMensajeColumnaVacia();
                         }
                         actualizarMensajeColumnaVacia();
                     }
@@ -671,17 +671,17 @@
             let htmlGenerado = '';
             if (ruta) {
                 htmlGenerado = `
-                    <div class="selectable-item ${esCompletada ? 'selected' : ''}" 
+                    <div class="selectable-item ${esCompletada ? 'selected' : ''}"
                         data-ruta="${ruta}"
                         data-recepcion-id="${recepcionId || tarea.recepcion_id}"
                         data-atencion-id="${atencionId}"
                         data-actividad-id="${tarea.actividad_id}"
                         style="display: flex; align-items: center; padding: 10px; cursor: ${esCompletada ? 'not-allowed' : 'pointer'};">
                         <div style="display: flex; align-items: center; flex: 1; margin: 0;">
-                            <input type="checkbox" 
+                            <input type="checkbox"
                                 id="${taskId}"
-                                name="tarea_completada" 
-                                value="${tarea.actividad_id}" 
+                                name="tarea_completada"
+                                value="${tarea.actividad_id}"
                                 ${esCompletada ? 'checked disabled' : ''}
                                 style="width: 20px; height: 20px; margin-right: 12px; cursor: ${esCompletada ? 'not-allowed' : 'pointer'}; pointer-events: none;">
                             <div class="item-body" style="flex: 1;">
@@ -732,7 +732,7 @@
             form.submit();
             return;
         }
-        e.preventDefault(); 
+        e.preventDefault();
         $.ajax({ //Sin navegación
             url: actionUrl,
             type: 'POST',
@@ -881,8 +881,8 @@
             }
             if (cliente) { // Mostrar cliente primero
                 usersHtml += `
-                        <div style="margin: 0;" data-toggle="popover" 
-                            data-title="${cliente.name || 'Cliente'}" 
+                        <div style="margin: 0;" data-toggle="popover"
+                            data-title="${cliente.name || 'Cliente'}"
                             data-content="<span class='badge badge-pill ${badgeColor}'>Cliente</span>"
                             data-trigger="hover"
                             data-placement="top">
@@ -899,8 +899,8 @@
             }
             participantes.forEach(function(user) { // Mostrar participantes
                 usersHtml += `
-                <div style="margin: 0;" data-toggle="popover" 
-                    data-title="${user.name || 'Sin asignar'}" 
+                <div style="margin: 0;" data-toggle="popover"
+                    data-title="${user.name || 'Sin asignar'}"
                     data-content="<span class='badge badge-pill ${badgeColor}'>${user.recepcion_role_name || 'Sin rol'}</span>"
                     data-trigger="hover"
                     data-placement="top">
@@ -940,7 +940,6 @@
             'border-badge-secondary border-badge-primary border-badge-success border-badge-danger border-badge-warning'
         );
         $card.addClass(borderClass);
-        $card.find('.solicitud-estado').text(nombreEstado);
         $card.find('.solicitud-estado').css({
             'color': color,
             'font-size': '11px',
