@@ -85,7 +85,6 @@ SERVICIOS:
 
 
         ⏳18.feb... Cuadrar la formula de la orden
-            ... en los equivalentes usar el codigo en lugar del id
             ... agregar a formato de validacion de texto guiones y numeros
             ... agregar codigo a stock.index
 

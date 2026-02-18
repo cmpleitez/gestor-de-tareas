@@ -25,6 +25,7 @@
                                 <thead>
                                     <tr>
                                         <th class="text-center">ID</th>
+                                        <th class="text-center">Código</th>
                                         <th>Producto</th>
                                         <th class="text-center">Modelo</th>
                                         <th class="text-center">Tipo</th>
@@ -37,6 +38,7 @@
                                         <tr>
                                             {{-- CAMPOS --}}
                                             <td class="text-center">{{ $producto->id }}</td>
+                                            <td class="text-center">{{ $producto->codigo }}</td>
                                             <td>{{ $producto->producto }}</td>
                                             <td class="text-center">{{ $producto->modelo->modelo }}</td>
                                             <td class="text-center">{{ $producto->tipo->tipo }}</td>
@@ -62,6 +64,7 @@
                                 <tfoot>
                                     <tr>
                                         <th class="text-center">ID</th>
+                                        <th class="text-center">Código</th>
                                         <th>Producto</th>
                                         <th class="text-center">Modelo</th>
                                         <th class="text-center">Tipo</th>
@@ -227,7 +230,7 @@
                 }
             });
             $('#formMovimiento').on('submit', function(e) { //Stocks origen y destino deden ser diferentes
-                var origenVal = $('#origen_stock_id').val(); 
+                var origenVal = $('#origen_stock_id').val();
                 var destinoVal = $('#destino_stock_id').val();
                 if (origenVal && destinoVal && origenVal === destinoVal) {
                     e.preventDefault();
@@ -331,7 +334,7 @@
                 $(this).find('#ProductoStocks').empty();
             });
         });
-        
+
     </script>
 
 @stop
