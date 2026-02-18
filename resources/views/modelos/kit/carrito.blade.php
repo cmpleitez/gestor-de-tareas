@@ -1032,10 +1032,12 @@
                 const productIdInput = detalleAccordion.find(`input[id^="productId_"]`);
                 const productoIdOriginal = productIdInput.data('original-id');
                 const primerRadio = detalleAccordion.find('input[type="radio"]').first();
-                const radioName = primerRadio.attr('name');
-                if (!radioName) return;
-                const radioSeleccionado = detalleAccordion.find(`input[name="${radioName}"]:checked`);
-                const productoIdNuevo = radioSeleccionado.length > 0 ? radioSeleccionado.val() : productoIdOriginal;
+                let productoIdNuevo = productoIdOriginal; // Fallback: mantener producto actual
+                if (primerRadio.length > 0) {
+                    const radioName = primerRadio.attr('name');
+                    const radioSeleccionado = detalleAccordion.find(`input[name="${radioName}"]:checked`);
+                    if (radioSeleccionado.length > 0) productoIdNuevo = radioSeleccionado.val();
+                }
                 if (productoIdOriginal) {
                     detalles.push({
                         kit_id: parseInt(kitId),
@@ -1044,13 +1046,11 @@
                     });
                 }
             });
-            if (detalles.length > 0) {
-                ordenes.push({
-                    orden_id: parseInt(ordenId),
-                    unidades: parseInt(unidades),
-                    detalles: detalles
-                });
-            }
+            ordenes.push({
+                orden_id: parseInt(ordenId),
+                unidades: parseInt(unidades),
+                detalles: detalles
+            });
         });
         if (ordenes.length === 0) {
             toastr.error('No se encontraron órdenes para corregir.');
