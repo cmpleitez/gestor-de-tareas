@@ -5,9 +5,6 @@
 <link href="{{ asset('app-assets/css/bootstrap-extended.css') }}" rel="stylesheet">
 <link href="{{ asset('app-assets/css/pages/app-kanban.css') }}" rel="stylesheet">
 <link href="{{ asset('app-assets/css/solicitudes.css') }}" rel="stylesheet">
-<style>
-
-</style>
 @endsection
 
 @section('contenedor')

@@ -78,12 +78,19 @@ SERVICIOS:
         . historial de entradas y salidas en stocks
     🟢 Revisiones:
         . Cuadrar la formula de la orden
-        . el tracking 'en progreso' tapa la verdadera traza de la orden
+        
+        
+        
+        
+        
+        
+        
+        ⏳18.feb... el tracking 'en progreso' tapa la verdadera traza de la orden
 
         
         
         
-        ⏳18.feb... Rol receptor control revisar: No se encontraron ordenes para corregir
+         
 
 
 
