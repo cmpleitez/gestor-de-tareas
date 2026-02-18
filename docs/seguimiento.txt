@@ -85,7 +85,7 @@ SERVICIOS:
 
 
         ⏳18.feb... Cuadrar la formula de la orden
-            ... agregar a formato de validacion de texto guiones y numeros
+            
 
 
 
