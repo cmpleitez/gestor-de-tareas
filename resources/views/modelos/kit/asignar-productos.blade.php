@@ -76,39 +76,45 @@
                             <thead style="display: none;"></thead>
                             <tbody>
                                 @foreach ($productosChunks as $chunk)
-
-                                <tr>
-                                    @foreach ($chunk as $producto)
-                                    <td class="product-card-container">
-                                        <div class="product-card {{ in_array($producto->id, $kitProductosIds) ? 'border-primary-dark text-warning-dark bg-warning-light' : '' }}" data-producto-id="{{ $producto->id }}">
-                                            @if(in_array($producto->id, $kitProductosIds))
-                                            <span class="product-card-badge">Asignado</span>
+                                    <tr>
+                                        @foreach ($chunk as $producto)
+                                        <td class="product-card-container">
+                                            <div class="product-card {{ in_array($producto->id, $kitProductosIds) ? 'border-primary-dark text-warning-dark bg-warning-light' : '' }}" data-producto-id="{{ $producto->id }}">
+                                                @if(in_array($producto->id, $kitProductosIds))
+                                                <span class="product-card-badge">Asignado</span>
+                                                @endif
+                                                        <input type="checkbox" class="card-checkbox product-checkbox" data-producto-id="{{ $producto->id }}" {{ in_array($producto->id, $kitProductosIds) ? 'checked' : '' }}>
+                                                        <div class="product-card-header">
+                                                            <h5 class="product-card-title">{{ $producto->producto }}</h5>
+                                                        </div>
+                                                        <div class="product-card-body">
+                                                            <div class="product-card-info">
+                                                                <span class="product-card-label">ID</span>
+                                                                <span class="product-card-value">{{ $producto->id }}</span>
+                                                            </div>
+                                                            <div class="product-card-info">
+                                                                <span class="product-card-label">Código</span>
+                                                                <span class="badge secondary-dark"
+                                                                style="font-size: 0.60rem; font-weight: 700; background-color: var(--color-secondary-dark); color: white; margin-right: 0.5rem; display: inline-flex; align-items: center; justify-content: center; min-height: 1.5rem;">
+                                                                    {{ $producto->codigo ?? 'S/C' }}
+                                                                </span>
+                                                            </div>
+                                                            <div class="product-card-info">
+                                                                <span class="product-card-label">Modelo</span>
+                                                                <span class="product-card-value">{{ $producto->modelo->modelo }}</span>
+                                                            </div>
+                                                            <div class="product-card-info">
+                                                                <span class="product-card-label">Tipo</span>
+                                                                <span class="product-card-value">{{ $producto->tipo->tipo }}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            @endforeach
+                                            @if($chunk->count() == 1)
+                                            <td class="product-card-container"></td>
                                             @endif
-                                            <input type="checkbox" class="card-checkbox product-checkbox" data-producto-id="{{ $producto->id }}" {{ in_array($producto->id, $kitProductosIds) ? 'checked' : '' }}>
-                                            <div class="product-card-header">
-                                                <h5 class="product-card-title">{{ $producto->producto }}</h5>
-                                            </div>
-                                            <div class="product-card-body">
-                                                <div class="product-card-info">
-                                                    <span class="product-card-label">ID</span>
-                                                    <span class="product-card-value">{{ $producto->id }}</span>
-                                                </div>
-                                                <div class="product-card-info">
-                                                    <span class="product-card-label">Modelo</span>
-                                                    <span class="product-card-value">{{ $producto->modelo->modelo }}</span>
-                                                </div>
-                                                <div class="product-card-info">
-                                                    <span class="product-card-label">Tipo</span>
-                                                    <span class="product-card-value">{{ $producto->tipo->tipo }}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    @endforeach
-                                    @if($chunk->count() == 1)
-                                    <td class="product-card-container"></td>
-                                    @endif
-                                </tr>
+                                    </tr>
                                 @endforeach
                             </tbody>
                         </table>

@@ -60,11 +60,9 @@
     .btn-pyramid:active {
         transform: scale(0.9);
     }
-    /* Fix para mostrar invalid-feedback con input-clear-wrapper */
     .form-group:has(.is-invalid) .invalid-feedback {
         display: block;
     }
-    /* Eliminar iconos nativos de validación de Bootstrap (X y Check) */
     .form-control.is-invalid, 
     .form-control.is-valid,
     .was-validated .form-control:invalid,
@@ -189,17 +187,26 @@
                                 <div class="accordion collapse-icon accordion-icon-rotate">
                                     <div class="collapse-header" style="background-color:rgb(255, 255, 255) !important; min-height: 2em;">
                                         <div id="{{ $headingId }}" class="acordion-header" data-toggle="collapse" data-target="#{{ $accordionId }}" aria-expanded="false" aria-controls="{{ $accordionId }}" role="tablist">
+                                            <span class="badge secondary-dark" style="font-size: 0.85rem; background-color: var(--color-secondary-dark); color: white; margin-right: 0.5rem; display: inline-flex; align-items: center; justify-content: center; min-height: 1.5rem;">
+                                                {{ $producto->codigo ?? 'S/C' }}
+                                            </span>
                                             {{ $producto->producto }}
                                         </div>
+                                        
                                         <div id="{{ $accordionId }}" role="tabpanel" aria-labelledby="{{ $headingId }}" class="collapse">
                                             <div class="row row-equivalentes"> {{-- Equivalentes --}}
-                                                @foreach ($producto->kitProductos->first()->equivalentes as $equivalente)
+                                                @forelse ($producto->kitProductos->first()->equivalentes as $equivalente)
                                                     <div class="col-sm-6 col-md-2 col-lg-2" style="padding-top: 0.5em;">
                                                         <div class="card equivalente-card" data-producto-id="{{ $equivalente->producto_id }}" style="border: none !important;">
                                                             <div class="card-content">
                                                                 <img class="card-img-top img-fluid" src="{{ asset('app-assets/images/pages/mercaderia.png') }}" alt="Producto alterno" />
                                                                 <div class="card-body" style="padding: 0.5em; text-align: justify;">
-                                                                    <small class="text-muted">{{ $equivalente->producto->producto }}</small>
+                                                                    
+                                                                <div class="col-12 badge secondary-dark"
+                                                                style="font-size: 0.60rem; background-color: var(--color-secondary-dark); color: white; margin-right: 0.5rem; display: inline-flex; align-items: center; justify-content: center; min-height: 1.5rem;">
+                                                                    {{ $equivalente->producto->codigo ?? 'S/C' }}
+                                                                </div>
+                                                                <small class="text-muted">{{ $equivalente->producto->producto }}</small>
                                                                 </div>
                                                             </div>
                                                             <div class="card-footer" style="background-color: #ffffffff !important; border-top: 0.5px solid rgb(233, 236, 240) !important; padding: 0 !important; text-align: center;">
@@ -209,7 +216,11 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                @endforeach
+                                                @empty
+                                                    <div class="col-12">
+                                                        <p class="text-muted p-1" style="font-size: 1rem;">Sin equivalentes</p>
+                                                    </div>
+                                                @endforelse
                                             </div>
                                         </div>
                                     </div>
