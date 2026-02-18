@@ -38,7 +38,7 @@
                                         <tr>
                                             {{-- CAMPOS --}}
                                             <td class="text-center">{{ $producto->id }}</td>
-                                            <td class="text-center">{{ $producto->codigo }}</td>
+                                            <td class="text-center"><span class="badge bg-secondary-dark text-white font-weight-bold" style="font-size: 0.8rem;">{{ $producto->codigo }}</span></td>
                                             <td>{{ $producto->producto }}</td>
                                             <td class="text-center">{{ $producto->modelo->modelo }}</td>
                                             <td class="text-center">{{ $producto->tipo->tipo }}</td>
