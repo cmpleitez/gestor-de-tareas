@@ -46,8 +46,8 @@
                                     {{-- CAMPOS --}}
                                     <td class="text-center">{{ $equipo->id }}</td>
                                     <td>{{ $equipo->equipo }}</td>
-                                    <td class="text-center">{{ $equipo->created_at->format('d/m/Y') }}</td>
-                                    <td class="text-center">{{ $equipo->updated_at->format('d/m/Y') }}</td>
+                                    <td class="text-center">{{ $equipo->created_at->format('d/m/Y h:i a') }}</td>
+                                    <td class="text-center">{{ $equipo->updated_at->format('d/m/Y h:i a') }}</td>
                                     {{-- ACTIVAR --}}
                                     @can('autorizar')
                                     <td class="text-center">

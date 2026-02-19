@@ -46,8 +46,8 @@
                                             {{-- CAMPOS --}}
                                             <td class="text-center">{{ $solicitud->id }}</td>
                                             <td>{{ $solicitud->solicitud }}</td>
-                                            <td class="text-center">{{ $solicitud->created_at->format('d/m/Y') }}</td>
-                                            <td class="text-center">{{ $solicitud->updated_at->format('d/m/Y') }}</td>
+                                            <td class="text-center">{{ $solicitud->created_at->format('d/m/Y h:i a') }}</td>
+                                            <td class="text-center">{{ $solicitud->updated_at->format('d/m/Y h:i a') }}</td>
                                             {{-- ACTIVAR --}}
                                             @can('autorizar')
                                                 <td class="text-center">

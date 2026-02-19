@@ -40,8 +40,8 @@
                                     <td>{{ $parametro->parametro }}</td>
                                     <td>{{ $parametro->valor }}</td>
                                     <td>{{ $parametro->unidad_medida }}</td>
-                                    <td class="text-center">{{ $parametro->created_at->format('d/m/Y') }}</td>
-                                    <td class="text-center">{{ $parametro->updated_at->format('d/m/Y') }}</td>
+                                    <td class="text-center">{{ $parametro->created_at->format('d/m/Y h:i a') }}</td>
+                                    <td class="text-center">{{ $parametro->updated_at->format('d/m/Y h:i a') }}</td>
                                     {{-- ACTIVAR --}}
                                     @can('autorizar')
                                     <td class="text-center">

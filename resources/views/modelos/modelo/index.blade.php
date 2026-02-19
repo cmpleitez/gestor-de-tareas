@@ -45,8 +45,8 @@
                                     <td class="text-center">{{ $modelo->id }}</td>
                                     <td>{{ $modelo->modelo }}</td>
                                     <td>{{ $modelo->marca->marca }}</td>
-                                    <td class="text-center">{{ $modelo->created_at->format('d/m/Y') }}</td>
-                                    <td class="text-center">{{ $modelo->updated_at->format('d/m/Y') }}</td>
+                                    <td class="text-center">{{ $modelo->created_at->format('d/m/Y h:i a') }}</td>
+                                    <td class="text-center">{{ $modelo->updated_at->format('d/m/Y h:i a') }}</td>
                                     {{-- ACTIVAR --}}
                                     @can('autorizar')
                                     <td class="text-center">

@@ -41,8 +41,8 @@
                                 <td class="text-center">{{ $kit->id }}</td>
                                 <td>{{ $kit->kit }}</td>
                                 <td class="td-currency">{{ $kit->precio }}</td>
-                                <td class="text-center">{{ $kit->created_at->format('d/m/Y') }}</td>
-                                <td class="text-center">{{ $kit->updated_at->format('d/m/Y') }}</td>
+                                <td class="text-center">{{ $kit->created_at->format('d/m/Y h:i a') }}</td>
+                                <td class="text-center">{{ $kit->updated_at->format('d/m/Y h:i a') }}</td>
                                 {{-- ACTIVAR --}}
                                 @can('autorizar')
                                 <td class="text-center">

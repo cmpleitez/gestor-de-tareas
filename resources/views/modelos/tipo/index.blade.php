@@ -43,8 +43,8 @@
                                     {{-- CAMPOS --}}
                                     <td class="text-center">{{ $tipo->id }}</td>
                                     <td>{{ $tipo->tipo }}</td>
-                                    <td class="text-center">{{ $tipo->created_at->format('d/m/Y') }}</td>
-                                    <td class="text-center">{{ $tipo->updated_at->format('d/m/Y') }}</td>
+                                    <td class="text-center">{{ $tipo->created_at->format('d/m/Y h:i a') }}</td>
+                                    <td class="text-center">{{ $tipo->updated_at->format('d/m/Y h:i a') }}</td>
                                     {{-- ACTIVAR --}}
                                     @can('autorizar')
                                     <td class="text-center">

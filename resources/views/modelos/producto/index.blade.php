@@ -51,8 +51,8 @@
                                     <td>{{ $producto->modelo->modelo }}</td>
                                     <td>{{ $producto->tipo->tipo }}</td>
                                     <td class="td-currency">{{ $producto->precio }}</td>
-                                    <td class="text-center">{{ $producto->created_at->format('d/m/Y') }}</td>
-                                    <td class="text-center">{{ $producto->updated_at->format('d/m/Y') }}</td>
+                                    <td class="text-center">{{ $producto->created_at->format('d/m/Y h:i a') }}</td>
+                                    <td class="text-center">{{ $producto->updated_at->format('d/m/Y h:i a') }}</td>
                                     {{-- ACTIVAR --}}
                                     @can('autorizar')
                                     <td class="text-center">

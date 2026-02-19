@@ -55,13 +55,13 @@
                                     <td>{{ $user->dui }}</td>
                                     <td>{{ $user->name }}</td>
                                     <td class="text-center">
-                                        <span class="badge badge-pill bg-warning">
+                                        <span class="badge badge-pill bg-secondary-dark">
                                             {{ $user->main_role ?? $user->roles->pluck('name')->first() }}
                                         </span>
                                     </td>
                                     <td>{{ $user->email }}</td>
-                                    <td class="text-center">{{ $user->created_at->format('d/m/Y') }}</td>
-                                    <td class="text-center">{{ $user->updated_at->format('d/m/Y') }}</td>
+                                    <td class="text-center">{{ $user->created_at->format('d/m/Y h:i a') }}</td>
+                                    <td class="text-center">{{ $user->updated_at->format('d/m/Y h:i a') }}</td>
                                     {{-- ACTIVAR --}}
                                     @can('autorizar')
                                     <td class="text-center">

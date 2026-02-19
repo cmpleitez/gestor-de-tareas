@@ -44,8 +44,8 @@
                                     {{-- CAMPOS --}}
                                     <td class="text-center">{{ $tarea->id }}</td>
                                     <td>{{ $tarea->tarea }}</td>
-                                    <td class="text-center">{{ $tarea->created_at->format('d/m/Y') }}</td>
-                                    <td class="text-center">{{ $tarea->updated_at->format('d/m/Y') }}</td>
+                                    <td class="text-center">{{ $tarea->created_at->format('d/m/Y h:i a') }}</td>
+                                    <td class="text-center">{{ $tarea->updated_at->format('d/m/Y h:i a') }}</td>
                                     {{-- ACTIVAR --}}
                                     @can('autorizar')
                                     <td class="text-center">

@@ -43,8 +43,8 @@
                                     {{-- CAMPOS --}}
                                     <td class="text-center">{{ $marca->id }}</td>
                                     <td>{{ $marca->marca }}</td>
-                                    <td class="text-center">{{ $marca->created_at->format('d/m/Y') }}</td>
-                                    <td class="text-center">{{ $marca->updated_at->format('d/m/Y') }}</td>
+                                    <td class="text-center">{{ $marca->created_at->format('d/m/Y h:i a') }}</td>
+                                    <td class="text-center">{{ $marca->updated_at->format('d/m/Y h:i a') }}</td>
                                     {{-- ACTIVAR --}}
                                     @can('autorizar')
                                     <td class="text-center">
