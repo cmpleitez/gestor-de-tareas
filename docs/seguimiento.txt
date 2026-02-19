@@ -10,7 +10,6 @@ PAUTAS:
         Actualizar avance: 60 segundos
         Notificaciones limewire: 60 segundos
 
-
 PROCEDIMIENTO: perfil cpleitez.2024@gmail.com https://miro.com/app/board/uXjVJy6iRzE=/
         ✨. Cliente: Entra a la <Tienda>, selecciona en el catálogo el kit y da clic en <agregar al carrito>
             . Sistema: En respuesta al cliente (<recepcion.user_id_origen>), crea el registro de <Atención>, el detalle de la <Atencion>,
@@ -77,27 +76,7 @@ SERVICIOS:
     🟢 Reportes para el receptor y el administrador:
         . historial de entradas y salidas en stocks
     🟢 Revisiones:
-
-
-
-
-
-
-
-        ⏳18.feb... Cuadrar la formula de la orden
-            
-
-
-
-
-
-
-
-
-
-
-
-
+        . no hay revisiones pendientes
 
 CLIENTE:
 

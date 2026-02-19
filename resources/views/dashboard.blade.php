@@ -429,7 +429,6 @@
                         "closeButton": true,
                         "progressBar": false,
                         "positionClass": "toast-top-right",
-                        // "toastClass" eliminado para no romper estilos base
                         "timeOut": "0",          // Persistente
                         "extendedTimeOut": "0",  // Persistente al hover
                         "tapToDismiss": false,   // Evita cerrar al clickear el cuerpo
