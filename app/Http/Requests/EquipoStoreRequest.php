@@ -12,7 +12,7 @@ class EquipoStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'equipo'     => 'required|unique:equipos|min:3|max:255|regex:/^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ()]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ()]+)*$/',
+            'equipo'     => 'required|unique:equipos|min:3|max:255|regex:/^(?! )[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ()-]+( [a-zA-Z0-9áéíóúÁÉÍÓÚñÑ()-]+)*$/',
             'oficina_id' => 'required|exists:oficinas,id',
         ];
     }

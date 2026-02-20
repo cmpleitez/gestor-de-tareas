@@ -14,7 +14,7 @@ class KitUpdateRequest extends FormRequest
     {
         $kit = $this->route('kit');
         return [
-            'kit' => ['required', 'min:3', 'max:255', 'regex:/^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ()]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ()]+)*$/', Rule::unique('kits')->ignore($kit->id)],
+            'kit' => ['required', 'min:3', 'max:255', 'regex:/^(?! )[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ()-]+( [a-zA-Z0-9áéíóúÁÉÍÓÚñÑ()-]+)*$/', Rule::unique('kits')->ignore($kit->id)],
             'producto' => ['required', 'array'],
             'producto.*.producto_id' => ['required', 'integer', 'exists:productos,id'],
             'producto.*.unidades' => ['required', 'integer', 'min:1'],

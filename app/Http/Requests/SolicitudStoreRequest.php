@@ -12,7 +12,7 @@ class SolicitudStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'solicitud' => 'required|unique:solicitudes|min:3|max:255|regex:/^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ()]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ()]+)*$/',
+            'solicitud' => 'required|unique:solicitudes|min:3|max:255|regex:/^(?! )[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ()-]+( [a-zA-Z0-9áéíóúÁÉÍÓÚñÑ()-]+)*$/',
         ];
     }
 }

@@ -32,7 +32,14 @@
                     <div class="col-sm-12">
                         <div class="form-group"> {{-- Producto --}}
                             <label for="producto">Producto</label>
-                            <input type="text" name="producto" id="producto" class="form-control {{ $errors->has('producto') ? 'is-invalid' : '' }}" data-validation-required-message="Este campo es obligatorio" data-validation-containsnumber-regex="^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ()]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ()]+)*$" data-validation-containsnumber-message="Solo se permiten letras y paréntesis, sin espacios al inicio/final ni dobles espacios" data-validation-minlength-message="El nombre debe tener al menos 3 caracteres" data-clear="true" minlength="3" placeholder="Nombre del producto" value="{{ old('producto', $producto->producto) }}" required>
+                            <input type="text" name="producto" id="producto"
+                                class="form-control {{ $errors->has('producto') ? 'is-invalid' : '' }}"
+                                data-validation-required-message="Este campo es obligatorio"
+                                data-validation-containsnumber-regex="^(?! )[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ()-]+( [a-zA-Z0-9áéíóúÁÉÍÓÚñÑ()-]+)*$"
+                                data-validation-containsnumber-message="Solo se permiten letras, números, paréntesis y guion medio, sin espacios al inicio/final ni dobles espacios"
+                                data-validation-minlength-message="El nombre debe tener al menos 3 caracteres"
+                                data-clear="true" minlength="3" placeholder="Nombre del producto"
+                                value="{{ old('producto', $producto->producto) }}" required>
                             <div class="help-block"></div>
                             @error('producto')
                             <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">

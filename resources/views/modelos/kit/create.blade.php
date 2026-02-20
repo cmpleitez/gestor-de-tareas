@@ -31,7 +31,14 @@
                     <div class="col-md-12">
                         <div class="form-group"> {{-- Nombre del kit --}}
                             <label for="kit">Nombre del kit</label>
-                            <input type="text" name="kit" id="kit" class="form-control {{ $errors->has('kit') ? 'is-invalid' : '' }}" data-validation-required-message="Este campo es obligatorio" data-validation-containsnumber-regex="^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ()]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ()]+)*$" data-validation-containsnumber-message="Solo se permiten letras y paréntesis, sin espacios al inicio/final ni dobles espacios" data-validation-minlength-message="El nombre debe tener al menos 3 caracteres" data-clear="true" minlength="3" placeholder="Nombre del kit" value="{{ old('kit') }}" required>
+                            <input type="text" name="kit" id="kit"
+                                class="form-control {{ $errors->has('kit') ? 'is-invalid' : '' }}"
+                                data-validation-required-message="Este campo es obligatorio"
+                                data-validation-containsnumber-regex="^(?! )[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ()-]+( [a-zA-Z0-9áéíóúÁÉÍÓÚñÑ()-]+)*$"
+                                data-validation-containsnumber-message="Solo se permiten letras, números, paréntesis y guion medio, sin espacios al inicio/final ni dobles espacios"
+                                data-validation-minlength-message="El nombre debe tener al menos 3 caracteres"
+                                data-clear="true" minlength="3" placeholder="Nombre para el nuevo kit"
+                                value="{{ old('kit') }}" required>
                             <div class="help-block"></div>
                             @error('kit')
                             <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">

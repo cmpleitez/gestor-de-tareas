@@ -12,7 +12,7 @@ class MarcaStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'marca' => 'required|unique:marcas|min:3|max:255|regex:/^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ()]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ()]+)*$/',
+            'marca' => 'required|unique:marcas|min:3|max:255|regex:/^(?! )[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ()-]+( [a-zA-Z0-9áéíóúÁÉÍÓÚñÑ()-]+)*$/',
         ];
     }
 }

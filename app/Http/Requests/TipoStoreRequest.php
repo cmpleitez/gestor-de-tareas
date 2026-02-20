@@ -14,7 +14,7 @@ class TipoStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'tipo' => 'required|unique:tipos|min:3|max:255|regex:/^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ()]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ()]+)*$/',
+            'tipo' => 'required|unique:tipos|min:3|max:255|regex:/^(?! )[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ()-]+( [a-zA-Z0-9áéíóúÁÉÍÓÚñÑ()-]+)*$/',
         ];
     }
 }

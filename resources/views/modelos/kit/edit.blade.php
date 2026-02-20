@@ -111,12 +111,14 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="kit">Kit</label>
-                                    <input type="text" name="kit" id="kit" 
-                                    class="form-control {{ $errors->has('kit') ? 'is-invalid' : '' }}" 
-                                    data-clear="true" 
-                                    minlength="3" 
-                                    placeholder="Nombre del kit" 
-                                    value="{{ old('kit', $kit->kit) }}" required>
+                                    <input type="text" name="kit" id="kit"
+                                        class="form-control {{ $errors->has('kit') ? 'is-invalid' : '' }}"
+                                        data-validation-required-message="Este campo es obligatorio"
+                                        data-validation-containsnumber-regex="^(?! )[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ()-]+( [a-zA-Z0-9áéíóúÁÉÍÓÚñÑ()-]+)*$"
+                                        data-validation-containsnumber-message="Solo se permiten letras, números, paréntesis y guion medio, sin espacios al inicio/final ni dobles espacios"
+                                        data-validation-minlength-message="El nombre debe tener al menos 3 caracteres"
+                                        data-clear="true" minlength="3" placeholder="Nuevo nombre"
+                                        value="{{ old('kit', $kit->kit) }}" required>
                                     <div class="invalid-feedback"></div>
                                     @error('kit')
                                         <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
@@ -321,7 +323,7 @@
             var $input = $(this);
             var $feedback = $input.closest('.form-group').find('.invalid-feedback');
             var value = $input.val();
-            var regex = /^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ()]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ()]+)*$/;
+            var regex = /^(?! )[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ()-]+( [a-zA-Z0-9áéíóúÁÉÍÓÚñÑ()-]+)*$/;
             
             if (value === '' || value === null) {
                 $input.addClass('is-invalid').removeClass('is-valid');
@@ -331,7 +333,7 @@
                 $feedback.text('El nombre debe tener al menos 3 caracteres');
             } else if (!regex.test(value)) {
                 $input.addClass('is-invalid').removeClass('is-valid');
-                $feedback.text('Solo se permiten letras y paréntesis, sin espacios al inicio/final ni dobles espacios');
+                $feedback.text('Solo se permiten letras, números, paréntesis y guion medio, sin espacios al inicio/final ni dobles espacios');
             } else {
                 $input.removeClass('is-invalid').addClass('is-valid');
                 $feedback.text('');

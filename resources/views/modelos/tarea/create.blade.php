@@ -37,10 +37,10 @@
                                         <input type="text" name="tarea" id="tarea"
                                             class="form-control {{ $errors->has('tarea') ? 'is-invalid' : '' }}"
                                             data-validation-required-message="Este campo es obligatorio"
-                                            data-validation-containsnumber-regex="^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ()]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ()]+)*$"
-                                            data-validation-containsnumber-message="Solo se permiten letras y paréntesis, sin espacios al inicio/final ni dobles espacios"
+                                            data-validation-containsnumber-regex="^(?! )[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ()-]+( [a-zA-Z0-9áéíóúÁÉÍÓÚñÑ()-]+)*$"
+                                            data-validation-containsnumber-message="Solo se permiten letras, números, paréntesis y guion medio, sin espacios al inicio/final ni dobles espacios"
                                             data-validation-minlength-message="El nombre debe tener al menos 3 caracteres"
-                                            data-clear="true" minlength="3" placeholder="Nombre de la nueva tarea"
+                                            data-clear="true" minlength="3" placeholder="Nombre para la nueva tarea"
                                             value="{{ old('tarea') }}" required>
                                         <div class="help-block"></div>
                                         @error('tarea')

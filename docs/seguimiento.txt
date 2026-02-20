@@ -76,7 +76,7 @@ SERVICIOS:
     🟢 Reportes para el receptor y el administrador:
         . historial de entradas y salidas en stocks
     🟢 Revisiones:
-        . no hay revisiones pendientes
+        . Aún no permite numeros en los nombres de los productos
 
 CLIENTE:
 
