@@ -76,7 +76,8 @@ SERVICIOS:
     🟢 Reportes para el receptor y el administrador:
         . historial de entradas y salidas en stocks
     🟢 Revisiones:
-        . Aún no permite numeros en los nombres de los productos
+        . El navbar se torna transparente cuando se le da clic para colapsar, has que no lo haga
+         
 
 CLIENTE:
 
