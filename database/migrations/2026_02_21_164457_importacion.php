@@ -6,20 +6,24 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('importacion', function (Blueprint $table) {
-            $table->id();
+            $table->unsignedBigInteger('id')->primary();
+            $table->string('kit');
+            $table->integer('kit_unidades')->default(1);
+            $table->string('producto_codigo');
+            $table->string('producto');
+            $table->string('marca');
+            $table->string('modelo');
+            $table->string('tipo');
+            $table->decimal('producto_precio', 20, 4)->default(0);
+            $table->integer('stock_unidades')->default(0);            
+            $table->string('equivalente_producto_codigo');
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('importacion');
