@@ -62,7 +62,7 @@
                     </div>
                     <div class="col-1 d-flex justify-content-end" style="padding: 0;">
                         <a href="{{ route('kit') }}">
-                            <div class="badge-circle badge-circle-md btn-secondary">
+                            <div class="badge-circle badge-circle-md bg-secondary-dark">
                                 <i class="bx bx-arrow-back font-small-3"></i>
                             </div>
                         </a>

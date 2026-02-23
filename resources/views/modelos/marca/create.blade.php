@@ -14,7 +14,7 @@
                 </div>
                 <div class="col-md-2 d-flex justify-content-end" style="padding: 0.1rem;">
                     <a href="{!! route('marca') !!}">
-                        <div class="badge badge-pill badge-primary">
+                        <div class="badge badge-pill bg-secondary-dark">
                             <i class="bx bx-arrow-back font-medium-3"></i>
                         </div>
                     </a>
@@ -53,7 +53,7 @@
         </div>
         {{-- GUARDAR --}}
         <div class="card-footer d-flex justify-content-end">
-            <button type="submit" class="btn btn-primary">Guardar</button>
+            <button type="submit" class="btn bg-secondary-dark white">Guardar</button>
         </div>
     </form>
 </div>

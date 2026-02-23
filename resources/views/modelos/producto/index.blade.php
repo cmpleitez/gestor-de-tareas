@@ -14,7 +14,7 @@
                     </div>
                     <div class="col-1 d-flex justify-content-end" style="padding: 0;">
                         <a href="{!! route('producto.create') !!}">
-                            <div class="badge-circle badge-circle-md btn-warning">
+                            <div class="badge-circle badge-circle-md bg-secondary-dark">
                                 <i class="bx bx-plus-medical font-small-3"></i>
                             </div>
                         </a>
