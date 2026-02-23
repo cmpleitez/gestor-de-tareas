@@ -232,7 +232,7 @@
                             </div>
                             <div class="col-md-2 d-flex justify-content-end" style="padding: 0.1rem;">
                                 <a href="{!! route('user') !!}">
-                                    <div class="badge badge-pill badge-primary">
+                                    <div class="badge badge-pill bg-secondary-dark">
                                         <i class="bx bx-arrow-back font-medium-3"></i>
                                     </div>
                                 </a>
@@ -369,7 +369,7 @@
                         </div>
                     </div>
                     <div class="card-footer d-flex justify-content-end"> {{-- Guardar --}}
-                        <button type="submit" id="submit-btn" class="btn btn-primary">
+                        <button type="submit" id="submit-btn" class="btn btn-secondary-dark">
                             <span id="btn-text">Guardar</span>
                             <span id="btn-spinner" style="display: none;">
                                 <i class="fas fa-spinner fa-spin"></i> Procesando...
@@ -389,7 +389,7 @@
             <span class="float-right d-sm-inline-block d-none">
                 <a href="#" target="_blank">San Salvador</a> &copy; 2025
             </span>
-            <button class="btn btn-primary btn-icon scroll-top" type="button"><i
+            <button class="btn btn-icon btn-secondary-dark scroll-top" type="button"><i
                     class="bx bx-up-arrow-alt"></i></button>
         </p>
     </footer>
