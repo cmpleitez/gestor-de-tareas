@@ -16,7 +16,7 @@
                     <div class="col-1 d-flex justify-content-end" style="padding: 0;">
                         @can('crear')
                         <a href="{!! route('equipo.create') !!}">
-                            <div class="badge-circle badge-circle-md bg-primary">
+                            <div class="badge-circle badge-circle-md bg-secondary-dark">
                                 <i class="bx bx-plus-medical font-small-3"></i>
                             </div>
                         </a>

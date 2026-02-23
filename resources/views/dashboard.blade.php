@@ -287,7 +287,7 @@
         <div class="content-wrapper">
             <div class="content-header row">
             </div>
-            <div class="content-body">
+            <div class="content-body mt-2">
                 @section('contenedor')
                 @show
             </div>

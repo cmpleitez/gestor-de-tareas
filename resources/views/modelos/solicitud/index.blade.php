@@ -7,7 +7,6 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-
                     <div class="col-md-12 d-flex justify-content-between" style="padding: 0;">
                         <div class="col-11 p-1">
                             <h4 class="card-title">SOLICITUDES</h4>
@@ -16,13 +15,12 @@
                         </div>
                         <div class="col-1 d-flex justify-content-end" style="padding: 0;">
                             <a href="{!! route('solicitud.create') !!}">
-                                <div class="badge-circle badge-circle-md badge-circle-primary">
+                                <div class="badge-circle badge-circle-md bg-secondary-dark">
                                     <i class="bx bx-plus-medical font-small-3"></i>
                                 </div>
                             </a>
                         </div>
                     </div>
-
                 </div>
                 <div class="card-content">
                     <div class="card-body card-dashboard">

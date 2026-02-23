@@ -16,7 +16,7 @@
                     @can('create')
                         <div class="col-1 d-flex justify-content-end" style="padding: 0;">
                             <a href="{!! route('register') !!}">
-                                <div class="badge-circle badge-circle-md bg-primary">
+                                <div class="badge-circle badge-circle-md bg-secondary-dark">
                                     <i class="bx bx-plus-medical font-small-3"></i>
                                 </div>
                             </a>
@@ -64,16 +64,16 @@
                                     <td class="text-center">{{ $user->updated_at->format('d/m/Y h:i a') }}</td>
                                     {{-- ACTIVAR --}}
                                     @can('autorizar')
-                                    <td class="text-center">
-                                        <form action="{{ route('user.activate', $user->id) }}" method="POST" style="display: inline;">
-                                            @csrf
-                                            <div class="custom-control custom-switch" style="transform: scale(0.6); margin: 0;" data-toggle="tooltip" data-html="true" data-placement="bottom" title="<i class='bx bxs-error-circle'></i> {{ $user->activo ? 'Desactivar' : 'Activar' }} {{ $user->name }}">
-                                                <input id="activate_{{ $user->id }}" type="checkbox" class="custom-control-input" @if ($user->activo) checked @endif
-                                                onchange="this.form.submit();">
-                                                <label class="custom-control-label" for="activate_{{ $user->id }}"></label>
-                                            </div>
-                                        </form>
-                                    </td>
+                                        <td class="text-center">
+                                            <form action="{{ route('user.activate', $user->id) }}" method="POST" style="display: inline;">
+                                                @csrf
+                                                <div class="custom-control custom-switch" style="transform: scale(0.6); margin: 0;" data-toggle="tooltip" data-html="true" data-placement="bottom" title="<i class='bx bxs-error-circle'></i> {{ $user->activo ? 'Desactivar' : 'Activar' }} {{ $user->name }}">
+                                                    <input id="activate_{{ $user->id }}" type="checkbox" class="custom-control-input" @if ($user->activo) checked @endif
+                                                    onchange="this.form.submit();">
+                                                    <label class="custom-control-label" for="activate_{{ $user->id }}"></label>
+                                                </div>
+                                            </form>
+                                        </td>
                                     @endcan
                                     {{-- TABLERO DE CONTROL --}}
                                     @if ($user->activo)
