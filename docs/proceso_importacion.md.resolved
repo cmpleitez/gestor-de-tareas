@@ -1,0 +1,36 @@
+# Importación de Tareas desde Excel
+
+Este plan detalla la implementación de un servicio de importación que procesará el archivo [formato-importacion-full.xlsx](file:///c:/laragon/www/gestor-de-tareas/docs/formato-importacion-full.xlsx) para cargar tareas en el sistema, siguiendo las reglas de negocio y los estándares del proyecto.
+
+## Proposed Changes
+
+### [Backend]
+
+#### [NEW] [ImportCatalogService.php](file:///c:/laragon/www/gestor-de-tareas/app/Services/ImportCatalogService.php)
+- Servicio encargado de leer el Excel usando `spatie/simple-excel`.
+- Mapeo de columnas:
+    - [tipo](file:///c:/laragon/www/gestor-de-tareas/app/Models/Producto.php#19-23) -> [Tipo](file:///c:/laragon/www/gestor-de-tareas/app/Models/Tipo.php#5-19)
+    - [marca](file:///c:/laragon/www/gestor-de-tareas/app/Models/Modelo.php#19-23) -> [Marca](file:///c:/laragon/www/gestor-de-tareas/app/Models/Marca.php#5-19)
+    - [modelo](file:///c:/laragon/www/gestor-de-tareas/app/Models/Producto.php#24-28) -> [Modelo](file:///c:/laragon/www/gestor-de-tareas/app/Models/Modelo.php#5-24)
+    - [kit](file:///c:/laragon/www/gestor-de-tareas/app/Models/Detalle.php#32-36) -> [Kit](file:///c:/laragon/www/gestor-de-tareas/app/Models/Kit.php#7-26)
+    - [producto](file:///c:/laragon/www/gestor-de-tareas/app/Models/Detalle.php#37-41), `producto_codigo`, `producto_precio` -> [Producto](file:///c:/laragon/www/gestor-de-tareas/app/Models/Producto.php#7-50)
+    - `kit_unidades` (Excel) -> `kit_producto_unidades` -> Campo `unidades` en tabla pivot `kit_producto`.
+    - `stock_unidades` (Excel) -> Cantidad asociada a la bodega.
+    - `equivalente_producto_codigo` -> Relación `Equivalente`.
+- Lógica de Stock:
+    - Las unidades definidas en la columna `stock_unidades` se registrarán en la tabla `oficina_stock`.
+    - Se utilizará `oficina_id = 1` (Oficina Principal) de forma predeterminada para el inventario de Bodega (`stock_id = 2`).
+- Integridad Referencial:
+    - Se creará/actualizará primero el [Producto](file:///c:/laragon/www/gestor-de-tareas/app/Models/Producto.php#7-50).
+    - Luego se gestionará la relación en `kit_producto`, obteniendo su [id](file:///c:/laragon/www/gestor-de-tareas/app/Models/Actividad.php#6-36).
+    - Finalmente, se registrará el `Equivalente` utilizando el `kit_producto_id` generado, vinculando correctamente los códigos del Excel.
+
+#### [NEW] [ImportCatalogCommand.php](file:///c:/laragon/www/gestor-de-tareas/app/Console/Commands/ImportCatalogCommand.php)
+- Comando Artisan `app:import-catalog` para ejecutar la importación desde la terminal.
+
+## Verification Plan
+
+### Manual Verification
+- Ejecutar el comando de importación o disparar la acción desde el controlador.
+- Verificar en la base de datos que las tareas se hayan creado correctamente.
+- Validar que los campos coincidan con el archivo Excel de origen.
