@@ -1,3 +1,11 @@
+🟠 Resolviendo el bloqueo de github con ssh
+    1. Habilitar e iniciar ssh-agent	✅
+    2. Generar llave SSH ed25519	✅
+    3. Agregar llave al agente SSH	✅
+    4. Registrar llave pública en GitHub	✅
+    5. Verificar autenticación SSH	✅
+    6. Cambiar remote de HTTPS → SSH	✅
+
 🟠 Para controlas las sugerencias de la IA en.vscode/settings.json:
 {
     "git.autofetch": true,

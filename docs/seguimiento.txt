@@ -76,8 +76,9 @@ SERVICIOS:
     🟢 Reportes para el receptor y el administrador:
         . historial de entradas y salidas en stocks
     🟢 Revisiones:
-        . Sin puntos pendientes
-
+        . Asignación de equivalentes: agregar codigo local
+        . Formato de importación: cambio de nombre del campo unidades a item_unidades
+        
 CLIENTE:
 
     🔵 Que el cliente brinde la información del dominio
