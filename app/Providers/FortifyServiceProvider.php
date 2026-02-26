@@ -93,21 +93,21 @@ class FortifyServiceProvider extends ServiceProvider
             Route::post('/logout', [\Laravel\Fortify\Http\Controllers\AuthenticatedSessionController::class, 'destroy'])
                 ->name('logout');
 
-            // Password Reset (solo para Admin)
+            // Password Reset
             Route::get('/forgot-password', [\Laravel\Fortify\Http\Controllers\PasswordResetLinkController::class, 'create'])
-                ->middleware(['can:administrar'])
+                ->middleware(['guest'])
                 ->name('password.request');
 
             Route::post('/forgot-password', [\Laravel\Fortify\Http\Controllers\PasswordResetLinkController::class, 'store'])
-                ->middleware(['can:administrar'])
+                ->middleware(['guest'])
                 ->name('password.email');
 
             Route::get('/reset-password/{token}', [\Laravel\Fortify\Http\Controllers\NewPasswordController::class, 'create'])
-                ->middleware(['can:administrar'])
+                ->middleware(['guest'])
                 ->name('password.reset');
 
             Route::post('/reset-password', [\Laravel\Fortify\Http\Controllers\NewPasswordController::class, 'store'])
-                ->middleware(['can:administrar'])
+                ->middleware(['guest'])
                 ->name('password.update');
 
             // Email Verification
