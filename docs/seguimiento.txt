@@ -75,8 +75,16 @@ SERVICIOS:
 
     🟢 Reportes para el receptor y el administrador:
         . historial de entradas y salidas en stocks
-    🟢 Revisiones:
+    
+
+
+
+    ...25.feb 🟢 Revisiones:
         ... proceso de importación
+                ... revisan las unidades del kit importadas porque todas tienen el valor de 1
+
+
+
         
 CLIENTE:
 

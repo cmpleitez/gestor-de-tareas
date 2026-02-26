@@ -7,8 +7,6 @@ use App\Models\Marca;
 use App\Models\Modelo;
 use App\Models\Kit;
 use App\Models\Producto;
-use App\Models\KitProducto;
-use App\Models\Equivalente;
 use App\Models\OficinaStock;
 use App\Services\CorrelativeIdGenerator;
 use Spatie\SimpleExcel\SimpleExcelReader;
@@ -109,21 +107,11 @@ class ImportCatalogService
             $kit->save();
         }
 
-        // 5. Producto
-        $productoId = !empty($row['id']) ? (int)$row['id'] : null;
-        
-        if ($productoId) {
-            $producto = Producto::find($productoId);
-            if (!$producto) {
-                $producto = new Producto();
-                $producto->id = $productoId;
-            }
-        } else {
-            $producto = Producto::where('producto', $row['producto'])->first();
-            if (!$producto) {
-                $producto = new Producto();
-                $producto->id = $this->idGenerator->generate('Producto');
-            }
+        // 5. Producto (Identificado por nombre, ID autogenerado si es nuevo)
+        $producto = Producto::where('producto', $row['producto'])->first();
+        if (!$producto) {
+            $producto = new Producto();
+            $producto->id = $this->idGenerator->generate('Producto');
         }
 
         $producto->producto = $row['producto'];
@@ -140,13 +128,13 @@ class ImportCatalogService
             ->first();
 
         if ($kitProductoData) {
+            $kitProductoId = $kitProductoData->id;
             DB::table('kit_producto')
-                ->where('id', $kitProductoData->id)
+                ->where('id', $kitProductoId)
                 ->update([
                     'unidades' => $row['kit_unidades'] ?? 1,
                     'updated_at' => now(),
                 ]);
-            $kitProductoId = $kitProductoData->id;
         } else {
             $kitProductoId = $this->idGenerator->generate('KitProducto');
             DB::table('kit_producto')->insert([
@@ -176,11 +164,12 @@ class ImportCatalogService
             $stock->save();
         }
 
-        // 8. Equivalentes
+        // 8. Equivalentes (Búsqueda por código de producto)
         if (!empty($row['equivalente_producto_codigo'])) {
             $productoEq = Producto::where('codigo', $row['equivalente_producto_codigo'])->first();
             
             if ($productoEq) {
+                // El kit_producto_id ya lo tenemos del paso 6 (pertenece al producto principal de la fila)
                 DB::table('equivalentes')->updateOrInsert(
                     [
                         'kit_producto_id' => $kitProductoId,
