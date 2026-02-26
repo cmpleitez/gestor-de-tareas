@@ -179,7 +179,7 @@ body.vertical-layout.vertical-menu-modern.menu-collapsed .footer {
 
 @media (min-width: 992px) {
   body.vertical-layout.vertical-menu-modern .main-menu {
-    border-right: 1px solid #DFE3E7;
+    border-right: 1px solid #464d5c;
   }
 
   body.vertical-layout.vertical-menu-modern .main-menu.menu-dark {

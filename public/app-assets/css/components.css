@@ -425,7 +425,7 @@ body.footer-hidden footer {
 .main-menu.menu-light {
   color: #727E8C;
   background: #F2F4F4;
-  border: #DFE3E7;
+  border: #d0d9e2;
 }
 
 .main-menu.menu-light .navigation {
@@ -490,7 +490,7 @@ body.footer-hidden footer {
 .main-menu.menu-light .navigation>li.nav-item.sidebar-group-active.has-sub.open,
 .main-menu.menu-light .navigation>li.nav-item.sidebar-group-active.has-sub.sidebar-group-active {
   border-radius: 0.267rem;
-  border: 1px solid #DFE3E7;
+  border: 1px solid #465769;
   background-color: #fafbfb;
   transition: none;
 }
@@ -566,7 +566,7 @@ body.footer-hidden footer {
 }
 
 .main-menu.menu-light .navigation>li>ul>li:first-child>a {
-  border-top: 1px solid #DFE3E7;
+  border-top: 1px solid #8a9cad;
 }
 
 .main-menu.menu-light .navigation>li>ul>li.active:first-child>a {

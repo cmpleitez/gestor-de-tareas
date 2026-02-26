@@ -75,14 +75,17 @@ SERVICIOS:
 
     🟢 Reportes para el receptor y el administrador:
         . historial de entradas y salidas en stocks
-        
-    
-
-
 
     🟢 Revisiones:
-        . Asegurar logs de errores cuando falla cada fila en el importador
+        
+        
+        
 
+        26.feb... autorizar cambio de clave
+
+
+
+        . implementar y probar importacion en productivo
 
 
         

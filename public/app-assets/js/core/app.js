@@ -1011,27 +1011,9 @@
   var $checkNavbarScroll = function () {
     var $scrollTop = $(window).scrollTop()
     if ($scrollTop > 20) {
-      $(".navbar-sticky .main-header-navbar").css({
-        "background-color": "#ffff",
-        "box-shadow": "-8px 12px 18px 0 rgba(25, 42, 70, 0.13)"
-      })
-      $(".navbar-static .main-header-navbar").css({
-        "background-color": "transparent",
-        "box-shadow": "none"
-      })
-      $(".dark-layout.navbar-sticky .main-header-navbar").css({
-        "background-color": "#272e48",
-        "box-shadow": "rgba(26, 35, 59, .70) -8px 12px 18px 0px"
-      })
+      $(".main-header-navbar").addClass("navbar-scrolled");
     } else {
-      $(".navbar-sticky .main-header-navbar, .dark-layout.navbar-sticky .main-header-navbar").css({
-        "background-color": "#3333330f",
-        "box-shadow": "none"
-      })
-      $(".navbar-static .main-header-navbar").css({
-        "background-color": "transparent",
-        "box-shadow": "none"
-      })
+      $(".main-header-navbar").removeClass("navbar-scrolled");
     }
   }
 

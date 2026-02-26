@@ -1,1 +1,1 @@
-﻿Sh@d0wrandomitosis
+﻿<img src="http://gestor-de-tareas:7000/app-assets/images/logo/logo.svg" alt="Logo" style="width: 100%; height: auto; max-width: 200px;">

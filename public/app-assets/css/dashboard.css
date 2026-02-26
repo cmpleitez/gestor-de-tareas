@@ -13,17 +13,66 @@
     }    
 }
 
-.main-menu.menu-light {
-    background: #3333330f;
+/* Colores de los navbar en el Dashboard*/
+.main-header-navbar {
+    background: #373c50 !important;
+    backdrop-filter: none !important;
+    transition: all 0.3s ease !important;
 }
 
-.header-navbar.fixed-top {
-    background-color: #3333330f;
+.main-header-navbar,
+.main-header-navbar i,
+.main-header-navbar .nav-link,
+.main-header-navbar .breadcrumb-item,
+.main-header-navbar .user-name {
+    color: #dde7f1 !important;
+}
+
+.main-header-navbar .user-status,
+.main-header-navbar .breadcrumb-item a {
+    color: #dde7f1 !important;
 }
 
 .main-menu.menu-light .navigation {
-    background: #33333300;
+    background: #1e212e;
+    border: none;
 }
+
+.main-menu.menu-light {
+    background: #373c50;
+    border: none;
+}
+
+.main-menu.menu-light .navigation {
+    background: #373c50;
+    border: none;
+}
+
+.main-header-navbar.navbar-scrolled {
+    background-color: #ffffff !important;
+    box-shadow: -8px 12px 18px 0 rgba(25, 42, 70, 0.13) !important;
+}
+
+/* Este bloque se movió y reforzó al final para ganar por cascada y especificidad */
+
+.main-menu.menu-light .navigation .nav-item.has-sub.open > a,
+.main-menu.menu-light .navigation .nav-item.has-sub.open > a i,
+.main-menu.menu-light .navigation .nav-item.has-sub.open > a .menu-title,
+.main-menu.menu-light .navigation .nav-item.has-sub.open .menu-content li a,
+.main-menu.menu-light .navigation .nav-item.has-sub.open .menu-content li a i,
+.main-menu.menu-light .navigation .nav-item.has-sub.open .menu-content li a .menu-item {
+    color: #dde7f1 !important;
+}
+
+/* Fondos específicos para secciones solicitados por el usuario */
+.nav-item-administracion {
+    background-color: #232636 !important;
+}
+
+.nav-item-servicios {
+    background-color: #1e212e !important;
+}
+
 
 .product-card-container {
     padding: 0;
@@ -240,7 +289,7 @@ p {
 }
 
 .card-header {
-    background-color: #f8fafc;
+    background-color: #e0ebf7;
     border-bottom: 0.5px solid rgb(236, 237, 240) !important;
     font-weight: 600;
     padding: 1rem 1rem !important;
@@ -856,4 +905,14 @@ div.dataTables_wrapper div.dataTables_length {
     right: 2rem;
     z-index: 1000;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+/* ===== REFUERZO DE COLOR NEGRO EN SCROLL (FINAL DEFINITIVO) ===== */
+html body .main-header-navbar.navbar-scrolled,
+html body .main-header-navbar.navbar-scrolled i,
+html body .main-header-navbar.navbar-scrolled .nav-link,
+html body .main-header-navbar.navbar-scrolled .user-name,
+html body .main-header-navbar.navbar-scrolled .user-status,
+html body .main-header-navbar.navbar-scrolled .breadcrumb-item,
+html body .main-header-navbar.navbar-scrolled .breadcrumb-item a {
+    color: #3d3a3a !important;
 }

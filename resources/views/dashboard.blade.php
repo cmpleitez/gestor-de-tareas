@@ -183,13 +183,13 @@
 
     <!-- BEGIN: Main Menu-->
     <div class="main-menu menu-fixed menu-light menu-accordion menu-shadow" data-scroll-to-active="true">
-        <div class="navbar-header">
+        <div class="navbar-header" style="padding: 10px;">
             <ul class="nav navbar-nav flex-row">
                 <li class="nav-item mr-auto open">
                     <a class="navbar-brand d-flex justify-content-center align-items-center"
                         href="{{ route('dashboard') }}">
                         <div class="brand-logo d-flex justify-content-center">
-                            <img src="{{ asset('app-assets/images/logo/logo.svg') }}" alt="Logo" style="width: 100%; height: auto; max-width: 200px;">
+                            <img src="{{ asset('app-assets/images/logo/logo.svg') }}" alt="Logo" style="width: 85%; height: auto; max-width: 200px;">
                         </div>
                         <h2 class="brand-text mb-0"></h2>
                     </a>
@@ -205,7 +205,7 @@
             <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation"
                 data-icon-style="">
                 @can('administrar')
-                    <li class="nav-item has-sub open"><a href="#"><i class="bx bxs-cog"></i><span class="menu-title"
+                    <li class="nav-item has-sub open nav-item-administracion"><a href="#"><i class="bx bxs-cog"></i><span class="menu-title"
                                 data-i18n="Menu Levels">Administración</span></a>
                         <ul class="menu-content" style="display: block;">
                             <li><a href="{{ Route('recepcion.parametros') }}">
@@ -255,7 +255,7 @@
                     </li>
                 @endcan
 
-                <li class="nav-item has-sub open"><a href="#"><i class="bx bx-list-ul"></i><span class="menu-title"
+                <li class="nav-item has-sub open nav-item-servicios mt-1"><a href="#"><i class="bx bx-list-ul"></i><span class="menu-title"
                             data-i18n="Menu Levels">Servicios</span></a>
                     <ul class="menu-content" style="display: block;">
                         @can('stock')

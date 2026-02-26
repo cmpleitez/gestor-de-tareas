@@ -14,9 +14,9 @@ use App\Http\Controllers\TipoController;
 use App\Http\Controllers\TiendaController;
 use App\Http\Controllers\KitController;
 
-// Rutas públicas
+// Redirección de la raíz al login o dashboard
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 })->name('welcome');
 
 // Rutas de verificación de correo

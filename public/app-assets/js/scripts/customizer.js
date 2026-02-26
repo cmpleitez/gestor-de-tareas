@@ -267,6 +267,7 @@
   })
 
   /***** Navbar Color On Scroll *****/
+  /* Se comenta esta sección para delegar el control del scroll al nuevo sistema de clases en app.js y dashboard.css
   $(window).scroll(function(){
     var navbarActiveColor = $("#customizer-navbar-colors .color-box.selected").data("navbar-color");
     if ($(this).scrollTop() < 20){
@@ -282,6 +283,7 @@
       }
     }
   });
+  */
 
   /***** Navbar Type *****/
   if($(body).hasClass("horizontal-layout")){
