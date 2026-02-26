@@ -13,7 +13,7 @@ class ImportCatalogCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'app:importar-full {file=docs/formato-importacion-full.xlsx}';
+    protected $signature = 'db:importar {file=docs/formato-importacion-full.xlsx}';
 
     /**
      * The console command description.

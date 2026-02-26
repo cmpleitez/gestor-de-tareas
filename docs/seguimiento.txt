@@ -79,9 +79,8 @@ SERVICIOS:
 
 
 
-    ...25.feb 🟢 Revisiones:
-        ... proceso de importación
-                ... revisan las unidades del kit importadas porque todas tienen el valor de 1
+    🟢 Revisiones:
+        . Asegurar logs de errores cuando falla cada fila en el importador
 
 
 

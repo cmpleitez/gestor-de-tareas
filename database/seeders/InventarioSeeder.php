@@ -1,12 +1,6 @@
 <?php
 namespace Database\Seeders;
 use Illuminate\Database\Seeder;
-use App\Models\Stock;
-use App\Models\Tipo;
-use App\Models\Marca;
-use App\Models\Modelo;
-use App\Models\Producto;
-use App\Models\Entrada;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 

@@ -35,30 +35,26 @@ class ImportCatalogService
 
         try {
             $reader = SimpleExcelReader::create($filePath);
-            
             DB::beginTransaction();
-
-            $reader->getRows()->each(function (array $row) use (&$rowsProcessed, &$errors) {
-                try {
-                    $this->processRow($row);
-                    $rowsProcessed++;
-                } catch (\Exception $e) {
-                    $errors[] = "Error en fila " . ($rowsProcessed + 1) . ": " . $e->getMessage();
-                    Log::error("Import Error on Row " . ($rowsProcessed + 1), [
-                        'error' => $e->getMessage(),
-                        'trace' => $e->getTraceAsString(),
-                        'row' => $row
-                    ]);
-                }
-            });
-
+                $reader->getRows()->each(function (array $row) use (&$rowsProcessed, &$errors) {
+                    try {
+                        $this->processRow($row);
+                        $rowsProcessed++;
+                    } catch (\Exception $e) {
+                        $errors[] = "Error en fila " . ($rowsProcessed + 1) . ": " . $e->getMessage();
+                        Log::error("Import Error on Row " . ($rowsProcessed + 1), [
+                            'error' => $e->getMessage(),
+                            'trace' => $e->getTraceAsString(),
+                            'row' => $row
+                        ]);
+                    }
+                });
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error("Critical Import Failure: " . $e->getMessage());
             throw $e;
         }
-
         return [
             'total' => $rowsProcessed,
             'errors' => $errors,
@@ -126,13 +122,12 @@ class ImportCatalogService
             ->where('kit_id', $kit->id)
             ->where('producto_id', $producto->id)
             ->first();
-
         if ($kitProductoData) {
             $kitProductoId = $kitProductoData->id;
             DB::table('kit_producto')
                 ->where('id', $kitProductoId)
                 ->update([
-                    'unidades' => $row['kit_unidades'] ?? 1,
+                    'unidades' => $row['kit_producto_unidades'] ?? 1,
                     'updated_at' => now(),
                 ]);
         } else {
@@ -141,7 +136,7 @@ class ImportCatalogService
                 'id' => $kitProductoId,
                 'kit_id' => $kit->id,
                 'producto_id' => $producto->id,
-                'unidades' => $row['kit_unidades'] ?? 1,
+                'unidades' => $row['kit_producto_unidades'] ?? 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
