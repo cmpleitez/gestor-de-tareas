@@ -78,7 +78,7 @@ SERVICIOS:
     🟢 Instalar Reverb + Echo + Broadcasting, segun claude es compatible para la version 10 en adelante
 
     🟢 Revisiones:
-        . Hay un problema con el manifest 
+        . Sin pendientes por el momento
 
         
 CLIENTE:
