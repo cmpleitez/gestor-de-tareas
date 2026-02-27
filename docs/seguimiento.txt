@@ -70,16 +70,13 @@ SEGURIDAD:
 
     Sin puntos pendientes
 
-
 SERVICIOS:
 
     🟢 Reportes para el receptor y el administrador:
         . historial de entradas y salidas en stocks
 
     🟢 Revisiones:
-
-        26.feb... Retirar el precio de kit.edit
-
+        . Sin pendientes por el momento
         
 CLIENTE:
 
