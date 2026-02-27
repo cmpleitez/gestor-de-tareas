@@ -77,15 +77,8 @@ SERVICIOS:
         . historial de entradas y salidas en stocks
 
     🟢 Revisiones:
-        
-        
-        
 
-        26.feb... autorizar cambio de clave
-
-
-
-        . implementar y probar importacion en productivo
+        26.feb... implementar y probar importacion en productivo
 
 
         
