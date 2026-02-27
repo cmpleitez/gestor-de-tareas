@@ -78,9 +78,7 @@ SERVICIOS:
 
     🟢 Revisiones:
 
-        26.feb... Analizar el problema del precio del kit, si usamos un campo la tienda cargaría dichos precios más rápido
-        pues no se tendría que hacer el calculo para cada kit.
-        . en productivo el borde blanco intenso se muestra en la derecha del menu lateral
+        26.feb... Retirar el precio de kit.edit
 
         
 CLIENTE:

@@ -127,20 +127,6 @@
                                     @enderror
                                 </div>
                                 <div class="form-group">
-                                    <label for="precio">Precio</label>
-                                    <input type="text" name="precio" id="precio" 
-                                    class="form-control input-currency {{ $errors->has('precio') ? 'is-invalid' : '' }}" 
-                                    data-clear="true" 
-                                    placeholder="Precio del kit" 
-                                    value="{{ old('precio', $kit->precio) }}" required>
-                                    <div class="invalid-feedback"></div>
-                                    @error('precio')
-                                        <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
-                                            {{ $errors->first('precio') }}
-                                        </div>
-                                    @enderror
-                                </div>
-                                <div class="form-group">
                                     <label>Fotografia del Kit <small class="text-muted">(Máximo 10 MB, solo
                                             JPEG/PNG)</small></label>
                                     <input type="file" name="image_path" class="form-control" style="padding-bottom: 35px;" accept="image/jpeg,image/jpg,image/png" onchange="validateFileSize(this, 10)">
@@ -232,7 +218,6 @@
                     @endforeach
                 </div>
             </div>
-
         </div>
         <div class="card-footer d-flex justify-content-end"> {{-- Botón guardar --}}
             <button type="submit" class="btn btn-warning">Guardar</button>

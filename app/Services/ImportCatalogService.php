@@ -61,31 +61,24 @@ class ImportCatalogService
         ];
     }
 
-    /**
-     * Procesa una única fila del Excel.
-     */
+    //Sub-proceso una fila por vez
     private function processRow(array $row)
     {
-        // 1. Tipo
-        $tipo = Tipo::where('tipo', $row['tipo'])->first();
+        $tipo = Tipo::where('tipo', $row['tipo'])->first(); // 1. Tipo
         if (!$tipo) {
             $tipo = new Tipo();
             $tipo->id = $this->idGenerator->generate('Tipo');
             $tipo->tipo = $row['tipo'];
             $tipo->save();
         }
-
-        // 2. Marca
-        $marca = Marca::where('marca', $row['marca'])->first();
+        $marca = Marca::where('marca', $row['marca'])->first(); // 2. Marca
         if (!$marca) {
             $marca = new Marca();
             $marca->id = $this->idGenerator->generate('Marca');
             $marca->marca = $row['marca'];
             $marca->save();
         }
-
-        // 3. Modelo
-        $modelo = Modelo::where('modelo', $row['modelo'])->where('marca_id', $marca->id)->first();
+        $modelo = Modelo::where('modelo', $row['modelo'])->where('marca_id', $marca->id)->first(); // 3. Modelo
         if (!$modelo) {
             $modelo = new Modelo();
             $modelo->id = $this->idGenerator->generate('Modelo');
@@ -93,32 +86,25 @@ class ImportCatalogService
             $modelo->marca_id = $marca->id;
             $modelo->save();
         }
-
-        // 4. Kit
-        $kit = Kit::where('kit', $row['kit'])->first();
+        $kit = Kit::where('kit', $row['kit'])->first(); // 4. Kit
         if (!$kit) {
             $kit = new Kit();
             $kit->id = $this->idGenerator->generate('Kit');
             $kit->kit = $row['kit'];
             $kit->save();
         }
-
-        // 5. Producto (Identificado por nombre, ID autogenerado si es nuevo)
-        $producto = Producto::where('producto', $row['producto'])->first();
+        $producto = Producto::where('producto', $row['producto'])->first(); // 5. Producto (Identificado por nombre, ID autogenerado si es nuevo)
         if (!$producto) {
             $producto = new Producto();
             $producto->id = $this->idGenerator->generate('Producto');
         }
-
         $producto->producto = $row['producto'];
         $producto->codigo   = $row['producto_codigo'] ?? null;
         $producto->precio   = $row['producto_precio'] ?? 0;
         $producto->modelo_id = $modelo->id;
         $producto->tipo_id   = $tipo->id;
         $producto->save();
-
-        // 6. Relación Kit-Producto (Tabla Pivot)
-        $kitProductoData = DB::table('kit_producto')
+        $kitProductoData = DB::table('kit_producto') // 6. Relación Kit-Producto (Tabla Pivot)
             ->where('kit_id', $kit->id)
             ->where('producto_id', $producto->id)
             ->first();
@@ -141,9 +127,7 @@ class ImportCatalogService
                 'updated_at' => now(),
             ]);
         }
-
-        // 7. Stock en Bodega (stock_id = 2, oficina_id = 1)
-        if (!empty($row['stock_unidades'])) {
+        if (!empty($row['stock_unidades'])) { // 7. Stock en Bodega (stock_id = 2, oficina_id = 1)
             $stock = OficinaStock::where('oficina_id', 1)
                 ->where('stock_id', 2)
                 ->where('producto_id', $producto->id)
@@ -158,16 +142,12 @@ class ImportCatalogService
             $stock->unidades = (int)$row['stock_unidades'];
             $stock->save();
         }
-
-        // 8. Equivalentes (Búsqueda por código de producto)
-        if (!empty($row['equivalente_producto_codigo'])) {
+        if (!empty($row['equivalente_producto_codigo'])) { // 8. Equivalentes (Búsqueda por código de producto)
             $productoEq = Producto::where('codigo', $row['equivalente_producto_codigo'])->first();
-            
             if ($productoEq) {
-                // El kit_producto_id ya lo tenemos del paso 6 (pertenece al producto principal de la fila)
                 DB::table('equivalentes')->updateOrInsert(
                     [
-                        'kit_producto_id' => $kitProductoId,
+                        'kit_producto_id' => $kitProductoId, // ( El kit_producto_id ya lo tenemos del paso 6 (pertenece al producto principal de la fila) )
                         'producto_id'     => $productoEq->id,
                         'kit_id'          => $kit->id,
                     ],
@@ -175,5 +155,12 @@ class ImportCatalogService
                 );
             }
         }
+        $totalKit = DB::table('kit_producto') // 9. Calcular y actualizar el precio total del Kit
+            ->join('productos', 'kit_producto.producto_id', '=', 'productos.id')
+            ->where('kit_producto.kit_id', $kit->id)
+            ->selectRaw('SUM(kit_producto.unidades * productos.precio) as total')
+            ->value('total');
+        $kit->precio = $totalKit ?? 0;
+        $kit->save();
     }
 }
