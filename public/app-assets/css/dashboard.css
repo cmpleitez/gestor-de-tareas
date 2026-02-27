@@ -402,6 +402,12 @@ div.dataTables_wrapper div.dataTables_length {
     margin-top: 5px !important; /* Ajuste visual para juntar las flechas */
 }
 
+
+.table-hover tbody tr:hover {
+    color: #3f3f3f !important;
+    background-color: #e9f0fd !important;
+}
+
 .selectable-item {
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -911,4 +917,14 @@ div.dataTables_wrapper div.dataTables_length {
 html body .main-header-navbar.navbar-scrolled {
     background-color: #4b526d !important;
     box-shadow: -8px 12px 18px 0 rgba(25, 42, 70, 0.13) !important;
+}
+
+/* Personalización de Toastr */
+#toast-container > .toast-info {
+    background-color: var(--color-primary) !important;
+    opacity: 1 !important; /* Para que el color se vea sólido y vibrante */
+}
+#toast-container > .toast-info:hover {
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.35);
+    opacity: 1 !important;
 }

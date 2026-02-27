@@ -394,7 +394,6 @@
             }
         });
     </script>
-    <!-- ... otros scripts ... -->
 
     <!-- Custom js for this page -->
     @section('js')
@@ -402,18 +401,6 @@
     <!-- End custom js for this page -->
 
     <livewire:check-notifications />
-
-    <style>
-        /* Personalización de Toastr según requerimientos */
-        #toast-container > .toast-info {
-            background-color: var(--color-primary) !important;
-            opacity: 1 !important; /* Para que el color se vea sólido y vibrante */
-        }
-        #toast-container > .toast-info:hover {
-            box-shadow: 0 0 12px rgba(0, 0, 0, 0.35);
-            opacity: 1 !important;
-        }
-    </style>
 
     <script>
         document.addEventListener('livewire:init', () => {

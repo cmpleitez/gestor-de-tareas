@@ -75,6 +75,8 @@ SERVICIOS:
     🟢 Reportes para el receptor y el administrador:
         . historial de entradas y salidas en stocks
 
+    🟢 Instalar Reverb + Echo + Broadcasting, segun claude es compatible para la version 10 en adelante
+
     🟢 Revisiones:
         . Sin pendientes por el momento
         
