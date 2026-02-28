@@ -180,7 +180,6 @@
                                             </span>
                                             {{ $producto->producto }}
                                         </div>
-                                        
                                         <div id="{{ $accordionId }}" role="tabpanel" aria-labelledby="{{ $headingId }}" class="collapse">
                                             <div class="row row-equivalentes"> {{-- Equivalentes --}}
                                                 @forelse ($producto->kitProductos->first()->equivalentes as $equivalente)
