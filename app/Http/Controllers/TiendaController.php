@@ -212,7 +212,7 @@ class TiendaController extends Controller
                 }
             }
             DB::commit();
-            return response()->json(['success' => true, 'message' => 'Orden recibida. Redireccionando a la Tienda']);
+            return response()->json(['success' => true, 'message' => 'Su orden ha sido recibida por nuestros gestores']);
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Error en carritoEnviar: ' . $e->getMessage(), ['exception' => $e]);
@@ -260,7 +260,7 @@ class TiendaController extends Controller
                     ->whereHas('recepciones', function ($query) {
                         $query->where('origen_user_id', auth()->user()->id);
                     })
-                    ->where('estado_id', Estado::where('estado', 'Solicitada')->first()->id)
+                    ->where('estado_id', Estado::where('estado', 'En carrito')->first()->id)
                     ->first();
                 if (!$atencion) {
                     $atencion_nueva = true;
@@ -270,18 +270,16 @@ class TiendaController extends Controller
                         $query->where('id', $user->oficina_id);
                     })->get();
                     if ($receptores->isEmpty()) {
-                        
                         Log::warning('No hay receptores disponibles', ['oficina_id' => $user->oficina_id, 'user_id' => $user->id]);
-                        
                         DB::rollBack();
-                        $message = 'No hay personal <Receptor> disponible para atender la solicitud';
+                        $message = 'El sistema está fuera de servicio';
                         return $request->ajax() ? response()->json(['success' => false, 'message' => $message, 'type' => 'error']) : back()->with('error', $message);
                     }
                     $receptor = $receptores->random();
                     $atencion             = new Atencion(); //Creando número de atención
                     $atencion->id         = (new KeyMaker())->generate('Atencion', Solicitud::where('solicitud', 'Orden de compra')->first()->id);
                     $atencion->oficina_id = auth()->user()->oficina_id;
-                    $atencion->estado_id  = Estado::where('estado', 'Solicitada')->first()->id;
+                    $atencion->estado_id  = Estado::where('estado', 'En carrito')->first()->id;
                     $atencion->avance     = 0.00;
                     $atencion->activo     = false;
                     $atencion->save();
@@ -292,7 +290,7 @@ class TiendaController extends Controller
                     $recepcion->origen_user_id  = auth()->user()->id;
                     $recepcion->destino_user_id = $receptor->id;
                     $recepcion->user_destino_role_id = Role::where('name', 'Receptor')->first()->id;
-                    $recepcion->estado_id       = Estado::where('estado', 'Solicitada')->first()->id;
+                    $recepcion->estado_id       = Estado::where('estado', 'En carrito')->first()->id;
                     $recepcion->activo          = false;
                     $recepcion->save();
                 }

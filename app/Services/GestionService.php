@@ -62,7 +62,7 @@ class GestionService
         ->sortByDesc('updated_at');
 
         if ($actividades->isEmpty()) {
-            $traza = 'Solicitada';
+            $traza = 'En carrito';
         } else {
             $todasResueltas = $actividades->every(function ($actividad) use ($estado_resuelta_id) {
                 return $actividad->estado_id == $estado_resuelta_id;

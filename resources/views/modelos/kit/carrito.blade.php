@@ -499,40 +499,43 @@
             @endforeach
             <div class="row d-flex justify-content-end mt-4"> {{--Tablero de control--}}
                 <div class="col-12 col-md-12 d-flex justify-content-end gap-2">
-                    @if($rol_usuario_actual == 'cliente')
-                        <button type="button" id="btnEnviarCarrito" class="btn btn-primary">
-                            <i class="fas fa-shopping-cart me-2"></i> Enviar
-                        </button>
-                    @endif
-                    @if($rol_usuario_actual == 'receptor')
-                        <button type="button" id="corregir-orden" class="btn btn-warning"
-                            @if($atencion && $atencion->count() > 0)
-                                data-atencion-id="{{ $atencion->first()->id }}"
-                            @endif>
-                            <i class="fas fa-pencil-alt"></i> Corregir
-                        </button>
-                    @endif
-                    @if($rol_usuario_actual == 'receptor')
-                        <button type="button" id="revisar-orden" class="btn btn-primary"
-                            @if($atencion && $atencion->count() > 0)
-                                data-atencion-id="{{ $atencion->first()->id }}"
-                            @endif
-                            data-recepcion-id="{{ $recepcion_id ?? '' }}"
-                            data-route="{{ route('recepcion.revisar-orden') }}">
-                            <i class="fas fa-clipboard-check me-2"></i> Revisar
-                        </button>
-                    @endif
-                    @if($rol_usuario_actual == 'operador')
-                        <button type="button"
-                            id="revisar-stock"
-                            class="btn btn-primary"
-                            @if($atencion && $atencion->count() > 0)
-                                data-atencion-id="{{ $atencion->first()->id }}"
-                            @endif
-                            data-recepcion-id="{{ $recepcion_id ?? '' }}"
-                            data-route="{{ route('recepcion.revisar-stock') }}">
-                            <i class="fas fa-clipboard-check me-2"></i> Revisar
-                        </button>
+                    @if($atencion->first()->estado->estado == 'En carrito')
+                        @if($rol_usuario_actual == 'cliente' || $rol_usuario_actual == 'receptor')
+                            <button type="button" id="btnEnviarCarrito" class="btn btn-primary">
+                                <i class="fas fa-shopping-cart me-2"></i> Enviar
+                            </button>
+                        @endif
+                    @else
+                        @if($rol_usuario_actual == 'receptor')
+                            <button type="button" id="corregir-orden" class="btn btn-warning"
+                                @if($atencion && $atencion->count() > 0)
+                                    data-atencion-id="{{ $atencion->first()->id }}"
+                                @endif>
+                                <i class="fas fa-pencil-alt"></i> Corregir
+                            </button>
+                        @endif
+                        @if($rol_usuario_actual == 'receptor')
+                            <button type="button" id="revisar-orden" class="btn btn-primary"
+                                @if($atencion && $atencion->count() > 0)
+                                    data-atencion-id="{{ $atencion->first()->id }}"
+                                @endif
+                                data-recepcion-id="{{ $recepcion_id ?? '' }}"
+                                data-route="{{ route('recepcion.revisar-orden') }}">
+                                <i class="fas fa-clipboard-check me-2"></i> Revisar
+                            </button>
+                        @endif
+                        @if($rol_usuario_actual == 'operador')
+                            <button type="button"
+                                id="revisar-stock"
+                                class="btn btn-primary"
+                                @if($atencion && $atencion->count() > 0)
+                                    data-atencion-id="{{ $atencion->first()->id }}"
+                                @endif
+                                data-recepcion-id="{{ $recepcion_id ?? '' }}"
+                                data-route="{{ route('recepcion.revisar-stock') }}">
+                                <i class="fas fa-clipboard-check me-2"></i> Revisar
+                            </button>
+                        @endif
                     @endif
                 </div>
             </div>
