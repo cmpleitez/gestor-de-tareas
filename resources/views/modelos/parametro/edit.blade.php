@@ -13,7 +13,7 @@
                     <p>EDITAR PARAMETRO</p>
                 </div>
                 <div class="col-md-2 d-flex justify-content-end" style="padding: 0.1rem;">
-                    <a href="{!! route('recepcion.parametros') !!}">
+                    <a href="{!! route('parametro') !!}">
                         <div class="badge badge-pill badge-warning">
                             <i class="bx bx-arrow-back font-medium-3"></i>
                         </div>
@@ -23,7 +23,7 @@
         </div>
     </div>
     <!-- FORMULARIO -->
-    <form class="form-horizontal" action="{{ route('recepcion.parametros-update', $parametro->id) }}"
+    <form class="form-horizontal" action="{{ route('parametro.update', $parametro->id) }}"
         method="POST" novalidate>
         @csrf
         @method('PUT')

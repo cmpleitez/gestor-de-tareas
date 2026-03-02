@@ -17,6 +17,10 @@ use App\Models\User;
 use App\Models\Detalle;
 use App\Models\Orden;
 use App\Models\Atencion;
+use App\Models\Stock;
+use App\Models\OficinaStock;
+use App\Models\Movimiento;
+use App\Models\Producto;
 use App\Services\KeyMaker;
 use App\Services\KeyRipper;
 use Spatie\Permission\Models\Role;
@@ -302,39 +306,6 @@ class RecepcionController extends Controller
         }
     }
 
-    public function parametros()
-    {
-        $parametros = Parametro::All();
-        return view('modelos.parametro.index', compact('parametros'));
-    }
-
-    public function parametrosEdit(Parametro $parametro)
-    {
-        return view('modelos.parametro.edit', compact('parametro'));
-    }
-
-    public function parametrosUpdate(Request $request, Parametro $parametro)
-    {
-        $validatedData = $request->validate([
-            'parametro'     => 'required|string|min:3|max:255|unique:parametros,parametro,' . $parametro->id,
-            'valor'         => 'required|string|min:1|max:255',
-            'unidad_medida' => 'required|string|min:3|max:255',
-        ]);
-        $parametro->parametro     = $validatedData['parametro']; 
-        $parametro->valor         = $validatedData['valor'];     
-        $parametro->unidad_medida = $validatedData['unidad_medida']; 
-        $parametro->save(); 
-        return redirect()->route('recepcion.parametros')->with('success', 'Parámetro actualizado correctamente');
-    }
-
-    public function parametrosActivate(Parametro $parametro)
-    {
-        $parametro->activo = ! $parametro->activo; 
-        $parametro->save();
-        return redirect()->route('recepcion.parametros')->with('success', 'Parámetro actualizado correctamente');
-    }
-
-
     public function revisarStock(Request $request)
     {
         try {
@@ -488,7 +459,7 @@ class RecepcionController extends Controller
                     }
                 }
 
-                // REVERTIR TAREA "Stock revisado" (Y opcionalmente "Orden Revisada" si se requiere, pero enfocado en Stock)
+                // REVERTIR TAREA "Stock revisado" (Y opcionalmente "Orden validada" si se requiere, pero enfocado en Stock)
                 $estado_en_progreso_id = Estado::where('estado', 'En progreso')->first()->id;
                 $actividadStock = Actividad::whereHas('recepcion', function($q) use ($atencion_id) {
                         $q->where('atencion_id', $atencion_id);
@@ -544,7 +515,7 @@ class RecepcionController extends Controller
         }
     }
 
-    public function revisarOrden(Request $request)
+    public function validarOrden(Request $request)
     {
         try {
             // LECTURA
@@ -555,7 +526,7 @@ class RecepcionController extends Controller
             if (empty($atencion_id) || empty($ordenes_recibidas)) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Información incompleta para la revisión'
+                    'message' => 'Información incompleta para la validación'
                 ], 422);
             }
             // PROCESAMIENTO
@@ -565,7 +536,7 @@ class RecepcionController extends Controller
             if ($detalles->isEmpty()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'No se encontraron productos asociados a esta solicitud para revisar.'
+                    'message' => 'No se encontraron productos asociados a esta solicitud para validar.'
                 ], 422);
             }
             foreach ($detalles as $detalle) {
@@ -578,7 +549,7 @@ class RecepcionController extends Controller
                 if ($detalle->stock_fisico_existencias == "0") {
                     return response()->json([
                         'success' => false,
-                        'message' => "El producto {$detalle->producto_id} - {$detalle->producto->producto} no tiene existencias físicas. No se puede revisar la orden."
+                        'message' => "El producto {$detalle->producto_id} - {$detalle->producto->producto} no tiene existencias físicas. No se puede validar la orden."
                     ], 422);
                 }
             }
@@ -588,21 +559,21 @@ class RecepcionController extends Controller
                     $recepcion->validada_destino = true;
                     $recepcion->save();
                 }
-                $this->reportarTarea('Orden Revisada', $recepcion_id, $atencion_id); //Reportar tarea
+                $this->reportarTarea('Orden validada', $recepcion_id, $atencion_id); //Reportar tarea
             DB::commit();
             $recepcion->load('atencion.ordenes.detalle.kit', 'atencion.ordenes.detalle.producto');
-            $recepcion->usuarioOrigen->notify(new \App\Notifications\OrdenRevisadaNotification($recepcion));
+            $recepcion->usuarioOrigen->notify(new \App\Notifications\OrdenValidadaNotification($recepcion));
             //RESULTADO
             return response()->json([
                 'success' => true,
-                'message' => 'Orden revisada correctamente'
+                'message' => 'Orden validada correctamente'
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error("Log:: [Usuario: " . auth()->user()->name . "] Error en revisarOrden: " . $e->getMessage(), ['exception' => $e]);
+            Log::error("Log:: [Usuario: " . auth()->user()->name . "] Error en validarOrden: " . $e->getMessage(), ['exception' => $e]);
             return response()->json([
-                'success' => false, 
-                'message' => 'Error al revisar la orden.'
+                'success' => false,
+                'message' => 'Ocurrió un error al validar la orden.'
             ], 500);
         }
     }
@@ -735,6 +706,142 @@ class RecepcionController extends Controller
                 'success' => false,
                 'message' => 'Ocurrió un error al obtener la información de la orden.'
             ], 500);
+        }
+    }
+
+    public function carritoEditar(Request $request)
+    {
+        $atencion = Atencion::find($request->atencion_id);
+        $oficinaId = auth()->user()->oficina_id;
+        $stockBodegaId = Stock::where('stock', 'Bodega')->first()->id;
+        $atencion->load([
+            'ordenes.kit',
+            'ordenes.detalle' => function ($query1) {
+                $query1->orderBy('created_at');
+            },
+            'ordenes.detalle.producto.oficinaStock' => function($query2) use ($oficinaId, $stockBodegaId){
+                $query2->where('stock_id', $stockBodegaId)->where('oficina_id', $oficinaId);
+            },
+            'ordenes.detalle.producto.kitProductos.equivalentes.producto.oficinaStock'=> function($query3) use ($oficinaId, $stockBodegaId){
+                $query3->where('stock_id', $stockBodegaId)->where('oficina_id', $oficinaId);
+            }
+        ]);
+        $atencion_id_ripped = KeyRipper::rip($atencion->id);
+        return view('modelos.kit.carrito', [
+            'atencion' => collect([$atencion]),
+            'atencion_id_ripped' => $atencion_id_ripped,
+            'recepcion_id' => $request->recepcion_id
+        ]);
+    }
+
+    public function createStock()
+    {
+        $stocks = Stock::where('activo', true)->get();
+        $productos = Producto::where('activo', true)->with('modelo', 'tipo')->get();
+        return view('modelos.producto.stock', compact('productos', 'stocks'));
+    }
+
+    public function storeStock(Request $request)
+    {
+        //PREESTABLECIMIENTOS
+        $request->merge([ //Limpiando máscara de entrada
+            'unidades' => preg_replace('/[\s,]/', '', (string) $request->input('unidades')),
+        ]);
+        //VALIDACIÓN
+        try {
+            $validated = $request->validate([
+                'origen_stock_id'  => 'required|integer|different:destino_stock_id|exists:stocks,id',
+                'destino_stock_id' => 'required|integer|different:origen_stock_id|exists:stocks,id',
+                'producto_id'      => 'required|integer|exists:productos,id',
+                'unidades'         => 'required|integer|min:1',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Error en la validación de stock: ' . $e->getMessage(), ['exception' => $e]);
+            return back()->with('error', 'La información proporcionada no es válida.');
+        }
+        if ($validated['origen_stock_id'] == 1 && $validated['destino_stock_id'] == 5) { //Compras
+            $origenStockUnidades = 0;
+            $destinoStockUnidades = $validated['unidades'];
+        } else if ($validated['origen_stock_id'] == 5 && $validated['destino_stock_id'] == 1) { //Devoluciones
+            $origenStockUnidades = $validated['unidades'];
+            $destinoStockUnidades = 0;
+        } else { //Movimientos
+            $origenStockUnidades = $validated['unidades'];
+            $destinoStockUnidades = $validated['unidades'];
+        }
+        $oficinaStockOrigen = OficinaStock::where('oficina_id', auth()->user()->oficina_id) //Rebasamiento
+            ->where('stock_id', $validated['origen_stock_id'])
+            ->where('producto_id', $validated['producto_id'])
+            ->with('stock')
+            ->first();
+        $oficinaStockDestino = OficinaStock::where('oficina_id', auth()->user()->oficina_id)
+            ->where('stock_id', $validated['destino_stock_id'])
+            ->where('producto_id', $validated['producto_id'])
+            ->with('stock')
+            ->first();
+        $stockOrigen = Stock::find($validated['origen_stock_id']); // Cargar los stocks para obtener sus nombres
+        $stockDestino = Stock::find($validated['destino_stock_id']);
+        if (!$stockOrigen) { // Verificar que los stocks existan (condición de carrera)
+            return back()->with('error', 'El stock de origen seleccionado ya no existe. Por favor, recarga la página.');
+        }
+        if (!$stockDestino) {
+            return back()->with('error', 'El stock de destino seleccionado ya no existe. Por favor, recarga la página.');
+        }
+        if ($oficinaStockOrigen && $oficinaStockOrigen->stock && $oficinaStockOrigen->stock->id != 1 && $validated['unidades'] > $oficinaStockOrigen->unidades) {
+            return back()->with(
+                'error',
+                'No hay suficientes unidades en ' . $oficinaStockOrigen->stock->stock .
+                    '. Cantidad disponible: ' . $oficinaStockOrigen->unidades
+            );
+        }
+        //PROCESOS
+        try {
+            DB::beginTransaction();
+            if (!$oficinaStockOrigen) { //Stock origen
+                $oficinaStockOrigen = new OficinaStock();
+                $oficinaStockOrigen->oficina_id = auth()->user()->oficina_id;
+                $oficinaStockOrigen->stock_id = $validated['origen_stock_id'];
+                $oficinaStockOrigen->producto_id = $validated['producto_id'];
+                $oficinaStockOrigen->unidades = $origenStockUnidades;
+                $oficinaStockOrigen->save();
+                $oficinaStockOrigen->load('stock'); // Cargar la relación stock después de guardar
+            } else {
+                $oficinaStockOrigen->unidades -= $origenStockUnidades;
+                $oficinaStockOrigen->save();
+            }
+            if (!$oficinaStockDestino) { //Stock destino
+                $oficinaStockDestino = new OficinaStock();
+                $oficinaStockDestino->oficina_id = auth()->user()->oficina_id;
+                $oficinaStockDestino->stock_id = $validated['destino_stock_id'];
+                $oficinaStockDestino->producto_id = $validated['producto_id'];
+                $oficinaStockDestino->unidades = $destinoStockUnidades;
+                $oficinaStockDestino->save();
+                $oficinaStockDestino->load('stock'); // Cargar la relación stock después de guardar
+            } else {
+                $oficinaStockDestino->unidades += $destinoStockUnidades;
+                $oficinaStockDestino->save();
+            }
+            $orientacion = $validated['origen_stock_id'] . auth()->user()->oficina_id . $validated['destino_stock_id'];
+            $movimiento = new Movimiento(); //Movimiento
+            $movimiento->id = app(KeyMaker::class)->generate('Movimiento', $orientacion);
+            $movimiento->user_id = auth()->id();
+            $movimiento->oficina_id = auth()->user()->oficina_id;
+            $movimiento->origen_stock_id = $validated['origen_stock_id'];
+            $movimiento->destino_stock_id = $validated['destino_stock_id'];
+            $movimiento->producto_id = $validated['producto_id'];
+            $movimiento->movimiento = $stockOrigen->stock . ' -> ' . $stockDestino->stock; // Usar los stocks cargados directamente (verificados anteriormente)
+            $movimiento->unidades = $validated['unidades'];
+            $movimiento->save();
+            DB::commit();
+            return back()->with('success', 'Movimiento ' . $movimiento->movimiento . ' efectuado correctamente');
+        } catch (\Illuminate\Database\QueryException $e) {
+            DB::rollBack();
+            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Error de base de datos en storeStock: ' . $e->getMessage(), ['exception' => $e]);
+            return back()->with('error', 'Ocurrió un error al procesar el movimiento en la base de datos.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Error en storeStock (transacción): ' . $e->getMessage(), ['exception' => $e]);
+            return back()->with('error', 'Ocurrió un error al efectuar el movimiento de stock.');
         }
     }
 }

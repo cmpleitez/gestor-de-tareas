@@ -13,6 +13,7 @@ use App\Http\Controllers\ModeloController;
 use App\Http\Controllers\TipoController;
 use App\Http\Controllers\TiendaController;
 use App\Http\Controllers\KitController;
+use App\Http\Controllers\ParametroController;
 
 // Redirección de la raíz al login o dashboard
 Route::get('/', function () {
@@ -49,7 +50,7 @@ Route::middleware([
     })->name('dashboard');
 
     //ADMINISTRACIÓN
-    Route::group(['middleware' => ['can:administrar']], function () {
+    Route::group(['middleware' => 'can:administrar'], function () {
         Route::group(['prefix' => 'user'], function () { //Usuarios
             Route::get('/', [userController::class, 'index'])->name('user')->middleware('can:ver');
             Route::get('edit/{user}', [userController::class, 'edit'])->name('user.edit')->middleware('can:editar');
@@ -137,19 +138,7 @@ Route::middleware([
             Route::get('destroy/{kit}', [KitController::class, 'destroy'])->name('kit.destroy')->middleware('can:eliminar');
             Route::post('activate/{kit}', [KitController::class, 'activate'])->name('kit.activate')->middleware('can:activar');
         });
-    });
 
-    //GESTIÓN
-    Route::get('parametros', [RecepcionController::class, 'parametros'])->name('recepcion.parametros')->middleware('can:ver');
-    Route::get('parametros/edit/{parametro}', [RecepcionController::class, 'parametrosEdit'])->name('recepcion.parametros-edit')->middleware('can:editar');
-    Route::put('parametros/update/{parametro}', [RecepcionController::class, 'parametrosUpdate'])->name('recepcion.parametros-update')->middleware('can:editar');
-    Route::post('parametros/activate/{parametro}', [RecepcionController::class, 'parametrosActivate'])->name('recepcion.parametros-activate')->middleware('can:activar');
-    Route::get('solicitudes', [RecepcionController::class, 'solicitudes'])->name('recepcion.solicitudes')->middleware('can:ver');
-    Route::get('equipos/{solicitud}', [RecepcionController::class, 'equipos'])->name('recepcion.equipos')->middleware('can:ver');
-    Route::get('operadores/{solicitud}', [RecepcionController::class, 'operadores'])->name('recepcion.operadores')->middleware('can:ver');
-    Route::post('orden-compra', [RecepcionController::class, 'ordenCompra'])->name('recepcion.orden-compra');
-    
-    Route::group(['middleware' => ['can:gestionar']], function () {
         Route::group(['prefix' => 'solicitud'], function () { //Solicitudes
             Route::get('/', [solicitudController::class, 'index'])->name('solicitud')->middleware('can:ver');
             Route::get('create', [solicitudController::class, 'create'])->name('solicitud.create')->middleware('can:crear');
@@ -161,16 +150,49 @@ Route::middleware([
             Route::get('destroy/{solicitud}', [solicitudController::class, 'destroy'])->name('solicitud.destroy')->middleware('can:eliminar');
             Route::post('activate/{solicitud}', [solicitudController::class, 'activate'])->name('solicitud.activate')->middleware('can:activar');
         });
+
+        Route::group(['prefix' => 'parametro'], function () { //Parametros
+            Route::get('/', [ParametroController::class, 'index'])->name('parametro')->middleware('can:ver');
+            Route::get('edit/{parametro}', [ParametroController::class, 'edit'])->name('parametro.edit')->middleware('can:editar');
+            Route::put('update/{parametro}', [ParametroController::class, 'update'])->name('parametro.update')->middleware('can:editar');
+            Route::post('activate/{parametro}', [ParametroController::class, 'activate'])->name('parametro.activate')->middleware('can:activar');
+        });
+
+    });
+
+    
+
+    
+
+
+    
+    //..... GESTIÓN: BLOQUE SUELTO HABRIA QUE REVISAR PARA QUE SIRVE CADA UNO
+
+    Route::get('solicitudes', [RecepcionController::class, 'solicitudes'])->name('recepcion.solicitudes')->middleware('can:ver');
+    Route::get('equipos/{solicitud}', [RecepcionController::class, 'equipos'])->name('recepcion.equipos')->middleware('can:ver');
+    Route::get('operadores/{solicitud}', [RecepcionController::class, 'operadores'])->name('recepcion.operadores')->middleware('can:ver');
+    Route::post('orden-compra', [RecepcionController::class, 'ordenCompra'])->name('recepcion.orden-compra')->middleware('can:ver');
+    
+
+
+
+
+
+    //GESTIÓN
+    Route::group(['middleware' => ['can:gestionar']], function () {
         Route::group(['prefix' => 'recepcion'], function () {
+            Route::post('nuevas-recibidas', [RecepcionController::class, 'nuevasRecibidas'])->name('recepcion.nuevas-recibidas')->middleware('can:autorefrescar');
             Route::post('asignar/{recepcion}/{equipo}', [RecepcionController::class, 'asignar'])->name('recepcion.asignar')->middleware('can:asignar');
-            Route::get('tareas/{recepcion_id}', [RecepcionController::class, 'tareas'])->name('recepcion.tareas');
+            Route::get('tareas/{recepcion_id}', [RecepcionController::class, 'tareas'])->name('recepcion.tareas')->middleware('can:ver');
             Route::post('corregir-orden', [RecepcionController::class, 'corregirOrden'])->name('recepcion.corregir-orden')->middleware('can:editar');
-            Route::post('revisar-orden', [RecepcionController::class, 'revisarOrden'])->name('recepcion.revisar-orden')->middleware('can:editar');
-            Route::post('revisar-stock', [RecepcionController::class, 'revisarStock'])->name('recepcion.revisar-stock')->middleware('can:editar');
+            Route::post('validar-orden', [RecepcionController::class, 'validarOrden'])->name('recepcion.validar-orden')->middleware('can:editar');
+            Route::get('stock', [RecepcionController::class, 'createStock'])->name('recepcion.create-stock')->middleware('can:stock');
+            Route::post('stock', [RecepcionController::class, 'storeStock'])->name('recepcion.store-stock')->middleware('can:stock');
+            Route::post('revisar-stock', [RecepcionController::class, 'revisarStock'])->name('recepcion.revisar-stock')->middleware('can:stock');
+            Route::post('carrito-editar', [RecepcionController::class, 'carritoEditar'])->name('recepcion.carrito-editar')->middleware('can:editar');
             Route::post('confirmar-pago', [RecepcionController::class, 'confirmarPago'])->name('recepcion.confirmar-pago')->middleware('can:autorizar');
             Route::post('descargar-stock', [RecepcionController::class, 'descargarStock'])->name('recepcion.descargar-stock')->middleware('can:editar');
             Route::post('efectuar-entrega', [RecepcionController::class, 'efectuarEntrega'])->name('recepcion.efectuar-entrega')->middleware('can:autorizar');
-            Route::post('nuevas-recibidas', [RecepcionController::class, 'nuevasRecibidas'])->name('tienda.nuevas-recibidas')->middleware('can:autorefrescar');
         });
     });
 
@@ -179,10 +201,7 @@ Route::middleware([
         Route::group(['prefix' => 'tienda'], function () {
             Route::get('/', [TiendaController::class, 'index'])->name('tienda')->middleware('can:ver');
             Route::get('carrito', [TiendaController::class, 'carritoIndex'])->name('tienda.carrito')->middleware('can:ver');
-            Route::post('carrito-editar', [TiendaController::class, 'carritoEditar'])->name('tienda.carrito-editar')->middleware('can:editar');
             Route::post('carrito-enviar', [TiendaController::class, 'carritoEnviar'])->name('tienda.carrito-enviar')->middleware('can:crear');
-            Route::get('stock', [TiendaController::class, 'createStock'])->name('tienda.create-stock')->middleware('can:crear');
-            Route::post('stock', [TiendaController::class, 'storeStock'])->name('tienda.store-stock')->middleware('can:editar');
             Route::get('get-stocks-producto/{productoId}', [TiendaController::class, 'getStocksProducto'])->name('tienda.get-stocks-producto')->middleware('can:ver');
             Route::post('get-kit-productos', [TiendaController::class, 'getKitProductos'])->name('tienda.get-kit-productos')->middleware('can:ver');
             Route::get('agregar-orden/{orden}', [TiendaController::class, 'agregarOrden'])->name('tienda.agregar-orden')->middleware('can:crear');

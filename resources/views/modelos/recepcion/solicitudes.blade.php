@@ -657,10 +657,10 @@
             let formId = 'form_' + tarea.actividad_id;
             let formAction = '';
             let ruta = '';
-            if (tarea.tarea === 'Orden Revisada') { //Definiendo las tareas del tracking
-                ruta = '{{ route("tienda.carrito-editar") }}';
+            if (tarea.tarea === 'Orden validada') { //Definiendo las tareas del tracking
+                ruta = '{{ route("recepcion.carrito-editar") }}';
             } else if (tarea.tarea === 'Stock revisado') {
-                ruta = '{{ route("tienda.carrito-editar") }}';
+                ruta = '{{ route("recepcion.carrito-editar") }}';
             } else if (tarea.tarea === 'Pago efectuado') {
                 ruta = '{{ route("recepcion.confirmar-pago") }}';
             } else if (tarea.tarea === 'Stock descargado') {
@@ -1051,7 +1051,7 @@
             function cargarNuevasRecibidas() {
                 let atencionIdsExistentes = obtenerAtencionIdsExistentes();
                 $.post({
-                    url: '{{ route('tienda.nuevas-recibidas') }}',
+                    url: '{{ route('recepcion.nuevas-recibidas') }}',
                     data: {
                         _token: $('meta[name="csrf-token"]').attr('content'),
                         atencion_ids: atencionIdsExistentes

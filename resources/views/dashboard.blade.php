@@ -208,7 +208,7 @@
                     <li class="nav-item has-sub open nav-item-administracion"><a href="#"><i class="bx bxs-cog"></i><span class="menu-title"
                                 data-i18n="Menu Levels">Administración</span></a>
                         <ul class="menu-content" style="display: block;">
-                            <li><a href="{{ Route('recepcion.parametros') }}">
+                            <li><a href="{{ Route('parametro') }}">
                                     <i class="bx bx-right-arrow-alt"></i>
                                     <span class="menu-item" data-i18n="Second Level">Configuración</span>
                                 </a></li>
@@ -259,7 +259,7 @@
                             data-i18n="Menu Levels">Servicios</span></a>
                     <ul class="menu-content" style="display: block;">
                         @can('stock')
-                            <li><a href="{{ route('tienda.create-stock') }}">
+                            <li><a href="{{ route('recepcion.create-stock') }}">
                                     <i class="bx bx-right-arrow-alt"></i>
                                     <span class="menu-item" data-i18n="Second Level">Stocks</span>
                                 </a></li>

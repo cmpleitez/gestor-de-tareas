@@ -72,7 +72,7 @@ class UserSeeder extends Seeder
         $role->syncPermissions(['ver']);
 
         $role = Role::firstOrCreate(['name' => 'operador']);
-        $role->syncPermissions(['ver', 'crear', 'editar', 'asignar', 'gestionar', 'tienda', 'autorefrescar']);
+        $role->syncPermissions(['ver', 'editar', 'gestionar', 'autorefrescar', 'stock']);
 
         $role = Role::firstOrCreate(['name' => 'cliente']);
         $role->syncPermissions(['ver', 'crear', 'tienda', 'vaciar_carrito', 'eliminar', 'autorefrescar']);
@@ -122,7 +122,7 @@ class UserSeeder extends Seeder
         }
 
         //CREACION DE TAREAS
-        DB::table('tareas')->updateOrInsert(['id' => 1], ['tarea' => 'Orden Revisada', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
+        DB::table('tareas')->updateOrInsert(['id' => 1], ['tarea' => 'Orden validada', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
         DB::table('tareas')->updateOrInsert(['id' => 2], ['tarea' => 'Stock revisado', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
         DB::table('tareas')->updateOrInsert(['id' => 3], ['tarea' => 'Pago efectuado', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
         DB::table('tareas')->updateOrInsert(['id' => 4], ['tarea' => 'Stock descargado', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);

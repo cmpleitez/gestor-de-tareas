@@ -73,11 +73,12 @@ SEGURIDAD:
 SERVICIOS:
 
     🟢 Reportes para el receptor y el administrador:
-        . historial de entradas y salidas en stocks
+        . Historial de entradas y salidas en stocks
 
     🟢 Revisiones:
-        . Sin pendientes por el momento
-
+        . Proceso para vaciar carrito desde cualquier rol
+        . iconos del menu del usuario están muy palidos
+        . el superadmin no deberia tener roles asignados
         
 CLIENTE:
 

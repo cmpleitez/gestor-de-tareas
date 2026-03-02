@@ -515,13 +515,13 @@
                             </button>
                         @endif
                         @if($rol_usuario_actual == 'receptor')
-                            <button type="button" id="revisar-orden" class="btn btn-primary"
+                            <button type="button" id="validar-orden" class="btn btn-primary"
                                 @if($atencion && $atencion->count() > 0)
                                     data-atencion-id="{{ $atencion->first()->id }}"
                                 @endif
                                 data-recepcion-id="{{ $recepcion_id ?? '' }}"
-                                data-route="{{ route('recepcion.revisar-orden') }}">
-                                <i class="fas fa-clipboard-check me-2"></i> Revisar
+                                data-route="{{ route('recepcion.validar-orden') }}">
+                                <i class="fas fa-clipboard-check me-2"></i> Validar
                             </button>
                         @endif
                         @if($rol_usuario_actual == 'operador')
@@ -942,7 +942,7 @@
             }
         });
     });
-    $(document).on('click', '#revisar-orden', function() { // Revisar Orden (Receptor)
+    $(document).on('click', '#validar-orden', function() { // Validar Orden (Receptor)
         const btn = $(this);
         const atencionId = btn.data('atencion-id');
         const recepcionId = btn.data('recepcion-id');
@@ -978,7 +978,7 @@
             }
         });
         if (ordenes.length === 0) {
-            toastr.error('No se encontraron órdenes para revisar.');
+            toastr.error('No se encontraron órdenes para validar.');
             return;
         }
         $.ajax({
@@ -991,17 +991,17 @@
                 ordenes: ordenes
             },
             beforeSend: function() {
-                btn.prop('disabled', true).html('<i class="fas fa-clock me-2"></i> Revisando...');
+                btn.prop('disabled', true).html('<i class="fas fa-clock me-2"></i> Validando...');
             },
             success: function(response) {
                 toastr.success(response.message);
                 $('.main-kit-collapse').find('.accordion.accordion-flush button').each(function() {
                     const $iconContainer = $(this).find('span.px-1');
                     if ($iconContainer.length) {
-                        $iconContainer.empty().html('<i class="fas fa-check-double text-success" title="Orden revisada"></i>');
+                        $iconContainer.empty().html('<i class="fas fa-check-double text-success" title="Orden validada"></i>');
                     }
                 });
-                btn.prop('disabled', false).html('<i class="fas fa-check"></i> Revisado');
+                btn.prop('disabled', true).html('<i class="fas fa-check me-2"></i> Validada');
                 if (typeof cargarTareas === 'function') {
                     cargarTareas(recepcionId, atencionId);
                 }
@@ -1010,16 +1010,16 @@
                 }, 1500);
             },
             error: function(xhr) {
-                console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error en revisar-orden click:", xhr);
-                btn.prop('disabled', false).html('<i class="fas fa-clipboard-check"></i> Revisar');
-                toastr.error(xhr.responseJSON?.message || 'Error al revisar');
+                console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error en validar-orden click:", xhr);
+                btn.prop('disabled', false).html('<i class="fas fa-clipboard-check me-2"></i> Validar');
+                toastr.error(xhr.responseJSON?.message || 'Error al validar');
             }
         });
     });
     $(document).on('click', '#corregir-orden', function() { // Corregir Orden (Receptor)
         const btn = $(this);
         const atencionId = btn.data('atencion-id');
-        const recepcionId = $('#revisar-orden').data('recepcion-id'); // Obteniendo recepcionId del otro botón
+        const recepcionId = $('#validar-orden').data('recepcion-id'); // Obteniendo recepcionId del otro botón
         let ordenes = [];
         $('.main-kit-collapse').each(function() {
             const collapseDiv = $(this);

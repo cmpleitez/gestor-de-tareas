@@ -8,7 +8,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use App\Models\Recepcion;
 
-class OrdenRevisadaNotification extends Notification implements ShouldQueue
+class OrdenValidadaNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -28,8 +28,8 @@ class OrdenRevisadaNotification extends Notification implements ShouldQueue
     {
         $ordenId = \App\Services\KeyRipper::rip($this->recepcion->atencion_id);
         return (new MailMessage)
-            ->subject('Orden #' . $ordenId . ' Revisada')
-            ->markdown('mail.orden-revisada', ['recepcion' => $this->recepcion]);
+            ->subject('Orden #' . $ordenId . ' Validada')
+            ->markdown('mail.orden-validada', ['recepcion' => $this->recepcion]);
     }
 
 
@@ -37,8 +37,8 @@ class OrdenRevisadaNotification extends Notification implements ShouldQueue
     {
         $ordenId = \App\Services\KeyRipper::rip($this->recepcion->atencion_id);
         return [
-            'titulo' => 'Orden Revisada',
-            'mensaje' => 'La orden #' . $ordenId . ' ha sido revisada, por favor abra su correo '.$notifiable->email.' y valídela para continuar con la gestión del pago y envío respectivos.',
+            'titulo' => 'Orden Validada',
+            'mensaje' => 'La orden #' . $ordenId . ' ha sido validada, por favor abra su correo '.$notifiable->email.' y proceda con la gestión respectiva.',
             'atencion_id' => $this->recepcion->atencion_id,
         ];
     }

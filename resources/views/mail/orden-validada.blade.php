@@ -1,11 +1,11 @@
 @component('mail::message')
-# Orden de Compra #{{ \App\Services\KeyRipper::rip($recepcion->atencion_id) }} Revisada
+# Orden de Compra #{{ \App\Services\KeyRipper::rip($recepcion->atencion_id) }} Validada
 
 ASUNTO: **GESTIÓN DE PAGO Y ENTREGA**
 
 Estimado(a) **{{ $recepcion->usuarioOrigen->name }}**,
 
-Su orden de compra #{{ \App\Services\KeyRipper::rip($recepcion->atencion_id) }} ha sido revisada exitosamente. A continuación, encontrará el detalle de la misma, por favor revisela y validela para continuar con la gestión del pago y entrega:
+Su orden de compra #{{ \App\Services\KeyRipper::rip($recepcion->atencion_id) }} ha sido validada exitosamente. A continuación, encontrará el detalle de la misma, por favor verifíquela para continuar con la gestión del pago y entrega:
 
 @component('mail::table')
 | Kit | Cantidad | Precio Unitario | Subtotal |
