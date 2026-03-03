@@ -22,7 +22,10 @@ use App\Models\Role;
 use App\Models\Solicitud;
 use App\Models\Orden;
 use App\Models\Detalle;
+use App\Models\Parametro;
+use App\Models\Equipo;
 use App\Services\KeyRipper;
+
 
 
 
@@ -464,6 +467,93 @@ class TiendaController extends Controller
             return response()->json(['success' => false, 'message' => 'Ocurrió un error al consultar el avance.'], 500);
         }
     }
+
+    public function solicitudes(GestionService $gestionService)
+    {
+        try {
+            //VALIDACIÓN
+            $equipos = collect();
+            $operadores = collect();
+            $user = auth()->user();
+            if ($user->mainRole->name != 'cliente') {
+                $equipos = Equipo::where('oficina_id', $user->oficina_id)->get();
+                if ($equipos->isEmpty()) {
+                    return back()->with('warning', 'No hay equipos de trabajo disponibles para asignar las solicitudes');
+                }
+                $operadores = User::whereHas('roles', function ($query) {
+                    $query->where('name', 'Operador');
+                })->whereHas('oficina', function ($query) use ($user) {
+                    $query->where('id', $user->oficina_id);
+                })->where('activo', true)->get();
+                if ($operadores->isEmpty()) {
+                    return back()->with('warning', 'No hay operadores disponibles para asignar las solicitudes');
+                }
+            }
+            $solicitudes = Solicitud::has('tareas')->get();
+            if ($solicitudes->isEmpty()) {
+                return back()->with('warning', 'Las solicitudes no tienen tareas asociadas');
+            }
+            //PROCESO
+            $user = auth()->user();
+            $recepciones = Recepcion::where(function ($query) use ($user) {
+                if ($user->mainRole->name == 'cliente') {
+                    $query->where('origen_user_id', $user->id);
+                } else {
+                    $query->where('destino_user_id', $user->id);
+                }
+            })
+            ->with(['solicitud.tareas', 'usuarioDestino', 'usuarioOrigen', 'atencion.oficina', 'atencion.estado', 'role', 'actividades.tarea'])
+            ->whereHas('atencion.oficina', function ($query) use ($user) {
+                $query->where('id', $user->oficina_id);
+            })
+            ->where('activo', true)
+            ->orderBy('atencion_id', 'desc')
+            ->take(15)
+            ->get();
+            $atencionIds = $recepciones->pluck('atencion_id')->unique();
+            $usuariosParticipantes = $gestionService->obtenerUsuariosParticipantes($atencionIds); //Obtener usuarios participantes
+            $tarjetas = $recepciones->map(function ($tarjeta) use ($usuariosParticipantes, $gestionService) {
+                $usuariosParticipantesAtencion = $usuariosParticipantes->get($tarjeta->atencion_id, collect());
+                $traza = $gestionService->obtenerTraza($tarjeta);
+                return [
+                    'atencion_id'         => $tarjeta->atencion_id,
+                    'created_at'          => $tarjeta->created_at->toISOString(),
+                    'detalle'             => $tarjeta->detalle,
+                    'traza'               => $traza,
+                    'estado_id'           => $tarjeta->estado->id,
+                    'fecha_relativa'      => Carbon::parse($tarjeta->created_at)->diffForHumans(),
+                    'porcentaje_progreso' => $tarjeta->atencion->avance,
+                    'recepcion_id'        => $tarjeta->id,
+                    'recepcion_id_ripped' => KeyRipper::rip($tarjeta->id),
+                    'role_name'           => $tarjeta->role->name,
+                    'atencion_id_ripped'  => KeyRipper::rip($tarjeta->atencion_id),
+                    'titulo'              => $tarjeta->solicitud->solicitud,
+                    'users'               => $usuariosParticipantesAtencion,
+                    'user_name'           => $tarjeta->usuarioDestino->name,
+                    'user_origen_name'    => $tarjeta->usuarioOrigen->name,
+                    'oficina'             => $tarjeta->atencion->oficina->oficina,
+                ];
+            });
+            $recibidas                = $tarjetas->where('estado_id', Estado::where('estado', 'Recibida')->first()->id)->sortBy('created_at')->values()->toArray();
+            $progreso                 = $tarjetas->where('estado_id', Estado::where('estado', 'En progreso')->first()->id)->sortBy('created_at')->values()->toArray();
+            $resueltas                = $tarjetas->where('estado_id', Estado::where('estado', 'Resuelta')->first()->id)->sortBy('created_at')->values()->toArray();
+            $parametro                = Parametro::where('parametro', 'Frecuencia de refresco')->first();
+            $frecuencia_actualizacion = $parametro ? $parametro->valor : 1; // Valor por defecto: 1 minuto
+            $data                     = [
+                'recibidas'                => $recibidas,
+                'progreso'                 => $progreso,
+                'resueltas'                => $resueltas,
+                'equipos'                  => $equipos,
+                'operadores'               => $operadores,
+                'frecuencia_actualizacion' => $frecuencia_actualizacion,
+            ];
+            return view('modelos.recepcion.solicitudes', $data);
+        } catch (\Exception $e) {
+            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Ocurrió un error cuando se intentaba obtener las tarjetas: ' . $e->getMessage(), ['exception' => $e]);
+            return back()->with('error', 'Ocurrió un error al cargar las tarjetas.');
+        }
+    }
+
 
 
 }

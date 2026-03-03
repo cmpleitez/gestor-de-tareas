@@ -101,7 +101,6 @@
                                                     fallbackCopyTextToClipboard(text);
                                                 });
                                         }
-
                                         function fallbackCopyTextToClipboard(text) {
                                             var textArea = document.createElement("textarea");
                                             textArea.value = text;
@@ -160,11 +159,13 @@
                                 </div>
                             </a>
                             <div class="dropdown-menu dropdown-menu-right pb-0">
-                                <a class="dropdown-item" href="#"><i class="bx bx-user mr-50"></i>
-                                    Perfil</a>
-                                <a class="dropdown-item" href="{{ route('recepcion.solicitudes') }}"><i
-                                        class="bx bx-check-square mr-50"></i>
-                                    Mis ordenes de compra</a>
+                                @can('tienda')                                
+                                    @can('ver-solicitudes')                                
+                                        <a class="dropdown-item" href="{{ route('tienda.solicitudes') }}">
+                                            <i class="bx bx-check-square mr-50"></i>Solicitudes
+                                        </a>
+                                    @endcan
+                                @endcan
                                 <div class="dropdown-divider mb-0"></div>
                                 <form method="POST" action="{{ route('logout') }}" style="display: inline;">
                                     @csrf
@@ -205,71 +206,77 @@
             <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation"
                 data-icon-style="">
                 @can('administrar')
-                    <li class="nav-item has-sub open nav-item-administracion"><a href="#"><i class="bx bxs-cog"></i><span class="menu-title"
-                                data-i18n="Menu Levels">Administración</span></a>
-                        <ul class="menu-content" style="display: block;">
-                            <li><a href="{{ Route('parametro') }}">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Configuración</span>
-                                </a></li>
-                            <li><a href="{{ Route('user') }}">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Usuarios</span>
-                                </a></li>
-                            <li><a href="{{ Route('equipo') }}">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Equipos</span>
-                                </a></li>
-                            <li><a href="{{ Route('solicitud') }}">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Solicitudes</span>
-                                </a></li>
-                            <li><a href="{{ Route('kit') }}">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Kits</span>
-                                </a></li>
+                    @can('ver')
+                        <li class="nav-item has-sub open nav-item-administracion"><a href="#"><i class="bx bxs-cog"></i><span class="menu-title"
+                                    data-i18n="Menu Levels">Administración</span></a>
+                            <ul class="menu-content" style="display: block;">
+                                <li><a href="{{ Route('parametro') }}">
+                                        <i class="bx bx-right-arrow-alt"></i>
+                                        <span class="menu-item" data-i18n="Second Level">Configuración</span>
+                                    </a></li>
+                                <li><a href="{{ Route('user') }}">
+                                        <i class="bx bx-right-arrow-alt"></i>
+                                        <span class="menu-item" data-i18n="Second Level">Usuarios</span>
+                                    </a></li>
+                                <li><a href="{{ Route('equipo') }}">
+                                        <i class="bx bx-right-arrow-alt"></i>
+                                        <span class="menu-item" data-i18n="Second Level">Equipos</span>
+                                    </a></li>
+                                <li><a href="{{ Route('solicitud') }}">
+                                        <i class="bx bx-right-arrow-alt"></i>
+                                        <span class="menu-item" data-i18n="Second Level">Solicitudes</span>
+                                    </a></li>
+                                <li><a href="{{ Route('kit') }}">
+                                        <i class="bx bx-right-arrow-alt"></i>
+                                        <span class="menu-item" data-i18n="Second Level">Kits</span>
+                                    </a></li>
 
-                            <li class="dropdown-divider"></li>
+                                <li class="dropdown-divider"></li>
 
-                            <li><a href="{{ Route('tarea') }}">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Tareas</span>
-                                </a></li>
-                            <li><a href="{{ Route('marca') }}">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Marcas</span>
-                                </a></li>
-                            <li><a href="{{ Route('modelo') }}">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Modelos</span>
-                                </a></li>
-                            <li><a href="{{ Route('tipo') }}">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Tipos</span>
-                                </a></li>
-                            <li><a href="{{ Route('producto') }}">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Productos</span>
-                                </a></li>
-                        </ul>
-                    </li>
+                                <li><a href="{{ Route('tarea') }}">
+                                        <i class="bx bx-right-arrow-alt"></i>
+                                        <span class="menu-item" data-i18n="Second Level">Tareas</span>
+                                    </a></li>
+                                <li><a href="{{ Route('marca') }}">
+                                        <i class="bx bx-right-arrow-alt"></i>
+                                        <span class="menu-item" data-i18n="Second Level">Marcas</span>
+                                    </a></li>
+                                <li><a href="{{ Route('modelo') }}">
+                                        <i class="bx bx-right-arrow-alt"></i>
+                                        <span class="menu-item" data-i18n="Second Level">Modelos</span>
+                                    </a></li>
+                                <li><a href="{{ Route('tipo') }}">
+                                        <i class="bx bx-right-arrow-alt"></i>
+                                        <span class="menu-item" data-i18n="Second Level">Tipos</span>
+                                    </a></li>
+                                <li><a href="{{ Route('producto') }}">
+                                        <i class="bx bx-right-arrow-alt"></i>
+                                        <span class="menu-item" data-i18n="Second Level">Productos</span>
+                                    </a></li>
+                            </ul>
+                        </li>
+                    @endcan
                 @endcan
 
                 <li class="nav-item has-sub open nav-item-servicios mt-1"><a href="#"><i class="bx bx-list-ul"></i><span class="menu-title"
                             data-i18n="Menu Levels">Servicios</span></a>
                     <ul class="menu-content" style="display: block;">
-                        @can('stock')
-                            <li><a href="{{ route('recepcion.create-stock') }}">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Stocks</span>
+                        @can('gestionar')
+                            @can('ver')
+                                <li><a href="{{ route('recepcion.create-stock') }}">
+                                        <i class="bx bx-right-arrow-alt"></i>
+                                        <span class="menu-item" data-i18n="Second Level">Stocks</span>
                                 </a></li>
+                            @endcan
                         @endcan
 
                         @can('tienda')
-                        <li><a href="{{ Route('tienda') }}">
-                                <i class="bx bx-right-arrow-alt"></i>
-                                <span class="menu-item" data-i18n="Second Level">Tienda</span>
-                            </a></li>
+                            @can('ver')
+                                <li><a href="{{ Route('tienda') }}">
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Tienda</span>
+                                </a></li>
+                            @endcan
                         @endcan
                     </ul>
                 </li>

@@ -79,6 +79,7 @@ SERVICIOS:
         . Proceso para vaciar carrito desde cualquier rol
         . iconos del menu del usuario están muy palidos
         . el superadmin no deberia tener roles asignados
+        . seguir revisando los permisos de grupo y de ruta
         
 CLIENTE:
 

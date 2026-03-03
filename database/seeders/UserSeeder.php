@@ -37,19 +37,20 @@ class UserSeeder extends Seeder
 
         //CREACION DE PERMISOS
         $permissions = [
+            'tienda',
+            'gestionar',            
+            'administrar',
             'ver',
             'crear',
             'editar',
             'asignar',
             'eliminar',
             'activar',
-            'autorizar',
-            'gestionar',
-            'administrar',
-            'tienda',
+            'validar',
+            'revisar',
             'vaciar_carrito',
             'autorefrescar',
-            'stock',
+            'ver-solicitudes'
         ];
         foreach ($permissions as $permission) {
             Permission::firstOrCreate(['name' => $permission]);
@@ -59,11 +60,18 @@ class UserSeeder extends Seeder
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
         
         $role = Role::firstOrCreate(['name' => 'superadmin']);
+        
         $role = Role::firstOrCreate(['name' => 'admin']);
-        $role->syncPermissions(['ver', 'crear', 'editar', 'activar', 'eliminar', 'autorizar', 'administrar', 'tienda', 'vaciar_carrito']);
+        $role->syncPermissions(['administrar', 'ver', 'crear', 'editar', 'activar', 'eliminar']);
 
         $role = Role::firstOrCreate(['name' => 'receptor']);
-        $role->syncPermissions(['ver', 'crear', 'editar', 'asignar', 'eliminar', 'autorizar', 'gestionar', 'tienda', 'autorefrescar', 'stock']);
+        $role->syncPermissions(['gestionar', 'tienda', 'ver', 'crear', 'editar', 'validar', 'asignar', 'autorefrescar', 'ver-solicitudes']);
+
+        $role = Role::firstOrCreate(['name' => 'operador']);
+        $role->syncPermissions(['gestionar', 'tienda', 'ver-solicitudes', 'autorefrescar', 'revisar', 'ver-solicitudes']);
+
+        $role = Role::firstOrCreate(['name' => 'cliente']);
+        $role->syncPermissions(['tienda', 'ver', 'crear', 'vaciar_carrito', 'eliminar', 'autorefrescar', 'ver-solicitudes']);
 
         $role = Role::firstOrCreate(['name' => 'supervisor']);
         $role->syncPermissions(['ver']);
@@ -71,11 +79,6 @@ class UserSeeder extends Seeder
         $role = Role::firstOrCreate(['name' => 'gestor']);
         $role->syncPermissions(['ver']);
 
-        $role = Role::firstOrCreate(['name' => 'operador']);
-        $role->syncPermissions(['ver', 'editar', 'gestionar', 'autorefrescar', 'stock']);
-
-        $role = Role::firstOrCreate(['name' => 'cliente']);
-        $role->syncPermissions(['ver', 'crear', 'tienda', 'vaciar_carrito', 'eliminar', 'autorefrescar']);
 
         //SUPERADMINISTRADOR
         DB::table('users')->updateOrInsert(
