@@ -78,7 +78,6 @@ SERVICIOS:
     🟢 Revisiones:
         . Proceso para vaciar carrito desde cualquier rol
         . iconos del menu del usuario están muy palidos
-        . seguir revisando los permisos de grupo y de ruta
         . agregar codigo en agregar equivalentes para que se muestren en el carrito
         
 CLIENTE:
