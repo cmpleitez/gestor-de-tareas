@@ -25,7 +25,7 @@
             @endif
         </div>
         <div class="col d-flex justify-content-center">
-            <span style="font-size: 1.5em;">ORDEN # {{ $atencion_id_ripped }}</span>
+            <span id="titulo-orden" style="font-size: 1.5em;">ORDEN # {{ $atencion_id_ripped }}</span>
         </div>
         @if($rol_usuario_actual == 'cliente' || $rol_usuario_actual == 'receptor')
             <div class="col-auto d-flex justify-content-end">
@@ -694,6 +694,7 @@
                             if ($('#orders-container').find('.row:has(.accordion)').length === 0) {
                                 $('#orders-container').fadeOut(400, function() {
                                     $('#empty-cart-msg').removeClass('d-none').hide().fadeIn();
+                                    $('#titulo-orden').fadeOut(400, function() { $(this).text('').show(); }); // Vaciar título
                                 });
                             }
                             recalcularTotales();
@@ -747,6 +748,7 @@
                         if ($('#orders-container').find('.row:has(.accordion)').length === 0) {
                             $('#orders-container').fadeOut(400, function() {
                                 $('#empty-cart-msg').removeClass('d-none').hide().fadeIn();
+                                $('#titulo-orden').fadeOut(400, function() { $(this).text('').show(); }); // Vaciar título
                             });
                         }
                         recalcularTotales();

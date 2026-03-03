@@ -246,7 +246,7 @@
                                     <select name="producto_id" id="producto_id" class="select2 form-control {{ $errors->has('producto_id') ? 'is-invalid' : '' }}" data-placeholder="Seleccione un producto" required>
                                         <option value=""></option>
                                         @foreach($productos as $producto)
-                                        <option value="{{ $producto->id }}" {{ old('producto_id') == $producto->id ? 'selected' : '' }}>
+                                        <option value="{{ $producto->id }}" data-code="{{ $producto->codigo ?? '' }}" {{ old('producto_id') == $producto->id ? 'selected' : '' }}>
                                             {{ $producto->producto }}
                                         </option>
                                         @endforeach
@@ -379,6 +379,29 @@
                 placeholder: 'Seleccione un producto'
                 , allowClear: true
                 , dropdownParent: modal
+                , templateResult: function (data) { // Renderiza badge + nombre en el desplegable
+                    if (!data.id) { return data.text; }
+                    var code = $(data.element).data('code') || '';
+                    var $badge = $('<span>').addClass('badge secondary-dark')
+                        .css({ 'font-size': '0.8rem', 'background-color': 'var(--color-secondary-dark)', 'color': 'white', 'margin-right': '0.4rem', 'padding': '0.2rem 0.4rem' })
+                        .text(code || 'S/C');
+                    return $('<span>').append($badge).append(' ' + data.text);
+                }
+                , templateSelection: function (data) { // Renderiza badge + nombre en el campo seleccionado
+                    if (!data.id) { return data.text; }
+                    var code = $(data.element).data('code') || '';
+                    var $badge = $('<span>').addClass('badge secondary-dark')
+                        .css({ 'font-size': '0.8rem', 'background-color': 'var(--color-secondary-dark)', 'color': 'white', 'margin-right': '0.4rem', 'padding': '0.2rem 0.4rem' })
+                        .text(code || 'S/C');
+                    return $('<span>').append($badge).append(' ' + data.text);
+                }
+                , matcher: function (params, data) { // Busca por nombre y por código
+                    if ($.trim(params.term) === '') { return data; }
+                    var term = params.term.toLowerCase();
+                    var text = data.text.toLowerCase();
+                    var code = $(data.element).data('code') ? $(data.element).data('code').toString().toLowerCase() : '';
+                    return (text.indexOf(term) > -1 || code.indexOf(term) > -1) ? data : null;
+                }
             });
         });
         $('#modal-nuevo-equivalente').on('hidden.bs.modal', function() { //Destruye select2 y restaura el producto base

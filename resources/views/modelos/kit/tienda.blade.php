@@ -24,6 +24,13 @@
 
 @section('content') {{-- TIENDA --}}
 <div class="d-flex flex-column h-100">
+    <div class="row mb-5 justify-content-end">
+        <div class="col-md-6">
+            <div class="input-group">
+                <input type="text" class="form-control" id="buscador-kits" placeholder="Buscar kit...">
+            </div>
+        </div>
+    </div>
     <div class="row">
         <div class="col-lg-12">
             <div class="row" id="contenedor-kits">
@@ -370,7 +377,7 @@
     };
     initPagination();
     //BÚSQUEDA
-    const searchInput = document.querySelector('input[placeholder="Buscar producto"]');
+    const searchInput = document.getElementById('buscador-kits');
     if (searchInput) {
         searchInput.addEventListener('input', function() {
             const searchTerm = this.value.toLowerCase().trim();
