@@ -50,7 +50,8 @@ class UserSeeder extends Seeder
             'revisar',
             'vaciar_carrito',
             'autorefrescar',
-            'ver-solicitudes'
+            'ver-solicitudes',
+            'ver-tareas'
         ];
         foreach ($permissions as $permission) {
             Permission::firstOrCreate(['name' => $permission]);
@@ -65,10 +66,10 @@ class UserSeeder extends Seeder
         $role->syncPermissions(['administrar', 'ver', 'crear', 'editar', 'activar', 'eliminar']);
 
         $role = Role::firstOrCreate(['name' => 'receptor']);
-        $role->syncPermissions(['gestionar', 'tienda', 'ver', 'crear', 'editar', 'validar', 'asignar', 'autorefrescar', 'ver-solicitudes']);
+        $role->syncPermissions(['gestionar', 'tienda', 'ver', 'crear', 'editar', 'eliminar',  'validar', 'asignar', 'autorefrescar', 'ver-solicitudes', 'ver-tareas']);
 
         $role = Role::firstOrCreate(['name' => 'operador']);
-        $role->syncPermissions(['gestionar', 'tienda', 'ver-solicitudes', 'autorefrescar', 'revisar', 'ver-solicitudes']);
+        $role->syncPermissions(['gestionar', 'tienda', 'ver', 'editar', 'autorefrescar', 'asignar', 'revisar', 'ver-solicitudes', 'ver-tareas']);
 
         $role = Role::firstOrCreate(['name' => 'cliente']);
         $role->syncPermissions(['tienda', 'ver', 'crear', 'vaciar_carrito', 'eliminar', 'autorefrescar', 'ver-solicitudes']);
@@ -103,21 +104,21 @@ class UserSeeder extends Seeder
         }
 
         //ADMINISTRADOR
-        DB::table('users')->updateOrInsert(
-            ['id' => 2],
-            [
-                'role_id'           => 2,
-                'name'              => 'admin',
-                'dui'               => '023456783',
-                'email'             => 'admin@servidor.com',
-                'email_verified_at' => Carbon::now(),
-                'password'          => bcrypt('p@5t15al5abana'),
-                'remember_token'    => Str::random(10),
-                'created_at'        => Carbon::now(),
-                'updated_at'        => Carbon::now(),
-            ]
-        );
         try {
+            DB::table('users')->updateOrInsert(
+                ['id' => 2],
+                [
+                    'role_id'           => 2,
+                    'name'              => 'admin',
+                    'dui'               => '023456783',
+                    'email'             => 'admin@servidor.com',
+                    'email_verified_at' => Carbon::now(),
+                    'password'          => bcrypt('p@5t15al5abana'),
+                    'remember_token'    => Str::random(10),
+                    'created_at'        => Carbon::now(),
+                    'updated_at'        => Carbon::now(),
+                ]
+            );
             $user = User::findOrFail(2);
             $user->assignRole('admin');
         } catch (\Exception $e) {

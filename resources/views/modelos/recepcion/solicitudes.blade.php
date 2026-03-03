@@ -529,17 +529,19 @@
         const estadoId = parseInt($card.attr('data-recepcion-estado-id'));
         if (estadoId === 3) { // En progreso
             @can('gestionar')
-                const titulo = $card.find('.solicitud-titulo').text().trim();
-                const atencionId = $card.data('atencion-id');
-                const recepcionId = $card.data('recepcion-id');
-                const atencionIdRipped = $card.find('.text-right div[style*="font-weight: 600"]').text().trim();
-                $('#sidebar-card-title').text(atencionIdRipped + ' - ' + titulo).css('font-size', '1rem');
-                $('#sidebar-card-body').empty();
-                cargarTareas(recepcionId, atencionId);
-                $('.kanban-overlay').addClass('show');
-                $('.kanban-sidebar').addClass('show');
-                $('body').addClass('sidebar-open');
-                limpiarClasesDrag();
+                @can('ver-tareas')
+                    const titulo = $card.find('.solicitud-titulo').text().trim();
+                    const atencionId = $card.data('atencion-id');
+                    const recepcionId = $card.data('recepcion-id');
+                    const atencionIdRipped = $card.find('.text-right div[style*="font-weight: 600"]').text().trim();
+                    $('#sidebar-card-title').text(atencionIdRipped + ' - ' + titulo).css('font-size', '1rem');
+                    $('#sidebar-card-body').empty();
+                    cargarTareas(recepcionId, atencionId);
+                    $('.kanban-overlay').addClass('show');
+                    $('.kanban-sidebar').addClass('show');
+                    $('body').addClass('sidebar-open');
+                    limpiarClasesDrag();
+                @endcan
             @else
                 mostrarOrdenCompra($card);
             @endcan
@@ -547,7 +549,6 @@
             mostrarOrdenCompra($card);
         }
     });
-
     function mostrarOrdenCompra($card) {
         const titulo = $card.find('.solicitud-titulo').text().trim();
         const recepcionId = $card.data('recepcion-id');
@@ -560,7 +561,6 @@
         $('body').addClass('sidebar-open');
         limpiarClasesDrag();
     }
-
     function cargarTareas(recepcionId, atencionId) {
         $.ajax({
             url: '{{ route('recepcion.tareas',['recepcion_id'=>':id']) }}'.replace(':id', recepcionId),

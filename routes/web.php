@@ -183,7 +183,7 @@ Route::middleware([
         Route::group(['prefix' => 'recepcion'], function () {
             Route::post('nuevas-recibidas', [RecepcionController::class, 'nuevasRecibidas'])->name('recepcion.nuevas-recibidas')->middleware('can:autorefrescar');
             Route::post('asignar/{recepcion}/{equipo}', [RecepcionController::class, 'asignar'])->name('recepcion.asignar')->middleware('can:asignar');
-            Route::get('tareas/{recepcion_id}', [RecepcionController::class, 'tareas'])->name('recepcion.tareas')->middleware('can:ver');
+            Route::get('tareas/{recepcion_id}', [RecepcionController::class, 'tareas'])->name('recepcion.tareas')->middleware('can:ver-tareas');
             Route::post('corregir-orden', [RecepcionController::class, 'corregirOrden'])->name('recepcion.corregir-orden')->middleware('can:editar');
             Route::post('validar-orden', [RecepcionController::class, 'validarOrden'])->name('recepcion.validar-orden')->middleware('can:validar');
             Route::get('stock', [RecepcionController::class, 'createStock'])->name('recepcion.create-stock')->middleware('can:crear');

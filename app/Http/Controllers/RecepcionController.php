@@ -88,7 +88,7 @@ class RecepcionController extends Controller
         $operadores = User::whereHas('equipos', function ($q1) use ($equipo) {
             $q1->where('equipo_id', $equipo->id);
         })->whereHas('mainRole', function ($q1) {
-            $q1->where('name', 'Operador');
+            $q1->where('name', 'operador');
         })->with('equipos')->where('activo', true)->get();
         if ($operadores->isEmpty()) {
             return response()->json(['warning' => true, 'message' => 'No hay operadores disponibles para asignar la solicitud'], 422);
@@ -107,7 +107,7 @@ class RecepcionController extends Controller
                     $new_recepcion->solicitud_id = $recepcion->solicitud_id;
                     $new_recepcion->origen_user_id = $usuario->id;
                     $new_recepcion->destino_user_id = $operador->id;
-                    $new_recepcion->user_destino_role_id = Role::where('name', 'Operador')->first()->id;
+                    $new_recepcion->user_destino_role_id = Role::where('name', 'operador')->first()->id;
                     $new_recepcion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
                     $new_recepcion->save();
                     $recepcion->estado_id = $estado_en_progreso_id; //Validando de <copia receptor> y cambiando estado local
@@ -179,7 +179,7 @@ class RecepcionController extends Controller
     {
         try {
             $operadores = User::whereHas('roles', function ($query) {
-                $query->where('name', 'Operador');
+                $query->where('name', 'operador');
             })->whereHas('oficina', function ($query) {
                 $query->where('id', auth()->user()->oficina_id);
             })->whereHas('solicitudes', function ($query) use ($solicitud) {
@@ -187,7 +187,7 @@ class RecepcionController extends Controller
             })->get();
 
             $operadores_activos = User::whereHas('roles', function ($query) {
-                $query->where('name', 'Operador');
+                $query->where('name', 'operador');
             })->where('activo', true)->get();
 
             return response()->json([

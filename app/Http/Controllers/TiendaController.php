@@ -179,7 +179,7 @@ class TiendaController extends Controller
                     $atencion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
                     $atencion->save();
                     $recepcion = Recepcion::where('atencion_id', $atencion->id) //Activar la copia del receptor
-                    ->where('user_destino_role_id', Role::where('name','Receptor')->first()->id)
+                    ->where('user_destino_role_id', Role::where('name','receptor')->first()->id)
                     ->first(); 
                     if ($recepcion) {
                         $recepcion->activo = true;
@@ -243,7 +243,7 @@ class TiendaController extends Controller
                 if (!$atencion) {
                     $atencion_nueva = true;
                     $receptores = User::whereHas('roles', function ($query) { //Seleccionando el receptor
-                        $query->where('name', 'Receptor');
+                        $query->where('name', 'receptor');
                     })->whereHas('oficina', function ($query) use ($user) {
                         $query->where('id', $user->oficina_id);
                     })->get();
@@ -267,7 +267,7 @@ class TiendaController extends Controller
                     $recepcion->solicitud_id    = Solicitud::where('solicitud', 'Orden de compra')->first()->id;
                     $recepcion->origen_user_id  = auth()->user()->id;
                     $recepcion->destino_user_id = $receptor->id;
-                    $recepcion->user_destino_role_id = Role::where('name', 'Receptor')->first()->id;
+                    $recepcion->user_destino_role_id = Role::where('name', 'receptor')->first()->id;
                     $recepcion->estado_id       = Estado::where('estado', 'En carrito')->first()->id;
                     $recepcion->activo          = false;
                     $recepcion->save();
@@ -481,7 +481,7 @@ class TiendaController extends Controller
                     return back()->with('warning', 'No hay equipos de trabajo disponibles para asignar las solicitudes');
                 }
                 $operadores = User::whereHas('roles', function ($query) {
-                    $query->where('name', 'Operador');
+                    $query->where('name', 'operador');
                 })->whereHas('oficina', function ($query) use ($user) {
                     $query->where('id', $user->oficina_id);
                 })->where('activo', true)->get();

@@ -624,7 +624,7 @@
                 success: function(response) {
                     toastr.success(response.message, null, { "progressBar": false, "timeOut": 0, "extendedTimeOut": 0 });
                     setTimeout(function() {
-                        window.location.href = "{{ route('recepcion.solicitudes') }}";
+                        window.location.href = "{{ route('tienda.solicitudes') }}";
                     }, 2000);
                 },
                 error: function(xhr) {
@@ -925,7 +925,7 @@
                         cargarTareas(recepcionId, atencionId);
                     }
                     setTimeout(function() {
-                        window.location.href = "{{ route('recepcion.solicitudes') }}";
+                        window.location.href = "{{ route('tienda.solicitudes') }}";
                     }, 1500);
                 } else {
                     toastr.error(response.message || 'Error al procesar el lote');
@@ -1006,7 +1006,7 @@
                     cargarTareas(recepcionId, atencionId);
                 }
                 setTimeout(function() {
-                    window.location.href = "{{ route('recepcion.solicitudes') }}";
+                    window.location.href = "{{ route('tienda.solicitudes') }}";
                 }, 1500);
             },
             error: function(xhr) {
@@ -1091,7 +1091,7 @@
                     });
                 }
                 setTimeout(function() {
-                    window.location.href = "{{ route('recepcion.solicitudes') }}";
+                    window.location.href = "{{ route('tienda.solicitudes') }}";
                 }, 1500);
                 btn.prop('disabled', false).html('<i class="fas fa-pencil-alt"></i> Corregir');
             },
