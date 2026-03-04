@@ -74,15 +74,9 @@ SERVICIOS:
 
     🟢 Reportes para el receptor y el administrador:
         . Historial de entradas y salidas en stocks
-
     
-    
-    
-    ...🟢 Revisiones:
-        3.Feb... Al receptor le Permitió vaciar el carrito del cliente: no debería
-
-
-    
+    🟢 Revisiones:
+        . Sin pendientes
         
 CLIENTE:
 

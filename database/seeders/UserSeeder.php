@@ -48,7 +48,6 @@ class UserSeeder extends Seeder
             'activar',
             'validar',
             'revisar',
-            'vaciar-carrito',
             'autorefrescar',
             'ver-solicitudes',
             'ver-tareas'
@@ -72,7 +71,6 @@ class UserSeeder extends Seeder
         $role->syncPermissions(['gestionar', 'tienda', 'ver', 'editar', 'autorefrescar', 'asignar', 'revisar', 'ver-solicitudes', 'ver-tareas']);
 
         $role = Role::firstOrCreate(['name' => 'cliente']);
-        $role->syncPermissions(['tienda', 'ver', 'crear', 'vaciar-carrito', 'eliminar', 'autorefrescar', 'ver-solicitudes']);
 
         $role = Role::firstOrCreate(['name' => 'supervisor']);
         $role->syncPermissions(['ver']);

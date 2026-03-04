@@ -202,22 +202,16 @@ class TiendaController extends Controller
     {
         try {
             DB::beginTransaction();
-            $atencion = Atencion::with('ordenes')->find($orden->atencion_id);
-            $autorizado = $atencion && $atencion->recepciones()->where('origen_user_id', auth()->user()->id)->exists();
-            if(!$autorizado){
-                if ($atencion && $atencion->ordenes->count() === 1) {
-                    return response()->json(['success' => false, 'message' => 'No se autoriza eliminar el último item de la última orden, ya que se eliminaría completamente la solicitud del cliente']);
+                $atencion = Atencion::with('ordenes')->find($orden->atencion_id);
+                $orden->detalle()->delete();
+                $orden->delete();
+                if ($atencion && $atencion->ordenes()->count() === 0) {
+                    foreach ($atencion->recepciones as $recepcion) {
+                        $recepcion->actividades()->delete();
+                    }
+                    $atencion->recepciones()->delete();
+                    $atencion->delete();
                 }
-            }
-            $orden->detalle()->delete();
-            $orden->delete();
-            if ($atencion && $atencion->ordenes()->count() === 0) {
-                foreach ($atencion->recepciones as $recepcion) {
-                    $recepcion->actividades()->delete();
-                }
-                $atencion->recepciones()->delete();
-                $atencion->delete();
-            }
             DB::commit();
             return response()->json(['success' => true, 'message' => 'Kit retirado del carrito correctamente', 'orden_vacia' => true]);
         } catch (Exception $e) {
@@ -226,7 +220,51 @@ class TiendaController extends Controller
             return response()->json(['success' => false, 'message' => 'Ocurrió un error al procesar la solicitud.'], 500);
         }
     }
-    
+
+    public function retirarItem(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+                $eliminado = DB::table('detalles')
+                ->where('orden_id', $request->orden_id)
+                ->where('kit_id', $request->kit_id)
+                ->where('producto_id', $request->producto_id)
+                ->delete();
+                if (!$eliminado) {
+                    throw new Exception('No se encontró el producto especificado');
+                }
+                $orden = Orden::with('detalle')->find($request->orden_id);
+                $ordenVacia = false;
+                $nuevoPrecio = 0;
+                $nuevoSubtotal = 0;
+                if ($orden) {
+                    if ($orden->detalle->count() === 0) {
+                        $orden->delete();
+                        $ordenVacia = true;
+                    } else {
+                        $nuevoPrecio = $orden->detalle->sum(function ($det) { // Recalcular el precio sumando los precios de los detalles
+                            return $det->precio;
+                        });
+                        $orden->precio = $nuevoPrecio;
+                        $orden->save();
+                        $nuevoSubtotal = $nuevoPrecio * $orden->unidades;
+                    }
+                }
+            DB::commit();
+            return response()->json([
+                'success'        => true,
+                'message'        => 'Se retiró el item',
+                'orden_vacia'    => $ordenVacia,
+                'nuevo_precio'   => $nuevoPrecio,
+                'nuevo_subtotal' => $nuevoSubtotal
+            ]);
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Ocurrió un error en retirarItem: ' . $e->getMessage(), ['exception' => $e]);
+            return response()->json(['success' => false, 'message' => 'Ocurrió un error al intentar retirar el ítem.'], 500);
+        }
+    }
+
     public function agregarOrden(Request $request, Kit $orden)
     {
         try {
@@ -311,59 +349,7 @@ class TiendaController extends Controller
         }
     }
 
-    public function retirarItem(Request $request)
-    {
-        $orden = Orden::with('atencion.ordenes')->find($request->orden_id);
-        $autorizado = $orden && $orden->atencion && $orden->atencion->recepciones()->where('origen_user_id', auth()->user()->id)->exists();
-        if (!$autorizado) {
-            if ($orden && $orden->detalle()->count() === 1 && $orden->atencion->ordenes->count() === 1) {
-                return response()->json([
-                    'success' => false, 
-                    'message' => 'No puedes vaciar el carrito completamente. Ya que provocarías una inconsistencia, la solicitud quedaría vacía, sin posibilidades de ser resuelta, por tanto quedaría permanentemente en los tableros de trabajo.'
-                ], 422);
-            }
-        }
-        try {
-            DB::beginTransaction();
-            $eliminado = DB::table('detalles')
-                ->where('orden_id', $request->orden_id)
-                ->where('kit_id', $request->kit_id)
-                ->where('producto_id', $request->producto_id)
-                ->delete();
-            if ($eliminado) {
-                $orden = Orden::with('detalle')->find($request->orden_id);
-                $ordenVacia = false;
-                $nuevoPrecio = 0;
-                $nuevoSubtotal = 0;
-                if ($orden) {
-                    if ($orden->detalle->count() === 0) {
-                        $orden->delete();
-                        $ordenVacia = true;
-                    } else {
-                        $nuevoPrecio = $orden->detalle->sum(function ($det) { // Recalcular el precio de la orden sumando los precios de los detalles
-                            return $det->precio; // Asumiendo que el precio en detalle es unitario y las unidades son del producto en el kit
-                        });
-                        $orden->precio = $nuevoPrecio;
-                        $orden->save();
-                        $nuevoSubtotal = $nuevoPrecio * $orden->unidades;
-                    }
-                }
-                DB::commit();
-                return response()->json([
-                    'success' => true, 
-                    'message' => 'Se retiró el item',
-                    'orden_vacia' => $ordenVacia,
-                    'nuevo_precio' => $nuevoPrecio,
-                    'nuevo_subtotal' => $nuevoSubtotal
-                ]);
-            }
-            throw new Exception('No se encontró el producto especificado');
-        } catch (Exception $e) {
-            DB::rollBack();
-            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Ocurrió un error en retirarItem: ' . $e->getMessage(), ['exception' => $e]);
-            return response()->json(['success' => false, 'message' => 'Ocurrió un error al intentar retirar el ítem.'], 500);
-        }
-    }
+
 
     public function getStocksProducto(int $productoId)
     {
