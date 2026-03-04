@@ -75,9 +75,18 @@ SERVICIOS:
     🟢 Reportes para el receptor y el administrador:
         . Historial de entradas y salidas en stocks
     
-    🟢 Revisiones:
-        . Sin pendientes
-        
+    
+    
+    
+    
+    ...🟢 Revisiones:
+        4.feb... El cliente no tiene permiso para ver las solicitudes porque el seeders no dispone de esos permisos
+
+
+
+
+
+
 CLIENTE:
 
     🔵 Que el cliente brinde la información del dominio

@@ -73,6 +73,7 @@ class UserSeeder extends Seeder
         $role = Role::firstOrCreate(['name' => 'cliente']);
 
         $role = Role::firstOrCreate(['name' => 'supervisor']);
+
         $role->syncPermissions(['ver']);
 
         $role = Role::firstOrCreate(['name' => 'gestor']);
