@@ -192,7 +192,7 @@
                         <div class="brand-logo d-flex justify-content-center">
                             <img src="{{ asset('app-assets/images/logo/logo.svg') }}" alt="Logo" style="width: 85%; height: auto; max-width: 200px;">
                         </div>
-                        <h2 class="brand-text mb-0"></h2>
+                        <p class="brand-text mb-0" style="font-size: 1rem;">Gestor de Tareas</p>
                     </a>
                 </li>
                 <li class="nav-item nav-toggle"><a class="nav-link modern-nav-toggle pr-0" data-toggle="collapse"><i

@@ -26,7 +26,7 @@
 .main-header-navbar .nav-link,
 .main-header-navbar .breadcrumb-item,
 .main-header-navbar .user-name {
-    color: #dde7f1 !important;
+    color: #8fc7ff !important;
 }
 
 .main-header-navbar .user-status,
@@ -34,15 +34,10 @@
     color: #dde7f1 !important;
 }
 
-
-.main-menu.menu-light .navigation {
-    background: #1e212e;
-    border: none;
-}
-
 .main-menu.menu-light {
     background: #373c50;
     border: none;
+    
 }
 
 .main-menu.menu-light .navigation {
@@ -50,21 +45,20 @@
     border: none;
 }
 
-
-
-/* Este bloque se movió y reforzó al final para ganar por cascada y especificidad */
-/*
-.main-menu.menu-light .navigation .nav-item.has-sub.open > a,
-.main-menu.menu-light .navigation .nav-item.has-sub.open > a i,
-.main-menu.menu-light .navigation .nav-item.has-sub.open > a .menu-title,
-.main-menu.menu-light .navigation .nav-item.has-sub.open .menu-content li a,
-.main-menu.menu-light .navigation .nav-item.has-sub.open .menu-content li a i,
-.main-menu.menu-light .navigation .nav-item.has-sub.open .menu-content li a .menu-item {
+.main-menu.menu-light .navigation li a,
+.main-menu.menu-light .navigation li a span,
+.main-menu.menu-light .navigation li a i,
+.main-menu.menu-light .navigation li a .menu-title,
+.main-menu.menu-light .navigation li a .menu-item,
+.main-menu.menu-light .navigation .navigation-header {
     color: #dde7f1 !important;
 }
-*/
 
-/* Fondos específicos para secciones solicitados por el usuario */
+.main-menu .navbar-header .navbar-brand .brand-text {
+    color: #dde7f1;
+    font-size: 1rem;
+}
+
 .nav-item-administracion {
     background-color: #232636 !important;
 }

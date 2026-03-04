@@ -55,7 +55,7 @@
                                             <img src="{{ asset('app-assets/images/logo/logo.svg') }}" alt="Logo"
                                                 style="height: 16vh; max-height: 400px; width: auto;">
                                         </div>
-                                        <div class="card-header mb-3 mt-0 p-0">
+                                        <div class="card-header mb-3 mt-1 p-0">
                                             <div class="card-title">
                                                 <h6 class="text-center">GESTOR DE TAREAS</h6>
                                             </div>
