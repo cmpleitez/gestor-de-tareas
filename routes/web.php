@@ -161,11 +161,6 @@ Route::middleware([
     });
 
     
-
-    
-
-
-    
     //..... GESTIÓN: BLOQUE SUELTO HABRIA QUE REVISAR PARA QUE SIRVE CADA UNO
 
     
@@ -173,10 +168,6 @@ Route::middleware([
     Route::get('operadores/{solicitud}', [RecepcionController::class, 'operadores'])->name('recepcion.operadores')->middleware('can:ver');
     Route::post('orden-compra', [RecepcionController::class, 'ordenCompra'])->name('recepcion.orden-compra')->middleware('can:ver');
  
-
-
-
-
 
     //GESTIÓN
     Route::group(['middleware' => ['can:gestionar']], function () {
