@@ -80,7 +80,7 @@ SERVICIOS:
     
     
     ...🟢 Revisiones:
-        4.feb... El cliente no tiene permiso para ver las solicitudes porque el seeders no dispone de esos permisos
+        5.feb... carrito.editar: cuando se usa el control de retroceso hay una re-apertura del sidebar con las tareas
 
 
 

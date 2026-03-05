@@ -534,6 +534,7 @@
                     const atencionId = $card.data('atencion-id');
                     const recepcionId = $card.data('recepcion-id');
                     const atencionIdRipped = $card.find('.text-right div[style*="font-weight: 600"]').text().trim();
+                    sessionStorage.setItem('recepcion_id_activa', recepcionId); // Guardar ID para apertura automática
                     $('#sidebar-card-title').text(atencionIdRipped + ' - ' + titulo).css('font-size', '1rem');
                     $('#sidebar-card-body').empty();
                     cargarTareas(recepcionId, atencionId);
@@ -1123,6 +1124,18 @@
         }
         safeUpdate();
         setInterval(safeUpdate, updateInterval);
+
+        // Apertura automática del sidebar si viene de una validación de orden
+        const recepcionIdGuardado = sessionStorage.getItem('recepcion_id_activa');
+        if (recepcionIdGuardado) {
+            sessionStorage.removeItem('recepcion_id_activa');
+            setTimeout(function() {
+                const $tarjeta = $(`.solicitud-card[data-recepcion-id="${recepcionIdGuardado}"]`);
+                if ($tarjeta.length) {
+                    $tarjeta.click();
+                }
+            }, 1200); // Retardo para asegurar que las tarjetas estén renderizadas
+        }
     });
 </script>
 @endsection

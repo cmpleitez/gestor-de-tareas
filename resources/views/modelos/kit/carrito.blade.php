@@ -623,9 +623,50 @@
                 }),
                 success: function(response) {
                     toastr.success(response.message, null, { "progressBar": false, "timeOut": 0, "extendedTimeOut": 0 });
-                    setTimeout(function() {
-                        window.location.href = "{{ route('tienda.solicitudes') }}";
-                    }, 2000);
+                    
+                    const role = "{{ $rol_usuario_actual }}";
+                    const atencionId = response.atencion_id || "{{ $atencion->first()->id ?? '' }}";
+                    const recepcionId = response.recepcion_id || "{{ $recepcion_id ?? '' }}";
+                    const equipoId = response.equipo_id;
+
+                    const procederRedireccion = function() {
+                        setTimeout(function() {
+                            if (role === 'receptor') {
+                                let form = $('<form action="{{ route('recepcion.carrito-editar') }}" method="POST">' +
+                                    '<input type="hidden" name="_token" value="{{ csrf_token() }}">' +
+                                    '<input type="hidden" name="atencion_id" value="' + atencionId + '">' +
+                                    '<input type="hidden" name="recepcion_id" value="' + recepcionId + '">' +
+                                    '</form>');
+                                $('body').append(form);
+                                form.submit();
+                            } else {
+                                window.location.href = "{{ route('tienda.solicitudes') }}";
+                            }
+                        }, 2000);
+                    };
+
+                    if (role === 'receptor' && recepcionId && equipoId) {
+                        // Auto-asignación automática para el receptor
+                        const asignarUrl = "{{ route('recepcion.asignar', [':recepcion', ':equipo']) }}"
+                            .replace(':recepcion', recepcionId)
+                            .replace(':equipo', equipoId);
+
+                        $.ajax({
+                            url: asignarUrl,
+                            method: 'POST',
+                            data: { _token: '{{ csrf_token() }}' },
+                            success: function(assignResponse) {
+                                console.log("Auto-asignación completada:", assignResponse.message);
+                                procederRedireccion();
+                            },
+                            error: function(err) {
+                                console.error("Error en auto-asignación:", err);
+                                procederRedireccion(); // Intentamos redirigir de todos modos
+                            }
+                        });
+                    } else {
+                        procederRedireccion();
+                    }
                 },
                 error: function(xhr) {
                     console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error en carrito-enviar:", xhr);

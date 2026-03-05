@@ -26,18 +26,6 @@ use App\Models\Parametro;
 use App\Models\Equipo;
 use App\Services\KeyRipper;
 
-
-
-
-
-
-
-use Illuminate\Support\Facades\Log;
-
-
-
-
-
 class TiendaController extends Controller
 {
     public function index()
@@ -190,7 +178,24 @@ class TiendaController extends Controller
                 }
             }
             DB::commit();
-            return response()->json(['success' => true, 'message' => 'Su orden ha sido recibida por nuestros gestores']);
+
+            $responseData = ['success' => true, 'message' => 'Su orden ha sido recibida por nuestros gestores'];
+
+            $user = auth()->user();
+            if ($user->mainRole->name === 'receptor' && $atencionId) {
+                $recepcion = Recepcion::where('atencion_id', $atencionId)
+                    ->where('user_destino_role_id', Role::where('name', 'receptor')->first()->id)
+                    ->first();
+                
+                $equipo = $user->equipos->first();
+                
+                if ($recepcion && $equipo) {
+                    $responseData['recepcion_id'] = $recepcion->id;
+                    $responseData['equipo_id'] = $equipo->id;
+                }
+            }
+
+            return response()->json($responseData);
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Error en carritoEnviar: ' . $e->getMessage(), ['exception' => $e]);
