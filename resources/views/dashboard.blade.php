@@ -271,7 +271,7 @@
                         @endcan
 
                         @can('tienda')
-                            @can('ver')
+                            @can('ver-solicitudes')
                                 <li><a href="{{ Route('tienda') }}">
                                     <i class="bx bx-right-arrow-alt"></i>
                                     <span class="menu-item" data-i18n="Second Level">Tienda</span>
