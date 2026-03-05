@@ -71,6 +71,7 @@ class UserSeeder extends Seeder
         $role->syncPermissions(['gestionar', 'tienda', 'ver', 'editar', 'autorefrescar', 'asignar', 'revisar', 'ver-solicitudes', 'ver-tareas']);
 
         $role = Role::firstOrCreate(['name' => 'cliente']);
+        $role->syncPermissions(['tienda', 'ver', 'crear' ,'ver-solicitudes']);
 
         $role = Role::firstOrCreate(['name' => 'supervisor']);
 
