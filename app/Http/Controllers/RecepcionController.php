@@ -288,7 +288,8 @@ class RecepcionController extends Controller
                     $recepcion->save();
                     // Log::info("Log:: Recepción $recepcion_id actualizada");
                 }
-            $this->reportarTarea('Stock revisado', $recepcion_id, $atencion_id); //Reportar tarea
+            $tareaStockRevisado = \App\Models\Tarea::find(3)->tarea ?? 'Stock revisado';
+            $this->reportarTarea($tareaStockRevisado, $recepcion_id, $atencion_id); //Reportar tarea
             // Log::info("Log:: Tarea reportada");
             DB::commit();
             // Log::info("Log:: Transacción confirmada");
@@ -312,7 +313,7 @@ class RecepcionController extends Controller
             //RESULTADO
             return response()->json([
                 'success' => true,
-                'message' => 'Stock revisado correctamente',
+                'message' => ($tareaStockRevisado ?? 'Revisión') . ' exitosa',
                 'items_validados' => $itemsValidados
             ]);
         } catch (\Exception $e) {
@@ -381,7 +382,7 @@ class RecepcionController extends Controller
                         $q->where('atencion_id', $atencion_id);
                     })
                     ->whereHas('tarea', function($q) {
-                        $q->where('tarea', 'Stock revisado');
+                        $q->where('id', 3); // ID de Stock revisado
                     })
                     ->first();
 
@@ -475,14 +476,15 @@ class RecepcionController extends Controller
                     $recepcion->validada_destino = true;
                     $recepcion->save();
                 }
-                $this->reportarTarea('Orden validada', $recepcion_id, $atencion_id); //Reportar tarea
+                $tareaOrdenValidada = \App\Models\Tarea::find(2)->tarea ?? 'Orden validada';
+                $this->reportarTarea($tareaOrdenValidada, $recepcion_id, $atencion_id); //Reportar tarea
             DB::commit();
             $recepcion->load('atencion.ordenes.detalle.kit', 'atencion.ordenes.detalle.producto');
             $recepcion->usuarioOrigen->notify(new \App\Notifications\OrdenValidadaNotification($recepcion));
             //RESULTADO
             return response()->json([
                 'success' => true,
-                'message' => 'Orden validada correctamente'
+                'message' => ($tareaOrdenValidada ?? 'Validación') . ' exitosa'
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -498,10 +500,11 @@ class RecepcionController extends Controller
     {
         $recepcion_id = $request->input('recepcion_id');
         $atencion_id = $request->input('atencion_id');
-        $this->reportarTarea('Pago efectuado', $recepcion_id, $atencion_id);
+        $tareaPagoEfectuado = \App\Models\Tarea::find(4)->tarea ?? 'Pago efectuado';
+        $this->reportarTarea($tareaPagoEfectuado, $recepcion_id, $atencion_id);
         return response()->json([
             'success' => true,
-            'message' => 'Pago confirmado correctamente'
+            'message' => ($tareaPagoEfectuado ?? 'Pago') . ' exitoso'
         ]);
     }
 
@@ -541,9 +544,10 @@ class RecepcionController extends Controller
                 }
             }
             // Reportando Tarea
-            $this->reportarTarea('Stock descargado', $recepcion_id, $atencion_id);
+            $tareaStockDescargado = \App\Models\Tarea::find(5)->tarea ?? 'Stock descargado';
+            $this->reportarTarea($tareaStockDescargado, $recepcion_id, $atencion_id);
             DB::commit();
-            return response()->json(['success' => true, 'message' => 'Stock descargado del inventario de Bodega correctamente.']);
+            return response()->json(['success' => true, 'message' => ($tareaStockDescargado ?? 'Descarga') . ' exitosa']);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Error al descargar stock: ' . $e->getMessage(), ['exception' => $e]);
@@ -555,10 +559,11 @@ class RecepcionController extends Controller
     {
         $recepcion_id = $request->input('recepcion_id');
         $atencion_id = $request->input('atencion_id');
-        $this->reportarTarea('Entrega efectuada', $recepcion_id, $atencion_id);
+        $tareaEntregaEfectuada = \App\Models\Tarea::find(6)->tarea ?? 'Entrega efectuada';
+        $this->reportarTarea($tareaEntregaEfectuada, $recepcion_id, $atencion_id);
         return response()->json([
             'success' => true,
-            'message' => 'Entrega efectuada correctamente'
+            'message' => ($tareaEntregaEfectuada ?? 'Entrega') . ' exitosa'
         ]);
     }
 

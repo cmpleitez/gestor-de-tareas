@@ -171,6 +171,19 @@
     //SELECCIONANDO EL ITEM DESTINATARIO
     let userRole = @json(optional(auth()->user()->mainRole)->name) || '';
     const equipos = @json($equipos);
+    const ESTADOS = {
+        RECIBIDA: {{ \App\Models\Estado::where('estado', 'Recibida')->first()->id ?? 1 }},
+        EN_PROGRESO: {{ \App\Models\Estado::where('estado', 'En progreso')->first()->id ?? 2 }},
+        RESUELTA: {{ \App\Models\Estado::where('estado', 'Resuelta')->first()->id ?? 3 }}
+    };
+    const TAREAS = {
+        ORDEN_CREADA: '{{ \App\Models\Tarea::where('id', 1)->first()->tarea ?? 'Orden creada' }}',
+        ORDEN_VALIDADA: '{{ \App\Models\Tarea::where('id', 2)->first()->tarea ?? 'Orden validada' }}',
+        STOCK_REVISADO: '{{ \App\Models\Tarea::where('id', 3)->first()->tarea ?? 'Stock revisado' }}',
+        PAGO_EFECTUADO: '{{ \App\Models\Tarea::where('id', 4)->first()->tarea ?? 'Pago efectuado' }}',
+        STOCK_DESCARGADO: '{{ \App\Models\Tarea::where('id', 5)->first()->tarea ?? 'Stock descargado' }}',
+        ENTREGA_EFECTUADA: '{{ \App\Models\Tarea::where('id', 6)->first()->tarea ?? 'Entrega efectuada' }}'
+    };
 
     function selectItem(radioId) { // Función para seleccionar items
         document.querySelectorAll('.selectable-item').forEach(selector => { // Desmarcar todos los selectores
@@ -527,7 +540,7 @@
     $(document).on('click', '.solicitud-card', function() {
         const $card = $(this);
         const estadoId = parseInt($card.attr('data-recepcion-estado-id'));
-        if (estadoId === 3) { // En progreso
+        if (estadoId === ESTADOS.EN_PROGRESO) { // En progreso
             @can('gestionar')
                 @can('ver-tareas')
                     const titulo = $card.find('.solicitud-titulo').text().trim();
@@ -545,7 +558,7 @@
             @else
                 mostrarOrdenCompra($card);
             @endcan
-        } else if (estadoId === 2 || estadoId === 4) { // Recibida o Resuelta
+        } else if (estadoId === ESTADOS.RECIBIDA || estadoId === ESTADOS.RESUELTA) { // Recibida o Resuelta
             mostrarOrdenCompra($card);
         }
     });
@@ -661,15 +674,15 @@
             let formId = 'form_' + tarea.actividad_id;
             let formAction = '';
             let ruta = '';
-            if (tarea.tarea === 'Orden validada') { //Definiendo las tareas del tracking
+            if (tarea.tarea === TAREAS.ORDEN_VALIDADA) { //Definiendo las tareas del tracking
                 ruta = '{{ route("recepcion.carrito-editar") }}';
-            } else if (tarea.tarea === 'Stock revisado') {
+            } else if (tarea.tarea === TAREAS.STOCK_REVISADO) {
                 ruta = '{{ route("recepcion.carrito-editar") }}';
-            } else if (tarea.tarea === 'Pago efectuado') {
+            } else if (tarea.tarea === TAREAS.PAGO_EFECTUADO) {
                 ruta = '{{ route("recepcion.confirmar-pago") }}';
-            } else if (tarea.tarea === 'Stock descargado') {
+            } else if (tarea.tarea === TAREAS.STOCK_DESCARGADO) {
                 ruta = '{{ route("recepcion.descargar-stock") }}';
-            } else if (tarea.tarea === 'Entrega efectuada') {
+            } else if (tarea.tarea === TAREAS.ENTREGA_EFECTUADA) {
                 ruta = '{{ route("recepcion.efectuar-entrega") }}';
             }
             let htmlGenerado = '';
@@ -873,13 +886,13 @@
             }
             let badgeColor = 'badge-secondary'; // Determinar colores basados en el estado
             let estadoColor = '#2c3e50';
-            if (estadoId == 3) { // Resuelta
+            if (estadoId == ESTADOS.RESUELTA) { // Resuelta
                 badgeColor = 'badge-success';
                 estadoColor = '#28a745';
-            } else if (estadoId == 2) { // En progreso
+            } else if (estadoId == ESTADOS.EN_PROGRESO) { // En progreso
                 badgeColor = 'badge-primary';
                 estadoColor = '#17a2b8';
-            } else if (estadoId == 1) { // Recibida
+            } else if (estadoId == ESTADOS.RECIBIDA) { // Recibida
                 badgeColor = 'badge-secondary';
                 estadoColor = '#2c3e50';
             }
@@ -919,17 +932,17 @@
     function actualizarEstilosTarjeta($card, estadoId, avance = null) {
         let color, borderClass, nombreEstado;
         switch (estadoId) {
-            case 2: // Recibida
+            case ESTADOS.RECIBIDA: // Recibida
                 color = '#2c3e50';
                 borderClass = 'border-badge-secondary';
                 nombreEstado = 'Recibida';
                 break;
-            case 3: // En progreso
+            case ESTADOS.EN_PROGRESO: // En progreso
                 color = '#17a2b8';
                 borderClass = 'border-badge-primary';
                 nombreEstado = 'En progreso';
                 break;
-            case 4: // Resuelta
+            case ESTADOS.RESUELTA: // Resuelta
                 color = '#28a745';
                 borderClass = 'border-badge-success';
                 nombreEstado = 'Resuelta';
@@ -989,13 +1002,13 @@
                             $card.attr('data-recepcion-estado-id', estadoBackend);
                             let columnaDestino; // Determinar columna destino según el estado
                             switch (estadoBackend) {
-                                case 2: // Recibida
+                                case ESTADOS.RECIBIDA: // Recibida
                                     columnaDestino = '#columna-recibidas';
                                     break;
-                                case 3: // En progreso
+                                case ESTADOS.EN_PROGRESO: // En progreso
                                     columnaDestino = '#columna-progreso';
                                     break;
-                                case 4: // Resuelta
+                                case ESTADOS.RESUELTA: // Resuelta
                                     columnaDestino = '#columna-resueltas';
                                     break;
                                 default:

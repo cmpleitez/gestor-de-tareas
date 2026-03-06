@@ -497,9 +497,7 @@
                     @endif
                 </div>
             @endforeach
-            <div class="row d-flex justify-content-end mt-4"> {{--Tablero de control--}}
-                <div class="col-12 col-md-12 d-flex justify-content-end gap-2">
-                    @if($atencion->first()->estado->estado == 'En carrito')
+                    @if($atencion && $atencion->count() > 0 && !$atencion->first()->activo)
                         @if($rol_usuario_actual == 'cliente' || $rol_usuario_actual == 'receptor')
                             <button type="button" id="btnEnviarCarrito" class="btn btn-primary">
                                 <i class="fas fa-shopping-cart me-2"></i> Enviar
@@ -1044,17 +1042,17 @@
                 ordenes: ordenes
             },
             beforeSend: function() {
-                btn.prop('disabled', true).html('<i class="fas fa-clock me-2"></i> Validando...');
+                btn.prop('disabled', true).html('<i class="fas fa-clock me-2"></i> Procesando...');
             },
             success: function(response) {
                 toastr.success(response.message);
                 $('.main-kit-collapse').find('.accordion.accordion-flush button').each(function() {
                     const $iconContainer = $(this).find('span.px-1');
                     if ($iconContainer.length) {
-                        $iconContainer.empty().html('<i class="fas fa-check-double text-success" title="Orden validada"></i>');
+                        $iconContainer.empty().html('<i class="fas fa-check-double text-success" title="' + response.message + '"></i>');
                     }
                 });
-                btn.prop('disabled', true).html('<i class="fas fa-check me-2"></i> Validada');
+                btn.prop('disabled', true).html('<i class="fas fa-check me-2"></i> Procesada');
                 if (typeof cargarTareas === 'function') {
                     cargarTareas(recepcionId, atencionId);
                 }

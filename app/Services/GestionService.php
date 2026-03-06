@@ -62,7 +62,8 @@ class GestionService
         ->sortByDesc('updated_at');
 
         if ($actividades->isEmpty()) {
-            $traza = 'En carrito';
+            $recepcion = $tarjeta instanceof Recepcion ? $tarjeta : Recepcion::find($tarjeta->recepcion_id);
+            $traza = optional($recepcion->solicitud->tareas->first())->tarea ?? 'Solicitud';
         } else {
             $todasResueltas = $actividades->every(function ($actividad) use ($estado_resuelta_id) {
                 return $actividad->estado_id == $estado_resuelta_id;
