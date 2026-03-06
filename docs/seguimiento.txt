@@ -75,17 +75,8 @@ SERVICIOS:
     🟢 Reportes para el receptor y el administrador:
         . Historial de entradas y salidas en stocks
     
-    
-    
-    
-    
-    ...🟢 Revisiones:
-        5.feb... carrito.editar: cuando se usa el control de retroceso hay una re-apertura del sidebar con las tareas
-
-
-
-
-
+    🟢 Revisiones:
+        . Sin pendientes
 
 CLIENTE:
 

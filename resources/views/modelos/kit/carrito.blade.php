@@ -14,12 +14,12 @@
     <div class="row align-items-center flex-nowrap">
         <div class="col-auto d-flex justify-content-start">
             @if($rol_usuario_actual == 'receptor' || $rol_usuario_actual == 'operador')
-                <a href="javascript:history.back()" class="btn btn-primary-light">
+                <a href="javascript:void(0)" onclick="sessionStorage.removeItem('recepcion_id_activa'); history.back();" class="btn btn-primary-light">
                     <i class="fas fa-arrow-left"></i>
                 </a>
             @endif
             @if($rol_usuario_actual == 'cliente')
-                <a href="{{ route('tienda') }}" class="btn btn-primary-light">
+                <a href="{{ route('tienda') }}" id="btn-regresar-tienda" class="btn btn-primary-light">
                     <i class="fas fa-arrow-left"></i>
                 </a>
             @endif
@@ -576,6 +576,9 @@
         @endforeach
     @endif
     $(document).ready(function() {
+        // Limpiamos la variable en cuanto carga el carrito (cubre el retroceso del navegador)
+        sessionStorage.removeItem('recepcion_id_activa');
+
         $('.main-kit-collapse').on('show.bs.collapse hidden.bs.collapse', function (e) { //Lógica del acordión y el alto de fila
             if (e.target === this) {
                 const isShowing = e.type === 'show';
@@ -625,6 +628,7 @@
                     toastr.success(response.message, null, { "progressBar": false, "timeOut": 0, "extendedTimeOut": 0 });
                     
                     const role = "{{ $rol_usuario_actual }}";
+                    const canVer = @json(auth()->user()->can('ver'));
                     const atencionId = response.atencion_id || "{{ $atencion->first()->id ?? '' }}";
                     const recepcionId = response.recepcion_id || "{{ $recepcion_id ?? '' }}";
                     const equipoId = response.equipo_id;
@@ -645,7 +649,7 @@
                         }, 2000);
                     };
 
-                    if (role === 'receptor' && recepcionId && equipoId) {
+                    if (canVer && role === 'receptor' && recepcionId && equipoId) {
                         // Auto-asignación automática para el receptor
                         const asignarUrl = "{{ route('recepcion.asignar', [':recepcion', ':equipo']) }}"
                             .replace(':recepcion', recepcionId)
@@ -805,6 +809,11 @@
             }
         });
     }
+
+    // Vaciar variable de sesión para evitar re-apertura automática del sidebar
+    $(document).on('click', '#btn-regresar-tienda', function() {
+        sessionStorage.removeItem('recepcion_id_activa');
+    });
     function updateProductName(radio) {
         const productName = radio.getAttribute('data-product-name');
         const targetSelector = radio.getAttribute('data-name-target');
@@ -968,6 +977,7 @@
                         cargarTareas(recepcionId, atencionId);
                     }
                     setTimeout(function() {
+                        sessionStorage.setItem('recepcion_id_activa', recepcionId);
                         window.location.href = "{{ route('tienda.solicitudes') }}";
                     }, 1500);
                 } else {
@@ -1049,6 +1059,7 @@
                     cargarTareas(recepcionId, atencionId);
                 }
                 setTimeout(function() {
+                    sessionStorage.setItem('recepcion_id_activa', recepcionId);
                     window.location.href = "{{ route('tienda.solicitudes') }}";
                 }, 1500);
             },
@@ -1134,6 +1145,7 @@
                     });
                 }
                 setTimeout(function() {
+                    sessionStorage.setItem('recepcion_id_activa', recepcionId);
                     window.location.href = "{{ route('tienda.solicitudes') }}";
                 }, 1500);
                 btn.prop('disabled', false).html('<i class="fas fa-pencil-alt"></i> Corregir');

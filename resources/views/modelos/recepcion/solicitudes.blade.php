@@ -534,7 +534,6 @@
                     const atencionId = $card.data('atencion-id');
                     const recepcionId = $card.data('recepcion-id');
                     const atencionIdRipped = $card.find('.text-right div[style*="font-weight: 600"]').text().trim();
-                    sessionStorage.setItem('recepcion_id_activa', recepcionId); // Guardar ID para apertura automática
                     $('#sidebar-card-title').text(atencionIdRipped + ' - ' + titulo).css('font-size', '1rem');
                     $('#sidebar-card-body').empty();
                     cargarTareas(recepcionId, atencionId);
@@ -572,9 +571,13 @@
                 dibujarTareas(tareas, atencionId, recepcionId);
             },
             error: function(xhr, status, error) {
-                console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error en cargarTareas:", error);
-                $('#sidebar-card-body').append(
-                    '<div class="text-center text-muted py-3"><i class="bx bx-error-circle text-danger"></i><div class="mt-2">Error al cargar tareas</div></div>'
+                console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error en cargarTareas:", xhr);
+                let msg = 'Error al cargar tareas';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    msg = xhr.responseJSON.message;
+                }
+                $('#sidebar-card-body').html(
+                    '<div class="text-center text-muted py-3"><i class="bx bx-error-circle text-danger"></i><div class="mt-2">' + msg + '</div></div>'
                 );
             }
         });
