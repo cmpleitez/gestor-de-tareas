@@ -75,8 +75,31 @@ SERVICIOS:
     🟢 Reportes para el receptor y el administrador:
         . Historial de entradas y salidas en stocks
     
+    
+
+
+
+
+
+
+
+
+    
     🟢 Revisiones:
-        . Sin pendientes
+       8.Mar... Hay un bonito desorden con los estado y el tracking, así como con las tareas que se muestran a los roles
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 CLIENTE:
 

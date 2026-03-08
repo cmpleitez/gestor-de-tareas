@@ -1,11 +1,11 @@
 <?php
-
 namespace App\Services;
 
 use App\Models\Recepcion;
 use App\Models\Actividad;
 use App\Models\Estado;
-use Carbon\Carbon;
+use App\Models\Tarea;
+use App\Models\Atencion;
 
 class GestionService
 {
@@ -78,5 +78,47 @@ class GestionService
         }
 
         return $traza;
+    }
+
+    public function reportarTarea($nombre_tarea, $recepcion_id, $atencion_id)
+    {
+        $estado_resuelta_id = Estado::where('estado', 'Resuelta')->first()->id;
+        $actividad = Actividad::where('recepcion_id', $recepcion_id)
+            ->whereHas('tarea', function($q) use ($nombre_tarea) {
+                $q->where('tarea', $nombre_tarea);
+            })
+            ->first();
+
+        if ($actividad) {
+            $actividad->estado_id = $estado_resuelta_id;
+            $actividad->save();
+
+            $total_actividades_globales = Actividad::whereHas('recepcion', function($query) use ($atencion_id) {
+                $query->where('atencion_id', $atencion_id);
+            })->count();
+
+            $actividades_resueltas_globales = Actividad::whereHas('recepcion', function($query) use ($atencion_id) {
+                $query->where('atencion_id', $atencion_id);
+            })
+            ->where('estado_id', $estado_resuelta_id)
+            ->count();
+
+            $porcentaje_avance = $total_actividades_globales > 0 
+                ? round(($actividades_resueltas_globales / $total_actividades_globales) * 100, 2) 
+                : 0;
+
+            $atencion = Atencion::find($atencion_id);
+            if ($atencion) {
+                $atencion->avance = $porcentaje_avance;
+                $atencion->save();
+            }
+
+            if ($porcentaje_avance >= 100) {
+                Recepcion::where('atencion_id', $atencion_id)
+                    ->update(['estado_id' => $estado_resuelta_id]);
+                $atencion->estado_id = $estado_resuelta_id;
+                $atencion->save();
+            }
+        }
     }
 }

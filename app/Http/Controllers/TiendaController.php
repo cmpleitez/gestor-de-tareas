@@ -2,15 +2,12 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Database\QueryException;
 use Carbon\Carbon;
 use Exception;
 use App\Services\GestionService;
-
+use Illuminate\Support\Facades\Log;
 
 use App\Models\Stock;
-use App\Models\OficinaStock;
-use App\Models\Movimiento;
 use App\Services\KeyMaker;
 use App\Models\Producto;
 use App\Models\Kit;
@@ -24,6 +21,7 @@ use App\Models\Orden;
 use App\Models\Detalle;
 use App\Models\Parametro;
 use App\Models\Equipo;
+use App\Models\Tarea;
 use App\Services\KeyRipper;
 
 class TiendaController extends Controller
@@ -198,7 +196,7 @@ class TiendaController extends Controller
             return response()->json($responseData);
         } catch (\Throwable $e) {
             DB::rollBack();
-            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Error en carritoEnviar: ' . $e->getMessage(), ['exception' => $e]);
+            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Error: ' . $e->getMessage(), ['exception' => $e]);
             return response()->json(['success' => false, 'message' => 'Ocurrió un error al procesar la orden.'], 500);
         }
     }
@@ -274,18 +272,14 @@ class TiendaController extends Controller
     {
         try {
             DB::beginTransaction(); //Lectura
-                $atencion_nueva = false;
                 $orden->load('productos');
                 $user = auth()->user();
                 $atencion = Atencion::where('oficina_id', $user->oficina_id) //Verificando si ya existe el número de atención
-                    ->where('activo', false)
-                    ->whereHas('recepciones', function ($query) {
-                        $query->where('origen_user_id', auth()->user()->id);
-                    })
-                    ->where('estado_id', Estado::where('estado', 'En carrito')->first()->id)
-                    ->first();
+                ->where('activo', false)
+                ->whereHas('recepciones', function ($query) {
+                    $query->where('origen_user_id', auth()->user()->id);
+                })->first();
                 if (!$atencion) {
-                    $atencion_nueva = true;
                     $receptores = User::whereHas('roles', function ($query) { //Seleccionando el receptor
                         $query->where('name', 'receptor');
                     })->whereHas('oficina', function ($query) use ($user) {
@@ -301,7 +295,7 @@ class TiendaController extends Controller
                     $atencion             = new Atencion(); //Creando número de atención
                     $atencion->id         = (new KeyMaker())->generate('Atencion', Solicitud::where('solicitud', 'Orden de compra')->first()->id);
                     $atencion->oficina_id = auth()->user()->oficina_id;
-                    $atencion->estado_id  = Estado::where('estado', 'En carrito')->first()->id;
+                    $atencion->estado_id  = Estado::where('estado', 'Recibida')->first()->id;
                     $atencion->avance     = 0.00;
                     $atencion->activo     = false;
                     $atencion->save();
@@ -315,15 +309,12 @@ class TiendaController extends Controller
                     $recepcion->estado_id       = Estado::where('estado', 'Recibida')->first()->id;
                     $recepcion->activo          = false;
                     $recepcion->save();
-                    
-                    // Reportar la primera tarea de manera dinámica (Orden creada)
-                    $primeraTarea = \App\Models\Tarea::orderBy('id', 'asc')->first();
+                    $primeraTarea = Tarea::orderBy('id', 'asc')->first(); // Reportar la primera tarea de manera dinámica
                     if ($primeraTarea) {
-                        $gestionService = app(\App\Services\GestionService::class);
+                        $gestionService = app(GestionService::class);
                         $gestionService->reportarTarea($primeraTarea->tarea, $recepcion->id, $recepcion->atencion_id);
                     }
-                }
-                if(!$atencion_nueva) { // Verificar si el kit ya está en el carrito
+                } else { // Verificar si el kit ya está en el carrito
                     $ordenExistente = Orden::where('atencion_id', $atencion->id) 
                         ->where('kit_id', $orden->id)
                         ->first();
@@ -351,7 +342,7 @@ class TiendaController extends Controller
                     $detalle->save();
                 }
             DB::commit();
-            $message = 'Kit agregado a la tienda correctamente';
+            $message = 'Item agregado';
             return $request->ajax() ? response()->json(['success' => true, 'message' => $message, 'type' => 'success']) : back()->with('success', $message);
         } catch (Exception $e) {
             DB::rollBack();
@@ -360,7 +351,6 @@ class TiendaController extends Controller
             return $request->ajax() ? response()->json(['success' => false, 'message' => $message, 'type' => 'error']) : back()->with('error', $message);
         }
     }
-
 
 
     public function getStocksProducto(int $productoId)
