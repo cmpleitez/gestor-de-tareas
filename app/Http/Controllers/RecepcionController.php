@@ -222,7 +222,7 @@ class RecepcionController extends Controller
         }
     }
 
-    public function revisarStock(Request $request)
+    public function confirmarStock(Request $request)
     {
         try {
             // LECTURA DE DATOS
@@ -416,7 +416,7 @@ class RecepcionController extends Controller
         }
     }
 
-    public function validarOrden(Request $request)
+    public function revisarOrden(Request $request)
     {
         try {
             // LECTURA

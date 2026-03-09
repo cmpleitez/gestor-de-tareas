@@ -521,7 +521,7 @@
                                 data-atencion-id="{{ $atencion->first()->id }}"
                             @endif
                             data-recepcion-id="{{ $recepcion_id ?? '' }}"
-                            data-route="{{ route('recepcion.validar-orden') }}">
+                            data-route="{{ route('recepcion.revisar-orden') }}">
                             <i class="fas fa-clipboard-check me-2"></i> Revisar
                         </button>
                     @endif
@@ -533,7 +533,7 @@
                                 data-atencion-id="{{ $atencion->first()->id }}"
                             @endif
                             data-recepcion-id="{{ $recepcion_id ?? '' }}"
-                            data-route="{{ route('recepcion.revisar-stock') }}">
+                            data-route="{{ route('recepcion.confirmar-stock') }}">
                             <i class="fas fa-clipboard-check me-2"></i> Confirmar
                         </button>
                     @endif

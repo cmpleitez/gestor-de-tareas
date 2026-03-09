@@ -86,13 +86,17 @@ SERVICIOS:
 
     
     🟢 Revisiones:
-        8.Mar... TiendaController, linea 312: en este punto se crea una tarea dinámicamente, pero nadie la resuelve, 
-        hay una linea: $gestionService->reportarTarea, que debería resolverla, pero no lo hace, por tanto cuando el receptor
-        y operador resuelven sus tareas, queda ésta tarea pendiente y no pasa al tablero de resueltas debido a la 
-        tarea pendiente.
-            . cambiar revisarStock a confirmarStock
-            . cambiar validarOrden a revisarOrden
-            . la tarjeta no acepta clic para ver tareas si no hasta que se recarga la pagina
+        8.Mar... parametrizar notificaciones y correos
+
+
+
+
+
+
+
+
+
+
 
 
 
