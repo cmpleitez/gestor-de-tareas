@@ -444,7 +444,7 @@ class RecepcionController extends Controller
                 if ($detalle->stock_fisico_existencias === null) {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Hay productos pendientes de revisión física. Por favor, espere a que el operador complete la revisión.'
+                        'message' => 'Hay stocks pendientes de revisión.'
                     ], 422);
                 }
                 if ($detalle->stock_fisico_existencias == "0") {

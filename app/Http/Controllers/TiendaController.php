@@ -176,9 +176,7 @@ class TiendaController extends Controller
                 }
             }
             DB::commit();
-
-            $responseData = ['success' => true, 'message' => 'Su orden ha sido recibida por nuestros gestores'];
-
+            $responseData = ['success' => true, 'message' => 'Su orden ha sido recibida y asignada a uno de nuestros gestores'];
             $user = auth()->user();
             if ($user->mainRole->name === 'receptor' && $atencionId) {
                 $recepcion = Recepcion::where('atencion_id', $atencionId)
@@ -192,7 +190,6 @@ class TiendaController extends Controller
                     $responseData['equipo_id'] = $equipo->id;
                 }
             }
-
             return response()->json($responseData);
         } catch (\Throwable $e) {
             DB::rollBack();
