@@ -177,12 +177,11 @@
         RESUELTA: {{ \App\Models\Estado::where('estado', 'Resuelta')->first()->id ?? 3 }}
     };
     const TAREAS = {
-        ORDEN_CREADA: '{{ \App\Models\Tarea::where('id', 1)->first()->tarea ?? 'Orden creada' }}',
-        ORDEN_VALIDADA: '{{ \App\Models\Tarea::where('id', 2)->first()->tarea ?? 'Orden validada' }}',
-        STOCK_REVISADO: '{{ \App\Models\Tarea::where('id', 3)->first()->tarea ?? 'Stock revisado' }}',
-        PAGO_EFECTUADO: '{{ \App\Models\Tarea::where('id', 4)->first()->tarea ?? 'Pago efectuado' }}',
-        STOCK_DESCARGADO: '{{ \App\Models\Tarea::where('id', 5)->first()->tarea ?? 'Stock descargado' }}',
-        ENTREGA_EFECTUADA: '{{ \App\Models\Tarea::where('id', 6)->first()->tarea ?? 'Entrega efectuada' }}'
+        REVISION: '{{ \App\Models\Tarea::where('tarea', 'Revisión')->first()->tarea ?? 'Revisión' }}',
+        CONFIRMACION: '{{ \App\Models\Tarea::where('tarea', 'Confirmación')->first()->tarea ?? 'Confirmación' }}',
+        PAGO: '{{ \App\Models\Tarea::where('tarea', 'Pago')->first()->tarea ?? 'Pago' }}',
+        DESCARGA: '{{ \App\Models\Tarea::where('tarea', 'Descarga')->first()->tarea ?? 'Descarga' }}',
+        ENTREGA: '{{ \App\Models\Tarea::where('tarea', 'Entrega')->first()->tarea ?? 'Entrega' }}'
     };
 
     function selectItem(radioId) { // Función para seleccionar items
@@ -384,19 +383,19 @@
         let estadoColor = 'rgb(170, 95, 34)'; // Color por defecto
         switch (nuevaColumna) {
             case 'columna-recibidas':
-                nuevoEstadoId = 2;
+                nuevoEstadoId = ESTADOS.RECIBIDA;
                 nombreEstado = 'Recibida';
                 colorBorde = 'badge-secondary';
                 estadoColor = '#2c3e50';
                 break;
             case 'columna-progreso':
-                nuevoEstadoId = 3;
+                nuevoEstadoId = ESTADOS.EN_PROGRESO;
                 nombreEstado = 'En progreso';
                 colorBorde = 'badge-primary';
                 estadoColor = '#17a2b8';
                 break;
             case 'columna-resueltas':
-                nuevoEstadoId = 4;
+                nuevoEstadoId = ESTADOS.RESUELTA;
                 nombreEstado = 'Resuelta';
                 colorBorde = 'badge-success';
                 estadoColor = '#28a745';
@@ -455,11 +454,11 @@
                         });
                         tarjeta.attr('data-recepcion-estado-id', nuevoEstadoId); // Determinar clase de badge según el nuevo estado
                         let badgeColor = 'badge-secondary'; // Por defecto
-                        if (nuevoEstadoId == 3) { // Resuelta
+                        if (nuevoEstadoId == ESTADOS.RESUELTA) { // Resuelta
                             badgeColor = 'badge-success';
-                        } else if (nuevoEstadoId == 2) { // En progreso
+                        } else if (nuevoEstadoId == ESTADOS.EN_PROGRESO) { // En progreso
                             badgeColor = 'badge-primary';
-                        } else if (nuevoEstadoId == 1) { // Recibida
+                        } else if (nuevoEstadoId == ESTADOS.RECIBIDA) { // Recibida
                             badgeColor = 'badge-secondary';
                         }
                         tarjeta.find('[data-toggle="popover"]').each(function() { // Actualizar badges en los popovers
@@ -674,15 +673,15 @@
             let formId = 'form_' + tarea.actividad_id;
             let formAction = '';
             let ruta = '';
-            if (tarea.tarea === TAREAS.ORDEN_VALIDADA) { //Definiendo las tareas del tracking
+            if (tarea.tarea === TAREAS.REVISION) {
                 ruta = '{{ route("recepcion.carrito-editar") }}';
-            } else if (tarea.tarea === TAREAS.STOCK_REVISADO) {
+            } else if (tarea.tarea === TAREAS.CONFIRMACION) {
                 ruta = '{{ route("recepcion.carrito-editar") }}';
-            } else if (tarea.tarea === TAREAS.PAGO_EFECTUADO) {
+            } else if (tarea.tarea === TAREAS.PAGO) {
                 ruta = '{{ route("recepcion.confirmar-pago") }}';
-            } else if (tarea.tarea === TAREAS.STOCK_DESCARGADO) {
+            } else if (tarea.tarea === TAREAS.DESCARGA) {
                 ruta = '{{ route("recepcion.descargar-stock") }}';
-            } else if (tarea.tarea === TAREAS.ENTREGA_EFECTUADA) {
+            } else if (tarea.tarea === TAREAS.ENTREGA) {
                 ruta = '{{ route("recepcion.efectuar-entrega") }}';
             }
             let htmlGenerado = '';

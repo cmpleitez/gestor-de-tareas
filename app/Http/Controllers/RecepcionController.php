@@ -250,7 +250,6 @@ class RecepcionController extends Controller
             }
             $faltantes = array_diff($clavesRequeridas, $clavesRecibidas);
             if (!empty($faltantes)) {
-                // Log::warning("Log:: Intento de confirmación incompleta para atención $atencion_id. Faltan items.");
                 return response()->json([
                     'success' => false,
                     'message' => 'Error: El lote enviado no contiene todos los ítems de la solicitud.'
@@ -265,7 +264,6 @@ class RecepcionController extends Controller
                 }
             }
             //PROCESO
-            // Log::info("Log:: Iniciando proceso de revisión de stock para atención $atencion_id");
             DB::beginTransaction();
                 $itemsValidados = [];
                 foreach ($orden as $item) {
@@ -280,19 +278,15 @@ class RecepcionController extends Controller
                         'stock_existencias' => $item['stock_fisico_existencias']
                     ];
                 }
-                // Log::info("Log:: Items actualizados: " . count($itemsValidados));
                 $recepcion = Recepcion::find($recepcion_id); // Validar copia operador
                 if ($recepcion) {
                     $recepcion->validada_origen = true;
                     $recepcion->validada_destino = true;
                     $recepcion->save();
-                    // Log::info("Log:: Recepción $recepcion_id actualizada");
                 }
-            $tareaStockRevisado = \App\Models\Tarea::find(3)->tarea ?? 'Stock revisado';
-            app(GestionService::class)->reportarTarea($tareaStockRevisado, $recepcion_id, $atencion_id); //Reportar tarea
-            // Log::info("Log:: Tarea reportada");
+                $tareaConfirmacion = \App\Models\Tarea::where('tarea', 'Confirmación')->first()->tarea ?? 'Confirmación';
+                app(GestionService::class)->reportarTarea($tareaConfirmacion, $recepcion_id, $atencion_id); //Reportar tarea
             DB::commit();
-            // Log::info("Log:: Transacción confirmada");
             try {
                 if ($recepcion) {
                     $oficina_id = auth()->user()->oficina_id;
@@ -302,18 +296,16 @@ class RecepcionController extends Controller
                         })
                         ->get();
                     if ($receptores->isNotEmpty()) {
-                        // Log::info("Log:: Enviando notificaciones a " . $receptores->count() . " receptores");
                         Notification::send($receptores, new StockRevisadoNotification($recepcion, $itemsValidados));
-                        // Log::info("Log:: Notificaciones enviadas");
                     }
                 }
             } catch (\Exception $e) {
-                Log::error("Log:: [Usuario: " . auth()->user()->name . "] Error al enviar notificación StockRevisadoNotification: " . $e->getMessage(), ['exception' => $e]);
+                Log::error("Log:: [Usuario: " . auth()->user()->name . "] Error al enviar notificación: " . $e->getMessage(), ['exception' => $e]);
             }
             //RESULTADO
             return response()->json([
                 'success' => true,
-                'message' => ($tareaStockRevisado ?? 'Revisión') . ' exitosa',
+                'message' => ($tareaConfirmacion ?? 'Confirmación') . ' exitosa',
                 'items_validados' => $itemsValidados
             ]);
         } catch (\Exception $e) {
@@ -330,7 +322,7 @@ class RecepcionController extends Controller
         try {
             // LECTURA
             $atencion_id = $request->input('atencion_id');
-            $recepcion_id = $request->input('recepcion_id'); // Añadido recepcion_id
+            $recepcion_id = $request->input('recepcion_id');
             $ordenes_recibidas = $request->input('ordenes', []);
             // VALIDACIÓN
             if (empty($atencion_id) || empty($recepcion_id) || empty($ordenes_recibidas)) { 
@@ -353,61 +345,53 @@ class RecepcionController extends Controller
                         $producto_id_nuevo = $detalleData['producto_id_nuevo'];
                         if ($producto_id_original != $producto_id_nuevo) {
                             Detalle::where('orden_id', $orden_id)
-                                ->where('kit_id', $kit_id)
-                                ->where('producto_id', $producto_id_original)
-                                ->update([
-                                    'producto_id' => $producto_id_nuevo,
-                                    'stock_fisico_existencias' => null
-                                ]);
+                            ->where('kit_id', $kit_id)
+                            ->where('producto_id', $producto_id_original)
+                            ->update([
+                                'producto_id' => $producto_id_nuevo,
+                                'stock_fisico_existencias' => null
+                            ]);
                             $productos_cambiados[] = [ //Registrando productos que cambiaron de la orden
                                 'orden_id' => $orden_id,
                                 'kit_id' => $kit_id,
                                 'producto_id' => $producto_id_nuevo
                             ];
                         } else {
-                            // Si no cambió el producto, igual reseteamos existencias según requerimiento
-                            Detalle::where('orden_id', $orden_id)
-                                ->where('kit_id', $kit_id)
-                                ->where('producto_id', $producto_id_original)
-                                ->update([
-                                    'stock_fisico_existencias' => null
-                                ]);
+                            Detalle::where('orden_id', $orden_id) // Si no cambió el producto, igual reseteamos stock_fisico_existencias para que se vuelva a validar el stock
+                            ->where('kit_id', $kit_id)
+                            ->where('producto_id', $producto_id_original)
+                            ->update([
+                                'stock_fisico_existencias' => null
+                            ]);
                         }
                     }
                 }
-
-                // REVERTIR TAREA "Stock revisado" (Y opcionalmente "Orden validada" si se requiere, pero enfocado en Stock)
-                $estado_en_progreso_id = Estado::where('estado', 'En progreso')->first()->id;
+                $estado_en_progreso_id = Estado::where('estado', 'En progreso')->first()->id; //Revertir estado de l atarea
                 $actividadStock = Actividad::whereHas('recepcion', function($q) use ($atencion_id) {
-                        $q->where('atencion_id', $atencion_id);
-                    })
-                    ->whereHas('tarea', function($q) {
-                        $q->where('id', 3); // ID de Stock revisado
-                    })
-                    ->first();
-
+                    $q->where('atencion_id', $atencion_id);
+                })
+                ->whereHas('tarea', function($q) {
+                    $q->where('tarea', 'Confirmación');
+                })
+                ->first();
                 if ($actividadStock) {
                     $actividadStock->estado_id = $estado_en_progreso_id;
                     $actividadStock->save();
                     $total_actividades = Actividad::whereHas('recepcion', function($query) use ($atencion_id) { // Forzar actualización de progreso de la atención (restando esta tarea)
                         $query->where('atencion_id', $atencion_id);
                     })->count();
-                    
                     $actividades_resueltas = Actividad::whereHas('recepcion', function($query) use ($atencion_id) {
                         $query->where('atencion_id', $atencion_id);
                     })
                     ->where('estado_id', Estado::where('estado', 'Resuelta')->first()->id)
                     ->count();
-
                     $porcentaje_avance = $total_actividades > 0 
                         ? round(($actividades_resueltas / $total_actividades) * 100, 2) 
                         : 0;
-
                     $atencion = Atencion::find($atencion_id);
                     if ($atencion) {
                         $atencion->avance = $porcentaje_avance;
-                        // Si retrocede del 100%, bajamos el estado a "En progreso" si estaba resuelta
-                        if ($porcentaje_avance < 100) {
+                        if ($porcentaje_avance < 100) { // Si retrocede del 100%, bajamos el estado a "En progreso" si estaba resuelta
                             $atencion->estado_id = $estado_en_progreso_id;
                             Recepcion::where('atencion_id', $atencion_id)->update(['estado_id' => $estado_en_progreso_id]);
                         }
@@ -476,15 +460,15 @@ class RecepcionController extends Controller
                     $recepcion->validada_destino = true;
                     $recepcion->save();
                 }
-                $tareaOrdenValidada = \App\Models\Tarea::find(2)->tarea ?? 'Orden validada';
-                app(GestionService::class)->reportarTarea($tareaOrdenValidada, $recepcion_id, $atencion_id); //Reportar tarea
+                $tareaRevision = \App\Models\Tarea::where('tarea', 'Revisión')->first()->tarea ?? 'Revisión';
+                app(GestionService::class)->reportarTarea($tareaRevision, $recepcion_id, $atencion_id); //Reportar tarea
             DB::commit();
             $recepcion->load('atencion.ordenes.detalle.kit', 'atencion.ordenes.detalle.producto');
             $recepcion->usuarioOrigen->notify(new \App\Notifications\OrdenValidadaNotification($recepcion));
             //RESULTADO
             return response()->json([
                 'success' => true,
-                'message' => ($tareaOrdenValidada ?? 'Validación') . ' exitosa'
+                'message' => ($tareaRevision ?? 'Revisión') . ' exitosa'
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -500,11 +484,11 @@ class RecepcionController extends Controller
     {
         $recepcion_id = $request->input('recepcion_id');
         $atencion_id = $request->input('atencion_id');
-        $tareaPagoEfectuado = \App\Models\Tarea::find(4)->tarea ?? 'Pago efectuado';
-        app(GestionService::class)->reportarTarea($tareaPagoEfectuado, $recepcion_id, $atencion_id);
+        $tareaPago = \App\Models\Tarea::where('tarea', 'Pago')->first()->tarea ?? 'Pago';
+        app(GestionService::class)->reportarTarea($tareaPago, $recepcion_id, $atencion_id);
         return response()->json([
             'success' => true,
-            'message' => ($tareaPagoEfectuado ?? 'Pago') . ' exitoso'
+            'message' => ($tareaPago ?? 'Pago') . ' exitoso'
         ]);
     }
 
@@ -544,10 +528,10 @@ class RecepcionController extends Controller
                 }
             }
             // Reportando Tarea
-            $tareaStockDescargado = \App\Models\Tarea::find(5)->tarea ?? 'Stock descargado';
-            app(GestionService::class)->reportarTarea($tareaStockDescargado, $recepcion_id, $atencion_id);
+            $tareaDescarga = \App\Models\Tarea::where('tarea', 'Descarga')->first()->tarea ?? 'Descarga';
+            app(GestionService::class)->reportarTarea($tareaDescarga, $recepcion_id, $atencion_id);
             DB::commit();
-            return response()->json(['success' => true, 'message' => ($tareaStockDescargado ?? 'Descarga') . ' exitosa']);
+            return response()->json(['success' => true, 'message' => ($tareaDescarga ?? 'Descarga') . ' exitosa']);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Error al descargar stock: ' . $e->getMessage(), ['exception' => $e]);
@@ -559,11 +543,11 @@ class RecepcionController extends Controller
     {
         $recepcion_id = $request->input('recepcion_id');
         $atencion_id = $request->input('atencion_id');
-        $tareaEntregaEfectuada = \App\Models\Tarea::find(6)->tarea ?? 'Entrega efectuada';
-        app(GestionService::class)->reportarTarea($tareaEntregaEfectuada, $recepcion_id, $atencion_id);
+        $tareaEntrega = \App\Models\Tarea::where('tarea', 'Entrega')->first()->tarea ?? 'Entrega';
+        app(GestionService::class)->reportarTarea($tareaEntrega, $recepcion_id, $atencion_id);
         return response()->json([
             'success' => true,
-            'message' => ($tareaEntregaEfectuada ?? 'Entrega') . ' exitosa'
+            'message' => ($tareaEntrega ?? 'Entrega') . ' exitosa'
         ]);
     }
 

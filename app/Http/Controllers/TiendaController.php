@@ -309,11 +309,16 @@ class TiendaController extends Controller
                     $recepcion->estado_id       = Estado::where('estado', 'Recibida')->first()->id;
                     $recepcion->activo          = false;
                     $recepcion->save();
+
+                    
+                    /*
                     $primeraTarea = Tarea::orderBy('id', 'asc')->first(); // Reportar la primera tarea de manera dinámica
                     if ($primeraTarea) {
                         $gestionService = app(GestionService::class);
                         $gestionService->reportarTarea($primeraTarea->tarea, $recepcion->id, $recepcion->atencion_id);
                     }
+                    */
+
                 } else { // Verificar si el kit ya está en el carrito
                     $ordenExistente = Orden::where('atencion_id', $atencion->id) 
                         ->where('kit_id', $orden->id)

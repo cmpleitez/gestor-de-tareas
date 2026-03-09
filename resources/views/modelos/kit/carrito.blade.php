@@ -272,7 +272,8 @@
         @if($currentAtencion && $currentAtencion->ordenes)
             @foreach($currentAtencion->ordenes as $orden)
                 @php $headingId = 'heading' . $orden->id; $accordionId = 'accordion' . $orden->id; $ordenIndex = $loop->index; @endphp
-                <div class="row mb-1 py-2 align-items-center"> <!--Kits-->
+                <!--KITS-->
+                <div class="row mb-1 py-2 align-items-center"> 
                     <div class="col-12 col-md-8 mb-2 {{ $loop->index % 2 == 0 ? 'marcador_fila_par' : 'marcador_fila_impar' }}">
                         <div class="accordion" id="{{ $accordionId }}" data-orden-id="{{ $orden->id }}">
                             <div class="accordion-item">
@@ -497,47 +498,46 @@
                     @endif
                 </div>
             @endforeach
-                    <div class="d-flex justify-content-end gap-2 mt-4">
-                        @if($atencion && $atencion->count() > 0 && !$atencion->first()->activo)
-                            @if($rol_usuario_actual == 'cliente' || $rol_usuario_actual == 'receptor')
-                                <button type="button" id="btnEnviarCarrito" class="btn btn-primary">
-                                    <i class="fas fa-shopping-cart me-2"></i> Enviar
-                                </button>
+            <!--TABLERO DE CONTROL-->
+            <div class="d-flex justify-content-end gap-2 mt-4">
+                @if($atencion && $atencion->count() > 0 && !$atencion->first()->activo)
+                    @if($rol_usuario_actual == 'cliente' || $rol_usuario_actual == 'receptor')
+                        <button type="button" id="btnEnviarCarrito" class="btn btn-primary">
+                            <i class="fas fa-shopping-cart me-2"></i> Enviar
+                        </button>
+                    @endif
+                @else
+                    @if($rol_usuario_actual == 'receptor')
+                        <button type="button" id="corregir-orden" class="btn btn-warning"
+                            @if($atencion && $atencion->count() > 0)
+                                data-atencion-id="{{ $atencion->first()->id }}"
+                            @endif>
+                            <i class="fas fa-pencil-alt"></i> Corregir
+                        </button>
+                    @endif
+                    @if($rol_usuario_actual == 'receptor')
+                        <button type="button" id="revisar-orden" class="btn btn-primary"
+                            @if($atencion && $atencion->count() > 0)
+                                data-atencion-id="{{ $atencion->first()->id }}"
                             @endif
-                        @else
-                            @if($rol_usuario_actual == 'receptor')
-                                <button type="button" id="corregir-orden" class="btn btn-warning"
-                                    @if($atencion && $atencion->count() > 0)
-                                        data-atencion-id="{{ $atencion->first()->id }}"
-                                    @endif>
-                                    <i class="fas fa-pencil-alt"></i> Corregir
-                                </button>
+                            data-recepcion-id="{{ $recepcion_id ?? '' }}"
+                            data-route="{{ route('recepcion.validar-orden') }}">
+                            <i class="fas fa-clipboard-check me-2"></i> Revisar
+                        </button>
+                    @endif
+                    @if($rol_usuario_actual == 'operador')
+                        <button type="button"
+                                id="confirmar-stock"
+                                class="btn btn-primary"
+                            @if($atencion && $atencion->count() > 0)
+                                data-atencion-id="{{ $atencion->first()->id }}"
                             @endif
-                            @if($rol_usuario_actual == 'receptor')
-                                <button type="button" id="validar-orden" class="btn btn-primary"
-                                    @if($atencion && $atencion->count() > 0)
-                                        data-atencion-id="{{ $atencion->first()->id }}"
-                                    @endif
-                                    data-recepcion-id="{{ $recepcion_id ?? '' }}"
-                                    data-route="{{ route('recepcion.validar-orden') }}">
-                                    <i class="fas fa-clipboard-check me-2"></i> Validar
-                                </button>
-                            @endif
-                            @if($rol_usuario_actual == 'operador')
-                                <button type="button"
-                                    id="revisar-stock"
-                                    class="btn btn-primary"
-                                    @if($atencion && $atencion->count() > 0)
-                                        data-atencion-id="{{ $atencion->first()->id }}"
-                                    @endif
-                                    data-recepcion-id="{{ $recepcion_id ?? '' }}"
-                                    data-route="{{ route('recepcion.revisar-stock') }}">
-                                    <i class="fas fa-clipboard-check me-2"></i> Revisar
-                                </button>
-                            @endif
-                        @endif
-                    </div>
-                </div>
+                            data-recepcion-id="{{ $recepcion_id ?? '' }}"
+                            data-route="{{ route('recepcion.revisar-stock') }}">
+                            <i class="fas fa-clipboard-check me-2"></i> Confirmar
+                        </button>
+                    @endif
+                @endif
             </div>
         @endif
     @endif
@@ -905,7 +905,7 @@
         }).format(totalGlobal);
         $('#total-global').text(formattedTotal);
     }
-    $(document).on('click', '#revisar-stock', function() {
+    $(document).on('click', '#confirmar-stock', function() {
         const btn = $(this);
         const ruta = btn.data('route');
         const atencionId = btn.data('atencion-id');
@@ -934,7 +934,7 @@
             }
         });
         if (!todoConfirmado) {
-            toastr.error('Faltan ítems por revisar.');
+            toastr.warning('Faltan ítems por revisar.');
             return;
         }
         $.ajax({
@@ -947,7 +947,7 @@
                 lote_stock: stockData
             },
             beforeSend: function() {
-                btn.prop('disabled', true).html('<i class="fas fa-clock me-2"></i> Revisando...');
+                btn.prop('disabled', true).html('<i class="fas fa-clock me-2"></i> Confirmando...');
             },
             success: function(response) {
                 if (response.success) {
@@ -985,17 +985,17 @@
                 }
             },
             error: function(xhr) {
-                console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error en revisar-stock click:", xhr);
-                btn.prop('disabled', false).html('<i class="fas fa-clipboard-check"></i> Revisar');
+                console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error en confirmar-stock :", xhr);
+                btn.prop('disabled', false).html('<i class="fas fa-clipboard-check"></i> Confirmar');
                 const errorMsg = xhr.responseJSON ? xhr.responseJSON.message : 'Error de conexión';
                 toastr.error(errorMsg);
             },
             complete: function() {
-                btn.prop('disabled', false).html('<i class="fas fa-check"></i> Revisado');
+                btn.prop('disabled', false).html('<i class="fas fa-check"></i> Confirmado');
             }
         });
     });
-    $(document).on('click', '#validar-orden', function() { // Validar Orden (Receptor)
+    $(document).on('click', '#revisar-orden', function() { // Revisar Orden (Receptor)
         const btn = $(this);
         const atencionId = btn.data('atencion-id');
         const recepcionId = btn.data('recepcion-id');
@@ -1031,7 +1031,7 @@
             }
         });
         if (ordenes.length === 0) {
-            toastr.error('No se encontraron órdenes para validar.');
+            toastr.error('No se encontraron órdenes para revisar.');
             return;
         }
         $.ajax({
@@ -1044,7 +1044,7 @@
                 ordenes: ordenes
             },
             beforeSend: function() {
-                btn.prop('disabled', true).html('<i class="fas fa-clock me-2"></i> Procesando...');
+                btn.prop('disabled', true).html('<i class="fas fa-clock me-2"></i> Revisando...');
             },
             success: function(response) {
                 toastr.success(response.message);
@@ -1054,7 +1054,7 @@
                         $iconContainer.empty().html('<i class="fas fa-check-double text-success" title="' + response.message + '"></i>');
                     }
                 });
-                btn.prop('disabled', true).html('<i class="fas fa-check me-2"></i> Procesada');
+                btn.prop('disabled', true).html('<i class="fas fa-check me-2"></i> Revisado');
                 if (typeof cargarTareas === 'function') {
                     cargarTareas(recepcionId, atencionId);
                 }
@@ -1065,7 +1065,7 @@
             },
             error: function(xhr) {
                 console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error en validar-orden click:", xhr);
-                btn.prop('disabled', false).html('<i class="fas fa-clipboard-check me-2"></i> Validar');
+                btn.prop('disabled', false).html('<i class="fas fa-clipboard-check me-2"></i> Revisar');
                 toastr.error(xhr.responseJSON?.message || 'Error al validar');
             }
         });

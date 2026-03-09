@@ -64,10 +64,8 @@ class GestionService
         ->with(['tarea', 'estado'])
         ->get()
         ->sortByDesc('updated_at');
-
         if ($actividades->isEmpty()) {
-            $recepcion = $tarjeta instanceof Recepcion ? $tarjeta : Recepcion::find($tarjeta->recepcion_id);
-            $traza = optional($recepcion->solicitud->tareas->first())->tarea ?? 'Solicitud';
+            $traza = 'Sin tareas';
         } else {
             $todasResueltas = $actividades->every(function ($actividad) use ($estado_resuelta_id) {
                 return $actividad->estado_id == $estado_resuelta_id;
@@ -89,8 +87,7 @@ class GestionService
         $actividad = Actividad::where('recepcion_id', $recepcion_id)
             ->whereHas('tarea', function($q) use ($nombre_tarea) {
                 $q->where('tarea', $nombre_tarea);
-            })
-            ->first();
+            })->first();
         if ($actividad) {
             $actividad->estado_id = $estado_resuelta_id;
             $actividad->save();
