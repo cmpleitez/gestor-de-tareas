@@ -86,7 +86,10 @@ SERVICIOS:
 
     
     🟢 Revisiones:
-       8.Mar... Hay un bonito desorden con los estado y el tracking, así como con las tareas que se muestran a los roles
+        8.Mar... TiendaController, linea 312: en este punto se crea una tarea dinámicamente, pero nadie la resuelve, 
+        hay una linea: $gestionService->reportarTarea, que debería resolverla, pero no lo hace, por tanto cuando el receptor
+        y operador resuelven sus tareas, queda ésta tarea pendiente y no pasa al tablero de resueltas debido a la 
+        tarea pendiente.
 
 
 
