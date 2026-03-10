@@ -74,31 +74,8 @@ SERVICIOS:
 
     🟢 Reportes para el receptor y el administrador:
         . Historial de entradas y salidas en stocks
-    
-    
-
-
-
-
-
-
-
-
-    
     🟢 Revisiones:
-        8.Mar... parametrizar notificaciones y correos
-
-
-
-
-
-
-
-
-
-
-
-
+        . Sin pendientes
 
 CLIENTE:
 

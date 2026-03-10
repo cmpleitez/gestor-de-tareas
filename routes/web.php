@@ -157,7 +157,6 @@ Route::middleware([
             Route::put('update/{parametro}', [ParametroController::class, 'update'])->name('parametro.update')->middleware('can:editar');
             Route::post('activate/{parametro}', [ParametroController::class, 'activate'])->name('parametro.activate')->middleware('can:activar');
         });
-
     });
 
     //GESTIÓN

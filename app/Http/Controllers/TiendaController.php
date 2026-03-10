@@ -68,10 +68,18 @@ class TiendaController extends Controller
         $atencion_id_ripped = null;
         if (!$atencion->isEmpty()) {
             $atencion_id_ripped = KeyRipper::rip($atencion->first()->id); //cuando es nuevo no tiene id, no hay productos en el carrito
+            
+            $recepcion_id = Recepcion::where('atencion_id', $atencion->first()->id)
+                ->where('destino_user_id', auth()->id())
+                ->where('activo', true)
+                ->value('id');
         }
+        $uso_interno = (int) (Parametro::where('parametro', 'Uso interno')->first()->valor ?? 1);
         return view('modelos.kit.carrito', [
             'atencion' => $atencion,
-            'atencion_id_ripped' => $atencion_id_ripped
+            'atencion_id_ripped' => $atencion_id_ripped,
+            'recepcion_id' => $recepcion_id ?? null,
+            'uso_interno' => $uso_interno
         ]);
     }
 
@@ -176,15 +184,13 @@ class TiendaController extends Controller
                 }
             }
             DB::commit();
-            $responseData = ['success' => true, 'message' => 'Su orden ha sido recibida y asignada a uno de nuestros gestores'];
+            $responseData = ['success' => true, 'message' => 'Su orden ha sido recibida por uno de nuestros gestores'];
             $user = auth()->user();
             if ($user->mainRole->name === 'receptor' && $atencionId) {
                 $recepcion = Recepcion::where('atencion_id', $atencionId)
                     ->where('user_destino_role_id', Role::where('name', 'receptor')->first()->id)
                     ->first();
-                
                 $equipo = $user->equipos->first();
-                
                 if ($recepcion && $equipo) {
                     $responseData['recepcion_id'] = $recepcion->id;
                     $responseData['equipo_id'] = $equipo->id;
@@ -306,16 +312,6 @@ class TiendaController extends Controller
                     $recepcion->estado_id       = Estado::where('estado', 'Recibida')->first()->id;
                     $recepcion->activo          = false;
                     $recepcion->save();
-
-                    
-                    /*
-                    $primeraTarea = Tarea::orderBy('id', 'asc')->first(); // Reportar la primera tarea de manera dinámica
-                    if ($primeraTarea) {
-                        $gestionService = app(GestionService::class);
-                        $gestionService->reportarTarea($primeraTarea->tarea, $recepcion->id, $recepcion->atencion_id);
-                    }
-                    */
-
                 } else { // Verificar si el kit ya está en el carrito
                     $ordenExistente = Orden::where('atencion_id', $atencion->id) 
                         ->where('kit_id', $orden->id)
@@ -353,7 +349,6 @@ class TiendaController extends Controller
             return $request->ajax() ? response()->json(['success' => false, 'message' => $message, 'type' => 'error']) : back()->with('error', $message);
         }
     }
-
 
     public function getStocksProducto(int $productoId)
     {
@@ -531,6 +526,8 @@ class TiendaController extends Controller
             $resueltas                = $tarjetas->where('estado_id', Estado::where('estado', 'Resuelta')->first()->id)->sortBy('created_at')->values()->toArray();
             $parametro                = Parametro::where('parametro', 'Frecuencia de refresco')->first();
             $frecuencia_actualizacion = $parametro ? $parametro->valor : 1; // Valor por defecto: 1 minuto
+            $uso_interno              = Parametro::where('parametro', 'Uso interno')->first();
+            $uso_interno              = $uso_interno ? $uso_interno->valor : 1;
             $data                     = [
                 'recibidas'                => $recibidas,
                 'progreso'                 => $progreso,
@@ -538,6 +535,7 @@ class TiendaController extends Controller
                 'equipos'                  => $equipos,
                 'operadores'               => $operadores,
                 'frecuencia_actualizacion' => $frecuencia_actualizacion,
+                'uso_interno'              => $uso_interno,
             ];
             return view('modelos.recepcion.solicitudes', $data);
         } catch (\Exception $e) {

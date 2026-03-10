@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\StockRevisadoNotification;
+use App\Notifications\OrdenValidadaNotification;
 
 use App\Models\Actividad;
 use App\Models\Equipo;
@@ -25,11 +26,10 @@ use App\Services\KeyMaker;
 use App\Services\KeyRipper;
 use Spatie\Permission\Models\Role;
 use App\Services\GestionService;
+use App\Models\Tarea;
 
 class RecepcionController extends Controller
 {
-
-
     public function nuevasRecibidas(Request $request, GestionService $gestionService)
     {
         try {
@@ -82,8 +82,7 @@ class RecepcionController extends Controller
         }
     }
 
-
-    public function asignar(Recepcion $recepcion, Equipo $equipo, GestionService $gestionService)
+    public function asignar(Request $request, Recepcion $recepcion, Equipo $equipo, GestionService $gestionService)
     {
         $operadores = User::whereHas('equipos', function ($q1) use ($equipo) {
             $q1->where('equipo_id', $equipo->id);
@@ -95,13 +94,13 @@ class RecepcionController extends Controller
         }
         try {
             //PROCESO
-            $operador = $operadores->random(); //Seleccion del operador
-            $usuario = Auth()->user();
+            $operador              = $operadores->random(); //Seleccion del operador
+            $usuario               = Auth()->user();
             $estado_en_progreso_id = Estado::where('estado', 'En progreso')->first()->id;
-            $atencion = $recepcion->atencion()->first();
+            $atencion              = $recepcion->atencion()->first();
             DB::beginTransaction();
-                if ($usuario->mainRole->name=='receptor') { //El Receptor crea una copia de la solicitud y la asigna al Operador
-                    $new_recepcion = new Recepcion(); 
+                if ($usuario->mainRole->name=='receptor') { //Creando nueva copia rol
+                    $new_recepcion = new Recepcion();
                     $new_recepcion->id = (new KeyMaker())->generate('Recepcion', $recepcion->solicitud_id);
                     $new_recepcion->atencion_id = $atencion->id;
                     $new_recepcion->solicitud_id = $recepcion->solicitud_id;
@@ -110,37 +109,35 @@ class RecepcionController extends Controller
                     $new_recepcion->user_destino_role_id = Role::where('name', 'operador')->first()->id;
                     $new_recepcion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
                     $new_recepcion->save();
-                    $recepcion->estado_id = $estado_en_progreso_id; //Validando de <copia receptor> y cambiando estado local
-                    $recepcion->save();
                     foreach ($recepcion->solicitud->tareas as $tarea) { //Autoasignación de tareas
                         $coincide = $usuario->tareas()->where('tareas.id', $tarea->id)->first();
                         if($coincide) {
-                            $actividad                      = new Actividad();
-                            $actividad->id                  = (new KeyMaker())->generate('Actividad', $recepcion->solicitud_id);
-                            $actividad->recepcion_id        = $recepcion->id;
-                            $actividad->tarea_id            = $tarea->id;
-                            $actividad->estado_id           = $estado_en_progreso_id;
+                            $actividad             = new Actividad();
+                            $actividad->id         = (new KeyMaker())->generate('Actividad', $recepcion->solicitud_id);
+                            $actividad->recepcion_id = $recepcion->id;
+                            $actividad->tarea_id   = $tarea->id;
+                            $actividad->estado_id  = $estado_en_progreso_id;
                             $actividad->save();
                         }
                     }
                 } elseIf($usuario->mainRole->name=='operador') {
-                    $recepcion->estado_id = $estado_en_progreso_id; //Validación de <copia operador>
-                    $recepcion->save();
                     foreach ($recepcion->solicitud->tareas as $tarea) { //Autoasignación de tareas
                         $coincide = $usuario->tareas()->where('tareas.id', $tarea->id)->first();
                         if($coincide) {
-                            $actividad                      = new Actividad();
-                            $actividad->id                  = (new KeyMaker())->generate('Actividad', $recepcion->solicitud_id);
-                            $actividad->recepcion_id        = $recepcion->id;
-                            $actividad->tarea_id            = $tarea->id;
-                            $actividad->estado_id           = $estado_en_progreso_id;
+                            $actividad             = new Actividad();
+                            $actividad->id         = (new KeyMaker())->generate('Actividad', $recepcion->solicitud_id);
+                            $actividad->recepcion_id = $recepcion->id;
+                            $actividad->tarea_id   = $tarea->id;
+                            $actividad->estado_id  = $estado_en_progreso_id;
                             $actividad->save();
                         }
                     }
                 }
-                $atencion->estado_id = $estado_en_progreso_id; //Cambiando estado global
+                $recepcion->estado_id = $estado_en_progreso_id; //Cambio de estado en local (Rol actual)
+                $recepcion->save();
+                $atencion->estado_id = $estado_en_progreso_id; //Cambiando estado en global
                 $atencion->save();
-            //RESULTADO
+                //RESULTADO
             DB::commit();
             $traza = $gestionService->obtenerTraza($recepcion); // Obtener la traza actualizada
             return response()->json([
@@ -154,8 +151,6 @@ class RecepcionController extends Controller
             return response()->json(['success' => false, 'message' => 'Ocurrió un error al asignar la solicitud.']);
         }
     }
-
-
 
     public function equipos(Solicitud $solicitud)
     {
@@ -289,14 +284,18 @@ class RecepcionController extends Controller
             DB::commit();
             try {
                 if ($recepcion) {
-                    $oficina_id = auth()->user()->oficina_id;
-                    $receptores = User::where('oficina_id', $oficina_id)
-                        ->whereHas('roles', function($q) {
-                            $q->where('name', 'receptor');
-                        })
-                        ->get();
-                    if ($receptores->isNotEmpty()) {
-                        Notification::send($receptores, new StockRevisadoNotification($recepcion, $itemsValidados));
+                    $uso_interno = Parametro::where('parametro', 'Uso interno')->first();
+                    $uso_interno = $uso_interno ? $uso_interno->valor : 1;
+                    if ($uso_interno == 0) {
+                        $oficina_id = auth()->user()->oficina_id;
+                        $receptores = User::where('oficina_id', $oficina_id)
+                            ->whereHas('roles', function($q) {
+                                $q->where('name', 'receptor');
+                            })
+                            ->get();
+                        if ($receptores->isNotEmpty()) {
+                            Notification::send($receptores, new StockRevisadoNotification($recepcion, $itemsValidados));
+                        }
                     }
                 }
             } catch (\Exception $e) {
@@ -423,6 +422,7 @@ class RecepcionController extends Controller
             $atencion_id = $request->input('atencion_id');
             $recepcion_id = $request->input('recepcion_id');
             $ordenes_recibidas = $request->input('ordenes', []);
+            $uso_interno = $request->input('uso_interno', Parametro::where('parametro', 'Uso interno')->first()->valor ?? 1);
             // VALIDACIÓN
             if (empty($atencion_id) || empty($ordenes_recibidas)) {
                 return response()->json([
@@ -441,11 +441,13 @@ class RecepcionController extends Controller
                 ], 422);
             }
             foreach ($detalles as $detalle) {
-                if ($detalle->stock_fisico_existencias === null) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Hay stocks pendientes de revisión.'
-                    ], 422);
+                if ($uso_interno == 0) {
+                    if ($detalle->stock_fisico_existencias === null) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Hay stocks pendientes de validación.'
+                        ], 422);
+                    }
                 }
                 if ($detalle->stock_fisico_existencias == "0") {
                     return response()->json([
@@ -460,11 +462,13 @@ class RecepcionController extends Controller
                     $recepcion->validada_destino = true;
                     $recepcion->save();
                 }
-                $tareaRevision = \App\Models\Tarea::where('tarea', 'Revisión')->first()->tarea ?? 'Revisión';
+                $tareaRevision = Tarea::where('tarea', 'Revisión')->first()->tarea ?? 'Revisión';
                 app(GestionService::class)->reportarTarea($tareaRevision, $recepcion_id, $atencion_id); //Reportar tarea
             DB::commit();
-            $recepcion->load('atencion.ordenes.detalle.kit', 'atencion.ordenes.detalle.producto');
-            $recepcion->usuarioOrigen->notify(new \App\Notifications\OrdenValidadaNotification($recepcion));
+            if ($uso_interno == 0) {
+                $recepcion->load('atencion.ordenes.detalle.kit', 'atencion.ordenes.detalle.producto');
+                $recepcion->usuarioOrigen->notify(new OrdenValidadaNotification($recepcion));
+            }
             //RESULTADO
             return response()->json([
                 'success' => true,
@@ -596,10 +600,19 @@ class RecepcionController extends Controller
             }
         ]);
         $atencion_id_ripped = KeyRipper::rip($atencion->id);
+        $uso_interno = (int) $request->input('uso_interno', Parametro::where('parametro', 'Uso interno')->first()->valor ?? 1);
+        $recepcion_id = $request->recepcion_id; // Recuperación de recepción (Seguridad para el auto-abierto del sidebar)
+        if (!$recepcion_id) {
+            $recepcion_id = Recepcion::where('atencion_id', $atencion->id)
+                ->where('destino_user_id', auth()->id())
+                ->where('activo', true)
+                ->value('id');
+        }
         return view('modelos.kit.carrito', [
             'atencion' => collect([$atencion]),
             'atencion_id_ripped' => $atencion_id_ripped,
-            'recepcion_id' => $request->recepcion_id
+            'recepcion_id' => $recepcion_id,
+            'uso_interno' => $uso_interno
         ]);
     }
 

@@ -270,9 +270,9 @@
 <div id="orders-container" class="{{ !$hasOrders ? 'd-none' : '' }}">
     @if($hasOrders)
         @if($currentAtencion && $currentAtencion->ordenes)
+            <!--KITS-->
             @foreach($currentAtencion->ordenes as $orden)
                 @php $headingId = 'heading' . $orden->id; $accordionId = 'accordion' . $orden->id; $ordenIndex = $loop->index; @endphp
-                <!--KITS-->
                 <div class="row mb-1 py-2 align-items-center"> 
                     <div class="col-12 col-md-8 mb-2 {{ $loop->index % 2 == 0 ? 'marcador_fila_par' : 'marcador_fila_impar' }}">
                         <div class="accordion" id="{{ $accordionId }}" data-orden-id="{{ $orden->id }}">
@@ -508,14 +508,16 @@
                     @endif
                 @else
                     @if($rol_usuario_actual == 'receptor')
-                        <button type="button" id="corregir-orden" class="btn btn-warning"
-                            @if($atencion && $atencion->count() > 0)
-                                data-atencion-id="{{ $atencion->first()->id }}"
-                            @endif>
-                            <i class="fas fa-pencil-alt"></i> Corregir
-                        </button>
+                        @if($uso_interno == 0)
+                            <button type="button" id="corregir-orden" class="btn btn-warning"
+                                @if($atencion && $atencion->count() > 0)
+                                    data-atencion-id="{{ $atencion->first()->id }}"
+                                @endif>
+                                <i class="fas fa-pencil-alt"></i> Corregir
+                            </button>
+                        @endif
                     @endif
-                    @if($rol_usuario_actual == 'receptor')
+                    @if($rol_usuario_actual == 'receptor' || $rol_usuario_actual == 'operador')
                         <button type="button" id="revisar-orden" class="btn btn-primary"
                             @if($atencion && $atencion->count() > 0)
                                 data-atencion-id="{{ $atencion->first()->id }}"
@@ -576,9 +578,7 @@
         @endforeach
     @endif
     $(document).ready(function() {
-        // Limpiamos la variable en cuanto carga el carrito (cubre el retroceso del navegador)
-        sessionStorage.removeItem('recepcion_id_activa');
-
+        sessionStorage.removeItem('recepcion_id_activa'); // Limpiamos la variable en cuanto carga el carrito (cubre el retroceso del navegador)
         $('.main-kit-collapse').on('show.bs.collapse hidden.bs.collapse', function (e) { //Lógica del acordión y el alto de fila
             if (e.target === this) {
                 const isShowing = e.type === 'show';
@@ -944,7 +944,8 @@
                 _token: '{{ csrf_token() }}',
                 atencion_id: atencionId,
                 recepcion_id: recepcionId,
-                lote_stock: stockData
+                lote_stock: stockData,
+                uso_interno: {{ $uso_interno }}
             },
             beforeSend: function() {
                 btn.prop('disabled', true).html('<i class="fas fa-clock me-2"></i> Confirmando...');
@@ -1041,7 +1042,8 @@
                 _token: '{{ csrf_token() }}',
                 atencion_id: atencionId,
                 recepcion_id: recepcionId,
-                ordenes: ordenes
+                ordenes: ordenes,
+                uso_interno: {{ $uso_interno }}
             },
             beforeSend: function() {
                 btn.prop('disabled', true).html('<i class="fas fa-clock me-2"></i> Revisando...');

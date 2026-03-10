@@ -146,8 +146,6 @@ class UserSeeder extends Seeder
         //CREACION DE PARAMETROS
         DB::table('parametros')->updateOrInsert(['id' => 1], ['parametro' => 'Frecuencia de refresco', 'valor' => '60', 'unidad_medida' => 'segundos', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
         DB::table('parametros')->updateOrInsert(['id' => 2], ['parametro' => 'Nombres de kits automáticos', 'valor' => '1', 'unidad_medida' => 'boolean', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
-        DB::table('parametros')->updateOrInsert(['id' => 3], ['parametro' => 'Notificaciones automatizadas', 'valor' => '1', 'unidad_medida' => 'boolean', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
-        DB::table('parametros')->updateOrInsert(['id' => 4], ['parametro' => 'Correos automatizados', 'valor' => '1', 'unidad_medida' => 'boolean', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
-        DB::table('parametros')->updateOrInsert(['id' => 5], ['parametro' => 'Validar stock físico', 'valor' => '1', 'unidad_medida' => 'boolean', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
+        DB::table('parametros')->updateOrInsert(['id' => 3], ['parametro' => 'Uso interno', 'valor' => '1', 'unidad_medida' => 'boolean', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
     }
 }

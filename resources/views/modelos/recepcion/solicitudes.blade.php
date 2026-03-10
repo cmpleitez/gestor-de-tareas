@@ -183,7 +183,6 @@
         DESCARGA: '{{ \App\Models\Tarea::where('tarea', 'Descarga')->first()->tarea ?? 'Descarga' }}',
         ENTREGA: '{{ \App\Models\Tarea::where('tarea', 'Entrega')->first()->tarea ?? 'Entrega' }}'
     };
-
     function selectItem(radioId) { // Función para seleccionar items
         document.querySelectorAll('.selectable-item').forEach(selector => { // Desmarcar todos los selectores
             selector.classList.remove('selected');
@@ -434,7 +433,8 @@
             method: 'POST',
             cache: false,
             data: {
-                _token: $('meta[name="csrf-token"]').attr('content')
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                uso_interno: {{ $uso_interno }}
             },
             success: function(response) {
                 if (response.success) {
@@ -743,6 +743,7 @@
                 '<input type="hidden" name="recepcion_id" value="' + recepcionId + '">' +
                 '<input type="hidden" name="atencion_id" value="' + atencionId + '">' +
                 '<input type="hidden" name="tarea_completada" value="' + actividadId + '">' +
+                '<input type="hidden" name="uso_interno" value="{{ $uso_interno }}">' +
                 '</form>');
             $('body').append(form);
             form.submit();
@@ -756,7 +757,8 @@
                 _token: csrfToken,
                 recepcion_id: recepcionId,
                 atencion_id: atencionId,
-                tarea_completada: actividadId
+                tarea_completada: actividadId,
+                uso_interno: {{ $uso_interno }}
             },
             success: function(response) {
                 if (response && response.success) {
@@ -1100,8 +1102,8 @@
     @endcan
     //CONTROL PRINCIPAL
     $(document).ready(function() {
-        inicializarPopovers();
-        const tarjetasIniciales = { // Datos iniciales de las tarjetas
+        inicializarPopovers(); // Datos iniciales de las tarjetas
+        const tarjetasIniciales = { 
             recibidas: @json($recibidas),
             progreso: @json($progreso),
             resueltas: @json($resueltas)
@@ -1118,35 +1120,37 @@
         }
         setTimeout(initializeProgressBars, 100); // Inicializar barras de progreso inmediatamente no es timer
         initKanban();
-        let isUpdating = false; // Sistema inteligente de polling para evitar saturación
-        let updateInterval = ({{ $frecuencia_actualizacion }} * 1000);
-        function safeUpdate() {
-            if (isUpdating) {
-                return;
-            }
-            isUpdating = true;
-            actualizarAvance(function() { // Al completar avances, cargar nuevas recibidas
-                try {
-                    if (typeof cargarNuevasRecibidas === "function") {
-                        cargarNuevasRecibidas();
-                    }
-                } catch (e) {
-                    console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error en polling:", e);
-                } finally {
-                    isUpdating = false;
+        if ({{ $uso_interno }}) { // Sistema inteligente de polling para evitar saturación
+            //No se necesita polling
+        } else {
+            let isUpdating = false;
+            let updateInterval = ({{ $frecuencia_actualizacion }} * 1000);
+            function safeUpdate() {
+                if (isUpdating) {
+                    return;
                 }
-            });
+                isUpdating = true;
+                actualizarAvance(function() {
+                    try {
+                        if (typeof cargarNuevasRecibidas === "function") {
+                            cargarNuevasRecibidas();
+                        }
+                    } catch (e) {
+                        console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error en polling:", e);
+                    } finally {
+                        isUpdating = false;
+                    }
+                });
+            }
+            safeUpdate();
+            setInterval(safeUpdate, updateInterval);
         }
-        safeUpdate();
-        setInterval(safeUpdate, updateInterval);
-
-        // Apertura automática del sidebar si viene de una validación de orden
-        const recepcionIdGuardado = sessionStorage.getItem('recepcion_id_activa');
-        if (recepcionIdGuardado) {
-            sessionStorage.removeItem('recepcion_id_activa');
+        const recepcionIdGuardado = sessionStorage.getItem('recepcion_id_activa'); // Apertura automática del sidebar si viene de una validación de orden
+        if (recepcionIdGuardado && recepcionIdGuardado !== "undefined" && recepcionIdGuardado !== "null") {
             setTimeout(function() {
                 const $tarjeta = $(`.solicitud-card[data-recepcion-id="${recepcionIdGuardado}"]`);
                 if ($tarjeta.length) {
+                    sessionStorage.removeItem('recepcion_id_activa'); // Se limpia solo si se encuentra para permitir reintentos o redundancia
                     $tarjeta.click();
                 }
             }, 1200); // Retardo para asegurar que las tarjetas estén renderizadas
