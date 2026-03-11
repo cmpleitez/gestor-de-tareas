@@ -98,12 +98,6 @@ class GestionService
                 $query->where('atencion_id', $atencion_id);
             })->where('estado_id', $estado_resuelta_id)
             ->count();
-
-            
-
-Log::info("total_actividades_globales ".$total_actividades_globales." | actividades_resueltas_globales ".$actividades_resueltas_globales);
-
-
             $porcentaje_avance = $total_actividades_globales > 0 
                 ? round(($actividades_resueltas_globales / $total_actividades_globales) * 100, 2) 
                 : 0;

@@ -140,10 +140,7 @@ ESTILOS PARA COMPONENTES DE SOLICITUDES
 
 .kanban-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    inset: 0;
     background: rgba(0, 0, 0, 0.5);
     z-index: 999;
     opacity: 0;
@@ -160,7 +157,7 @@ ESTILOS PARA COMPONENTES DE SOLICITUDES
     position: fixed;
     top: 0;
     right: -100%;
-    width: clamp(350px, 40vw, 500px);
+    width: clamp(350px, 70vw, 900px);
     height: 100%;
     background: #fff;
     z-index: 1000;
@@ -170,37 +167,28 @@ ESTILOS PARA COMPONENTES DE SOLICITUDES
     flex-direction: column;
 }
 
-.kanban-sidebar.show {
-    right: 0;
-}
+.kanban-sidebar.show { right: 0; }
 
 #sidebar-card-body {
-    flex: 1 !important;
-    overflow-y: auto !important;
-    padding: 1rem !important;
-    max-height: calc(100vh - 60px) !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    max-height: calc(100vh - 60px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-#sidebar-card-body::-webkit-scrollbar {
-    width: 8px;
-}
+#sidebar-card-body::-webkit-scrollbar { width: 8px; }
 
-#sidebar-card-body::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 3px;
-}
-
+#sidebar-card-body::-webkit-scrollbar-track,
 #sidebar-card-body::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
     border-radius: 3px;
 }
 
-#sidebar-card-body::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
-}
+#sidebar-card-body::-webkit-scrollbar-track  { background: #f1f1f1; }
+#sidebar-card-body::-webkit-scrollbar-thumb  { background: #c1c1c1; }
+#sidebar-card-body::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
 
 body.sidebar-open {
     overflow: hidden;
