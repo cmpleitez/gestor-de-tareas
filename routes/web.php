@@ -169,14 +169,14 @@ Route::middleware([
             Route::get('tareas/{recepcion_id}', [RecepcionController::class, 'tareas'])->name('recepcion.tareas')->middleware('can:ver-tareas');
             Route::post('orden-compra', [RecepcionController::class, 'ordenCompra'])->name('recepcion.orden-compra')->middleware('can:ver-solicitudes');
             Route::post('corregir-orden', [RecepcionController::class, 'corregirOrden'])->name('recepcion.corregir-orden')->middleware('can:editar');
-            Route::post('revisar-orden', [RecepcionController::class, 'revisarOrden'])->name('recepcion.revisar-orden')->middleware('can:validar');
+            Route::post('revisar-orden', [RecepcionController::class, 'revisarOrden'])->name('recepcion.revisar-orden')->middleware('can:revisar');
             Route::get('create-stock', [RecepcionController::class, 'createStock'])->name('recepcion.create-stock')->middleware('can:crear');
             Route::post('store-stock', [RecepcionController::class, 'storeStock'])->name('recepcion.store-stock')->middleware('can:crear');
             Route::post('confirmar-stock', [RecepcionController::class, 'confirmarStock'])->name('recepcion.confirmar-stock')->middleware('can:revisar');
             Route::post('carrito-editar', [RecepcionController::class, 'carritoEditar'])->name('recepcion.carrito-editar')->middleware('can:editar');
-            Route::post('confirmar-pago', [RecepcionController::class, 'confirmarPago'])->name('recepcion.confirmar-pago')->middleware('can:validar');
+            Route::post('confirmar-pago', [RecepcionController::class, 'confirmarPago'])->name('recepcion.confirmar-pago')->middleware('can:confirmar');
             Route::post('descargar-stock', [RecepcionController::class, 'descargarStock'])->name('recepcion.descargar-stock')->middleware('can:editar');
-            Route::post('efectuar-entrega', [RecepcionController::class, 'efectuarEntrega'])->name('recepcion.efectuar-entrega')->middleware('can:validar');
+            Route::post('efectuar-entrega', [RecepcionController::class, 'efectuarEntrega'])->name('recepcion.efectuar-entrega')->middleware('can:confirmar');
         });
     });
 

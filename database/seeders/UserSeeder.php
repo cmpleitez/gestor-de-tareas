@@ -46,8 +46,8 @@ class UserSeeder extends Seeder
             'asignar',
             'eliminar',
             'activar',
-            'validar',
             'revisar',
+            'confirmar',
             'autorefrescar',
             'ver-solicitudes',
             'ver-tareas'
@@ -65,10 +65,10 @@ class UserSeeder extends Seeder
         $role->syncPermissions(['administrar', 'ver', 'crear', 'editar', 'activar', 'eliminar']);
 
         $role = Role::firstOrCreate(['name' => 'receptor']);
-        $role->syncPermissions(['gestionar', 'tienda', 'ver', 'crear', 'editar', 'eliminar',  'validar', 'asignar', 'autorefrescar', 'ver-solicitudes', 'ver-tareas']);
+        $role->syncPermissions(['gestionar', 'tienda', 'ver', 'crear', 'editar', 'eliminar', 'revisar', 'confirmar', 'asignar', 'autorefrescar', 'ver-solicitudes', 'ver-tareas']);
 
         $role = Role::firstOrCreate(['name' => 'operador']);
-        $role->syncPermissions(['gestionar', 'tienda', 'editar', 'autorefrescar', 'asignar', 'revisar', 'ver-solicitudes', 'ver-tareas']);
+        $role->syncPermissions(['gestionar', 'tienda', 'editar', 'autorefrescar', 'asignar', 'revisar', 'confirmar', 'ver-solicitudes', 'ver-tareas']);
 
         $role = Role::firstOrCreate(['name' => 'cliente']);
         $role->syncPermissions(['tienda', 'ver', 'crear' ,'ver-solicitudes', 'eliminar']);
@@ -127,7 +127,7 @@ class UserSeeder extends Seeder
 
         //CREACION DE TAREAS
         DB::table('tareas')->updateOrInsert(['id' => 1], ['tarea' => 'Revisión', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
-        DB::table('tareas')->updateOrInsert(['id' => 2], ['tarea' => 'Validación', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
+        DB::table('tareas')->updateOrInsert(['id' => 2], ['tarea' => 'Verificación', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
         DB::table('tareas')->updateOrInsert(['id' => 3], ['tarea' => 'Pago', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
         DB::table('tareas')->updateOrInsert(['id' => 4], ['tarea' => 'Descarga', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
         DB::table('tareas')->updateOrInsert(['id' => 5], ['tarea' => 'Entrega', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);

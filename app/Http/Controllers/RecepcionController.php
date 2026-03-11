@@ -279,8 +279,8 @@ class RecepcionController extends Controller
                     $recepcion->validada_destino = true;
                     $recepcion->save();
                 }
-                $tareaConfirmacion = \App\Models\Tarea::where('tarea', 'Confirmación')->first()->tarea ?? 'Confirmación';
-                app(GestionService::class)->reportarTarea($tareaConfirmacion, $recepcion_id, $atencion_id); //Reportar tarea
+                $tareaVerificacion = \App\Models\Tarea::where('tarea', 'Verificación')->first()->tarea ?? 'Verificación';
+                app(GestionService::class)->reportarTarea($tareaVerificacion, $recepcion_id, $atencion_id); //Reportar tarea
             DB::commit();
             try {
                 if ($recepcion) {
@@ -304,7 +304,7 @@ class RecepcionController extends Controller
             //RESULTADO
             return response()->json([
                 'success' => true,
-                'message' => ($tareaConfirmacion ?? 'Confirmación') . ' exitosa',
+                'message' => ($tareaVerificacion ?? 'Verificación') . ' exitosa',
                 'items_validados' => $itemsValidados
             ]);
         } catch (\Exception $e) {
@@ -370,7 +370,7 @@ class RecepcionController extends Controller
                     $q->where('atencion_id', $atencion_id);
                 })
                 ->whereHas('tarea', function($q) {
-                    $q->where('tarea', 'Confirmación');
+                    $q->where('tarea', 'Verificación');
                 })
                 ->first();
                 if ($actividadStock) {
@@ -463,7 +463,7 @@ class RecepcionController extends Controller
                     $recepcion->save();
                 }
                 $tareaRevision = Tarea::where('tarea', 'Revisión')->first()->tarea ?? 'Revisión';
-                app(GestionService::class)->reportarTarea($tareaRevision, $recepcion_id, $atencion_id); //Reportar tarea
+                app(GestionService::class)->reportarTarea($tareaRevision, $recepcion_id, $atencion_id);
             DB::commit();
             if ($uso_interno == 0) {
                 $recepcion->load('atencion.ordenes.detalle.kit', 'atencion.ordenes.detalle.producto');
@@ -472,7 +472,7 @@ class RecepcionController extends Controller
             //RESULTADO
             return response()->json([
                 'success' => true,
-                'message' => ($tareaRevision ?? 'Revisión') . ' exitosa'
+                'message' => $tareaRevision.' exitosa'
             ]);
         } catch (\Exception $e) {
             DB::rollBack();

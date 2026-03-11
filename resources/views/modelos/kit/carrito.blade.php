@@ -1066,16 +1066,16 @@
                 }, 1500);
             },
             error: function(xhr) {
-                console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error en validar-orden click:", xhr);
+                console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error en revisar-orden click:", xhr);
                 btn.prop('disabled', false).html('<i class="fas fa-clipboard-check me-2"></i> Revisar');
-                toastr.error(xhr.responseJSON?.message || 'Error al validar');
+                toastr.error(xhr.responseJSON?.message || 'Error al revisar orden');
             }
         });
     });
     $(document).on('click', '#corregir-orden', function() { // Corregir Orden (Receptor)
         const btn = $(this);
         const atencionId = btn.data('atencion-id');
-        const recepcionId = $('#validar-orden').data('recepcion-id'); // Obteniendo recepcionId del otro botón
+        const recepcionId = $('#revisar-orden').data('recepcion-id'); // Obteniendo recepcionId del otro botón
         let ordenes = [];
         $('.main-kit-collapse').each(function() {
             const collapseDiv = $(this);
