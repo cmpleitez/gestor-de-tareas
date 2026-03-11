@@ -90,7 +90,7 @@ class RecepcionController extends Controller
             $q1->where('name', 'operador');
         })->with('equipos')->where('activo', true)->get();
         if ($operadores->isEmpty()) {
-            return response()->json(['warning' => true, 'message' => 'No hay operadores disponibles para asignar la solicitud'], 422);
+            return response()->json(['success' => false, 'message' => 'No hay operadores disponibles para asignar la solicitud', 'type' => 'error'], 422);
         }
         try {
             //PROCESO
@@ -144,11 +144,45 @@ class RecepcionController extends Controller
                 'success' => true,
                 'message' => 'La solicitud "' . (new KeyRipper())->rip($atencion->id) . '" ha sido asignada al operador',
                 'traza'   => $traza,
+                'type'    => 'success'
             ], 200);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Ocurrió un error al asignar la solicitud: ' . $e->getMessage(), ['exception' => $e]);
-            return response()->json(['success' => false, 'message' => 'Ocurrió un error al asignar la solicitud.']);
+            return response()->json([
+                'success' => false,
+                'message' => 'Ocurrió un error al asignar la solicitud.',
+                'type'    => 'error'
+            ], 500);
+        }
+    }
+
+    public function avanzarEstado(Recepcion $recepcion, GestionService $gestionService)
+    {
+        try {
+            $atencion = $recepcion->atencion()->first();
+            $estado_en_progreso_id = Estado::where('estado', 'En progreso')->first()->id;
+            DB::beginTransaction();
+                $recepcion->estado_id = $estado_en_progreso_id;
+                $recepcion->save();
+                $atencion->estado_id = $estado_en_progreso_id;
+                $atencion->save();
+            DB::commit();
+            $traza = $gestionService->obtenerTraza($recepcion);
+            return response()->json([
+                'success' => true,
+                'message' => 'Solicitud en Progreso',
+                'traza'   => $traza,
+                'type'    => 'success'
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Error al avanzar estado: ' . $e->getMessage(), ['exception' => $e]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al avanzar la solicitud de estado.',
+                'type'    => 'error'
+            ], 500);
         }
     }
 
@@ -213,7 +247,11 @@ class RecepcionController extends Controller
             return response()->json(['tareas' => $tareas]);
         } catch (\Exception $e) {
             Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Ocurrió un error al obtener las tareas: ' . $e->getMessage(), ['exception' => $e]);
-            return response()->json(['success' => false, 'message' => 'Ocurrió un error al obtener el listado de tareas.'], 500);
+            return response()->json([
+                'success' => false,
+                'message' => 'Ocurrió un error al obtener el listado de tareas.',
+                'type'    => 'error'
+            ], 500);
         }
     }
 
@@ -228,7 +266,8 @@ class RecepcionController extends Controller
             if (empty($atencion_id) || empty($orden)) { //Ordenes e items no vacíos
                 return response()->json([
                     'success' => false,
-                    'message' => 'Información incompleta para la validación del lote'
+                    'message' => 'Información incompleta para la validación del lote',
+                    'type'    => 'warning'
                 ], 422);
             }
             $detallesRequeridos = Detalle::whereHas('orden', function($q) use ($atencion_id) { //Confirmaciones
@@ -247,14 +286,16 @@ class RecepcionController extends Controller
             if (!empty($faltantes)) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Error: El lote enviado no contiene todos los ítems de la solicitud.'
+                    'message' => 'Error: El lote enviado no contiene todos los ítems de la solicitud.',
+                    'type'    => 'error'
                 ], 422);
             }
             foreach ($orden as $item) {
                 if (!isset($item['stock_fisico_existencias']) || !in_array($item['stock_fisico_existencias'], ['1', '0'])) {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Error: Hay ítems sin una confirmación de stock válida.'
+                        'message' => 'Error: Hay ítems sin una confirmación de stock válida.',
+                        'type'    => 'error'
                     ], 422);
                 }
             }
@@ -286,7 +327,7 @@ class RecepcionController extends Controller
                 if ($recepcion) {
                     $uso_interno = Parametro::where('parametro', 'Uso interno')->first();
                     $uso_interno = $uso_interno ? $uso_interno->valor : 1;
-                    if ($uso_interno == 0) {
+                    if ($uso_interno == 0) { //Parametrizado: Uso interno-externo
                         $oficina_id = auth()->user()->oficina_id;
                         $receptores = User::where('oficina_id', $oficina_id)
                             ->whereHas('roles', function($q) {
@@ -305,13 +346,15 @@ class RecepcionController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => ($tareaConfirmacion ?? 'Confirmación') . ' exitosa',
-                'items_validados' => $itemsValidados
+                'items_validados' => $itemsValidados,
+                'type'    => 'success'
             ]);
         } catch (\Exception $e) {
             Log::error("Log:: [Usuario: " . auth()->user()->name . "] Error en revisarStock: " . $e->getMessage(), ['exception' => $e]);
             return response()->json([
                 'success' => false, 
-                'message' => 'Error al validar el lote de stock.'
+                'message' => 'Ocurrió un error al validar el lote de stock.',
+                'type'    => 'error'
             ], 500);
         }
     }
@@ -423,12 +466,12 @@ class RecepcionController extends Controller
             $recepcion_id = $request->input('recepcion_id');
             $ordenes_recibidas = $request->input('ordenes', []);
             $uso_interno = $request->input('uso_interno', Parametro::where('parametro', 'Uso interno')->first()->valor ?? 1);
-            Log::info('Log:: [DEBUG revisarOrden] Datos recibidos', ['atencion_id' => $atencion_id, 'recepcion_id' => $recepcion_id, 'ordenes_count' => count($ordenes_recibidas), 'uso_interno' => $uso_interno]);
             // VALIDACIÓN
             if (empty($atencion_id) || empty($ordenes_recibidas)) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Información incompleta para la validación'
+                    'message' => 'Información incompleta para la revisión',
+                    'type'    => 'warning'
                 ], 422);
             }
             // PROCESAMIENTO
@@ -438,22 +481,25 @@ class RecepcionController extends Controller
             if ($detalles->isEmpty()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'No se encontraron productos asociados a esta solicitud para validar.'
+                    'message' => 'No se encontraron productos asociados a esta solicitud para revisar.',
+                    'type'    => 'warning'
                 ], 422);
             }
             foreach ($detalles as $detalle) {
-                if ($uso_interno == 0) {
+                if ($uso_interno == 0) { //Parametrizado: Uso interno-externo
                     if ($detalle->stock_fisico_existencias === null) {
                         return response()->json([
                             'success' => false,
-                            'message' => 'Hay stocks pendientes de validación.'
+                            'message' => 'Hay stocks pendientes de confirmación.',
+                            'type'    => 'warning'
                         ], 422);
                     }
                 }
                 if ($detalle->stock_fisico_existencias == "0") {
                     return response()->json([
                         'success' => false,
-                        'message' => "El producto {$detalle->producto_id} - {$detalle->producto->producto} no tiene existencias físicas. No se puede validar la orden."
+                        'message' => "El producto {$detalle->producto_id} - {$detalle->producto->producto} no tiene existencias físicas. No se puede revisar la orden.",
+                        'type'    => 'error'
                     ], 422);
                 }
             }
@@ -466,23 +512,23 @@ class RecepcionController extends Controller
                 $tareaRevision = Tarea::where('tarea', 'Revisión')->first()->tarea ?? 'Revisión';
                 app(GestionService::class)->reportarTarea($tareaRevision, $recepcion_id, $atencion_id);
             DB::commit();
-            Log::info('Log:: [DEBUG revisarOrden] Commit exitoso, tarea reportada', ['tarea' => $tareaRevision]);
-            if ($uso_interno == 0) {
+            if ($uso_interno == 0) { //Parametrizado: Uso interno-externo
                 $recepcion->load('atencion.ordenes.detalle.kit', 'atencion.ordenes.detalle.producto');
                 $recepcion->usuarioOrigen->notify(new OrdenValidadaNotification($recepcion));
             }
             //RESULTADO
-            Log::info('Log:: [DEBUG revisarOrden] Respuesta exitosa enviada');
             return response()->json([
                 'success' => true,
-                'message' => $tareaRevision.' exitosa'
+                'message' => $tareaRevision.' exitosa',
+                'type'    => 'success'
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error("Log:: [DEBUG revisarOrden] EXCEPCION CAPTURADA: " . $e->getMessage(), ['exception' => $e, 'trace' => $e->getTraceAsString()]);
+            Log::error("Log:: [Usuario: " . auth()->user()->name . "] Ocurrió un error al validar la orden: " . $e->getMessage(), ['exception' => $e]);
             return response()->json([
                 'success' => false,
-                'message' => 'Ocurrió un error al validar la orden.'
+                'message' => 'Ocurrió un error al validar la orden.',
+                'type'    => 'error'
             ], 500);
         }
     }
@@ -495,7 +541,8 @@ class RecepcionController extends Controller
         app(GestionService::class)->reportarTarea($tareaPago, $recepcion_id, $atencion_id);
         return response()->json([
             'success' => true,
-            'message' => ($tareaPago ?? 'Pago') . ' exitoso'
+            'message' => ($tareaPago ?? 'Pago') . ' exitoso',
+            'type'    => 'success'
         ]);
     }
 
@@ -538,11 +585,19 @@ class RecepcionController extends Controller
             $tareaDescarga = \App\Models\Tarea::where('tarea', 'Descarga')->first()->tarea ?? 'Descarga';
             app(GestionService::class)->reportarTarea($tareaDescarga, $recepcion_id, $atencion_id);
             DB::commit();
-            return response()->json(['success' => true, 'message' => ($tareaDescarga ?? 'Descarga') . ' exitosa']);
+            return response()->json([
+                'success' => true,
+                'message' => ($tareaDescarga ?? 'Descarga') . ' exitosa',
+                'type'    => 'success'
+            ]);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Error al descargar stock: ' . $e->getMessage(), ['exception' => $e]);
-            return response()->json(['success' => false, 'message' => 'Ocurrió un error al intentar descargar el stock del inventario.']);
+            return response()->json([
+                'success' => false,
+                'message' => 'Ocurrió un error al intentar descargar el stock del inventario.',
+                'type'    => 'error'
+            ], 500);
         }
     }
 
@@ -554,7 +609,8 @@ class RecepcionController extends Controller
         app(GestionService::class)->reportarTarea($tareaEntrega, $recepcion_id, $atencion_id);
         return response()->json([
             'success' => true,
-            'message' => ($tareaEntrega ?? 'Entrega') . ' exitosa'
+            'message' => ($tareaEntrega ?? 'Entrega') . ' exitosa',
+            'type'    => 'success'
         ]);
     }
 
@@ -580,7 +636,8 @@ class RecepcionController extends Controller
             Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Error al obtener la orden de compra: ' . $e->getMessage(), ['exception' => $e]);
             return response()->json([
                 'success' => false,
-                'message' => 'Ocurrió un error al obtener la información de la orden.'
+                'message' => 'Ocurrió un error al obtener la información de la orden.',
+                'type'    => 'error'
             ], 500);
         }
     }

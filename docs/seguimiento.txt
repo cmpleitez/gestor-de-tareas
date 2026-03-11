@@ -75,7 +75,7 @@ SERVICIOS:
     🟢 Reportes para el receptor y el administrador:
         . Historial de entradas y salidas en stocks
     🟢 Revisiones:
-        . Sin pendientes
+        . Revisar los momentos de validación de cada recepcion en los distintos roles y tableros
 
 CLIENTE:
 

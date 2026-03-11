@@ -12,6 +12,7 @@ use App\Services\KeyMaker;
 use App\Models\Producto;
 use App\Models\Kit;
 use App\Models\Recepcion;
+use App\Models\Actividad;
 use App\Models\User;
 use App\Models\Atencion;
 use App\Models\Estado;
@@ -165,7 +166,7 @@ class TiendaController extends Controller
                     }
                 }
             }
-            //ACTIVACIÓN DE LA ORDEN DE COMPRAS Y LA COPIA DEL RECEPTOR
+            //ACTIVACIÓN DE LA SOLICITUD COPIA DEL RECEPTOR
             if ($atencionId) {
                 $atencion = Atencion::find($atencionId);
                 if ($atencion) {
@@ -180,6 +181,23 @@ class TiendaController extends Controller
                         $recepcion->validada_origen = true;
                         $recepcion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
                         $recepcion->save();
+
+                        
+                        $receptor_tmp = User::find($recepcion->destino_user_id); // Autoasignación de tareas para la copia del Receptor
+                        if ($receptor_tmp && $recepcion->solicitud) {
+                            $estado_recibida_id = Estado::where('estado', 'Recibida')->first()->id;
+                            foreach ($recepcion->solicitud->tareas as $tarea) {
+                                $coincide = $receptor_tmp->tareas()->where('tareas.id', $tarea->id)->first();
+                                if ($coincide) {
+                                    $actividad = new Actividad();
+                                    $actividad->id = (new KeyMaker())->generate('Actividad', $recepcion->solicitud_id);
+                                    $actividad->recepcion_id = $recepcion->id;
+                                    $actividad->tarea_id = $tarea->id;
+                                    $actividad->estado_id = $estado_recibida_id;
+                                    $actividad->save();
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -432,13 +450,22 @@ class TiendaController extends Controller
                 ->select('atencion_id', 'estado_id', 'origen_user_id', 'destino_user_id')
                 ->get();
             $usuariosParticipantes = $gestionService->obtenerUsuariosParticipantes($tarjetas->pluck('atencion_id')->unique()); //Obtener usuarios participantes
-            $resultado             = $tarjetas->map(function ($tarjeta) use ($usuariosParticipantes, $gestionService, $user) {
+            $estadoProgresoId = \Illuminate\Support\Facades\Cache::remember('estado_progreso_id', 3600, fn() => Estado::where('estado', 'En progreso')->first()->id);
+            $estadoResueltaId = \Illuminate\Support\Facades\Cache::remember('estado_resuelta_id', 3600, fn() => Estado::where('estado', 'Resuelta')->first()->id);
+            $resultado             = $tarjetas->map(function ($tarjeta) use ($usuariosParticipantes, $gestionService, $user, $estadoProgresoId, $estadoResueltaId) {
                 $traza = $gestionService->obtenerTraza($tarjeta);
                 
                 // Si es cliente, priorizamos el estado global de la atención para asegurar sincronización con el tablero de Resueltas
                 $estadoId = ($user->mainRole && $user->mainRole->name === 'cliente') 
                     ? (optional($tarjeta->atencion)->estado_id ?? $tarjeta->estado_id)
                     : $tarjeta->estado_id;
+                    
+                $avance = optional($tarjeta->atencion)->avance ?? 0;
+                if ($avance > 0 && $avance < 100) {
+                    $estadoId = $estadoProgresoId;
+                } elseif ($avance >= 100) {
+                    $estadoId = $estadoResueltaId;
+                }
 
                 return [
                     'atencion_id' => $tarjeta->atencion_id,
@@ -469,8 +496,7 @@ class TiendaController extends Controller
                 if ($equipos->isEmpty()) {
                     return redirect()->route('tienda')->with('warning', 'No hay equipos de trabajo disponibles para asignar las solicitudes');
                 }
-                
-                if ($uso_interno == 0) {
+                if ($uso_interno == 0) { //Parametrizado: Uso interno-externo
                     $operadores = User::whereHas('roles', function ($query) {
                         $query->where('name', 'operador');
                     })->whereHas('oficina', function ($query) use ($user) {
@@ -480,7 +506,6 @@ class TiendaController extends Controller
                         return redirect()->route('tienda')->with('warning', 'No hay operadores disponibles para asignar las solicitudes');
                     }
                 }
-                
             }
             $solicitudes = Solicitud::has('tareas')->get();
             if ($solicitudes->isEmpty()) {
@@ -505,15 +530,28 @@ class TiendaController extends Controller
             ->get();
             $atencionIds = $recepciones->pluck('atencion_id')->unique();
             $usuariosParticipantes = $gestionService->obtenerUsuariosParticipantes($atencionIds); //Obtener usuarios participantes
-            $tarjetas = $recepciones->map(function ($tarjeta) use ($usuariosParticipantes, $gestionService) {
+            $estadoProgresoId = \Illuminate\Support\Facades\Cache::remember('estado_progreso_id', 3600, fn() => Estado::where('estado', 'En progreso')->first()->id);
+            $estadoResueltaId = \Illuminate\Support\Facades\Cache::remember('estado_resuelta_id', 3600, fn() => Estado::where('estado', 'Resuelta')->first()->id);
+            $tarjetas = $recepciones->map(function ($tarjeta) use ($usuariosParticipantes, $gestionService, $user, $estadoProgresoId, $estadoResueltaId) {
                 $usuariosParticipantesAtencion = $usuariosParticipantes->get($tarjeta->atencion_id, collect());
                 $traza = $gestionService->obtenerTraza($tarjeta);
+                $estadoId = ($user->mainRole && $user->mainRole->name === 'cliente') 
+                    ? (optional($tarjeta->atencion)->estado_id ?? $tarjeta->estado_id)
+                    : $tarjeta->estado_id;
+
+                $avance = optional($tarjeta->atencion)->avance ?? 0;
+                if ($avance > 0 && $avance < 100) {
+                    $estadoId = $estadoProgresoId;
+                } elseif ($avance >= 100) {
+                    $estadoId = $estadoResueltaId;
+                }
+                
                 return [
                     'atencion_id'         => $tarjeta->atencion_id,
                     'created_at'          => $tarjeta->created_at->toISOString(),
                     'detalle'             => $tarjeta->detalle,
                     'traza'               => $traza,
-                    'estado_id'           => $tarjeta->estado->id,
+                    'estado_id'           => $estadoId,
                     'fecha_relativa'      => Carbon::parse($tarjeta->created_at)->diffForHumans(),
                     'porcentaje_progreso' => $tarjeta->atencion->avance,
                     'recepcion_id'        => $tarjeta->id,

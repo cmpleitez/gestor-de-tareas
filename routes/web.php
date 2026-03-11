@@ -166,6 +166,7 @@ Route::middleware([
             Route::get('operadores/{solicitud}', [RecepcionController::class, 'operadores'])->name('recepcion.operadores')->middleware('can:ver');
             Route::post('nuevas-recibidas', [RecepcionController::class, 'nuevasRecibidas'])->name('recepcion.nuevas-recibidas')->middleware('can:autorefrescar');
             Route::post('asignar/{recepcion}/{equipo}', [RecepcionController::class, 'asignar'])->name('recepcion.asignar')->middleware('can:asignar');
+            Route::post('avanzar/{recepcion}', [RecepcionController::class, 'avanzarEstado'])->name('recepcion.avanzar')->middleware('can:asignar');
             Route::get('tareas/{recepcion_id}', [RecepcionController::class, 'tareas'])->name('recepcion.tareas')->middleware('can:ver-tareas');
             Route::post('orden-compra', [RecepcionController::class, 'ordenCompra'])->name('recepcion.orden-compra')->middleware('can:ver-solicitudes');
             Route::post('corregir-orden', [RecepcionController::class, 'corregirOrden'])->name('recepcion.corregir-orden')->middleware('can:editar');

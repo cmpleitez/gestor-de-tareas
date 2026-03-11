@@ -400,35 +400,35 @@
                 estadoColor = '#28a745';
                 break;
         }
-        let url = null; //Seleccionando la ruta a la que se va a enviar la solicitud
+        
+        let url = null;
         let selectedValue = null;
-        if (userRole === 'receptor' || userRole === 'operador') {
-            selectedValue = $('input[name="equipo_destino"]:checked').val();
-            if (!selectedValue && equipos && equipos.length === 1) {
-                selectedValue = equipos[0].id; // Auto-selección si solo hay un equipo
+
+        @if($uso_interno == 0)
+            if (userRole === 'receptor' || userRole === 'operador') { 
+                selectedValue = $('input[name="equipo_destino"]:checked').val();
+                if (!selectedValue && equipos && equipos.length === 1) {
+                    selectedValue = equipos[0].id; 
+                }
+                if (!selectedValue) {
+                    toastr.warning('Debes seleccionar un equipo destino', null, { "progressBar": true });
+                    $(evt.from).append(evt.item);
+                    return;
+                }
+                url = '{{ route('recepcion.asignar', ['recepcion' => ':recepcion_id', 'equipo' => ':equipo_id']) }}'
+                    .replace(':recepcion_id', solicitudId)
+                    .replace(':equipo_id', selectedValue);
             }
-            if (!selectedValue) {
-                Swal.fire({
-                    position: 'top-end',
-                    type: 'warning',
-                    title: 'Debes seleccionar un equipo destino',
-                    showConfirmButton: false,
-                    timer: 2000,
-                    confirmButtonClass: 'btn btn-primary',
-                    buttonsStyling: false
-                });
-                $(evt.from).append(evt.item);
-                return;
-            }
-            url = '{{ route('recepcion.asignar', ['recepcion' => ':recepcion_id', 'equipo' => ':equipo_id']) }}'
-                .replace(':recepcion_id', solicitudId)
-                .replace(':equipo_id', selectedValue);
-        }
+        @else
+            url = '{{ route('recepcion.avanzar', ['recepcion' => ':recepcion_id']) }}'
+                .replace(':recepcion_id', solicitudId);
+        @endif
+
         if (!url) {
             $(evt.from).append(evt.item);
             return;
         }
-        $.ajax({ //Enviando la solicitud a la ruta seleccionada
+        $.ajax({ 
             url: url,
             method: 'POST',
             cache: false,
@@ -471,46 +471,24 @@
                         });
                         tarjeta.find('.fas.fa-arrow-right').css('color', estadoColor); // Actualizar color de la flecha según el nuevo estado
                     }
-                    toastr.success(response.message);
+                    toastr[response.type || 'success'](response.message);
                 } else {
-                    Swal.fire({
-                        position: 'top-end',
-                        type: 'error',
-                        title: response.message,
-                        showConfirmButton: true,
-                        timer: 6000,
-                        confirmButtonClass: 'btn btn-danger',
-                        buttonsStyling: false
-                    });
+                    toastr[response.type || 'error'](response.message, null, { "progressBar": true, "timeOut": 15000 });
                     $(evt.from).append(evt.item); // Revertir la tarjeta a su posición original
                     actualizarMensajeColumnaVacia(); // Actualizar mensaje de columna vacía
                 }
             },
-            error: function(xhr, status, error) {
-                console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error en updatePosition:", error);
-                let mensaje = '🚨 Error desconocido';
-                if (xhr.status === 419) {
-                    mensaje = '🚨 Error CSRF - Recarga la página';
-                } else if (xhr.status === 404) {
-                    mensaje = '🚨 Ruta no encontrada';
-                } else if (xhr.status === 500) {
-                    mensaje = '🚨 Error del servidor';
-                } else if (xhr.responseJSON && xhr.responseJSON.message) {
-                    mensaje = '🚨 ' + xhr.responseJSON.message;
-                }
-                Swal.fire({
-                    position: 'top-end',
-                    type: 'error',
-                    title: mensaje,
-                    showConfirmButton: true,
-                    timer: 60000,
-                    confirmButtonClass: 'btn btn-danger',
-                    buttonsStyling: false
-                });
+            error: function(xhr) {
+                console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error en updatePosition:", xhr);
+                const errorMessage = xhr.responseJSON && xhr.responseJSON.message
+                    ? xhr.responseJSON.message
+                    : 'Error al procesar la solicitud';
+                toastr.error(errorMessage, null, { "progressBar": true, "timeOut": 15000 });
                 $(evt.from).append(evt.item); // Revertir la tarjeta a su posición original
                 actualizarMensajeColumnaVacia(); // Actualizar mensaje de columna vacía
             }
         });
+        
     }
     function actualizarMensajeColumnaVacia() { //Mostrar u ocultar mensaje de columna vacía
         const columnas = [{
@@ -1093,8 +1071,10 @@
                             }
                         }
                     },
-                    error: function(xhr, status, error) {
-                        if (xhr.status !== 0) console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error cargando nuevas recibidas:", status);
+                    error: function(xhr) {
+                        if (xhr.status !== 0) {
+                            console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error cargando nuevas recibidas:", xhr);
+                        }
                     }
                 });
             }
