@@ -279,8 +279,8 @@ class RecepcionController extends Controller
                     $recepcion->validada_destino = true;
                     $recepcion->save();
                 }
-                $tareaVerificacion = \App\Models\Tarea::where('tarea', 'Verificación')->first()->tarea ?? 'Verificación';
-                app(GestionService::class)->reportarTarea($tareaVerificacion, $recepcion_id, $atencion_id); //Reportar tarea
+                $tareaConfirmacion = \App\Models\Tarea::where('tarea', 'Confirmación')->first()->tarea ?? 'Confirmación';
+                app(GestionService::class)->reportarTarea($tareaConfirmacion, $recepcion_id, $atencion_id); //Reportar tarea
             DB::commit();
             try {
                 if ($recepcion) {
@@ -304,7 +304,7 @@ class RecepcionController extends Controller
             //RESULTADO
             return response()->json([
                 'success' => true,
-                'message' => ($tareaVerificacion ?? 'Verificación') . ' exitosa',
+                'message' => ($tareaConfirmacion ?? 'Confirmación') . ' exitosa',
                 'items_validados' => $itemsValidados
             ]);
         } catch (\Exception $e) {
@@ -370,7 +370,7 @@ class RecepcionController extends Controller
                     $q->where('atencion_id', $atencion_id);
                 })
                 ->whereHas('tarea', function($q) {
-                    $q->where('tarea', 'Verificación');
+                    $q->where('tarea', 'Confirmación');
                 })
                 ->first();
                 if ($actividadStock) {
@@ -423,6 +423,7 @@ class RecepcionController extends Controller
             $recepcion_id = $request->input('recepcion_id');
             $ordenes_recibidas = $request->input('ordenes', []);
             $uso_interno = $request->input('uso_interno', Parametro::where('parametro', 'Uso interno')->first()->valor ?? 1);
+            Log::info('Log:: [DEBUG revisarOrden] Datos recibidos', ['atencion_id' => $atencion_id, 'recepcion_id' => $recepcion_id, 'ordenes_count' => count($ordenes_recibidas), 'uso_interno' => $uso_interno]);
             // VALIDACIÓN
             if (empty($atencion_id) || empty($ordenes_recibidas)) {
                 return response()->json([
@@ -465,18 +466,20 @@ class RecepcionController extends Controller
                 $tareaRevision = Tarea::where('tarea', 'Revisión')->first()->tarea ?? 'Revisión';
                 app(GestionService::class)->reportarTarea($tareaRevision, $recepcion_id, $atencion_id);
             DB::commit();
+            Log::info('Log:: [DEBUG revisarOrden] Commit exitoso, tarea reportada', ['tarea' => $tareaRevision]);
             if ($uso_interno == 0) {
                 $recepcion->load('atencion.ordenes.detalle.kit', 'atencion.ordenes.detalle.producto');
                 $recepcion->usuarioOrigen->notify(new OrdenValidadaNotification($recepcion));
             }
             //RESULTADO
+            Log::info('Log:: [DEBUG revisarOrden] Respuesta exitosa enviada');
             return response()->json([
                 'success' => true,
                 'message' => $tareaRevision.' exitosa'
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error("Log:: [Usuario: " . auth()->user()->name . "] Error en validarOrden: " . $e->getMessage(), ['exception' => $e]);
+            Log::error("Log:: [DEBUG revisarOrden] EXCEPCION CAPTURADA: " . $e->getMessage(), ['exception' => $e, 'trace' => $e->getTraceAsString()]);
             return response()->json([
                 'success' => false,
                 'message' => 'Ocurrió un error al validar la orden.'
@@ -584,6 +587,7 @@ class RecepcionController extends Controller
 
     public function carritoEditar(Request $request)
     {
+        Log::info('Log:: [DEBUG carritoEditar] Método HTTP: ' . $request->method() . ', Datos: ', $request->all());
         $atencion = Atencion::find($request->atencion_id);
         $oficinaId = auth()->user()->oficina_id;
         $stockBodegaId = Stock::where('stock', 'Bodega')->first()->id;

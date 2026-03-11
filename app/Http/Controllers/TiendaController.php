@@ -459,26 +459,32 @@ class TiendaController extends Controller
     {
         try {
             //VALIDACIÓN
+            $uso_interno = Parametro::where('parametro', 'Uso interno')->first();
+            $uso_interno = $uso_interno ? (int) $uso_interno->valor : 1;
             $equipos = collect();
             $operadores = collect();
             $user = auth()->user();
             if ($user->mainRole->name != 'cliente') {
                 $equipos = Equipo::where('oficina_id', $user->oficina_id)->get();
                 if ($equipos->isEmpty()) {
-                    return back()->with('warning', 'No hay equipos de trabajo disponibles para asignar las solicitudes');
+                    return redirect()->route('tienda')->with('warning', 'No hay equipos de trabajo disponibles para asignar las solicitudes');
                 }
-                $operadores = User::whereHas('roles', function ($query) {
-                    $query->where('name', 'operador');
-                })->whereHas('oficina', function ($query) use ($user) {
-                    $query->where('id', $user->oficina_id);
-                })->where('activo', true)->get();
-                if ($operadores->isEmpty()) {
-                    return back()->with('warning', 'No hay operadores disponibles para asignar las solicitudes');
+                
+                if ($uso_interno == 0) {
+                    $operadores = User::whereHas('roles', function ($query) {
+                        $query->where('name', 'operador');
+                    })->whereHas('oficina', function ($query) use ($user) {
+                        $query->where('id', $user->oficina_id);
+                    })->where('activo', true)->get();
+                    if ($operadores->isEmpty()) {
+                        return redirect()->route('tienda')->with('warning', 'No hay operadores disponibles para asignar las solicitudes');
+                    }
                 }
+                
             }
             $solicitudes = Solicitud::has('tareas')->get();
             if ($solicitudes->isEmpty()) {
-                return back()->with('warning', 'Las solicitudes no tienen tareas asociadas');
+                return redirect()->route('tienda')->with('warning', 'La solicitud no tiene tareas asociadas');
             }
             //PROCESO
             $user = auth()->user();
@@ -526,8 +532,6 @@ class TiendaController extends Controller
             $resueltas                = $tarjetas->where('estado_id', Estado::where('estado', 'Resuelta')->first()->id)->sortBy('created_at')->values()->toArray();
             $parametro                = Parametro::where('parametro', 'Frecuencia de refresco')->first();
             $frecuencia_actualizacion = $parametro ? $parametro->valor : 1; // Valor por defecto: 1 minuto
-            $uso_interno              = Parametro::where('parametro', 'Uso interno')->first();
-            $uso_interno              = $uso_interno ? $uso_interno->valor : 1;
             $data                     = [
                 'recibidas'                => $recibidas,
                 'progreso'                 => $progreso,
@@ -539,8 +543,8 @@ class TiendaController extends Controller
             ];
             return view('modelos.recepcion.solicitudes', $data);
         } catch (\Exception $e) {
-            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Ocurrió un error cuando se intentaba obtener las tarjetas: ' . $e->getMessage(), ['exception' => $e]);
-            return back()->with('error', 'Ocurrió un error al cargar las tarjetas.');
+            Log::error('Log:: [DEBUG solicitudes] EXCEPCION: ' . $e->getMessage(), ['file' => $e->getFile(), 'line' => $e->getLine(), 'trace' => $e->getTraceAsString()]);
+            return redirect()->route('tienda')->with('error', 'Ocurrió un error al cargar las tarjetas: ' . $e->getMessage());
         }
     }
 

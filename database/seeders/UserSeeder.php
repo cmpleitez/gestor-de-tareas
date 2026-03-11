@@ -127,7 +127,7 @@ class UserSeeder extends Seeder
 
         //CREACION DE TAREAS
         DB::table('tareas')->updateOrInsert(['id' => 1], ['tarea' => 'Revisión', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
-        DB::table('tareas')->updateOrInsert(['id' => 2], ['tarea' => 'Verificación', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
+        DB::table('tareas')->updateOrInsert(['id' => 2], ['tarea' => 'Confirmación', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
         DB::table('tareas')->updateOrInsert(['id' => 3], ['tarea' => 'Pago', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
         DB::table('tareas')->updateOrInsert(['id' => 4], ['tarea' => 'Descarga', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
         DB::table('tareas')->updateOrInsert(['id' => 5], ['tarea' => 'Entrega', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);

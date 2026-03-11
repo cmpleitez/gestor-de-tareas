@@ -1049,6 +1049,7 @@
                 btn.prop('disabled', true).html('<i class="fas fa-clock me-2"></i> Revisando...');
             },
             success: function(response) {
+                console.log('Log:: [DEBUG revisar-orden] SUCCESS response:', response);
                 toastr.success(response.message);
                 $('.main-kit-collapse').find('.accordion.accordion-flush button').each(function() {
                     const $iconContainer = $(this).find('span.px-1');
@@ -1060,13 +1061,16 @@
                 if (typeof cargarTareas === 'function') {
                     cargarTareas(recepcionId, atencionId);
                 }
+                console.log('Log:: [DEBUG revisar-orden] Redirigiendo a tienda.solicitudes en 1500ms, recepcionId:', recepcionId);
                 setTimeout(function() {
                     sessionStorage.setItem('recepcion_id_activa', recepcionId);
+                    console.log('Log:: [DEBUG revisar-orden] Ejecutando window.location.href =', "{{ route('tienda.solicitudes') }}");
                     window.location.href = "{{ route('tienda.solicitudes') }}";
                 }, 1500);
             },
             error: function(xhr) {
-                console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error en revisar-orden click:", xhr);
+                console.error("Log:: [DEBUG revisar-orden] ERROR xhr:", xhr);
+                console.error("Log:: [DEBUG revisar-orden] Status:", xhr.status, "Response:", xhr.responseText);
                 btn.prop('disabled', false).html('<i class="fas fa-clipboard-check me-2"></i> Revisar');
                 toastr.error(xhr.responseJSON?.message || 'Error al revisar orden');
             }
