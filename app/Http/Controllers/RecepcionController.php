@@ -30,6 +30,47 @@ use App\Models\Tarea;
 
 class RecepcionController extends Controller
 {
+    public function carritoEditar(Request $request)
+    {
+        $atencion = Atencion::find($request->atencion_id);
+        $oficinaId = auth()->user()->oficina_id;
+        $stockBodegaId = Stock::where('stock', 'Bodega')->first()->id;
+        $atencion->load([
+            'ordenes.kit',
+            'ordenes.detalle' => function ($query1) {
+                $query1->orderBy('created_at');
+            },
+            'ordenes.detalle.producto.oficinaStock' => function($query2) use ($oficinaId, $stockBodegaId){
+                $query2->where('stock_id', $stockBodegaId)->where('oficina_id', $oficinaId);
+            },
+            'ordenes.detalle.producto.kitProductos.equivalentes.producto.oficinaStock'=> function($query3) use ($oficinaId, $stockBodegaId){
+                $query3->where('stock_id', $stockBodegaId)->where('oficina_id', $oficinaId);
+            }
+        ]);
+        $atencion_id_ripped = KeyRipper::rip($atencion->id);
+        $uso_interno = (int) $request->input('uso_interno', Parametro::where('parametro', 'Uso interno')->first()->valor ?? 1);
+        $recepcion_id = $request->recepcion_id; // Recuperación de recepción (Seguridad para el auto-abierto del sidebar)
+        if (!$recepcion_id) {
+            $recepcion_id = Recepcion::where('atencion_id', $atencion->id)
+                ->where('destino_user_id', auth()->id())
+                ->where('activo', true)
+                ->value('id');
+        }
+        return view('modelos.kit.carrito', [
+            'atencion' => collect([$atencion]),
+            'atencion_id_ripped' => $atencion_id_ripped,
+            'recepcion_id' => $recepcion_id,
+            'uso_interno' => $uso_interno
+        ]);
+    }
+
+    public function createStock()
+    {
+        $stocks = Stock::where('activo', true)->get();
+        $productos = Producto::where('activo', true)->with('modelo', 'tipo')->get();
+        return view('modelos.producto.stock', compact('productos', 'stocks'));
+    }
+
     public function nuevasRecibidas(Request $request, GestionService $gestionService)
     {
         try {
@@ -366,6 +407,7 @@ class RecepcionController extends Controller
             $atencion_id = $request->input('atencion_id');
             $recepcion_id = $request->input('recepcion_id');
             $ordenes_recibidas = $request->input('ordenes', []);
+            $uso_interno = (int) $request->input('uso_interno', Parametro::where('parametro', 'Uso interno')->first()->valor ?? 1);
             // VALIDACIÓN
             if (empty($atencion_id) || empty($recepcion_id) || empty($ordenes_recibidas)) { 
                 return response()->json([
@@ -381,34 +423,37 @@ class RecepcionController extends Controller
                     $unidades = $ordenData['unidades'];
                     $detalles = $ordenData['detalles'] ?? [];
                     Orden::where('id', $orden_id)->update(['unidades' => $unidades]);
-                    foreach ($detalles as $detalleData) {
-                        $kit_id = $detalleData['kit_id'];
-                        $producto_id_original = $detalleData['producto_id_original'];
-                        $producto_id_nuevo = $detalleData['producto_id_nuevo'];
-                        if ($producto_id_original != $producto_id_nuevo) {
-                            Detalle::where('orden_id', $orden_id)
-                            ->where('kit_id', $kit_id)
-                            ->where('producto_id', $producto_id_original)
-                            ->update([
-                                'producto_id' => $producto_id_nuevo,
-                                'stock_fisico_existencias' => null
-                            ]);
-                            $productos_cambiados[] = [ //Registrando productos que cambiaron de la orden
-                                'orden_id' => $orden_id,
-                                'kit_id' => $kit_id,
-                                'producto_id' => $producto_id_nuevo
-                            ];
-                        } else {
-                            Detalle::where('orden_id', $orden_id) // Si no cambió el producto, igual reseteamos stock_fisico_existencias para que se vuelva a validar el stock
-                            ->where('kit_id', $kit_id)
-                            ->where('producto_id', $producto_id_original)
-                            ->update([
-                                'stock_fisico_existencias' => null
-                            ]);
+                    if ($uso_interno == 0) { //Parametrizado: Reiniciar la tarea "Confirmación" de la cual se encarga el
+                        foreach ($detalles as $detalleData) {
+                            $kit_id = $detalleData['kit_id'];
+                            $producto_id_original = $detalleData['producto_id_original'];
+                            $producto_id_nuevo = $detalleData['producto_id_nuevo'];
+                            if ($producto_id_original != $producto_id_nuevo) {
+                                Detalle::where('orden_id', $orden_id)
+                                ->where('kit_id', $kit_id)
+                                ->where('producto_id', $producto_id_original)
+                                ->update([
+                                    'producto_id' => $producto_id_nuevo,
+                                    'stock_fisico_existencias' => null
+                                ]);
+                                $productos_cambiados[] = [ //Registrando productos que cambiaron de la orden
+                                    'orden_id' => $orden_id,
+                                    'kit_id' => $kit_id,
+                                    'producto_id' => $producto_id_nuevo
+                                ];
+                            } else {
+                                Detalle::where('orden_id', $orden_id) // Si no cambió el producto, igual reseteamos stock_fisico_existencias para que se vuelva a validar el stock
+                                ->where('kit_id', $kit_id)
+                                ->where('producto_id', $producto_id_original)
+                                ->update([
+                                    'stock_fisico_existencias' => null
+                                ]);
+                            }
                         }
                     }
                 }
-                $estado_en_progreso_id = Estado::where('estado', 'En progreso')->first()->id; //Revertir estado de l atarea
+                if ($uso_interno == 0) { //Parametrizado: Uso interno-externo
+                    $estado_en_progreso_id = Estado::where('estado', 'En progreso')->first()->id; //Revertir estado de la tarea
                 $actividadStock = Actividad::whereHas('recepcion', function($q) use ($atencion_id) {
                     $q->where('atencion_id', $atencion_id);
                 })
@@ -440,6 +485,7 @@ class RecepcionController extends Controller
                         $atencion->save();
                     }
                 }
+            }
             DB::commit();
             //RESULTADO
             return response()->json([
@@ -642,47 +688,7 @@ class RecepcionController extends Controller
         }
     }
 
-    public function carritoEditar(Request $request)
-    {
-        Log::info('Log:: [DEBUG carritoEditar] Método HTTP: ' . $request->method() . ', Datos: ', $request->all());
-        $atencion = Atencion::find($request->atencion_id);
-        $oficinaId = auth()->user()->oficina_id;
-        $stockBodegaId = Stock::where('stock', 'Bodega')->first()->id;
-        $atencion->load([
-            'ordenes.kit',
-            'ordenes.detalle' => function ($query1) {
-                $query1->orderBy('created_at');
-            },
-            'ordenes.detalle.producto.oficinaStock' => function($query2) use ($oficinaId, $stockBodegaId){
-                $query2->where('stock_id', $stockBodegaId)->where('oficina_id', $oficinaId);
-            },
-            'ordenes.detalle.producto.kitProductos.equivalentes.producto.oficinaStock'=> function($query3) use ($oficinaId, $stockBodegaId){
-                $query3->where('stock_id', $stockBodegaId)->where('oficina_id', $oficinaId);
-            }
-        ]);
-        $atencion_id_ripped = KeyRipper::rip($atencion->id);
-        $uso_interno = (int) $request->input('uso_interno', Parametro::where('parametro', 'Uso interno')->first()->valor ?? 1);
-        $recepcion_id = $request->recepcion_id; // Recuperación de recepción (Seguridad para el auto-abierto del sidebar)
-        if (!$recepcion_id) {
-            $recepcion_id = Recepcion::where('atencion_id', $atencion->id)
-                ->where('destino_user_id', auth()->id())
-                ->where('activo', true)
-                ->value('id');
-        }
-        return view('modelos.kit.carrito', [
-            'atencion' => collect([$atencion]),
-            'atencion_id_ripped' => $atencion_id_ripped,
-            'recepcion_id' => $recepcion_id,
-            'uso_interno' => $uso_interno
-        ]);
-    }
 
-    public function createStock()
-    {
-        $stocks = Stock::where('activo', true)->get();
-        $productos = Producto::where('activo', true)->with('modelo', 'tipo')->get();
-        return view('modelos.producto.stock', compact('productos', 'stocks'));
-    }
 
     public function storeStock(Request $request)
     {
