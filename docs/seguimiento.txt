@@ -74,8 +74,9 @@ SERVICIOS:
 
     🟢 Reportes para el receptor y el administrador:
         . Historial de entradas y salidas en stocks
+        
     🟢 Revisiones:
-        . Sin pendientes
+        . Pruebas en productivo
 
 CLIENTE:
 
