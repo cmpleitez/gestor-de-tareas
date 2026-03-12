@@ -77,7 +77,7 @@ SERVICIOS:
         
     🟢 Revisiones:
         . Regla para no permitir rebasamiento de stock:
-            ruta tienda-carrito: en control enviar y en controles <mas> y <menos>
+            . En ruta carrito-editar: en controles corregir y revisar
 
 CLIENTE:
 
