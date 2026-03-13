@@ -322,6 +322,8 @@ $hasOrders = $currentAtencion && $currentAtencion->ordenes && $currentAtencion->
                                                             <i class="fas fa-times text-danger" title="Sin stock"></i>
                                                         </span>
                                                     @endif
+                                                @else
+                                                    <span class="px-1"></span>
                                                 @endif
                                                 <div class="p-2">
                                                     <p id="badgeId_{{ $detAccordionId }}" class="badge bg-secondary-dark text-white mb-1" style="font-size: 0.7rem;">{{ $detalle->producto->codigo ?? 'S/C' }}</p>
@@ -597,6 +599,18 @@ $hasOrders = $currentAtencion && $currentAtencion->ordenes && $currentAtencion->
                 if (!$(this)[0].checkValidity()) isValid = false;
             });
             if (!isValid) return false;
+            
+            $(`button.accordion-button`).each(function() { // Reinicio de iconos
+                const $icon = $(this).find('span.px-1 i.fas');
+                if ($icon.hasClass('fa-times') && $icon.hasClass('text-danger')) {
+                    if ("{{ $rol_usuario_actual }}" === 'receptor' || "{{ $rol_usuario_actual }}" === 'operador') {
+                        $icon.attr('class', 'fas fa-clock text-muted').attr('title', 'Pendiente de revisión');
+                    } else {
+                        $(this).find('span.px-1').empty();
+                    }
+                }
+            });
+            
             const $btn = $(this);
             $('.input-unidades').each(function() { //Unidades del Kit
                 const ordenId = String($(this).data('orden-id'));
@@ -681,6 +695,24 @@ $hasOrders = $currentAtencion && $currentAtencion->ordenes && $currentAtencion->
                 , error: function(xhr) {
                     console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error en carrito-enviar:", xhr);
                     $btn.prop('disabled', false).html('<i class="fas fa-shopping-cart me-2"></i> Enviar');
+
+                    if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON.fallos) {
+                        const fallos = xhr.responseJSON.fallos;
+                        fallos.forEach(fallo => {
+                            $(`button.accordion-button`).each(function() {
+                                const $btn = $(this);
+                                const $productIdInput = $btn.find(`input[id^="productId_"]`);
+                                if ($productIdInput.val() == fallo.producto_id) {
+                                    const $iconContainer = $btn.find('span.px-1');
+                                    if ($iconContainer.length) {
+                                        const toolTipMsg = `Requerido: ${fallo.requerida}, Disponible: ${fallo.disponible}`;
+                                        $iconContainer.empty().html(`<i class="fas fa-times text-danger" title="${toolTipMsg}"></i>`);
+                                    }
+                                }
+                            });
+                        });
+                    }
+
                     const errorMessage = xhr.responseJSON && xhr.responseJSON.message ?
                         xhr.responseJSON.message :
                         'Error al procesar la orden';
