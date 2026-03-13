@@ -76,7 +76,8 @@ SERVICIOS:
         . Historial de entradas y salidas en stocks
         
     🟢 Revisiones:
-        . Sin pendientes
+        . Tienda.modal: Estandares del kit, Foto kit sin imagen
+        . Aplicar misma validación de "Enviar",  "Corregir", "Revisar" y "Descargar" crear un servicio global para reutilizarlo
 
 CLIENTE:
 

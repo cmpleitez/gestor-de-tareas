@@ -24,6 +24,8 @@ use App\Models\Parametro;
 use App\Models\Equipo;
 use App\Models\Tarea;
 use App\Services\KeyRipper;
+use App\Services\StockService;
+
 
 class TiendaController extends Controller
 {
@@ -84,123 +86,133 @@ class TiendaController extends Controller
         ]);
     }
 
-    public function carritoEnviar(Request $request)
+    public function carritoEnviar(Request $request, StockService $stockService)
     {
+        //VALIDACION
+        $cart = $request->input('cart'); //Regla del stock
+        if (isset($cart['ordenes'])) {
+            $validacionStock = $stockService->validarDisponibilidad($cart['ordenes']);
+            if ($validacionStock !== true) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $validacionStock['message'],
+                    'fallos'  => $validacionStock['fallos'] ?? [],
+                    'type'    => 'error'
+                ], $validacionStock['status']);
+            }
+        }
+        //PROCESO
         try {
             DB::beginTransaction();
-            //ORDEN DE COMPRA
-            $atencionId = null;
-            $cart = $request->input('cart');
-            if (isset($cart['ordenes'])) {
-                foreach ($cart['ordenes'] as $ordenData) {
-                    $ordenId = $ordenData['orden_id'];
-                    $atencionId = $ordenData['atencion_id'];
-                    $unidades = $ordenData['unidades'];
-                    if ($unidades < 1) {
-                        throw new Exception("Las unidades deben ser mayores a 0.");
-                    }
-                    $orden = Orden::with(['kit', 'detalle' => function ($query) {
-                        $query->orderBy('producto_id');
-                    }])->find($ordenId);
-                    if ($orden) {
-                        $orden->unidades = $unidades;
-                        $orden->save();
-                        if (isset($ordenData['detalles']) && is_array($ordenData['detalles'])) {
-                            $nuevosProductos = array_values($ordenData['detalles']);
-                            $productosIds = []; // Array para validar productos duplicados
-                            foreach ($orden->detalle as $index => $detalle) {
-                                if (isset($nuevosProductos[$index]['producto_id'])) {
-                                    $productoId = $nuevosProductos[$index]['producto_id'];
-                                    $esValido = DB::table('kit_producto') // Validar que el producto pertenezca al kit o sea equivalente
-                                        ->where('kit_id', $orden->kit_id)
-                                        ->where('producto_id', $productoId)
-                                        ->exists();
-                                    if (!$esValido) {
-                                        $esValido = DB::table('equivalentes')
+                $atencionId = null; //Orden de compra
+                $cart = $request->input('cart');
+                if (isset($cart['ordenes'])) {
+                    foreach ($cart['ordenes'] as $ordenData) {
+                        $ordenId = $ordenData['orden_id'];
+                        $atencionId = $ordenData['atencion_id'];
+                        $unidades = $ordenData['unidades'];
+                        if ($unidades < 1) {
+                            throw new Exception("Las unidades deben ser mayores a 0.");
+                        }
+                        $orden = Orden::with(['kit', 'detalle' => function ($query) {
+                            $query->orderBy('producto_id');
+                        }])->find($ordenId);
+                        if ($orden) {
+                            $orden->unidades = $unidades;
+                            $orden->save();
+                            if (isset($ordenData['detalles']) && is_array($ordenData['detalles'])) {
+                                $nuevosProductos = array_values($ordenData['detalles']);
+                                $productosIds = []; // Array para validar productos duplicados
+                                foreach ($orden->detalle as $index => $detalle) {
+                                    if (isset($nuevosProductos[$index]['producto_id'])) {
+                                        $productoId = $nuevosProductos[$index]['producto_id'];
+                                        $esValido = DB::table('kit_producto') // Validar que el producto pertenezca al kit o sea equivalente
                                             ->where('kit_id', $orden->kit_id)
                                             ->where('producto_id', $productoId)
                                             ->exists();
-                                    }
-                                    if (!$esValido) {
-                                        throw new Exception("El producto seleccionado no es válido para este kit.");
-                                    }
-                                    if (in_array($productoId, $productosIds)) { // Validar que no haya productos duplicados
-                                        throw new Exception("Hay productos repetidos en el kit ".mb_strtoupper($orden->kit->kit).". Por favor revise su selección.");
-                                    }
-                                    $productosIds[] = $productoId;
-                                }
-                            }
-                            $cambios = []; // FASE 2: Recolección
-                            foreach ($orden->detalle as $index => $detalle) {
-                                if (isset($nuevosProductos[$index]['producto_id'])) {
-                                    $nuevoProductoId = $nuevosProductos[$index]['producto_id'];
-                                    if ($detalle->producto_id != $nuevoProductoId) {
-                                        $cambios[] = [
-                                            'detalle_anterior' => $detalle,
-                                            'nuevo_producto_id' => $nuevoProductoId
-                                        ];
+                                        if (!$esValido) {
+                                            $esValido = DB::table('equivalentes')
+                                                ->where('kit_id', $orden->kit_id)
+                                                ->where('producto_id', $productoId)
+                                                ->exists();
+                                        }
+                                        if (!$esValido) {
+                                            throw new Exception("El producto seleccionado no es válido para este kit.");
+                                        }
+                                        if (in_array($productoId, $productosIds)) { // Validar que no haya productos duplicados
+                                            throw new Exception("Hay productos repetidos en el kit ".mb_strtoupper($orden->kit->kit).". Por favor revise su selección.");
+                                        }
+                                        $productosIds[] = $productoId;
                                     }
                                 }
-                            }
-                            foreach ($cambios as $cambio) { // FASE 3: Eliminación
-                                DB::table('detalles')
-                                    ->where('orden_id', $orden->id)
-                                    ->where('kit_id', $orden->kit_id)
-                                    ->where('producto_id', $cambio['detalle_anterior']->producto_id)
-                                    ->delete();
-                            }
-                            foreach ($cambios as $cambio) { // FASE 4: Inserción
-                                $detalleAnterior = $cambio['detalle_anterior'];
-                                DB::table('detalles')->insert([
-                                    'orden_id' => $detalleAnterior->orden_id,
-                                    'producto_id' => $cambio['nuevo_producto_id'],
-                                    'producto_id_original' => $detalleAnterior->producto_id_original ?? $detalleAnterior->producto_id, // Preservar el original
-                                    'kit_id' => $detalleAnterior->kit_id,
-                                    'unidades' => $detalleAnterior->unidades,
-                                    'precio' => $detalleAnterior->precio,
-                                    'created_at' => $detalleAnterior->created_at,
-                                    'updated_at' => now()
-                                ]);
-                            }
-                        }
-                    }
-                }
-            }
-            //ACTIVACIÓN DE LA SOLICITUD COPIA DEL RECEPTOR
-            if ($atencionId) {
-                $atencion = Atencion::find($atencionId);
-                if ($atencion) {
-                    $atencion->activo = true;
-                    $atencion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
-                    $atencion->save();
-                    $recepcion = Recepcion::where('atencion_id', $atencion->id) //Activar la copia del receptor
-                    ->where('user_destino_role_id', Role::where('name','receptor')->first()->id)
-                    ->first(); 
-                    if ($recepcion) {
-                        $recepcion->activo = true;
-                        $recepcion->validada_origen = true;
-                        $recepcion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
-                        $recepcion->save();
-
-                        
-                        $receptor_tmp = User::find($recepcion->destino_user_id); // Autoasignación de tareas para la copia del Receptor
-                        if ($receptor_tmp && $recepcion->solicitud) {
-                            $estado_recibida_id = Estado::where('estado', 'Recibida')->first()->id;
-                            foreach ($recepcion->solicitud->tareas as $tarea) {
-                                $coincide = $receptor_tmp->tareas()->where('tareas.id', $tarea->id)->first();
-                                if ($coincide) {
-                                    $actividad = new Actividad();
-                                    $actividad->id = (new KeyMaker())->generate('Actividad', $recepcion->solicitud_id);
-                                    $actividad->recepcion_id = $recepcion->id;
-                                    $actividad->tarea_id = $tarea->id;
-                                    $actividad->estado_id = $estado_recibida_id;
-                                    $actividad->save();
+                                $cambios = []; // FASE 2: Recolección
+                                foreach ($orden->detalle as $index => $detalle) {
+                                    if (isset($nuevosProductos[$index]['producto_id'])) {
+                                        $nuevoProductoId = $nuevosProductos[$index]['producto_id'];
+                                        if ($detalle->producto_id != $nuevoProductoId) {
+                                            $cambios[] = [
+                                                'detalle_anterior' => $detalle,
+                                                'nuevo_producto_id' => $nuevoProductoId
+                                            ];
+                                        }
+                                    }
+                                }
+                                foreach ($cambios as $cambio) { // FASE 3: Eliminación
+                                    DB::table('detalles')
+                                        ->where('orden_id', $orden->id)
+                                        ->where('kit_id', $orden->kit_id)
+                                        ->where('producto_id', $cambio['detalle_anterior']->producto_id)
+                                        ->delete();
+                                }
+                                foreach ($cambios as $cambio) { // FASE 4: Inserción
+                                    $detalleAnterior = $cambio['detalle_anterior'];
+                                    DB::table('detalles')->insert([
+                                        'orden_id' => $detalleAnterior->orden_id,
+                                        'producto_id' => $cambio['nuevo_producto_id'],
+                                        'producto_id_original' => $detalleAnterior->producto_id_original ?? $detalleAnterior->producto_id, // Preservar el original
+                                        'kit_id' => $detalleAnterior->kit_id,
+                                        'unidades' => $detalleAnterior->unidades,
+                                        'precio' => $detalleAnterior->precio,
+                                        'created_at' => $detalleAnterior->created_at,
+                                        'updated_at' => now()
+                                    ]);
                                 }
                             }
                         }
                     }
                 }
-            }
+                if ($atencionId) { //Activacion de la solicitud copia del recptor
+                    $atencion = Atencion::find($atencionId);
+                    if ($atencion) {
+                        $atencion->activo = true;
+                        $atencion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
+                        $atencion->save();
+                        $recepcion = Recepcion::where('atencion_id', $atencion->id) //Activar la copia del receptor
+                        ->where('user_destino_role_id', Role::where('name','receptor')->first()->id)
+                        ->first(); 
+                        if ($recepcion) {
+                            $recepcion->activo = true;
+                            $recepcion->validada_origen = true;
+                            $recepcion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
+                            $recepcion->save();
+                            $receptor_tmp = User::find($recepcion->destino_user_id); // Autoasignación de tareas para la copia del Receptor
+                            if ($receptor_tmp && $recepcion->solicitud) {
+                                $estado_recibida_id = Estado::where('estado', 'Recibida')->first()->id;
+                                foreach ($recepcion->solicitud->tareas as $tarea) {
+                                    $coincide = $receptor_tmp->tareas()->where('tareas.id', $tarea->id)->first();
+                                    if ($coincide) {
+                                        $actividad = new Actividad();
+                                        $actividad->id = (new KeyMaker())->generate('Actividad', $recepcion->solicitud_id);
+                                        $actividad->recepcion_id = $recepcion->id;
+                                        $actividad->tarea_id = $tarea->id;
+                                        $actividad->estado_id = $estado_recibida_id;
+                                        $actividad->save();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             DB::commit();
             $responseData = ['success' => true, 'message' => 'Su orden ha sido recibida por uno de nuestros gestores'];
             $user = auth()->user();

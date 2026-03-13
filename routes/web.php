@@ -15,12 +15,12 @@ use App\Http\Controllers\TiendaController;
 use App\Http\Controllers\KitController;
 use App\Http\Controllers\ParametroController;
 
-// Redirección de la raíz al login o dashboard
+// DASHBOARD
 Route::get('/', function () {
     return redirect()->route('login');
 })->name('welcome');
 
-// Rutas de verificación de correo
+// VERIFICACION DE CORREO
 Route::middleware(['auth'])->group(function () {
     Route::get('/email/verify', function () {
         return view('auth.verify-email');
@@ -37,7 +37,7 @@ Route::middleware(['auth'])->group(function () {
     })->middleware(['throttle:6,1'])->name('verification.send');
 });
 
-//Rutas protegidas que requieren verificación de correo
+//ENROLADAS
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),

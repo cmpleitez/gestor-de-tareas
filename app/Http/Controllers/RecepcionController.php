@@ -26,6 +26,9 @@ use App\Services\KeyMaker;
 use App\Services\KeyRipper;
 use Spatie\Permission\Models\Role;
 use App\Services\GestionService;
+use App\Services\StockService;
+
+
 use App\Models\Tarea;
 
 class RecepcionController extends Controller
@@ -400,70 +403,30 @@ class RecepcionController extends Controller
         }
     }
 
-    public function corregirOrden(Request $request)
+    public function corregirOrden(Request $request, StockService $stockService)
     {
+        // LECTURA
+        $atencion_id = $request->input('atencion_id');
+        $recepcion_id = $request->input('recepcion_id');
+        $ordenes_recibidas = $request->input('ordenes', []);
+        $uso_interno = (int) $request->input('uso_interno', Parametro::where('parametro', 'Uso interno')->first()->valor ?? 1);
+        // VALIDACIÓN
+        if (empty($atencion_id) || empty($recepcion_id) || empty($ordenes_recibidas)) { //Intento de inyección
+            return response()->json([
+                'success' => false,
+                'message' => 'Información incompleta para la corrección'
+            ], 422);
+        }
+        $validacionStock = $stockService->validarDisponibilidad($ordenes_recibidas); //Validación de Stock
+        if ($validacionStock !== true) {
+            return response()->json([
+                'success' => false,
+                'message' => $validacionStock['message'],
+                'fallos'  => $validacionStock['fallos'] ?? [],
+                'type'    => 'error'
+            ], $validacionStock['status']);
+        }
         try {
-            // LECTURA
-            $atencion_id = $request->input('atencion_id');
-            $recepcion_id = $request->input('recepcion_id');
-            $ordenes_recibidas = $request->input('ordenes', []);
-            $uso_interno = (int) $request->input('uso_interno', Parametro::where('parametro', 'Uso interno')->first()->valor ?? 1);
-            // VALIDACIÓN
-            if (empty($atencion_id) || empty($recepcion_id) || empty($ordenes_recibidas)) { 
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Información incompleta para la corrección'
-                ], 422);
-            }
-
-            // VALIDACIÓN DE STOCK REBASE
-            $oficina_id = auth()->user()->oficina_id;
-            $stockBodega = \App\Models\Stock::where('stock', 'Bodega')->first();
-            if (!$stockBodega) {
-                return response()->json(['success' => false, 'message' => 'No se encontró el stock "Bodega"'], 500);
-            }
-            $stockBodegaId = $stockBodega->id;
-            $demandaTotal = [];
-            foreach ($ordenes_recibidas as $ordenData) {
-                $orden_id = $ordenData['orden_id'];
-                $unidadesKit = (int) $ordenData['unidades'];
-                $detallesRecibidos = $ordenData['detalles'] ?? [];
-                if (empty($detallesRecibidos)) { // Si no vienen detalles, buscamos los actuales
-                    $detallesRecibidos = Detalle::where('orden_id', $orden_id)->get();
-                }
-                foreach ($detallesRecibidos as $detalleData) {
-                    $productoId = $detalleData['producto_id_nuevo'] ?? $detalleData['producto_id'];
-                    $unidadesPorItem = Detalle::where('orden_id', $orden_id)
-                        ->where('producto_id', $detalleData['producto_id_original'] ?? $detalleData['producto_id'])
-                        ->value('unidades') ?? 0;
-                    $demandaTotal[$productoId] = ($demandaTotal[$productoId] ?? 0) + ($unidadesKit * $unidadesPorItem);
-                }
-            }
-            $fallos = [];
-            foreach ($demandaTotal as $productoId => $cantidadRequerida) {
-                $oficinaStock = OficinaStock::where('oficina_id', $oficina_id)
-                    ->where('stock_id', $stockBodegaId)
-                    ->where('producto_id', $productoId)
-                    ->first();
-                $disponible = $oficinaStock ? $oficinaStock->unidades : 0;
-                if ($cantidadRequerida > $disponible) {
-                    $fallos[] = [
-                        'producto_id' => $productoId,
-                        'requerida' => $cantidadRequerida,
-                        'disponible' => $disponible
-                    ];
-                }
-            }
-
-            if (!empty($fallos)) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Se encontraron peticiones que rebasan el stock actual',
-                    'fallos' => $fallos,
-                    'type'    => 'error'
-                ], 422);
-            }
-
             // PROCESAMIENTO
             $productos_cambiados = [];
             DB::beginTransaction();
@@ -551,23 +514,32 @@ class RecepcionController extends Controller
         }
     }
 
-    public function revisarOrden(Request $request)
+    public function revisarOrden(Request $request, StockService $stockService)
     {
+        // LECTURA
+        $atencion_id = $request->input('atencion_id');
+        $recepcion_id = $request->input('recepcion_id');
+        $ordenes_recibidas = $request->input('ordenes', []);
+        $uso_interno = $request->input('uso_interno', Parametro::where('parametro', 'Uso interno')->first()->valor ?? 1);
+        // VALIDACIÓN
+        if (empty($atencion_id) || empty($ordenes_recibidas)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Información incompleta para la revisión',
+                'type'    => 'warning'
+            ], 422);
+        }
+        $validacionStock = $stockService->validarDisponibilidad($ordenes_recibidas); //Validación de Stock
+        if ($validacionStock !== true) {
+            return response()->json([
+                'success' => false,
+                'message' => $validacionStock['message'],
+                'fallos'  => $validacionStock['fallos'] ?? [],
+                'type'    => 'error'
+            ], $validacionStock['status']);
+        }
+        // PROCESAMIENTO
         try {
-            // LECTURA
-            $atencion_id = $request->input('atencion_id');
-            $recepcion_id = $request->input('recepcion_id');
-            $ordenes_recibidas = $request->input('ordenes', []);
-            $uso_interno = $request->input('uso_interno', Parametro::where('parametro', 'Uso interno')->first()->valor ?? 1);
-            // VALIDACIÓN
-            if (empty($atencion_id) || empty($ordenes_recibidas)) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Información incompleta para la revisión',
-                    'type'    => 'warning'
-                ], 422);
-            }
-            // PROCESAMIENTO
             $detalles = Detalle::whereHas('orden', function($q) use ($atencion_id) {
                 $q->where('atencion_id', $atencion_id);
             })->get();
@@ -609,7 +581,6 @@ class RecepcionController extends Controller
                 $recepcion->load('atencion.ordenes.detalle.kit', 'atencion.ordenes.detalle.producto');
                 $recepcion->usuarioOrigen->notify(new OrdenValidadaNotification($recepcion));
             }
-            //RESULTADO
             return response()->json([
                 'success' => true,
                 'message' => $tareaRevision.' exitosa',
@@ -639,45 +610,53 @@ class RecepcionController extends Controller
         ]);
     }
 
-    public function descargarStock(Request $request)
+    public function descargarStock(Request $request, StockService $stockService)
     {
+        //LECTURA
+        $recepcion_id = $request->input('recepcion_id');
+        $atencion_id = $request->input('atencion_id');
+        $recepcion = Recepcion::with(['atencion.ordenes.detalle'])->find($recepcion_id); 
+
+        //VALIDACION
+        if (!$recepcion || !$recepcion->atencion) { //Antifiltración
+            return response()->json([
+                'success' => false,
+                'message' => 'No se pudo localizar la atención asociada a la recepción.',
+                'type'    => 'error'
+            ], 422);
+        }
+        $ordenes_recibidas = $recepcion->atencion->ordenes->map(function($o) {
+            return [
+                'orden_id' => $o->id,
+                'unidades' => $o->unidades
+            ];
+        })->toArray();
+        $validacionStock = $stockService->validarDisponibilidad($ordenes_recibidas); //Regla del stock
+        if ($validacionStock !== true) {
+            return response()->json([
+                'success' => false,
+                'message' => $validacionStock['message'],
+                'fallos'  => $validacionStock['fallos'] ?? [],
+                'type'    => 'error'
+            ], $validacionStock['status']);
+        }
+        //PROCESO
         DB::beginTransaction();
         try {
-            //Descargando Stock
-            $recepcion_id = $request->input('recepcion_id');
-            $atencion_id = $request->input('atencion_id');
-            $oficina_id = auth()->user()->oficina_id;
-            $stockBodegaId = \App\Models\Stock::where('stock', 'Bodega')->value('id');
-            if (!$stockBodegaId) {
-                throw new \Exception("No se encontró el stock 'Bodega' configurado en el sistema.");
-            }
-            $recepcion = Recepcion::with(['atencion.ordenes.detalle'])->find($recepcion_id);
-            if (!$recepcion || !$recepcion->atencion) {
-                throw new \Exception("No se pudo localizar la atención asociada a la recepción.");
-            }
+            $oficina_id = auth()->user()->oficina_id; //Descargando Stock
+            $stockBodegaId = Stock::where('stock', 'Bodega')->value('id');
             foreach ($recepcion->atencion->ordenes as $orden) {
-                $cantidadKits = $orden->unidades;
                 foreach ($orden->detalle as $detalle) {
-                    $productoId = $detalle->producto_id;
-                    $unidadesPorKit = $detalle->unidades;
-                    $totalDescontar = $cantidadKits * $unidadesPorKit;
-                    $stockItem = \App\Models\OficinaStock::where('oficina_id', $oficina_id)
-                        ->where('producto_id', $productoId)
-                        ->where('stock_id', $stockBodegaId)
-                        ->first();
-                    if (!$stockItem) {
-                        throw new \Exception("No existe registro de stock en Bodega para el producto con ID {$productoId} en esta oficina.");
-                    }
-                    if ($stockItem->unidades < $totalDescontar) {
-                        throw new \Exception("Stock insuficiente en Bodega para el producto con ID {$productoId}. Requerido: {$totalDescontar}, Disponible: {$stockItem->unidades}");
-                    }
-                    $stockItem->decrement('unidades', $totalDescontar);
+                    \App\Models\OficinaStock::where([
+                        'oficina_id'  => $oficina_id,
+                        'producto_id' => $detalle->producto_id,
+                        'stock_id'    => $stockBodegaId
+                    ])->decrement('unidades', $orden->unidades * $detalle->unidades);
                 }
             }
-            // Reportando Tarea
-            $tareaDescarga = \App\Models\Tarea::where('tarea', 'Descarga')->first()->tarea ?? 'Descarga';
+            $tareaDescarga = \App\Models\Tarea::where('tarea', 'Descarga')->first()->tarea ?? 'Descarga'; // Reportando Tarea
             app(GestionService::class)->reportarTarea($tareaDescarga, $recepcion_id, $atencion_id);
-            DB::commit();
+            DB::commit(); //Resultado
             return response()->json([
                 'success' => true,
                 'message' => ($tareaDescarga ?? 'Descarga') . ' exitosa',
