@@ -287,7 +287,7 @@ $hasOrders = $currentAtencion && $currentAtencion->ordenes && $currentAtencion->
                     </span>
                     <div id="collapse{{ $orden->id }}" class="accordion-collapse collapse main-kit-collapse" aria-labelledby="{{ $headingId }}" data-bs-parent="#{{ $accordionId }}">
                         <div class="accordion-body">
-                            <!--Items-->
+                            <!--ITEMS-->
                             @foreach($orden->detalle as $index => $detalle)
                             @php
                             $detHeadingId = 'heading_det_' . $orden->id . '_' . $index;
@@ -298,51 +298,50 @@ $hasOrders = $currentAtencion && $currentAtencion->ordenes && $currentAtencion->
                                 <div class="accordion-item">
                                     <h2 class="accordion-header d-flex align-items-center" id="{{ $detHeadingId }}">
                                         @can('tienda')
-                                        @can('eliminar')
-                                        <div class="ps-2 pe-1">
-                                            <i id="btn_retirar_{{ $detalle->orden_id }}_{{ $detalle->kit_id }}_{{ $detalle->producto_id }}" class="fas fa-trash text-danger-dark" onclick="retirarItemAJAX(this)" data-orden-id="{{ $detalle->orden_id }}" data-kit-id="{{ $detalle->kit_id }}" data-producto-id="{{ $detalle->producto_id }}" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="Eliminar item">
-                                            </i>
-                                        </div>
-                                        @endcan
+                                            @can('eliminar')
+                                                <div class="ps-2 pe-1">
+                                                    <i id="btn_retirar_{{ $detalle->orden_id }}_{{ $detalle->kit_id }}_{{ $detalle->producto_id }}" class="fas fa-trash text-danger-dark" onclick="retirarItemAJAX(this)" data-orden-id="{{ $detalle->orden_id }}" data-kit-id="{{ $detalle->kit_id }}" data-producto-id="{{ $detalle->producto_id }}" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="Eliminar item">
+                                                    </i>
+                                                </div>
+                                            @endcan
                                         @endcan
                                         <div class="w-100 d-flex flex-column gap-2 p-2">
                                             <button class="d-flex justify-content-start align-items-center text-start flex-grow-1 {{ ($rol_usuario_actual == 'cliente' || $rol_usuario_actual == 'receptor') ? 'accordion-button collapsed' : 'border-0 bg-transparent' }}" style="padding: 0.5em; font-size: 0.8rem;" type="button" data-orden-id="{{ $detalle->orden_id }}" data-kit-id="{{ $detalle->kit_id }}" @if($rol_usuario_actual=='cliente' || $rol_usuario_actual=='receptor' ) data-bs-toggle="collapse" data-bs-target="#{{ $detCollapseId }}" aria-expanded="false" aria-controls="{{ $detCollapseId }}" @endif>
                                                 <span>{{ $detalle->unidades }}</span>
                                                 @if($rol_usuario_actual == 'receptor' || $rol_usuario_actual == 'operador')
-                                                @if(is_null($detalle->stock_fisico_existencias))
-                                                <span class="px-1">
-                                                    <i class="fas fa-clock text-muted" title="Pendiente de revisión"></i>
-                                                </span>
-                                                @elseif($detalle->stock_fisico_existencias == 1)
-                                                <span class="px-1">
-                                                    <i class="fas fa-check text-success" title="Stock verificado"></i>
-                                                </span>
-                                                @else
-                                                <span class="px-1">
-                                                    <i class="fas fa-times text-danger" title="Sin stock"></i>
-                                                </span>
-                                                @endif
+                                                    @if(is_null($detalle->stock_fisico_existencias))
+                                                        <span class="px-1">
+                                                            <i class="fas fa-clock text-muted" title="Pendiente de revisión"></i>
+                                                        </span>
+                                                    @elseif($detalle->stock_fisico_existencias == 1)
+                                                        <span class="px-1">
+                                                            <i class="fas fa-check text-success" title="Stock verificado"></i>
+                                                        </span>
+                                                    @else
+                                                        <span class="px-1">
+                                                            <i class="fas fa-times text-danger" title="Sin stock"></i>
+                                                        </span>
+                                                    @endif
                                                 @endif
                                                 <div class="p-2">
                                                     <p id="badgeId_{{ $detAccordionId }}" class="badge bg-secondary-dark text-white mb-1" style="font-size: 0.7rem;">{{ $detalle->producto->codigo ?? 'S/C' }}</p>
                                                 </div>
-
                                                 <span id="productName_{{ $detAccordionId }}">{{ $detalle->producto->producto }}</span>
                                                 <input type="hidden" id="productId_{{ $detAccordionId }}" value="{{ $detalle->producto_id }}" data-original-id="{{ $detalle->producto_id }}">
                                             </button>
                                             @if($rol_usuario_actual == 'operador')
-                                            <div class="btn-group-stock-status d-flex justify-content-end" role="group" aria-label="Estado de stock físico">
-                                                <input type="radio" class="btn-check-stock" name="stock_status_{{ $detAccordionId }}" id="stock_verificado_{{ $detAccordionId }}" value="1" {{ $detalle->stock_fisico_existencias === true ? 'checked' : '' }} data-route="{{ route('recepcion.revisar-stock') }}" data-orden-id="{{ $detalle->orden_id }}" data-kit-id="{{ $detalle->kit_id }}" data-producto-id="{{ $detalle->producto_id }}">
-                                                <label class="btn-stock-status btn-stock-verified" for="stock_verificado_{{ $detAccordionId }}">
-                                                    <i class="fas fa-check-circle me-1"></i>
-                                                    <span>Existencias verificadas</span>
-                                                </label>
-                                                <input type="radio" class="btn-check-stock" name="stock_status_{{ $detAccordionId }}" id="stock_sin_existencias_{{ $detAccordionId }}" value="0" {{ $detalle->stock_fisico_existencias === false ? 'checked' : '' }} data-route="{{ route('recepcion.revisar-stock') }}" data-orden-id="{{ $detalle->orden_id }}" data-kit-id="{{ $detalle->kit_id }}" data-producto-id="{{ $detalle->producto_id }}">
-                                                <label class="btn-stock-status btn-stock-unavailable" for="stock_sin_existencias_{{ $detAccordionId }}">
-                                                    <i class="fas fa-times-circle me-1"></i>
-                                                    <span>No hay existencias</span>
-                                                </label>
-                                            </div>
+                                                <div class="btn-group-stock-status d-flex justify-content-end" role="group" aria-label="Estado de stock físico">
+                                                    <input type="radio" class="btn-check-stock" name="stock_status_{{ $detAccordionId }}" id="stock_verificado_{{ $detAccordionId }}" value="1" {{ $detalle->stock_fisico_existencias === true ? 'checked' : '' }} data-route="{{ route('recepcion.revisar-stock') }}" data-orden-id="{{ $detalle->orden_id }}" data-kit-id="{{ $detalle->kit_id }}" data-producto-id="{{ $detalle->producto_id }}">
+                                                    <label class="btn-stock-status btn-stock-verified" for="stock_verificado_{{ $detAccordionId }}">
+                                                        <i class="fas fa-check-circle me-1"></i>
+                                                        <span>Existencias verificadas</span>
+                                                    </label>
+                                                    <input type="radio" class="btn-check-stock" name="stock_status_{{ $detAccordionId }}" id="stock_sin_existencias_{{ $detAccordionId }}" value="0" {{ $detalle->stock_fisico_existencias === false ? 'checked' : '' }} data-route="{{ route('recepcion.revisar-stock') }}" data-orden-id="{{ $detalle->orden_id }}" data-kit-id="{{ $detalle->kit_id }}" data-producto-id="{{ $detalle->producto_id }}">
+                                                    <label class="btn-stock-status btn-stock-unavailable" for="stock_sin_existencias_{{ $detAccordionId }}">
+                                                        <i class="fas fa-times-circle me-1"></i>
+                                                        <span>No hay existencias</span>
+                                                    </label>
+                                                </div>
                                             @endif
                                         </div>
                                     </h2>
@@ -1109,6 +1108,12 @@ $hasOrders = $currentAtencion && $currentAtencion->ordenes && $currentAtencion->
             toastr.error('No se encontraron órdenes para corregir.');
             return;
         }
+        $(`button.accordion-button`).each(function() { // Reinicio de iconos
+            const $icon = $(this).find('span.px-1 i.fas');
+            if ($icon.hasClass('fa-times') && $icon.hasClass('text-danger')) {
+                $icon.attr('class', 'fas fa-clock text-muted').attr('title', 'Pendiente de revisión');
+            }
+        });
         $.ajax({
             url:'{{ route('recepcion.corregir-orden') }}'
             , method: 'POST'
@@ -1144,6 +1149,24 @@ $hasOrders = $currentAtencion && $currentAtencion->ordenes && $currentAtencion->
             , error: function(xhr) {
                 console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error en corregir-orden click:", xhr);
                 btn.prop('disabled', false).html('<i class="fas fa-pencil-alt"></i> Corregir');
+                
+                if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON.fallos) {
+                    const fallos = xhr.responseJSON.fallos;
+                    fallos.forEach(fallo => {
+                        $(`button.accordion-button`).each(function() {
+                            const $btn = $(this);
+                            const $productIdInput = $btn.find(`input[id^="productId_"]`);
+                            if ($productIdInput.val() == fallo.producto_id) {
+                                const $iconContainer = $btn.find('span.px-1');
+                                if ($iconContainer.length) {
+                                    const toolTipMsg = `Requerido: ${fallo.requerida}, Disponible: ${fallo.disponible}`;
+                                    $iconContainer.empty().html(`<i class="fas fa-times text-danger" title="${toolTipMsg}"></i>`);
+                                }
+                            }
+                        });
+                    });
+                }
+                
                 toastr.error(xhr.responseJSON?.message || 'Error al corregir la orden');
             }
         });

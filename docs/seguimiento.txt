@@ -76,8 +76,7 @@ SERVICIOS:
         . Historial de entradas y salidas en stocks
         
     🟢 Revisiones:
-        . Regla para no permitir rebasamiento de stock:
-            . En ruta carrito-editar: en controles corregir y revisar
+        . Sin pendientes
 
 CLIENTE:
 

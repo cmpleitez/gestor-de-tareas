@@ -415,6 +415,55 @@ class RecepcionController extends Controller
                     'message' => 'Información incompleta para la corrección'
                 ], 422);
             }
+
+            // VALIDACIÓN DE STOCK REBASE
+            $oficina_id = auth()->user()->oficina_id;
+            $stockBodega = \App\Models\Stock::where('stock', 'Bodega')->first();
+            if (!$stockBodega) {
+                return response()->json(['success' => false, 'message' => 'No se encontró el stock "Bodega"'], 500);
+            }
+            $stockBodegaId = $stockBodega->id;
+            $demandaTotal = [];
+            foreach ($ordenes_recibidas as $ordenData) {
+                $orden_id = $ordenData['orden_id'];
+                $unidadesKit = (int) $ordenData['unidades'];
+                $detallesRecibidos = $ordenData['detalles'] ?? [];
+                if (empty($detallesRecibidos)) { // Si no vienen detalles, buscamos los actuales
+                    $detallesRecibidos = Detalle::where('orden_id', $orden_id)->get();
+                }
+                foreach ($detallesRecibidos as $detalleData) {
+                    $productoId = $detalleData['producto_id_nuevo'] ?? $detalleData['producto_id'];
+                    $unidadesPorItem = Detalle::where('orden_id', $orden_id)
+                        ->where('producto_id', $detalleData['producto_id_original'] ?? $detalleData['producto_id'])
+                        ->value('unidades') ?? 0;
+                    $demandaTotal[$productoId] = ($demandaTotal[$productoId] ?? 0) + ($unidadesKit * $unidadesPorItem);
+                }
+            }
+            $fallos = [];
+            foreach ($demandaTotal as $productoId => $cantidadRequerida) {
+                $oficinaStock = OficinaStock::where('oficina_id', $oficina_id)
+                    ->where('stock_id', $stockBodegaId)
+                    ->where('producto_id', $productoId)
+                    ->first();
+                $disponible = $oficinaStock ? $oficinaStock->unidades : 0;
+                if ($cantidadRequerida > $disponible) {
+                    $fallos[] = [
+                        'producto_id' => $productoId,
+                        'requerida' => $cantidadRequerida,
+                        'disponible' => $disponible
+                    ];
+                }
+            }
+
+            if (!empty($fallos)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Se encontraron peticiones que rebasan el stock actual',
+                    'fallos' => $fallos,
+                    'type'    => 'error'
+                ], 422);
+            }
+
             // PROCESAMIENTO
             $productos_cambiados = [];
             DB::beginTransaction();
@@ -454,38 +503,36 @@ class RecepcionController extends Controller
                 }
                 if ($uso_interno == 0) { //Parametrizado: Uso interno-externo
                     $estado_en_progreso_id = Estado::where('estado', 'En progreso')->first()->id; //Revertir estado de la tarea
-                $actividadStock = Actividad::whereHas('recepcion', function($q) use ($atencion_id) {
-                    $q->where('atencion_id', $atencion_id);
-                })
-                ->whereHas('tarea', function($q) {
-                    $q->where('tarea', 'Confirmación');
-                })
-                ->first();
-                if ($actividadStock) {
-                    $actividadStock->estado_id = $estado_en_progreso_id;
-                    $actividadStock->save();
-                    $total_actividades = Actividad::whereHas('recepcion', function($query) use ($atencion_id) { // Forzar actualización de progreso de la atención (restando esta tarea)
-                        $query->where('atencion_id', $atencion_id);
-                    })->count();
-                    $actividades_resueltas = Actividad::whereHas('recepcion', function($query) use ($atencion_id) {
-                        $query->where('atencion_id', $atencion_id);
-                    })
-                    ->where('estado_id', Estado::where('estado', 'Resuelta')->first()->id)
-                    ->count();
-                    $porcentaje_avance = $total_actividades > 0 
-                        ? round(($actividades_resueltas / $total_actividades) * 100, 2) 
-                        : 0;
-                    $atencion = Atencion::find($atencion_id);
-                    if ($atencion) {
-                        $atencion->avance = $porcentaje_avance;
-                        if ($porcentaje_avance < 100) { // Si retrocede del 100%, bajamos el estado a "En progreso" si estaba resuelta
-                            $atencion->estado_id = $estado_en_progreso_id;
-                            Recepcion::where('atencion_id', $atencion_id)->update(['estado_id' => $estado_en_progreso_id]);
+                    $actividadStock = Actividad::whereHas('recepcion', function($q) use ($atencion_id) {
+                        $q->where('atencion_id', $atencion_id);
+                    })->whereHas('tarea', function($q) {
+                        $q->where('tarea', 'Confirmación');
+                    })->first();
+                    if ($actividadStock) {
+                        $actividadStock->estado_id = $estado_en_progreso_id;
+                        $actividadStock->save();
+                        $total_actividades = Actividad::whereHas('recepcion', function($query) use ($atencion_id) { // Forzar actualización de progreso de la atención (restando esta tarea)
+                            $query->where('atencion_id', $atencion_id);
+                        })->count();
+                        $actividades_resueltas = Actividad::whereHas('recepcion', function($query) use ($atencion_id) {
+                            $query->where('atencion_id', $atencion_id);
+                        })
+                        ->where('estado_id', Estado::where('estado', 'Resuelta')->first()->id)
+                        ->count();
+                        $porcentaje_avance = $total_actividades > 0 
+                            ? round(($actividades_resueltas / $total_actividades) * 100, 2) 
+                            : 0;
+                        $atencion = Atencion::find($atencion_id);
+                        if ($atencion) {
+                            $atencion->avance = $porcentaje_avance;
+                            if ($porcentaje_avance < 100) { // Si retrocede del 100%, bajamos el estado a "En progreso" si estaba resuelta
+                                $atencion->estado_id = $estado_en_progreso_id;
+                                Recepcion::where('atencion_id', $atencion_id)->update(['estado_id' => $estado_en_progreso_id]);
+                            }
+                            $atencion->save();
                         }
-                        $atencion->save();
                     }
                 }
-            }
             DB::commit();
             //RESULTADO
             return response()->json([
