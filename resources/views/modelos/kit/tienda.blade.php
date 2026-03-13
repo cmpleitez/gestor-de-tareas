@@ -35,50 +35,50 @@
         <div class="col-lg-12">
             <div class="row" id="contenedor-kits">
                 @foreach ($kits as $kit)
-                <div class="col-md-3 kit-item" data-kit-name="{{ strtolower($kit->kit) }}">
-                    <div class="card mb-4" style="border: 0;">
-                        <div class="card">
-                            <img class="card-img img-fluid" src="{{ ($kit->image_path && Storage::disk('public')->exists($kit->image_path)) ? Storage::disk('public')->url($kit->image_path) : asset('app-assets/images/pages/mercaderia.png') }}">
-                            <div class="card-img-overlay product-overlay d-flex align-items-start justify-content-end" style="pointer-events: none;">
-                                <ul class="list-unstyled">
-                                    <li><a class="btn btn-success text-white" href="#" style="pointer-events: auto;"><i class="far fa-heart"></i></a></li>
-                                    <li><a class="btn btn-success text-white mt-2 btn-ver-kit" data-bs-toggle="modal" data-bs-target="#modalPreferencias" data-kit-id="{{ $kit->id }}" data-kit-name="{{ $kit->kit }}" data-kit-image-path="{{ $kit->image_path ? Storage::url($kit->image_path) : '' }}" href="#" style="pointer-events: auto;"><i class="far fa-eye"></i></a></li>
-                                    @if($kit->disponible)
-                                    <li><a class="btn btn-success text-white mt-2 btn-agregar-kit" href="{{ Route('tienda.agregar-orden', $kit->id) }}" style="pointer-events: auto;"><i class="fas fa-cart-plus"></i></a></li>
-                                    @else
-                                    <li><button class="btn btn-secondary text-white mt-2" disabled style="pointer-events: auto; cursor: not-allowed;"><i class="fas fa-ban"></i></button></li>
-                                    @endif
+                    <div class="col-md-3 kit-item" data-kit-name="{{ strtolower($kit->kit) }}">
+                        <div class="card mb-4" style="border: 0;">
+                            <div class="card">
+                                <img class="card-img img-fluid" src="{{ $kit->image_path ? Storage::url($kit->image_path) : asset('app-assets/images/pages/mercaderia.png') }}" onerror="this.onerror=null; this.src='{{ asset('app-assets/images/pages/mercaderia.png') }}';">
+                                <div class="card-img-overlay product-overlay d-flex align-items-start justify-content-end" style="pointer-events: none;">
+                                    <ul class="list-unstyled">
+                                        <li><a class="btn btn-success text-white" href="#" style="pointer-events: auto;"><i class="far fa-heart"></i></a></li>
+                                        <li><a class="btn btn-success text-white mt-2 btn-ver-kit" data-bs-toggle="modal" data-bs-target="#modalPreferencias" data-kit-id="{{ $kit->id }}" data-kit-name="{{ $kit->kit }}" data-kit-image-path="{{ $kit->image_path ? Storage::url($kit->image_path) : '' }}" href="#" style="pointer-events: auto;"><i class="far fa-eye"></i></a></li>
+                                        @if($kit->disponible)
+                                            <li><a class="btn btn-success text-white mt-2 btn-agregar-kit" href="{{ Route('tienda.agregar-orden', $kit->id) }}" style="pointer-events: auto;"><i class="fas fa-cart-plus"></i></a></li>
+                                        @else
+                                            <li><button class="btn btn-secondary text-white mt-2" disabled style="pointer-events: auto; cursor: not-allowed;"><i class="fas fa-ban"></i></button></li>
+                                        @endif
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="card-body ">
+                                @if($kit->disponible)
+                                <a href="{{ Route('tienda.agregar-orden', $kit->id) }}" class="text-decoration-none d-flex justify-content-center btn-agregar-kit">{{ $kit->kit }}</a>
+                                @else
+                                <span class="text-decoration-none d-flex justify-content-center text-muted">{{ $kit->kit }} <span class="badge bg-danger ms-1">Agotado</span></span>
+                                @endif
+                                <ul class="w-100 list-unstyled d-flex justify-content-between mb-0">
+                                    <li class="pt-2">
+                                        <span class="product-color-dot color-dot-red float-left rounded-circle ml-1"></span>
+                                        <span class="product-color-dot color-dot-blue float-left rounded-circle ml-1"></span>
+                                        <span class="product-color-dot color-dot-black float-left rounded-circle ml-1"></span>
+                                        <span class="product-color-dot color-dot-light float-left rounded-circle ml-1"></span>
+                                        <span class="product-color-dot color-dot-green float-left rounded-circle ml-1"></span>
+                                    </li>
                                 </ul>
+                                <ul class="list-unstyled d-flex justify-content-center mb-1">
+                                    <li>
+                                        <i class="text-warning fa fa-star"></i>
+                                        <i class="text-warning fa fa-star"></i>
+                                        <i class="text-warning fa fa-star"></i>
+                                        <i class="text-muted fa fa-star"></i>
+                                        <i class="text-muted fa fa-star"></i>
+                                    </li>
+                                </ul>
+                                <p class="text-center mb-0">${{ number_format($kit->precio, 2) }}</p>
                             </div>
                         </div>
-                        <div class="card-body ">
-                            @if($kit->disponible)
-                            <a href="{{ Route('tienda.agregar-orden', $kit->id) }}" class="text-decoration-none d-flex justify-content-center btn-agregar-kit">{{ $kit->kit }}</a>
-                            @else
-                            <span class="text-decoration-none d-flex justify-content-center text-muted">{{ $kit->kit }} <span class="badge bg-danger ms-1">Agotado</span></span>
-                            @endif
-                            <ul class="w-100 list-unstyled d-flex justify-content-between mb-0">
-                                <li class="pt-2">
-                                    <span class="product-color-dot color-dot-red float-left rounded-circle ml-1"></span>
-                                    <span class="product-color-dot color-dot-blue float-left rounded-circle ml-1"></span>
-                                    <span class="product-color-dot color-dot-black float-left rounded-circle ml-1"></span>
-                                    <span class="product-color-dot color-dot-light float-left rounded-circle ml-1"></span>
-                                    <span class="product-color-dot color-dot-green float-left rounded-circle ml-1"></span>
-                                </li>
-                            </ul>
-                            <ul class="list-unstyled d-flex justify-content-center mb-1">
-                                <li>
-                                    <i class="text-warning fa fa-star"></i>
-                                    <i class="text-warning fa fa-star"></i>
-                                    <i class="text-warning fa fa-star"></i>
-                                    <i class="text-muted fa fa-star"></i>
-                                    <i class="text-muted fa fa-star"></i>
-                                </li>
-                            </ul>
-                            <p class="text-center mb-0">${{ number_format($kit->precio, 2) }}</p>
-                        </div>
                     </div>
-                </div>
                 @endforeach
             </div>
         </div>
@@ -100,10 +100,9 @@
             <div class="modal-body">
                 <div class="container-fluid">
                     <div class="row">
-                        <div class="col-sm-6"> {{-- Imagen del Kit --}}
-                            <div id="kit-image-container" class="d-flex align-items-center justify-content-center h-100">
-                                <img id="kit-image" src="" alt="Foto del Kit" class="img-fluid" style="display: none; max-height: 400px; object-fit: contain;">
-                                <p id="kit-image-placeholder" class="text-muted">Foto del Kit</p>
+                        <div class="col-sm-6 text-center"> {{-- Imagen del Kit --}}
+                            <div id="kit-image-container" class="d-flex align-items-center justify-content-center h-100 p-2" style="min-height: 250px;">
+                                <img id="kit-image" src="{{ asset('app-assets/images/pages/mercaderia.png') }}" alt="Foto del Kit" class="img-fluid" style="max-height: 400px; object-fit: contain;">
                             </div>
                         </div>
                         <div class="col-sm-6"> {{-- Detalles Generales del Kit --}}
@@ -159,19 +158,15 @@
                 if (kitNameElement) { 
                     kitNameElement.textContent = kitName || 'Nombre del Kit';
                 }
+                const defaultImage = "{{ asset('app-assets/images/pages/mercaderia.png') }}";
                 if (kitImagePath && kitImagePath.trim() !== '') { 
                     kitImage.src = kitImagePath;
-                    kitImage.style.display = 'block';
-                    kitImagePlaceholder.style.display = 'none';
                     kitImage.onerror = function() {
-                        this.style.display = 'none';
-                        kitImagePlaceholder.style.display = 'block';
-                        kitImagePlaceholder.textContent = 'Foto del Kit (no disponible)';
+                        this.onerror = null;
+                        this.src = defaultImage;
                     };
                 } else {
-                    kitImage.style.display = 'none';
-                    kitImagePlaceholder.style.display = 'block';
-                    kitImagePlaceholder.textContent = 'Foto del Kit (sin imagen)';
+                    kitImage.src = defaultImage;
                 }
                 fetch('{{ route("tienda.get-kit-productos") }}', {
                         method: 'POST'
@@ -240,10 +235,7 @@
             }
         });
         modalPreferencias.addEventListener('hidden.bs.modal', function() {
-            kitImage.src = '';
-            kitImage.style.display = 'none';
-            kitImagePlaceholder.style.display = 'block';
-            kitImagePlaceholder.textContent = 'Foto del Kit';
+            kitImage.src = "{{ asset('app-assets/images/pages/mercaderia.png') }}";
             const kitNameElement = document.getElementById('kit-name');
             if (kitNameElement) {
                 kitNameElement.textContent = '';

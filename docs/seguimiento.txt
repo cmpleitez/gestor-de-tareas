@@ -76,7 +76,7 @@ SERVICIOS:
         . Historial de entradas y salidas en stocks
         
     🟢 Revisiones:
-        . Tienda.modal: Estandares del kit, Foto kit sin imagen
+        . Sin pendientes
 
 CLIENTE:
 

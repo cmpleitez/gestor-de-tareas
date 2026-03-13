@@ -22,7 +22,6 @@ use App\Models\Orden;
 use App\Models\Detalle;
 use App\Models\Parametro;
 use App\Models\Equipo;
-use App\Models\Tarea;
 use App\Services\KeyRipper;
 use App\Services\StockService;
 
