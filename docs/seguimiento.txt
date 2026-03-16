@@ -76,7 +76,7 @@ SERVICIOS:
         . Historial de entradas y salidas en stocks
         
     🟢 Revisiones:
-        . Sin pendientes
+        . Verificar las diferentes validaciones de stock
 
 CLIENTE:
 

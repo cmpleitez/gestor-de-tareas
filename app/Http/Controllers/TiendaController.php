@@ -536,6 +536,7 @@ class TiendaController extends Controller
                 $query->where('id', $user->oficina_id);
             })
             ->where('activo', true)
+            ->orderBy(Atencion::select('estado_id')->whereColumn('atenciones.id', 'recepciones.atencion_id'), 'asc')
             ->orderBy('atencion_id', 'desc')
             ->take(15)
             ->get();
@@ -549,14 +550,12 @@ class TiendaController extends Controller
                 $estadoId = ($user->mainRole && $user->mainRole->name === 'cliente') 
                     ? (optional($tarjeta->atencion)->estado_id ?? $tarjeta->estado_id)
                     : $tarjeta->estado_id;
-
                 $avance = optional($tarjeta->atencion)->avance ?? 0;
                 if ($avance > 0 && $avance < 100) {
                     $estadoId = $estadoProgresoId;
                 } elseif ($avance >= 100) {
                     $estadoId = $estadoResueltaId;
                 }
-                
                 return [
                     'atencion_id'         => $tarjeta->atencion_id,
                     'created_at'          => $tarjeta->created_at->toISOString(),
@@ -576,9 +575,9 @@ class TiendaController extends Controller
                     'oficina'             => $tarjeta->atencion->oficina->oficina,
                 ];
             });
-            $recibidas                = $tarjetas->where('estado_id', Estado::where('estado', 'Recibida')->first()->id)->sortBy('created_at')->values()->toArray();
-            $progreso                 = $tarjetas->where('estado_id', Estado::where('estado', 'En progreso')->first()->id)->sortBy('created_at')->values()->toArray();
-            $resueltas                = $tarjetas->where('estado_id', Estado::where('estado', 'Resuelta')->first()->id)->sortBy('created_at')->values()->toArray();
+            $recibidas                = $tarjetas->where('estado_id', Estado::where('estado', 'Recibida')->first()->id)->sortBy('created_at')->take(5)->values()->toArray();
+            $progreso                 = $tarjetas->where('estado_id', Estado::where('estado', 'En progreso')->first()->id)->sortBy('created_at')->take(5)->values()->toArray();
+            $resueltas                = $tarjetas->where('estado_id', Estado::where('estado', 'Resuelta')->first()->id)->sortBy('created_at')->take(5)->values()->toArray();
             $parametro                = Parametro::where('parametro', 'Frecuencia de refresco')->first();
             $frecuencia_actualizacion = $parametro ? $parametro->valor : 1; // Valor por defecto: 1 minuto
             $data                     = [
