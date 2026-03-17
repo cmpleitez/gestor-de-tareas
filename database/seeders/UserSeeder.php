@@ -1,7 +1,6 @@
 <?php
 namespace Database\Seeders;
 
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
@@ -18,7 +17,16 @@ class UserSeeder extends Seeder
         DB::table('oficinas')->updateOrInsert(
             ['id' => 1],
             [
-                'oficina'    => 'Oficina Sede',
+                'oficina'    => 'Mostro',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ]
+        );
+
+        DB::table('oficinas')->updateOrInsert(
+            ['id' => 2],
+            [
+                'oficina'    => 'Dodinsons',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]

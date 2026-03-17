@@ -8,6 +8,7 @@ use App\Models\Modelo;
 use App\Models\Kit;
 use App\Models\Producto;
 use App\Models\OficinaStock;
+use App\Models\Oficina;
 use App\Services\CorrelativeIdGenerator;
 use Spatie\SimpleExcel\SimpleExcelReader;
 use Illuminate\Support\Facades\DB;
@@ -16,6 +17,7 @@ use Illuminate\Support\Facades\Log;
 class ImportCatalogService
 {
     protected $idGenerator;
+    protected $oficinaId;
 
     public function __construct(CorrelativeIdGenerator $idGenerator)
     {
@@ -32,6 +34,11 @@ class ImportCatalogService
     {
         $rowsProcessed = 0;
         $errors = [];
+        $oficina = Oficina::where('oficina', 'Mostro')->first(); //Parametrización: oficinas
+        if (!$oficina) {
+            throw new \Exception("No se encontró ninguna oficina registrada para realizar la importación.");
+        }
+        $this->oficinaId = $oficina->id;
 
         try {
             $reader = SimpleExcelReader::create($filePath);
@@ -127,15 +134,15 @@ class ImportCatalogService
                 'updated_at' => now(),
             ]);
         }
-        if (!empty($row['stock_unidades'])) { // 7. Stock en Bodega (stock_id = 2, oficina_id = 1)
-            $stock = OficinaStock::where('oficina_id', 1)
+        if (!empty($row['stock_unidades'])) { // 7. Stock en Bodega (stock_id = 2, oficina_id dinámico)
+            $stock = OficinaStock::where('oficina_id', $this->oficinaId)
                 ->where('stock_id', 2)
                 ->where('producto_id', $producto->id)
                 ->first();
 
             if (!$stock) {
                 $stock = new OficinaStock();
-                $stock->oficina_id = 1;
+                $stock->oficina_id = $this->oficinaId;
                 $stock->stock_id = 2;
                 $stock->producto_id = $producto->id;
             }
