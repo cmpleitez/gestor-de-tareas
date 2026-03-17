@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->unsignedBigInteger('id')->primary();
             $table->foreignId('role_id')->default(7);
-            $table->foreignId('oficina_id');
+            $table->foreignId('oficina_id')->default(1);
             $table->string('dui', 9)->unique();
             $table->string('name');
             $table->string('email')->unique();
