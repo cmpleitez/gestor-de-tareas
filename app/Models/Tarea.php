@@ -11,6 +11,17 @@ class Tarea extends Model
         'activo' => 'boolean',
     ];
 
+
+    public function actividades()
+    {
+        return $this->hasMany(Actividad::class);
+    }
+
+    public function solicitudes()
+    {
+        return $this->belongsToMany(Solicitud::class);
+    }
+
     public function usuariosOrigen()
     {
         return $this->belongsToMany(User::class, 'actividades', 'user_id_origen');

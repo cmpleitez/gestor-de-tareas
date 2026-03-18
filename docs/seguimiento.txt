@@ -79,6 +79,9 @@ SERVICIOS:
     🟢 Revisiones:
         . Enllavar el cambio de nombres en registros con historial
             . revisar lo de la unidad de medida de la tabla parametros
+            . pendiente implementar validacion para editar nombres en modelos, tipos y productos
+                . implementados pendiente probarlos y ajustar sus dependencias
+    
 
 CLIENTE:
 

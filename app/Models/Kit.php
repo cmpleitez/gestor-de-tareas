@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Detalle;
 
 class Kit extends Model
 {
@@ -18,8 +19,13 @@ class Kit extends Model
         return $this->belongsToMany(Producto::class)->withPivot('unidades');
     }
 
-    public function atencionDetalles()
+    public function ordenes()
     {
-        return $this->hasMany(AtencionDetalle::class);
+        return $this->hasMany(Orden::class);
+    }
+
+    public function detalles()
+    {
+        return $this->hasMany(Detalle::class);
     }
 }

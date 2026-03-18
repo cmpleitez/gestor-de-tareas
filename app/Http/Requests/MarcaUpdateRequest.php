@@ -17,4 +17,17 @@ class MarcaUpdateRequest extends FormRequest
             'marca' => ['required', 'min:3', 'max:255', 'regex:/^(?! )[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ()-]+( [a-zA-Z0-9áéíóúÁÉÍÓÚñÑ()-]+)*$/', Rule::unique('marcas')->ignore($marca->id)],
         ];
     }
+
+    public function withValidator($validator): void // Bloquea el cambio de nombre si la marca ya tiene historial
+    {
+        $validator->after(function ($validator) {
+            $marca          = $this->route('marca');
+            $nombreCambio   = $this->input('marca') !== $marca->marca;
+            $tieneHistorial = $marca->modelos()->exists();
+
+            if ($nombreCambio && $tieneHistorial) {
+                $validator->errors()->add('marca', 'No se puede cambiar el nombre de la marca porque ya tiene modelos asociados.');
+            }
+        });
+    }
 }

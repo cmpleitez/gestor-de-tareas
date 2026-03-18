@@ -21,4 +21,18 @@ class KitUpdateRequest extends FormRequest
             'image_path' => ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:10240'],
         ];
     }
+
+    public function withValidator($validator): void // Bloquea el cambio de nombre si el kit ya tiene historial
+    {
+        $validator->after(function ($validator) {
+            $kit            = $this->route('kit');
+            $nombreCambio   = $this->input('kit') !== $kit->kit;
+            $tieneHistorial = $kit->ordenes()->exists() || $kit->detalles()->exists();
+
+            if ($nombreCambio && $tieneHistorial) {
+                $validator->errors()->add('kit', 'No se puede cambiar el nombre del kit porque ya tiene ordenes de compras.');
+            }
+        });
+    }
 }
+

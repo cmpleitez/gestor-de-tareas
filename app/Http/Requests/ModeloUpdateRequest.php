@@ -18,4 +18,17 @@ class ModeloUpdateRequest extends FormRequest
             'marca_id' => ['required', 'exists:marcas,id'],
         ];
     }
+
+    public function withValidator($validator): void // Bloquea el cambio de nombre si el modelo ya tiene historial
+    {
+        $validator->after(function ($validator) {
+            $modelo         = $this->route('modelo');
+            $nombreCambio   = $this->input('modelo') !== $modelo->modelo;
+            $tieneHistorial = $modelo->productos()->exists();
+
+            if ($nombreCambio && $tieneHistorial) {
+                $validator->errors()->add('modelo', 'No se puede cambiar el nombre del modelo porque ya tiene productos asociados.');
+            }
+        });
+    }
 }

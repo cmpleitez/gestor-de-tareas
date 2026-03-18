@@ -49,4 +49,17 @@ class ProductoUpdateRequest extends FormRequest
             ],
         ];
     }
+
+    public function withValidator($validator): void // Bloquea el cambio de nombre si el producto ya tiene historial
+    {
+        $validator->after(function ($validator) {
+            $producto       = $this->route('producto');
+            $nombreCambio   = $this->input('producto') !== $producto->producto;
+            $tieneHistorial = $producto->kits()->exists() || $producto->movimientos()->exists();
+
+            if ($nombreCambio && $tieneHistorial) {
+                $validator->errors()->add('producto', 'No se puede cambiar el nombre del producto porque ya tiene kits o movimientos asociados.');
+            }
+        });
+    }
 }
