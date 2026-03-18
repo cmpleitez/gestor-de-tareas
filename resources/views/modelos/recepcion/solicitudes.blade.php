@@ -112,9 +112,9 @@
                     </div>
                     <h6 class="mb-0 text-white font-weight-600" style="font-size: 0.9rem;">
                         @if(auth()->user()->mainRole->name == 'cliente')
-                        Pendientes de pago
+                            Pendientes de pago
                         @else
-                        En Progreso
+                            En Progreso
                         @endif
                     </h6>
                     <span class="badge badge-white ml-auto text-dark"
@@ -400,10 +400,8 @@
                 estadoColor = '#28a745';
                 break;
         }
-        
         let url = null;
         let selectedValue = null;
-
         @if($uso_interno == 0)
             if (userRole === 'receptor' || userRole === 'operador') { 
                 selectedValue = $('input[name="equipo_destino"]:checked').val();
@@ -423,7 +421,6 @@
             url = '{{ route('recepcion.avanzar', ['recepcion' => ':recepcion_id']) }}'
                 .replace(':recepcion_id', solicitudId);
         @endif
-
         if (!url) {
             $(evt.from).append(evt.item);
             return;

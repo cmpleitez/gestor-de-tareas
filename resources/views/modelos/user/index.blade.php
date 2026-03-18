@@ -13,7 +13,7 @@
                         <p class="card-text">Las personas autorizadas para operar el sistema desempeñando roles
                             específicos</p>
                     </div>
-                    @can('create')
+                    @can('crear')
                         <div class="col-1 d-flex justify-content-end" style="padding: 0;">
                             <a href="{!! route('register') !!}">
                                 <div class="badge-circle badge-circle-md bg-secondary-dark">
@@ -79,25 +79,23 @@
                                     @if ($user->activo)
                                     <td class="text-center">
                                         <div class="btn-group" role="group" aria-label="label">
-                                            @can('autorizar')
                                             {{-- Actualizar habilidades --}}
-                                            <a href="{{ route('user.tareas-edit', $user->id) }}" role="button" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bx-slider-alt'></i> Actualizar habilidades de {{ $user->name }}" class="button_edit border border-secondary-dark text-secondary-dark bg-secondary-light">
-                                                <i class="bx bx-slider-alt"></i>
-                                            </a>
-                                            {{-- Asignar a equipos --}}
-                                            <a href="{{ route('user.equipos-edit', $user->id) }}" role="button" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-group'></i> Equipos de {{ $user->name }}" class="button_show border border-secondary-dark text-secondary-dark bg-secondary-light">
-                                                <i class="bx bxs-group"></i>
-                                            </a>
-                                            {{-- Asignar roles --}}
-                                            <a href="{{ route('user.roles-edit', $user->id) }}" role="button" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-key'></i> Roles de {{ $user->name }}" class="button_keys border border-secondary-dark text-secondary-dark bg-secondary-light">
-                                                <i class="bx bxs-key"></i>
-                                            </a>
+                                            @can('autorizar')
+                                                <a href="{{ route('user.tareas-edit', $user->id) }}" role="button" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bx-slider-alt'></i> Actualizar habilidades de {{ $user->name }}" class="button_edit border border-secondary-dark text-secondary-dark bg-secondary-light">
+                                                    <i class="bx bx-slider-alt"></i>
+                                                </a>
+                                                <a href="{{ route('user.equipos-edit', $user->id) }}" role="button" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-group'></i> Equipos de {{ $user->name }}" class="button_show border border-secondary-dark text-secondary-dark bg-secondary-light">
+                                                    <i class="bx bxs-group"></i>
+                                                </a>
+                                                <a href="{{ route('user.roles-edit', $user->id) }}" role="button" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-key'></i> Roles de {{ $user->name }}" class="button_keys border border-secondary-dark text-secondary-dark bg-secondary-light">
+                                                    <i class="bx bxs-key"></i>
+                                                </a>
                                             @endcan
                                             {{-- Editar --}}
                                             @can('editar')
-                                            <a href="{{ route('user.edit', $user->id) }}" role="button" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-edit-alt'></i> Editar datos de {{ $user->name }}" class="button_edit align-center border border-warning-dark text-warning-dark bg-warning-light">
-                                                <i class="bx bxs-edit-alt"></i>
-                                            </a>
+                                                <a href="{{ route('user.edit', $user->id) }}" role="button" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-edit-alt'></i> Editar datos de {{ $user->name }}" class="button_edit align-center border border-warning-dark text-warning-dark bg-warning-light">
+                                                    <i class="bx bxs-edit-alt"></i>
+                                                </a>
                                             @endcan
                                             {{-- Eliminar --}}
                                             @can('eliminar')

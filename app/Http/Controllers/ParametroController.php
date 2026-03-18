@@ -21,11 +21,9 @@ class ParametroController extends Controller
     public function update(Request $request, Parametro $parametro)
     {
         $validatedData = $request->validate([
-            'parametro'     => 'required|string|min:3|max:255|unique:parametros,parametro,' . $parametro->id,
             'valor'         => 'required|string|min:1|max:255',
             'unidad_medida' => 'required|string|min:3|max:255',
         ]);
-        $parametro->parametro     = $validatedData['parametro']; 
         $parametro->valor         = $validatedData['valor'];     
         $parametro->unidad_medida = $validatedData['unidad_medida']; 
         $parametro->save();

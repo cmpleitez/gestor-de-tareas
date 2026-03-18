@@ -54,6 +54,7 @@ class UserSeeder extends Seeder
             'asignar',
             'eliminar',
             'activar',
+            'autorizar',
             'revisar',
             'confirmar',
             'autorefrescar',
@@ -70,7 +71,7 @@ class UserSeeder extends Seeder
         $role = Role::firstOrCreate(['name' => 'superadmin']);
         
         $role = Role::firstOrCreate(['name' => 'admin']);
-        $role->syncPermissions(['administrar', 'ver', 'crear', 'editar', 'activar', 'eliminar', 'asignar']);
+        $role->syncPermissions(['administrar', 'ver', 'crear', 'editar', 'activar', 'eliminar', 'asignar', 'autorizar']);
 
         $role = Role::firstOrCreate(['name' => 'receptor']);
         $role->syncPermissions(['gestionar', 'tienda', 'ver', 'crear', 'editar', 'eliminar', 'revisar', 'asignar', 'autorefrescar', 'ver-solicitudes', 'ver-tareas']);

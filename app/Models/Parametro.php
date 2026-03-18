@@ -6,7 +6,7 @@ class Parametro extends Model
 {
     public $incrementing = false;
     protected $keyType   = 'int';
-    protected $fillable  = ['parametro', 'valor'];
+    protected $fillable  = ['valor', 'unidad_medida'];
     protected $casts = [
         'activo' => 'boolean',
     ];
