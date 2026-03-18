@@ -172,16 +172,16 @@
     let userRole = @json(optional(auth()->user()->mainRole)->name) || '';
     const equipos = @json($equipos);
     const ESTADOS = {
-        RECIBIDA: {{ \App\Models\Estado::where('estado', 'Recibida')->first()->id ?? 1 }},
-        EN_PROGRESO: {{ \App\Models\Estado::where('estado', 'En progreso')->first()->id ?? 2 }},
-        RESUELTA: {{ \App\Models\Estado::where('estado', 'Resuelta')->first()->id ?? 3 }}
+        RECIBIDA: {{ \App\Models\Estado::where('estado', 'Recibida')->first()->id }},
+        EN_PROGRESO: {{ \App\Models\Estado::where('estado', 'En progreso')->first()->id }},
+        RESUELTA: {{ \App\Models\Estado::where('estado', 'Resuelta')->first()->id }}
     };
     const TAREAS = {
-        REVISION: '{{ \App\Models\Tarea::where('tarea', 'Revisión')->first()->tarea ?? 'Revisión' }}',
-        CONFIRMACION: '{{ \App\Models\Tarea::where('tarea', 'Confirmación')->first()->tarea ?? 'Confirmación' }}',
-        PAGO: '{{ \App\Models\Tarea::where('tarea', 'Pago')->first()->tarea ?? 'Pago' }}',
-        DESCARGA: '{{ \App\Models\Tarea::where('tarea', 'Descarga')->first()->tarea ?? 'Descarga' }}',
-        ENTREGA: '{{ \App\Models\Tarea::where('tarea', 'Entrega')->first()->tarea ?? 'Entrega' }}'
+        REVISION: '{{ \App\Models\Tarea::where('tarea', 'Revisión')->first()->tarea }}',
+        CONFIRMACION: '{{ \App\Models\Tarea::where('tarea', 'Confirmación')->first()->tarea }}',
+        PAGO: '{{ \App\Models\Tarea::where('tarea', 'Pago')->first()->tarea }}',
+        DESCARGA: '{{ \App\Models\Tarea::where('tarea', 'Descarga')->first()->tarea }}',
+        ENTREGA: '{{ \App\Models\Tarea::where('tarea', 'Entrega')->first()->tarea }}'
     };
     function selectItem(radioId) { // Función para seleccionar items
         document.querySelectorAll('.selectable-item').forEach(selector => { // Desmarcar todos los selectores

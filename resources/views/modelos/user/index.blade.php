@@ -101,15 +101,15 @@
                                             @endcan
                                             {{-- Eliminar --}}
                                             @can('eliminar')
-                                            @if ($user->id !== auth()->id())
-                                            <a href="{{ route('user.destroy', $user->id) }}" role="button" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-eraser'></i> Eliminar {{ $user->name }}" class="button_delete align-center border border-danger-dark text-danger-dark bg-danger-light">
-                                                <i class="bx bxs-eraser"></i>
-                                            </a>
-                                            @else
-                                            <span class="button_delete align-center border border-danger-dark text-danger-dark bg-danger-light" style="opacity: 0.5; cursor: not-allowed;" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-lock'></i> No puedes eliminarte a ti mismo">
-                                                <i class="bx bxs-trash"></i>
-                                            </span>
-                                            @endif
+                                                @if ($user->id !== auth()->id())
+                                                <a href="{{ route('user.destroy', $user->id) }}" role="button" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-eraser'></i> Eliminar {{ $user->name }}" class="button_delete align-center border border-danger-dark text-danger-dark bg-danger-light">
+                                                    <i class="bx bxs-eraser"></i>
+                                                </a>
+                                                @else
+                                                <span class="button_delete align-center border border-danger-dark text-danger-dark bg-danger-light" style="opacity: 0.5; cursor: not-allowed;" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-lock'></i> Acción reservada para el sistema">
+                                                    <i class="bx bxs-trash"></i>
+                                                </span>
+                                                @endif
                                             @endcan
                                         </div>
                                     </td>

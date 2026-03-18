@@ -30,8 +30,7 @@
                                 <th>precio</th>
                                 <th class="text-center">Creado</th>
                                 <th class="text-center">Actualizado</th>
-                                <th class="text-center">Estado</th>
-                                <th class="text-center">Control</th>
+                                <th class="text-center">Tablero de Control</th>
                             </tr>
                         </thead>
                         <tbody>

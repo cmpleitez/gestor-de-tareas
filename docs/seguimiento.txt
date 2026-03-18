@@ -72,12 +72,13 @@ SEGURIDAD:
     . Sin pendientes
 
 SERVICIOS:
-
+    
     🟢 Reportes para el receptor y el administrador:
         . Historial de entradas y salidas en stocks
         
     🟢 Revisiones:
-        . Sin pendientes
+        . Enllavar el cambio de nombres en registros con con historial
+            . Posible hardcoreo "Personal de atención al cliente"
 
 CLIENTE:
 

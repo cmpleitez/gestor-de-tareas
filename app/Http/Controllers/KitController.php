@@ -132,33 +132,32 @@ class KitController extends Controller
     {
         try {
             DB::beginTransaction();
-            //Sincronizando los productos del kit
-            $nombre_automatico = Parametro::findOrFail(2)->valor;
-            if ($nombre_automatico == '1') {
-                $nombre_creado = $this->sugerirNombreKit($kit, $request);
-                if ($nombre_creado) {
-                    $existe = Kit::where('kit', $nombre_creado)
-                        ->where('id', '<>', $kit->id)
-                        ->exists();
-                    if ($existe) {
-                        DB::rollback();
-                        return redirect()->back()->with('info', 'El nombre sugerido para el kit ya existe, por favor revise los productos seleccionados.');
+                //Sincronizando los productos del kit
+                $nombre_automatico = Parametro::where('parametro', 'Nombres de kits automáticos')->firstOrFail()->valor;
+                if ($nombre_automatico == '1') {
+                    $nombre_creado = $this->sugerirNombreKit($kit, $request);
+                    if ($nombre_creado) {
+                        $existe = Kit::where('kit', $nombre_creado)
+                            ->where('id', '<>', $kit->id)
+                            ->exists();
+                        if ($existe) {
+                            DB::rollback();
+                            return redirect()->back()->with('info', 'El nombre sugerido para el kit ya existe, por favor revise los productos seleccionados.');
+                        }
+                    }
+                    if ($nombre_creado) {
+                        $kit->kit = $nombre_creado;
+                        $kit->save();
                     }
                 }
-                if ($nombre_creado) {
-                    $kit->kit = $nombre_creado;
-                    $kit->save();
-                }
-            }
-            $this->sincronizarProductosConIds($kit, $request->productos ?? []); // Sincronizar productos del Kit
-
-            // Actualizar el precio del kit sumando los precios de los productos asociados
-            $kit->load('productos');
-            $precioTotal = $kit->productos->sum(function ($producto) {
-                return $producto->precio * $producto->pivot->unidades;
-            });
-            $kit->precio = $precioTotal;
-            $kit->save();
+                $this->sincronizarProductosConIds($kit, $request->productos ?? []); // Sincronizar productos del Kit
+                // Actualizar el precio del kit sumando los precios de los productos asociados
+                $kit->load('productos');
+                $precioTotal = $kit->productos->sum(function ($producto) {
+                    return $producto->precio * $producto->pivot->unidades;
+                });
+                $kit->precio = $precioTotal;
+                $kit->save();
             DB::commit();
             return redirect()->route('kit')->with('success', 'Kit actualizado correctamente');
         } catch (Exception $e) {

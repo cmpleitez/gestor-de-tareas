@@ -51,7 +51,7 @@ class RecepcionController extends Controller
             }
         ]);
         $atencion_id_ripped = KeyRipper::rip($atencion->id);
-        $uso_interno = (int) $request->input('uso_interno', Parametro::where('parametro', 'Uso interno')->first()->valor ?? 1);
+        $uso_interno = (int) $request->input('uso_interno', Parametro::where('parametro', 'Uso interno')->first()->valor);
         $recepcion_id = $request->recepcion_id; // Recuperación de recepción (Seguridad para el auto-abierto del sidebar)
         if (!$recepcion_id) {
             $recepcion_id = Recepcion::where('atencion_id', $atencion->id)
@@ -364,14 +364,14 @@ class RecepcionController extends Controller
                     $recepcion->validada_destino = true;
                     $recepcion->save();
                 }
-                $tareaConfirmacion = \App\Models\Tarea::where('tarea', 'Confirmación')->first()->tarea ?? 'Confirmación';
+                $tareaConfirmacion = Tarea::where('tarea', 'Confirmación')->first()->tarea;
                 app(GestionService::class)->reportarTarea($tareaConfirmacion, $recepcion_id, $atencion_id); //Reportar tarea
             DB::commit();
             try {
                 if ($recepcion) {
                     $uso_interno = Parametro::where('parametro', 'Uso interno')->first();
                     $uso_interno = $uso_interno ? $uso_interno->valor : 1;
-                    if ($uso_interno == 0) { //Parametrizado: Uso interno-externo
+                    if ($uso_interno == 0) { //Parametrizado: Uso interno
                         $oficina_id = auth()->user()->oficina_id;
                         $receptores = User::where('oficina_id', $oficina_id)
                             ->whereHas('roles', function($q) {
@@ -409,7 +409,7 @@ class RecepcionController extends Controller
         $atencion_id = $request->input('atencion_id');
         $recepcion_id = $request->input('recepcion_id');
         $ordenes_recibidas = $request->input('ordenes', []);
-        $uso_interno = (int) $request->input('uso_interno', Parametro::where('parametro', 'Uso interno')->first()->valor ?? 1);
+        $uso_interno = (int) $request->input('uso_interno', Parametro::where('parametro', 'Uso interno')->first()->valor);
         // VALIDACIÓN
         if (empty($atencion_id) || empty($recepcion_id) || empty($ordenes_recibidas)) { //Intento de inyección
             return response()->json([
@@ -464,7 +464,7 @@ class RecepcionController extends Controller
                         }
                     }
                 }
-                if ($uso_interno == 0) { //Parametrizado: Uso interno-externo
+                if ($uso_interno == 0) { //Parametrizado: Uso interno
                     $estado_en_progreso_id = Estado::where('estado', 'En progreso')->first()->id; //Revertir estado de la tarea
                     $actividadStock = Actividad::whereHas('recepcion', function($q) use ($atencion_id) {
                         $q->where('atencion_id', $atencion_id);
@@ -520,7 +520,7 @@ class RecepcionController extends Controller
         $atencion_id = $request->input('atencion_id');
         $recepcion_id = $request->input('recepcion_id');
         $ordenes_recibidas = $request->input('ordenes', []);
-        $uso_interno = $request->input('uso_interno', Parametro::where('parametro', 'Uso interno')->first()->valor ?? 1);
+        $uso_interno = $request->input('uso_interno', Parametro::where('parametro', 'Uso interno')->first()->valor);
         // VALIDACIÓN
         if (empty($atencion_id) || empty($ordenes_recibidas)) {
             return response()->json([
@@ -551,7 +551,7 @@ class RecepcionController extends Controller
                 ], 422);
             }
             foreach ($detalles as $detalle) {
-                if ($uso_interno == 0) { //Parametrizado: Uso interno-externo
+                if ($uso_interno == 0) { //Parametrizado: Uso interno
                     if ($detalle->stock_fisico_existencias === null) {
                         return response()->json([
                             'success' => false,
@@ -574,10 +574,10 @@ class RecepcionController extends Controller
                     $recepcion->validada_destino = true;
                     $recepcion->save();
                 }
-                $tareaRevision = Tarea::where('tarea', 'Revisión')->first()->tarea ?? 'Revisión';
+                $tareaRevision = Tarea::where('tarea', 'Revisión')->first()->tarea;
                 app(GestionService::class)->reportarTarea($tareaRevision, $recepcion_id, $atencion_id);
             DB::commit();
-            if ($uso_interno == 0) { //Parametrizado: Uso interno-externo
+            if ($uso_interno == 0) { //Parametrizado: Uso interno
                 $recepcion->load('atencion.ordenes.detalle.kit', 'atencion.ordenes.detalle.producto');
                 $recepcion->usuarioOrigen->notify(new OrdenValidadaNotification($recepcion));
             }
@@ -654,7 +654,7 @@ class RecepcionController extends Controller
                     ])->decrement('unidades', $orden->unidades * $detalle->unidades);
                 }
             }
-            $tareaDescarga = \App\Models\Tarea::where('tarea', 'Descarga')->first()->tarea ?? 'Descarga'; // Reportando Tarea
+            $tareaDescarga = Tarea::where('tarea', 'Descarga')->first()->tarea; // Reportando Tarea
             app(GestionService::class)->reportarTarea($tareaDescarga, $recepcion_id, $atencion_id);
             DB::commit(); //Resultado
             return response()->json([

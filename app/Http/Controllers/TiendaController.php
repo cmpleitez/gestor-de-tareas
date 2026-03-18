@@ -76,7 +76,7 @@ class TiendaController extends Controller
                 ->where('activo', true)
                 ->value('id');
         }
-        $uso_interno = (int) (Parametro::where('parametro', 'Uso interno')->first()->valor ?? 1);
+        $uso_interno = (int) (Parametro::where('parametro', 'Uso interno')->first()->valor);
         return view('modelos.kit.carrito', [
             'atencion' => $atencion,
             'atencion_id_ripped' => $atencion_id_ripped,
@@ -507,7 +507,7 @@ class TiendaController extends Controller
                 if ($equipos->isEmpty()) {
                     return redirect()->route('tienda')->with('warning', 'No hay equipos de trabajo disponibles para asignar las solicitudes');
                 }
-                if ($uso_interno == 0) { //Parametrizado: Uso interno-externo
+                if ($uso_interno == 0) { //Parametrizado: Uso interno
                     $operadores = User::whereHas('roles', function ($query) {
                         $query->where('name', 'operador');
                     })->whereHas('oficina', function ($query) use ($user) {

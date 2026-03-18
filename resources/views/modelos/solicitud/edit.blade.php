@@ -31,7 +31,6 @@
                     <div class="card-content">
                         <div class="card-body">
                             <div class="row">
-                                {{-- SOLICITUD --}}
                                 <div class="col-md-12">
                                     <div class="form-group"> {{-- Solicitud --}}
                                         <label for="solicitud">Solicitud</label>
