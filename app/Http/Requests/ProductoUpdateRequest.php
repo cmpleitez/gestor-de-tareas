@@ -55,10 +55,14 @@ class ProductoUpdateRequest extends FormRequest
         $validator->after(function ($validator) {
             $producto       = $this->route('producto');
             $nombreCambio   = $this->input('producto') !== $producto->producto;
-            $tieneHistorial = $producto->kits()->exists() || $producto->movimientos()->exists();
+            $tieneHistorial = $producto->kits()->exists() 
+            || $producto->movimientos()->exists() 
+            || $producto->oficinaStock->exists() 
+            || $producto->detalles()->exists() 
+            || $producto->equivalentes()->exists();
 
             if ($nombreCambio && $tieneHistorial) {
-                $validator->errors()->add('producto', 'No se puede cambiar el nombre del producto porque ya tiene kits o movimientos asociados.');
+                $validator->errors()->add('producto', 'No se puede cambiar el nombre del producto porque ya tiene kits, movimientos, stocks, ordenes de compra o producto equivalentes asociados.');
             }
         });
     }

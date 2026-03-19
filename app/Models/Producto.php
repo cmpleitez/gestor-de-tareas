@@ -46,4 +46,14 @@ class Producto extends Model
         return $this->hasMany(KitProducto::class, 'producto_id', 'id');
     }
 
+    public function equivalentes()
+    {
+        return $this->hasMany(Equivalente::class);
+    }
+
+    public function detalles()
+    {
+        return $this->hasMany(Detalle::class);
+    }
+
 }
