@@ -1,15 +1,15 @@
-PAUTAS:
-    🟠 Duis validos:
+🟠 PAUTAS:
+    . Duis validos:
         012345678
         023456783
         123456784
         234567890
         456789012
-    🟠 Tasas de refresco: Prueba de 40 minutos de estres
+    . Tasas de refresco: Prueba de 40 minutos de estres
         Nuevas recibidas: 60 segundos
         Actualizar avance: 60 segundos
         Notificaciones limewire: 60 segundos
-    🟠 Uso interno en primera fase y uso externo en seguda fase para ambos Mostro y Dobinsons, se cumple que se usa el mismo procedimiento
+    . Uso interno en primera fase y uso externo en seguda fase para ambos Mostro y Dobinsons, se cumple que se usa el mismo procedimiento
 
 PROCEDIMIENTO: perfil cpleitez.2024@gmail.com https://miro.com/app/board/uXjVJy6iRzE=/
         ✨. Cliente: Entra a la <Tienda>, selecciona en el catálogo el kit y da clic en <agregar al carrito>
@@ -67,21 +67,21 @@ PROCEDIMIENTO: perfil cpleitez.2024@gmail.com https://miro.com/app/board/uXjVJy6
                 . En cuanto el receptor y el operador han realizado todas las tareas, establece el estado de "Resuelta" a todas las copias de la solicitud
                 y a su solicitud principal <Atencion>, en consecuencia la solicitud se coloca en el tablero de resueltas.
 
-SEGURIDAD:
+🟠 SEGURIDAD:
 
     . Sin pendientes
 
-SERVICIOS:
+🟢 SERVICIOS:
     
-    🟢 Reportes para el receptor y el administrador:
+    Reportes para el receptor y el administrador:
         . Historial de entradas y salidas en stocks
         
-    🟢 Revisiones:
+    Revisiones:
         . Sin pendientes
 
-CLIENTE:
+🟡 CLIENTE:
 
-    🔵 Que el cliente brinde la información del dominio
+    . Que el cliente brinde la información del dominio
         Pasos básicos para enlazar IP pública con dominio:
         1. Configurar DNS en tu proveedor de dominio
         Ve al panel de tu proveedor de dominio (GoDaddy, Namecheap, etc.)
@@ -112,4 +112,4 @@ CLIENTE:
             Registro A: @ → IP del servidor
             Registro A: www → IP del servidor
 
-    🔵 revisar si se mantendrá el dui o se retira
+    . revisar si se mantendrá el dui o se retira
