@@ -158,6 +158,7 @@ Route::middleware([
             Route::post('confirmar-pago', [RecepcionController::class, 'confirmarPago'])->name('recepcion.confirmar-pago')->middleware('can:confirmar');
             Route::post('descargar-stock', [RecepcionController::class, 'descargarStock'])->name('recepcion.descargar-stock')->middleware('can:editar');
             Route::post('efectuar-entrega', [RecepcionController::class, 'efectuarEntrega'])->name('recepcion.efectuar-entrega')->middleware('can:confirmar');
+            Route::get('tracking-stocks', [RecepcionController::class, 'historialTransacciones'])->name('recepcion.historial-transacciones')->middleware('can:ver');
         });
     });
 

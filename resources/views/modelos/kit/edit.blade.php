@@ -264,11 +264,11 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-light-warning" data-dismiss="modal">
                             <i class="bx bx-x d-block d-sm-none"></i>
-                            <span class="d-none d-sm-block">Close</span>
+                            <span class="d-none d-sm-block">Cerrar</span>
                         </button>
                         <button type="submit" class="btn btn-warning ml-1">
                             <i class="bx bx-check d-block d-sm-none"></i>
-                            <span class="d-none d-sm-block">Accept</span>
+                            <span class="d-none d-sm-block">Asociar</span>
                         </button>
                     </div>
                 </form>

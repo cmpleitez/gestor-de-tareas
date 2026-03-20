@@ -714,7 +714,11 @@ class RecepcionController extends Controller
         }
     }
 
-
+    public function historialTransacciones(Request $request)
+    {
+        $productos = Producto::where('activo', true)->orderBy('producto', 'asc')->get();
+        return view('reportes.historial-transacciones', compact('productos'));
+    }
 
     public function storeStock(Request $request)
     {

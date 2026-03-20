@@ -39,6 +39,8 @@
     <link href="{{ asset('app-assets/css/plugins/forms/validation/form-validation.css') }}" rel="stylesheet">
     <link href="{{ asset('app-assets/css/plugins/forms/input-clear.css') }}" rel="stylesheet">
     <link href="{{ asset('app-assets/css/plugins/extensions/toastr.css') }}" rel="stylesheet">
+    <link href="{{ asset('app-assets/vendors/css/pickers/pickadate/pickadate.css') }}" rel="stylesheet">
+    <link href="{{ asset('app-assets/vendors/css/pickers/daterange/daterangepicker.css') }}" rel="stylesheet">
     <!-- END: All CSS-->
 
     <!-- BEGIN: Gestor de Tareas CSS-->
@@ -245,6 +247,8 @@
                                         <i class="bx bx-right-arrow-alt"></i>
                                         <span class="menu-item" data-i18n="Second Level">Productos</span>
                                     </a></li>
+                                
+
                             </ul>
                         </li>
                     @endcan
@@ -256,13 +260,19 @@
                         @can('gestionar')
                             @can('ver')
                                 <li><a href="{{ route('recepcion.create-stock') }}">
-                                        <i class="bx bx-right-arrow-alt"></i>
-                                        <span class="menu-item" data-i18n="Second Level">Stocks</span>
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Stocks</span>
+                                </a></li>
+
+                                <li><a href="{{ route('recepcion.historial-transacciones') }}">
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Historial de transacciones</span>
                                 </a></li>
                             @endcan
                         @endcan
                         @can('tienda')
                             @can('ver')
+                                <li class="dropdown-divider"></li>
                                 <li><a href="{{ Route('tienda') }}">
                                     <i class="bx bx-right-arrow-alt"></i>
                                     <span class="menu-item" data-i18n="Second Level">Tienda</span>
@@ -340,6 +350,13 @@
     <script src="{{ asset('app-assets/vendors/js/charts/chart.min.js') }}"></script>
     <script src="{{ asset('app-assets/js/scripts/forms/input-clear.js') }}"></script>
     <script src="{{ asset('app-assets/js/scripts/forms/input-masks.js') }}"></script>
+    <script src="{{ asset('app-assets/vendors/js/pickers/pickadate/picker.js') }}"></script>
+    <script src="{{ asset('app-assets/vendors/js/pickers/pickadate/picker.date.js') }}"></script>
+    <script src="{{ asset('app-assets/vendors/js/pickers/pickadate/picker.time.js') }}"></script>
+    <script src="{{ asset('app-assets/vendors/js/pickers/pickadate/legacy.js') }}"></script>
+    <script src="{{ asset('app-assets/vendors/js/pickers/daterange/moment.min.js') }}"></script>
+    <script src="{{ asset('app-assets/vendors/js/pickers/daterange/daterangepicker.js') }}"></script>
+    <script src="{{ asset('app-assets/js/scripts/pickers/dateTime/pick-a-datetime.js') }}"></script>
     <!-- END: Vendor JavaScript -->
 
     <!-- ... otros scripts ... -->
@@ -389,6 +406,21 @@
             // Inicializar Inputmask globalmente para todos los inputs con atributos data-inputmask
             if (typeof $.fn.inputmask !== 'undefined') {
                 $(":input[data-inputmask]").inputmask();
+            }
+
+            // Inicializar Pick-a-date globalmente en español para cualquier reporte
+            if (typeof $.fn.pickadate !== 'undefined') {
+                $('.filtro-fecha-espanol').pickadate({
+                    selectYears: true,
+                    selectMonths: true,
+                    formatSubmit: 'yyyy-mm-dd',
+                    monthsFull: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+                    monthsShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+                    weekdaysShort: ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'],
+                    today: 'Hoy',
+                    clear: 'Limpiar',
+                    close: 'Cerrar'
+                });
             }
         });
     </script>
