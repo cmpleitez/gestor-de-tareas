@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
     <meta name="description" content="Gestor de Tareas">
     <meta name="keywords" content="">
-    <meta name="author" content="Carlos Pleitez - cpleitez.2@gmail.com">
+    <meta name="author" content="Carlos Pleitez - cpleitez.2024@gmail.com">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     {{-- Titulo de la aplicación --}}
@@ -266,7 +266,7 @@
 
                                 <li><a href="{{ route('recepcion.historial-transacciones') }}">
                                     <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Historial de transacciones</span>
+                                    <span class="menu-item" data-i18n="Second Level">Transacciones</span>
                                 </a></li>
                             @endcan
                         @endcan
@@ -406,6 +406,36 @@
             // Inicializar Inputmask globalmente para todos los inputs con atributos data-inputmask
             if (typeof $.fn.inputmask !== 'undefined') {
                 $(":input[data-inputmask]").inputmask();
+            }
+
+            // Inicializar Select2 globalmente
+            if (typeof $.fn.select2 !== 'undefined') {
+                function formatSelect2Option(item) {
+                    if (!item.id) {
+                        return item.text;
+                    }
+                    var element = $(item.element);
+                    var codigo = element.data('codigo');
+                    var nombre = element.data('nombre');
+                    
+                    if (codigo && nombre) {
+                        var $badge = $('<span class="badge bg-secondary-dark text-white font-weight-bold" style="font-size: 0.8rem; margin-right: 8px;"></span>').text(codigo);
+                        var $text = $('<span></span>').text(nombre);
+                        return $('<span></span>').append($badge).append($text);
+                    }
+                    return item.text;
+                }
+
+                $('.select2').select2({
+                    width: '100%',
+                    templateResult: formatSelect2Option,
+                    templateSelection: formatSelect2Option,
+                    language: {
+                        noResults: function() {
+                            return "No se encontraron resultados";
+                        }
+                    }
+                });
             }
 
             // Inicializar Pick-a-date globalmente en español para cualquier reporte

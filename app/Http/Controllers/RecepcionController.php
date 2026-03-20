@@ -716,6 +716,12 @@ class RecepcionController extends Controller
 
     public function historialTransacciones(Request $request)
     {
+        //agregar aqui la validación de los campos parametros
+
+        if ($request->ajax()) {
+            Log::info("Consulta de historial - Producto ID: " . $request->producto_id . " | Fecha: " . $request->fecha);
+            return response()->json(['success' => true]);
+        }
         $productos = Producto::where('activo', true)->orderBy('producto', 'asc')->get();
         return view('reportes.historial-transacciones', compact('productos'));
     }

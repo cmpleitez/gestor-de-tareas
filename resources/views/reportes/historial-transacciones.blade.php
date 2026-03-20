@@ -6,7 +6,7 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-header">
-                <h4 class="card-title">Selección</h4>
+                <h6 class="card-title">Selección</h6>
             </div>
             <div class="card-content">
                 <div class="card-body mt-2">
@@ -14,14 +14,13 @@
                         <div class="col-md-6">
                             <h6>Productos</h6>
                             <div class="form-group">
-                                <select class="select2 form-control">
-                                    <option value="square">Square</option>
-                                    <option value="rectangle">Rectangle</option>
-                                    <option value="rombo">Rombo</option>
-                                    <option value="romboid">Romboid</option>
-                                    <option value="trapeze">Trapeze</option>
-                                    <option value="traible">Triangle</option>
-                                    <option value="polygon">Polygon</option>
+                                <select id="producto_id" class="select2 form-control">
+                                    <option value="">Seleccione un producto...</option>
+                                    @foreach($productos as $producto)
+                                        <option value="{{ $producto->id }}" data-codigo="{{ $producto->codigo }}" data-nombre="{{ $producto->producto }}">
+                                            {{ $producto->codigo }} - {{ $producto->producto }}
+                                        </option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
@@ -35,6 +34,13 @@
                             </fieldset>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-12 d-flex justify-content-end">
+                            <button type="button" id="consultar" class="btn btn-primary shadow">
+                                <i class="bx bx-search mr-50"></i> Consultar
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -45,9 +51,9 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-header">
-                <h4 class="card-title">
+                <h6 class="card-title">
                     Historial de transacciones
-                </h4>
+                </h6>
             </div>
             <div class="card-content">
                 <div class="card-body">
@@ -79,4 +85,32 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section('js')
+<script>
+    $(document).ready(function() {
+        $('#consultar').on('click', function() {
+            let producto_id = $('#producto_id').val();
+            let fecha = $('#filtro-fecha').val();
+
+            $.ajax({
+                url: "{{ route('recepcion.historial-transacciones') }}",
+                type: 'GET',
+                data: {
+                    producto_id: producto_id,
+                    fecha: fecha
+                },
+                success: function(response) {
+                    toastr.success('Consulta enviada al servidor');
+                    console.log('Respuesta:', response);
+                },
+                error: function(xhr) {
+                    toastr.error('Error al procesar la consulta');
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+    });
+</script>
 @endsection
