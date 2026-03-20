@@ -65,26 +65,6 @@ Route::middleware([
             Route::post('activate/{user}', [userController::class, 'activate'])->name('user.activate')->middleware('can:activar');
         });
 
-        Route::group(['prefix' => 'equipo'], function () { //Equipos
-            Route::get('/', [equipoController::class, 'index'])->name('equipo')->middleware('can:ver');
-            Route::get('create', [equipoController::class, 'create'])->name('equipo.create')->middleware('can:crear');
-            Route::post('store', [equipoController::class, 'store'])->name('equipo.store')->middleware('can:crear');
-            Route::get('edit/{equipo}', [equipoController::class, 'edit'])->name('equipo.edit')->middleware('can:editar');
-            Route::put('update/{equipo}', [equipoController::class, 'update'])->name('equipo.update')->middleware('can:editar');
-            Route::get('destroy/{equipo}', [equipoController::class, 'destroy'])->name('equipo.destroy')->middleware('can:eliminar');
-            Route::post('activate/{equipo}', [equipoController::class, 'activate'])->name('equipo.activate')->middleware('can:activar');
-        });
-        
-        Route::group(['prefix' => 'tarea'], function () { //Tareas
-            Route::get('/', [tareaController::class, 'index'])->name('tarea')->middleware('can:ver');
-            Route::get('create', [tareaController::class, 'create'])->name('tarea.create')->middleware('can:crear');
-            Route::post('store', [tareaController::class, 'store'])->name('tarea.store')->middleware('can:crear');
-            Route::get('edit/{tarea}', [tareaController::class, 'edit'])->name('tarea.edit')->middleware('can:editar');
-            Route::put('update/{tarea}', [tareaController::class, 'update'])->name('tarea.update')->middleware('can:editar');
-            Route::get('destroy/{tarea}', [tareaController::class, 'destroy'])->name('tarea.destroy')->middleware('can:eliminar');
-            Route::post('activate/{tarea}', [tareaController::class, 'activate'])->name('tarea.activate')->middleware('can:activar');
-        });
-
         Route::group(['prefix' => 'marca'], function () { //Marcas
             Route::get('/', [marcaController::class, 'index'])->name('marca')->middleware('can:ver');
             Route::get('create', [marcaController::class, 'create'])->name('marca.create')->middleware('can:crear');

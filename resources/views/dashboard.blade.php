@@ -218,10 +218,6 @@
                                         <i class="bx bx-right-arrow-alt"></i>
                                         <span class="menu-item" data-i18n="Second Level">Usuarios</span>
                                     </a></li>
-                                <li><a href="{{ Route('equipo') }}">
-                                        <i class="bx bx-right-arrow-alt"></i>
-                                        <span class="menu-item" data-i18n="Second Level">Equipos</span>
-                                    </a></li>
                                 <li><a href="{{ Route('solicitud') }}">
                                         <i class="bx bx-right-arrow-alt"></i>
                                         <span class="menu-item" data-i18n="Second Level">Solicitudes</span>
@@ -233,10 +229,6 @@
 
                                 <li class="dropdown-divider"></li>
 
-                                <li><a href="{{ Route('tarea') }}">
-                                        <i class="bx bx-right-arrow-alt"></i>
-                                        <span class="menu-item" data-i18n="Second Level">Tareas</span>
-                                    </a></li>
                                 <li><a href="{{ Route('marca') }}">
                                         <i class="bx bx-right-arrow-alt"></i>
                                         <span class="menu-item" data-i18n="Second Level">Marcas</span>
