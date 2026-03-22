@@ -750,6 +750,32 @@ class RecepcionController extends Controller
 
         // Si pasa la validación, por ahora solo retornamos confirmación de que llegó bien
         Log::info("Consulta de historial validada - Producto ID: " . $request->producto_id . " | Fecha: " . $request->fecha);
+
+
+
+        $salidas = Detalle::select(['orden_id', 'unidades', 'created_at'])
+        ->with(['orden.atencion'])
+        ->whereHas('orden.atencion', function ($query) {
+            $query->where('activo', true)
+                ->where('oficina_id', auth()->user()->oficina_id)
+                ->whereHas('estado', function ($q) {
+                    $q->where('estado', 'Resuelta');
+                });
+        })
+        ->where('producto_id', $request->producto_id)
+        ->whereDate('created_at', '>=', $request->fecha)
+        ->get();
+
+        
+
+        //extraer las entradas de la tabla "movimientos" aplicando los filtros: 
+        //created_at>=fecha input del usuario, 
+        //activo=true, 
+        //oficina_id=oficina del usuario actual
+        //producto_id=input del usuario
+
+
+
         return response()->json([
             'success' => true,
             'message' => 'Campos validados correctamente. Listo para fase 2.',
