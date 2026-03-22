@@ -247,8 +247,6 @@
                                         <i class="bx bx-right-arrow-alt"></i>
                                         <span class="menu-item" data-i18n="Second Level">Productos</span>
                                     </a></li>
-                                
-
                             </ul>
                         </li>
                     @endcan

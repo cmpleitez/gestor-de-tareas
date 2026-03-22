@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\StockRevisadoNotification;
 use App\Notifications\OrdenValidadaNotification;
-
+use Illuminate\Support\Facades\Validator;
 use App\Models\Actividad;
 use App\Models\Equipo;
 use App\Models\Estado;
@@ -714,16 +714,50 @@ class RecepcionController extends Controller
         }
     }
 
-    public function historialTransacciones(Request $request)
+    public function historialTransacciones()
     {
-        //agregar aqui la validación de los campos parametros
-
-        if ($request->ajax()) {
-            Log::info("Consulta de historial - Producto ID: " . $request->producto_id . " | Fecha: " . $request->fecha);
-            return response()->json(['success' => true]);
-        }
         $productos = Producto::where('activo', true)->orderBy('producto', 'asc')->get();
         return view('reportes.historial-transacciones', compact('productos'));
+    }
+
+    public function lecturaTransacciones(Request $request)
+    {
+        // VALIDACIÓN
+        $validator = Validator::make($request->all(), [
+            'producto_id' => 'required|integer|min:1|exists:productos,id',
+            'fecha'       => 'required|date|after_or_equal:2026-01-01|before_or_equal:2035-01-01',
+        ], [
+            'producto_id.required'         => 'El producto es obligatorio.',
+            'producto_id.integer'          => 'El producto debe ser un valor entero.',
+            'producto_id.min'              => 'El producto no puede ser cero ni negativo.',
+            'producto_id.exists'           => 'El producto seleccionado no existe.',
+            'fecha.required'               => 'La fecha es obligatoria.',
+            'fecha.date'                   => 'La fecha no tiene un formato válido.',
+            'fecha.after_or_equal'         => 'La fecha debe ser igual o posterior al 01/01/2024.',
+            'fecha.before_or_equal'        => 'La fecha debe ser igual o anterior al 01/01/2026.',
+        ]);
+        if ($validator->fails()) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Los parámetros de búsqueda no son válidos.',
+                    'errors'  => $validator->errors(),
+                    'type'    => 'warning',
+                ], 422);
+            }
+            return back()->withErrors($validator)->withInput();
+        }
+
+        // Si pasa la validación, por ahora solo retornamos confirmación de que llegó bien
+        Log::info("Consulta de historial validada - Producto ID: " . $request->producto_id . " | Fecha: " . $request->fecha);
+        return response()->json([
+            'success' => true,
+            'message' => 'Campos validados correctamente. Listo para fase 2.',
+            'data_recibida' => [
+                'producto_id' => $request->producto_id,
+                'fecha' => $request->fecha
+            ]
+        ]);
     }
 
     public function storeStock(Request $request)

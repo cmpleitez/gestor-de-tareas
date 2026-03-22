@@ -2,7 +2,6 @@
 
 @section('contenedor')
 <div class="row">
-    <!-- Columna izquierda: Select2 -->
     <div class="col-lg-12">
         <div class="card">
             <div class="card-header">
@@ -10,37 +9,57 @@
             </div>
             <div class="card-content">
                 <div class="card-body mt-2">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h6>Productos</h6>
-                            <div class="form-group">
-                                <select id="producto_id" class="select2 form-control">
-                                    <option value="">Seleccione un producto...</option>
-                                    @foreach($productos as $producto)
-                                        <option value="{{ $producto->id }}" data-codigo="{{ $producto->codigo }}" data-nombre="{{ $producto->producto }}">
-                                            {{ $producto->codigo }} - {{ $producto->producto }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                    <form id="form-consultar" novalidate>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Productos</h6>
+                                <div class="form-group">
+                                    <select name="producto_id" id="producto_id" class="select2 form-control {{ $errors->has('producto_id') ? 'is-invalid' : '' }}"
+                                        data-validation-required-message="El producto es obligatorio" required>
+                                        <option value="">Seleccione un producto...</option>
+                                        @foreach($productos as $producto)
+                                            <option value="{{ $producto->id }}" data-codigo="{{ $producto->codigo }}" data-nombre="{{ $producto->producto }}">
+                                                {{ $producto->codigo }} - {{ $producto->producto }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <div class="help-block"></div>
+                                    <div class="invalid-feedback"></div>
+                                    @error('producto_id')
+                                        <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                            {{ $errors->first('producto_id') }}
+                                        </div>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Fecha inicial</h6>
+                                <div class="form-group">
+                                    <fieldset class="position-relative has-icon-left">
+                                        <input type="text" name="fecha" id="filtro-fecha" class="form-control filtro-fecha-espanol {{ $errors->has('fecha') ? 'is-invalid' : '' }}" placeholder="Selecciona una fecha"
+                                            data-validation-required-message="La fecha es obligatoria" required>
+                                        <div class="form-control-position">
+                                            <i class='bx bx-calendar'></i>
+                                        </div>
+                                    </fieldset>
+                                    <div class="help-block"></div>
+                                    <div class="invalid-feedback"></div>
+                                    @error('fecha')
+                                        <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                            {{ $errors->first('fecha') }}
+                                        </div>
+                                    @enderror
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <h6>Fecha inicial</h6>
-                            <fieldset class="form-group position-relative has-icon-left">
-                                <input type="text" id="filtro-fecha" class="form-control filtro-fecha-espanol" placeholder="Selecciona una fecha">
-                                <div class="form-control-position">
-                                    <i class='bx bx-calendar'></i>
-                                </div>
-                            </fieldset>
+                        <div class="row">
+                            <div class="col-12 d-flex justify-content-end">
+                                <button type="submit" id="consultar" class="btn btn-primary shadow">
+                                    <i class="bx bx-search mr-50"></i> Consultar
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12 d-flex justify-content-end">
-                            <button type="button" id="consultar" class="btn btn-primary shadow">
-                                <i class="bx bx-search mr-50"></i> Consultar
-                            </button>
-                        </div>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -90,24 +109,47 @@
 @section('js')
 <script>
     $(document).ready(function() {
-        $('#consultar').on('click', function() {
+        if (typeof jqBootstrapValidation === 'function') {
+            $("input,select,textarea").not("[type=submit]").jqBootstrapValidation();
+        }
+        $('#form-consultar').on('submit', function(e) {
+            e.preventDefault();
+            $('.is-invalid').removeClass('is-invalid');
+            $('.invalid-feedback').text('').hide();
             let producto_id = $('#producto_id').val();
-            let fecha = $('#filtro-fecha').val();
-
+            let $pickerInput = $('#filtro-fecha').pickadate('picker');
+            let fecha = $pickerInput ? $pickerInput.get('select', 'yyyy-mm-dd') : $('#filtro-fecha').val();
             $.ajax({
-                url: "{{ route('recepcion.historial-transacciones') }}",
-                type: 'GET',
+                url: "{{ route('recepcion.lectura-transacciones') }}",
+                type: 'POST',
                 data: {
+                    _token: "{{ csrf_token() }}",
                     producto_id: producto_id,
                     fecha: fecha
                 },
                 success: function(response) {
-                    toastr.success('Consulta enviada al servidor');
-                    console.log('Respuesta:', response);
+                    toastr.success('Consulta procesada exitosamente');
                 },
                 error: function(xhr) {
-                    toastr.error('Error al procesar la consulta');
-                    console.log(xhr.responseText);
+                    console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error en lecturaTransacciones:", xhr);
+                    
+                    if (xhr.status === 422 && xhr.responseJSON.errors) {
+                        let errors = xhr.responseJSON.errors;
+                        toastr.warning(xhr.responseJSON.message || 'Revise los errores en el formulario');
+                        if (errors.producto_id) {
+                            $('#producto_id').addClass('is-invalid');
+                            $('#producto_id').closest('.form-group').find('.invalid-feedback').text(errors.producto_id[0]).show();
+                        }
+                        if (errors.fecha) {
+                            $('#filtro-fecha').addClass('is-invalid');
+                            $('#filtro-fecha').closest('.form-group').find('.invalid-feedback').text(errors.fecha[0]).show();
+                        }
+                    } else {
+                        const errorMessage = xhr.responseJSON && xhr.responseJSON.message 
+                            ? xhr.responseJSON.message 
+                            : 'Error al procesar la consulta';
+                        toastr.error(errorMessage, null, { "progressBar": true, "timeOut": 15000 });
+                    }
                 }
             });
         });
