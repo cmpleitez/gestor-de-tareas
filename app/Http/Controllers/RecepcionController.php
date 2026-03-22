@@ -748,11 +748,6 @@ class RecepcionController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
-        // Si pasa la validación, por ahora solo retornamos confirmación de que llegó bien
-        Log::info("Consulta de historial validada - Producto ID: " . $request->producto_id . " | Fecha: " . $request->fecha);
-
-
-
         $salidas = Detalle::select(['orden_id', 'unidades', 'created_at'])
         ->with(['orden.atencion'])
         ->whereHas('orden.atencion', function ($query) {
@@ -766,15 +761,36 @@ class RecepcionController extends Controller
         ->whereDate('created_at', '>=', $request->fecha)
         ->get();
 
-        
+        $stockBodegaId = Stock::where('stock', 'Bodega')->value('id');
+        $entradas = Movimiento::select(['unidades', 'created_at'])
+            ->where('activo', true)
+            ->whereDate('created_at', '>=', $request->fecha)
+            ->where('oficina_id', auth()->user()->oficina_id)
+            ->where('producto_id', $request->producto_id)
+            ->where('destino_stock_id', $stockBodegaId)
+            ->get();
 
-        //extraer las entradas de la tabla "movimientos" aplicando los filtros: 
-        //created_at>=fecha input del usuario, 
-        //activo=true, 
-        //oficina_id=oficina del usuario actual
-        //producto_id=input del usuario
+        $coleccionSalidas = $salidas->map(function ($item) {
+            return (object) [
+                'tipo'             => 'salida',
+                'unidades'         => $item->unidades,
+                'created_at'       => $item->created_at,
+                'stock_resultante' => null,
+            ];
+        });
 
+        $coleccionEntradas = $entradas->map(function ($item) {
+            return (object) [
+                'tipo'             => 'entrada',
+                'unidades'         => $item->unidades,
+                'created_at'       => $item->created_at,
+                'stock_resultante' => null,
+            ];
+        });
 
+        $transacciones = $coleccionSalidas->concat($coleccionEntradas)
+            ->sortByDesc('created_at')
+            ->values();
 
         return response()->json([
             'success' => true,
