@@ -67,12 +67,7 @@ class RecepcionController extends Controller
         ]);
     }
 
-    public function createStock()
-    {
-        $stocks = Stock::where('activo', true)->get();
-        $productos = Producto::where('activo', true)->with('modelo', 'tipo')->get();
-        return view('modelos.producto.stock', compact('productos', 'stocks'));
-    }
+
 
     public function nuevasRecibidas(Request $request, GestionService $gestionService)
     {
@@ -802,6 +797,13 @@ class RecepcionController extends Controller
         ]);
     }
 
+    public function createStock()
+    {
+        $stocks = Stock::where('activo', true)->get();
+        $productos = Producto::where('activo', true)->with('modelo', 'tipo')->get();
+        return view('modelos.producto.stock', compact('productos', 'stocks'));
+    }
+
     public function storeStock(Request $request)
     {
         //PREESTABLECIMIENTOS
@@ -856,43 +858,57 @@ class RecepcionController extends Controller
             );
         }
         //PROCESOS
+        $stock_bodega_id = Stock::where('stock', 'Bodega')->value('id');
+        $stock_actual = OficinaStock::where('oficina_id', auth()->user()->oficina_id)
+            ->where('stock_id', $stock_bodega_id)
+            ->where('producto_id', $validated['producto_id'])
+            ->value('unidades') ?? 0;
+        
+        
+
         try {
             DB::beginTransaction();
-            if (!$oficinaStockOrigen) { //Stock origen
-                $oficinaStockOrigen = new OficinaStock();
-                $oficinaStockOrigen->oficina_id = auth()->user()->oficina_id;
-                $oficinaStockOrigen->stock_id = $validated['origen_stock_id'];
-                $oficinaStockOrigen->producto_id = $validated['producto_id'];
-                $oficinaStockOrigen->unidades = $origenStockUnidades;
-                $oficinaStockOrigen->save();
-                $oficinaStockOrigen->load('stock'); // Cargar la relación stock después de guardar
-            } else {
-                $oficinaStockOrigen->unidades -= $origenStockUnidades;
-                $oficinaStockOrigen->save();
-            }
-            if (!$oficinaStockDestino) { //Stock destino
-                $oficinaStockDestino = new OficinaStock();
-                $oficinaStockDestino->oficina_id = auth()->user()->oficina_id;
-                $oficinaStockDestino->stock_id = $validated['destino_stock_id'];
-                $oficinaStockDestino->producto_id = $validated['producto_id'];
-                $oficinaStockDestino->unidades = $destinoStockUnidades;
-                $oficinaStockDestino->save();
-                $oficinaStockDestino->load('stock'); // Cargar la relación stock después de guardar
-            } else {
-                $oficinaStockDestino->unidades += $destinoStockUnidades;
-                $oficinaStockDestino->save();
-            }
-            $orientacion = $validated['origen_stock_id'] . auth()->user()->oficina_id . $validated['destino_stock_id'];
-            $movimiento = new Movimiento(); //Movimiento
-            $movimiento->id = app(KeyMaker::class)->generate('Movimiento', $orientacion);
-            $movimiento->user_id = auth()->id();
-            $movimiento->oficina_id = auth()->user()->oficina_id;
-            $movimiento->origen_stock_id = $validated['origen_stock_id'];
-            $movimiento->destino_stock_id = $validated['destino_stock_id'];
-            $movimiento->producto_id = $validated['producto_id'];
-            $movimiento->movimiento = $stockOrigen->stock . ' -> ' . $stockDestino->stock; // Usar los stocks cargados directamente (verificados anteriormente)
-            $movimiento->unidades = $validated['unidades'];
-            $movimiento->save();
+                if (!$oficinaStockOrigen) { //Stock origen
+                    $oficinaStockOrigen = new OficinaStock();
+                    $oficinaStockOrigen->oficina_id = auth()->user()->oficina_id;
+                    $oficinaStockOrigen->stock_id = $validated['origen_stock_id'];
+                    $oficinaStockOrigen->producto_id = $validated['producto_id'];
+                    $oficinaStockOrigen->unidades = $origenStockUnidades;
+                    $oficinaStockOrigen->save();
+                    $oficinaStockOrigen->load('stock'); // Cargar la relación stock después de guardar
+                } else {
+                    $oficinaStockOrigen->unidades -= $origenStockUnidades;
+                    $oficinaStockOrigen->save();
+                }
+                if (!$oficinaStockDestino) { //Stock destino
+                    $oficinaStockDestino = new OficinaStock();
+                    $oficinaStockDestino->oficina_id = auth()->user()->oficina_id;
+                    $oficinaStockDestino->stock_id = $validated['destino_stock_id'];
+                    $oficinaStockDestino->producto_id = $validated['producto_id'];
+                    $oficinaStockDestino->unidades = $destinoStockUnidades;
+                    $oficinaStockDestino->save();
+                    $oficinaStockDestino->load('stock'); // Cargar la relación stock después de guardar
+                } else {
+                    $oficinaStockDestino->unidades += $destinoStockUnidades;
+                    $oficinaStockDestino->save();
+                }
+                $orientacion = $validated['origen_stock_id'] . auth()->user()->oficina_id . $validated['destino_stock_id'];
+                $movimiento = new Movimiento(); //Movimiento
+                $movimiento->id = app(KeyMaker::class)->generate('Movimiento', $orientacion);
+                $movimiento->user_id = auth()->id();
+                $movimiento->oficina_id = auth()->user()->oficina_id;
+                $movimiento->origen_stock_id = $validated['origen_stock_id'];
+                $movimiento->destino_stock_id = $validated['destino_stock_id'];
+                $movimiento->producto_id = $validated['producto_id'];
+                $movimiento->movimiento = $stockOrigen->stock . ' -> ' . $stockDestino->stock; // Usar los stocks cargados directamente (verificados anteriormente)
+                $movimiento->unidades = $validated['unidades'];
+                if($stockOrigen->id == $stock_bodega_id){ //Stock resultante
+                    $movimiento->stock_resultante = $oficinaStockOrigen->unidades;
+                }
+                if($stockDestino->id == $stock_bodega_id){
+                    $movimiento->stock_resultante = $oficinaStockDestino->unidades;
+                }
+                $movimiento->save();
             DB::commit();
             return back()->with('success', 'Movimiento ' . $movimiento->movimiento . ' efectuado correctamente');
         } catch (\Illuminate\Database\QueryException $e) {

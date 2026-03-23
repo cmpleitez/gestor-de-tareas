@@ -77,6 +77,9 @@ PROCEDIMIENTO: perfil cpleitez.2024@gmail.com https://miro.com/app/board/uXjVJy6
         . Historial de entradas y salidas en stocks
             . analizar como obtener el stock resultante luego de efectuada una transaccion especifica en la linea de tiempo
               para tomarlo como punto de partida para recrear la secuencia historica de transacciones hasta llegar al stock actual
+            . Salidas: movimientos y ventas
+            . Entradas: movimientos y devoluciones
+            . Hay errores en la carga de stock desde las diferentes stocks: proveedores, bodega, reservados en transito....
     
     Revisiones:
         . Sin pendientes

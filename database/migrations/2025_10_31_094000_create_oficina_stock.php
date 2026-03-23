@@ -12,7 +12,7 @@ return new class extends Migration
             $table->foreignId('oficina_id')->constrained('oficinas');
             $table->foreignId('stock_id')->constrained('stocks');
             $table->foreignId('producto_id')->constrained('productos');
-            $table->bigInteger('unidades');
+            $table->integer('unidades');
             $table->timestamps();
             $table->primary(['oficina_id', 'stock_id', 'producto_id' ]);
         });

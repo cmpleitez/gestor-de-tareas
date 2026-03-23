@@ -175,8 +175,8 @@
                             </div>
                         </div>
                         <div class="modal-footer d-flex justify-content-end">
-                            <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Cerrar</button>
-                            <button type="submit" class="btn btn-primary btn-sm" id="btnRegistrar">Registrar</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                            <button type="submit" class="btn btn-primary" id="btnRegistrar">Cargar</button>
                         </div>
                     </div>
                 </form>

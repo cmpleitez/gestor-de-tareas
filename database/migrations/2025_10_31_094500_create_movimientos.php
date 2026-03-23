@@ -16,7 +16,8 @@ return new class extends Migration
             $table->foreignId('destino_stock_id')->constrained('stocks');
             $table->foreignId('producto_id')->constrained('productos');
             $table->string('movimiento');
-            $table->bigInteger('unidades');
+            $table->integer('unidades');
+            $table->integer('stock_resultante');
             $table->boolean('activo')->default(true);
             $table->timestamps();
         });
