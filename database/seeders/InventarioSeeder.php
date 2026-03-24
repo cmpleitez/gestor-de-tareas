@@ -42,6 +42,5 @@ class InventarioSeeder extends Seeder
                 ]
             );
         }
-
     }
 }

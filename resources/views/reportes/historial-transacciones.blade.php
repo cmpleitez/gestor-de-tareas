@@ -76,28 +76,8 @@
             </div>
             <div class="card-content">
                 <div class="card-body">
-                    <ul class="widget-timeline mb-0">
-                        <li class="timeline-items timeline-icon-primary active">
-                            <div class="timeline-time">September, 16</div>
-                            <h6 class="timeline-title">1983, orders, $4220</h6>
-                            <p class="timeline-text">2 hours ago</p>
-                            <div class="timeline-content">
-                                <img src="{{ asset('app-assets/images/icon/pdf.png') }}" alt="document" height="23" width="19" class="mr-50">New Order.pdf
-                            </div>
-                        </li>
-                        <li class="timeline-items timeline-icon-primary active">
-                            <div class="timeline-time">September, 17</div>
-                            <h6 class="timeline-title">12 Invoices have been paid</h6>
-                            <p class="timeline-text">25 minutes ago</p>
-                            <div class="timeline-content">
-                                <img src="{{ asset('app-assets/images/icon/pdf.png') }}" alt="document" height="23" width="19" class="mr-50">Invoices.pdf
-                            </div>
-                        </li>
-                        <li class="timeline-items timeline-icon-primary active pb-0">
-                            <div class="timeline-time">September, 18</div>
-                            <h6 class="timeline-title">Order #37745 from September</h6>
-                            <p class="timeline-text">4 minutes ago</p>
-                        </li>
+                    <ul class="widget-timeline mb-0" id="lista-transacciones">
+                        <!-- El historial se cargará aquí dinámicamente -->
                     </ul>
                 </div>
             </div>
@@ -128,11 +108,50 @@
                     fecha: fecha
                 },
                 success: function(response) {
+                    let transacciones = response.data_recibida.transacciones;
+                    let $lista = $('#lista-transacciones');
+                    $lista.empty();
+                    if (transacciones.length > 0) {
+                        transacciones.forEach(function(item) {
+                            let dateObj = new Date(item.created_at);
+                            let longDate = new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'long' }).format(dateObj);
+                            function getRelativeTime(date) {
+                                const now = new Date();
+                                const diffInSeconds = Math.floor((now - date) / 1000);
+                                if (diffInSeconds < 60) return 'hace un momento';
+                                const diffInMinutes = Math.floor(diffInSeconds / 60);
+                                if (diffInMinutes < 60) return `hace ${diffInMinutes} ${diffInMinutes === 1 ? 'minuto' : 'minutos'}`;
+                                const diffInHours = Math.floor(diffInMinutes / 60);
+                                if (diffInHours < 24) return `hace ${diffInHours} ${diffInHours === 1 ? 'hora' : 'horas'}`;
+                                const diffInDays = Math.floor(diffInHours / 24);
+                                if (diffInDays < 30) return `hace ${diffInDays} ${diffInDays === 1 ? 'día' : 'días'}`;
+                                return longDate;
+                            }
+                            let relDate = getRelativeTime(dateObj);
+                            let iconClass = item.tipo === 'entrada' ? 'timeline-icon-success' : 'timeline-icon-primary';
+                            let textClass = item.tipo === 'entrada' ? 'text-success-dark' : 'text-primary';
+                            let tipoLabel = item.tipo.charAt(0).toUpperCase() + item.tipo.slice(1);
+                            let unitsFormatted = new Intl.NumberFormat('en-US').format(item.unidades);
+                            let stockFormatted = new Intl.NumberFormat('en-US').format(item.stock_resultante);
+                            let html = `
+                                <li class="timeline-items ${iconClass} active">
+                                    <div class="timeline-time text-capitalize">${relDate}</div>
+                                    <h6 class="timeline-title"><b class="${textClass}">${unitsFormatted} unidades</b> -> Stock Resultante: ${stockFormatted}</h6>
+                                    <p class="timeline-text text-muted">${longDate}</p>
+                                    <div class="timeline-content">
+                                        <span class="text-secondary">${tipoLabel} : ${item.movimiento}</span>
+                                    </div>
+                                </li>
+                            `;
+                            $lista.append(html);
+                        });
+                    } else {
+                        $lista.append('<li class="timeline-items timeline-icon-warning active"><div class="timeline-content">No se encontraron movimientos para el criterio seleccionado.</div></li>');
+                    }
                     toastr.success('Consulta procesada exitosamente');
                 },
                 error: function(xhr) {
                     console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error en lecturaTransacciones:", xhr);
-                    
                     if (xhr.status === 422 && xhr.responseJSON.errors) {
                         let errors = xhr.responseJSON.errors;
                         toastr.warning(xhr.responseJSON.message || 'Revise los errores en el formulario');

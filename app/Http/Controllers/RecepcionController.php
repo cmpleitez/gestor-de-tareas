@@ -728,8 +728,8 @@ class RecepcionController extends Controller
             'producto_id.exists'           => 'El producto seleccionado no existe.',
             'fecha.required'               => 'La fecha es obligatoria.',
             'fecha.date'                   => 'La fecha no tiene un formato válido.',
-            'fecha.after_or_equal'         => 'La fecha debe ser igual o posterior al 01/01/2024.',
-            'fecha.before_or_equal'        => 'La fecha debe ser igual o anterior al 01/01/2026.',
+            'fecha.after_or_equal'         => 'La fecha debe ser igual o posterior al 01/01/2026.',
+            'fecha.before_or_equal'        => 'La fecha debe ser igual o anterior al 01/01/2035.',
         ]);
         if ($validator->fails()) {
             if ($request->ajax()) {
@@ -742,8 +742,25 @@ class RecepcionController extends Controller
             }
             return back()->withErrors($validator)->withInput();
         }
+        //PROCESO
+        $stockBodegaId = Stock::where('stock', 'Bodega')->value('id');
+        $entradas = Movimiento::select(['unidades', 'movimiento', 'stock_destino_resultante', 'created_at'])
+            ->where('activo', true)
+            ->whereDate('created_at', '>=', $request->fecha)
+            ->where('oficina_id', auth()->user()->oficina_id)
+            ->where('producto_id', $request->producto_id)
+            ->where('destino_stock_id', $stockBodegaId)
+            ->get();
 
-        $salidas = Detalle::select(['orden_id', 'unidades', 'created_at'])
+        $salidas_1 = Movimiento::select(['unidades', 'movimiento', 'stock_origen_resultante', 'created_at'])
+            ->where('activo', true)
+            ->whereDate('created_at', '>=', $request->fecha)
+            ->where('oficina_id', auth()->user()->oficina_id)
+            ->where('producto_id', $request->producto_id)
+            ->where('origen_stock_id', $stockBodegaId)
+            ->get();
+
+        $salidas_2 = Detalle::select(['orden_id', 'unidades', 'stock_resultante', 'created_at'])
         ->with(['orden.atencion'])
         ->whereHas('orden.atencion', function ($query) {
             $query->where('activo', true)
@@ -755,44 +772,46 @@ class RecepcionController extends Controller
         ->where('producto_id', $request->producto_id)
         ->whereDate('created_at', '>=', $request->fecha)
         ->get();
-
-        $stockBodegaId = Stock::where('stock', 'Bodega')->value('id');
-        $entradas = Movimiento::select(['unidades', 'created_at'])
-            ->where('activo', true)
-            ->whereDate('created_at', '>=', $request->fecha)
-            ->where('oficina_id', auth()->user()->oficina_id)
-            ->where('producto_id', $request->producto_id)
-            ->where('destino_stock_id', $stockBodegaId)
-            ->get();
-
-        $coleccionSalidas = $salidas->map(function ($item) {
-            return (object) [
-                'tipo'             => 'salida',
-                'unidades'         => $item->unidades,
-                'created_at'       => $item->created_at,
-                'stock_resultante' => null,
-            ];
-        });
-
         $coleccionEntradas = $entradas->map(function ($item) {
             return (object) [
                 'tipo'             => 'entrada',
+                'movimiento'       => $item->movimiento,
                 'unidades'         => $item->unidades,
+                'stock_resultante' => $item->stock_destino_resultante,
                 'created_at'       => $item->created_at,
-                'stock_resultante' => null,
             ];
         });
-
-        $transacciones = $coleccionSalidas->concat($coleccionEntradas)
+        $coleccionSalidas_1 = $salidas_1->map(function ($item) {
+            return (object) [
+                'tipo'              => 'salida',
+                'movimiento'        => $item->movimiento,
+                'unidades'          => $item->unidades,
+                'stock_resultante' => $item->stock_origen_resultante,
+                'created_at'        => $item->created_at,
+            ];
+        });
+        $coleccionSalidas_2 = $salidas_2->map(function ($item) {
+            return (object) [
+                'tipo'              => 'salida',
+                'movimiento'        => 'Sala de ventas -> Cliente',
+                'unidades'          => $item->unidades,
+                'stock_resultante' => $item->stock_resultante,
+                'created_at'        => $item->created_at,
+            ];
+        });
+        $transacciones = $coleccionSalidas_1->concat($coleccionSalidas_2)->concat($coleccionEntradas)
             ->sortByDesc('created_at')
             ->values();
 
-        return response()->json([
+        Log::info('Log:: [Usuario: ' . auth()->user()->name . '] Historial de transacciones: ' . json_encode($transacciones));
+
+        return response()->json([ //resultado temporal para depuracion
             'success' => true,
             'message' => 'Campos validados correctamente. Listo para fase 2.',
             'data_recibida' => [
                 'producto_id' => $request->producto_id,
-                'fecha' => $request->fecha
+                'fecha' => $request->fecha,
+                'transacciones' => $transacciones
             ]
         ]);
     }
@@ -858,14 +877,6 @@ class RecepcionController extends Controller
             );
         }
         //PROCESOS
-        $stock_bodega_id = Stock::where('stock', 'Bodega')->value('id');
-        $stock_actual = OficinaStock::where('oficina_id', auth()->user()->oficina_id)
-            ->where('stock_id', $stock_bodega_id)
-            ->where('producto_id', $validated['producto_id'])
-            ->value('unidades') ?? 0;
-        
-        
-
         try {
             DB::beginTransaction();
                 if (!$oficinaStockOrigen) { //Stock origen
@@ -902,12 +913,8 @@ class RecepcionController extends Controller
                 $movimiento->producto_id = $validated['producto_id'];
                 $movimiento->movimiento = $stockOrigen->stock . ' -> ' . $stockDestino->stock; // Usar los stocks cargados directamente (verificados anteriormente)
                 $movimiento->unidades = $validated['unidades'];
-                if($stockOrigen->id == $stock_bodega_id){ //Stock resultante
-                    $movimiento->stock_resultante = $oficinaStockOrigen->unidades;
-                }
-                if($stockDestino->id == $stock_bodega_id){
-                    $movimiento->stock_resultante = $oficinaStockDestino->unidades;
-                }
+                $movimiento->stock_origen_resultante = $oficinaStockOrigen->unidades;
+                $movimiento->stock_destino_resultante = $oficinaStockDestino->unidades;
                 $movimiento->save();
             DB::commit();
             return back()->with('success', 'Movimiento ' . $movimiento->movimiento . ' efectuado correctamente');
