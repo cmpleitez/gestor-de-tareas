@@ -92,10 +92,13 @@
         if (typeof jqBootstrapValidation === 'function') {
             $("input,select,textarea").not("[type=submit]").jqBootstrapValidation();
         }
+        $('#producto_id, #filtro-fecha').on('change', function() { // Limpiar el historial al cambiar los filtros
+            $('#lista-transacciones').empty();
+        });
         $('#form-consultar').on('submit', function(e) {
             e.preventDefault();
-            $('.is-invalid').removeClass('is-invalid');
             $('.invalid-feedback').text('').hide();
+            $('#lista-transacciones').empty();
             let producto_id = $('#producto_id').val();
             let $pickerInput = $('#filtro-fecha').pickadate('picker');
             let fecha = $pickerInput ? $pickerInput.get('select', 'yyyy-mm-dd') : $('#filtro-fecha').val();

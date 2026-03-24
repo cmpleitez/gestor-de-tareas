@@ -27,8 +27,6 @@ use App\Services\KeyRipper;
 use Spatie\Permission\Models\Role;
 use App\Services\GestionService;
 use App\Services\StockService;
-
-
 use App\Models\Tarea;
 
 class RecepcionController extends Controller
@@ -638,15 +636,20 @@ class RecepcionController extends Controller
         //PROCESO
         DB::beginTransaction();
         try {
-            $oficina_id = auth()->user()->oficina_id; //Descargando Stock
+            $oficina_id = auth()->user()->oficina_id; //Descargando Stock y guardando resultado en detalle
             $stockBodegaId = Stock::where('stock', 'Bodega')->value('id');
             foreach ($recepcion->atencion->ordenes as $orden) {
                 foreach ($orden->detalle as $detalle) {
-                    \App\Models\OficinaStock::where([
+                    $oficinaStock = OficinaStock::where([
                         'oficina_id'  => $oficina_id,
                         'producto_id' => $detalle->producto_id,
                         'stock_id'    => $stockBodegaId
-                    ])->decrement('unidades', $orden->unidades * $detalle->unidades);
+                    ])->first();
+                    if ($oficinaStock) {
+                        $oficinaStock->decrement('unidades', $orden->unidades * $detalle->unidades);
+                        $detalle->stock_resultante = $oficinaStock->unidades;
+                        $detalle->save();
+                    }
                 }
             }
             $tareaDescarga = Tarea::where('tarea', 'Descarga')->first()->tarea; // Reportando Tarea
