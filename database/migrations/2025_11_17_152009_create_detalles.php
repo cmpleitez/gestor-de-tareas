@@ -13,7 +13,7 @@ return new class extends Migration
             $table->integer('producto_id')->constrained('productos');
             $table->integer('kit_id')->constrained('kits');
             $table->integer('unidades');
-            $table->integer('stock_resultante');
+            $table->integer('stock_resultante')->nullable();
             $table->decimal('precio', 20, 4);
             $table->timestamps();
 
