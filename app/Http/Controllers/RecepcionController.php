@@ -764,7 +764,7 @@ class RecepcionController extends Controller
             ->get();
 
         $salidas_2 = Detalle::select(['orden_id', 'unidades', 'stock_resultante', 'created_at'])
-        ->with(['orden.atencion'])
+        ->with(['orden.atencion', 'orden'])
         ->whereHas('orden.atencion', function ($query) {
             $query->where('activo', true)
                 ->where('oficina_id', auth()->user()->oficina_id)
@@ -797,7 +797,7 @@ class RecepcionController extends Controller
             return (object) [
                 'tipo'              => 'salida',
                 'movimiento'        => 'Sala de ventas -> Cliente',
-                'unidades'          => $item->unidades,
+                'unidades'          => $item->unidades * $item->orden->unidades,
                 'stock_resultante' => $item->stock_resultante,
                 'created_at'        => $item->created_at,
             ];
