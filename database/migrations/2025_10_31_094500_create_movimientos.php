@@ -19,7 +19,6 @@ return new class extends Migration
             $table->integer('unidades');
             $table->integer('stock_origen_resultante');
             $table->integer('stock_destino_resultante');
-            $table->integer('stock_resultante');
             $table->boolean('activo')->default(true);
             $table->timestamps();
         });
