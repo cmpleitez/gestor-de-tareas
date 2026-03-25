@@ -78,7 +78,7 @@ PROCEDIMIENTO: perfil cpleitez.2024@gmail.com https://miro.com/app/board/uXjVJy6
             . agregar un hover sobre las filas
                 . sobre este elemento hay un hover: /html/body/div[4]/div[2]/div[2]/div[1]/div/div/div[2]/div/div/div/div[2]/div/table/tbody/tr[1] de la vista /recepcion/create-stock
                   implementar uno igual sobre el elemento /html/body/div[4]/div[2]/div[2]/div[2]/div/div/div[2]/div/ul/li[1] de la vista /recepcion/tracking-stocks
-                . la unidades deben estar multiplicadas por las unidades del kit
+                
     
     Revisiones:
         . Sin pendientes
