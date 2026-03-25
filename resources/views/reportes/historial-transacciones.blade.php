@@ -9,7 +9,7 @@
         margin-bottom: 0.5rem;
     }
     .widget-timeline .timeline-items:hover {
-        background-color: #f1f6fcff;
+        background-color: #e9f2fcff;
     }
 </style>
 @endsection
@@ -90,7 +90,7 @@
             </div>
             <div class="card-content">
                 <div class="card-body">
-                    <ul class="widget-timeline mb-0" id="lista-transacciones">
+                    <ul class="widget-timeline mt-2" id="lista-transacciones">
                         <!-- El historial se cargará aquí dinámicamente -->
                     </ul>
                 </div>

@@ -90,7 +90,7 @@
                         <input type="hidden" name="producto_id" id="producto_id" value="{{ old('producto_id') }}">
                         <div class="modal-header">
                             <h5 class="modal-title" id="modalMovimientoLabel">
-                                Stocks del producto
+                                Stocks del producto {{$producto->codigo}}
                             </h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>

@@ -53,8 +53,7 @@
 <!-- END: Head-->
 
 <!-- BEGIN: Body-->
-
-<body class="vertical-layout vertical-menu-modern boxicon-layout no-card-shadow 2-columns navbar-sticky footer-static"
+<body class="vertical-layout vertical-menu-modern boxicon-layout no-card-shadow 2-columns navbar-sticky footer-static menu-collapsed"
     data-open="click" data-menu="vertical-menu-modern" data-col="2-columns">
     <!-- BEGIN: Header-->
     <div class="header-navbar-shadow"></div>
@@ -198,9 +197,9 @@
                     </a>
                 </li>
                 <li class="nav-item nav-toggle"><a class="nav-link modern-nav-toggle pr-0" data-toggle="collapse"><i
-                            class="bx bx-x d-block d-xl-none font-medium-4 primary toggle-icon"></i><i
-                            class="toggle-icon bx bx-disc font-medium-4 d-none d-xl-block collapse-toggle-icon primary"
-                            data-ticon="bx-disc"></i></a></li>
+                class="bx bx-x d-block d-xl-none font-medium-4 primary toggle-icon"></i><i
+                            class="toggle-icon bx bx-circle font-medium-4 d-none d-xl-block collapse-toggle-icon primary"
+                            data-ticon="bx-circle"></i></a></li>
             </ul>
         </div>
         <div class="shadow-bottom"></div>
