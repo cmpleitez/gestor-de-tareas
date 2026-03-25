@@ -6,7 +6,7 @@
         transition: background-color 0.3s ease;
         padding: 0.8rem !important;
         border-radius: 0.5rem;
-        margin-bottom: 0.5rem;
+        margin-bottom: 1.2rem;
     }
     .widget-timeline .timeline-items:hover {
         background-color: #e9f2fcff;
@@ -19,14 +19,16 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-header">
-                <h6 class="card-title">Selección</h6>
+                <div class="card-title">
+                    Selección
+                </div>
             </div>
             <div class="card-content">
                 <div class="card-body mt-2">
                     <form id="form-consultar" novalidate>
                         <div class="row">
                             <div class="col-md-6">
-                                <h6>Productos</h6>
+                                <p>Productos</p>
                                 <div class="form-group">
                                     <select name="producto_id" id="producto_id" class="select2 form-control {{ $errors->has('producto_id') ? 'is-invalid' : '' }}"
                                         data-validation-required-message="El producto es obligatorio" required>
@@ -47,7 +49,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <h6>Fecha inicial</h6>
+                                <p>Fecha inicial</p>
                                 <div class="form-group">
                                     <fieldset class="position-relative has-icon-left">
                                         <input type="text" name="fecha" id="filtro-fecha" class="form-control filtro-fecha-espanol {{ $errors->has('fecha') ? 'is-invalid' : '' }}" placeholder="Selecciona una fecha"
@@ -84,9 +86,9 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-header">
-                <h6 class="card-title">
+                <div class="card-title">
                     Historial de transacciones
-                </h6>
+                </div>
             </div>
             <div class="card-content">
                 <div class="card-body">

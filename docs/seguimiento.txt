@@ -73,13 +73,7 @@ PROCEDIMIENTO: perfil cpleitez.2024@gmail.com https://miro.com/app/board/uXjVJy6
 
 🟢 SERVICIOS:
     
-    Reportes para el receptor y el administrador:
-        . Historial de entradas y salidas en stocks
-            
-                
-    
-    Revisiones:
-        . Sin pendientes
+    . Sin pendientes
 
 🟡 CLIENTE:
 

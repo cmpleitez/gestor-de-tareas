@@ -104,14 +104,6 @@
     z-index: 10;
 }
 
-.product-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 0.5rem;
-    padding-top: 1.5rem;
-}
-
 .product-card-title {
     font-size: 1.1rem;
     font-weight: 600;
@@ -282,12 +274,16 @@ p {
     box-shadow: 0 0 0 0.2px rgba(0, 0, 0, 0.1);
 }
 
+.card .card-header .card-title {
+    margin-bottom: 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
 .card-header {
     background-color: #f6f8ff;
     border-bottom: 0.5px solid rgb(236, 237, 240) !important;
-    font-weight: 600;
     padding: 1rem 1rem !important;
-    font-size: 0.8rem;
 }
 
 #heading5 {

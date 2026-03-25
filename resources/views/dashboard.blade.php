@@ -208,9 +208,9 @@
                 data-icon-style="">
                 @can('administrar')
                     @can('ver')
-                        <li class="nav-item has-sub open nav-item-administracion"><a href="#"><i class="bx bxs-cog"></i><span class="menu-title"
+                        <li class="nav-item has-sub nav-item-administracion"><a href="#"><i class="bx bxs-cog"></i><span class="menu-title"
                                     data-i18n="Menu Levels">Administración</span></a>
-                            <ul class="menu-content" style="display: block;">
+                            <ul class="menu-content">
                                 <li><a href="{{ Route('parametro') }}">
                                         <i class="bx bx-right-arrow-alt"></i>
                                         <span class="menu-item" data-i18n="Second Level">Configuración</span>
@@ -251,9 +251,9 @@
                     @endcan
                 @endcan
 
-                <li class="nav-item has-sub open nav-item-servicios mt-1"><a href="#"><i class="bx bx-list-ul"></i><span class="menu-title"
+                <li class="nav-item has-sub nav-item-servicios mt-1"><a href="#"><i class="bx bx-list-ul"></i><span class="menu-title"
                             data-i18n="Menu Levels">Servicios</span></a>
-                    <ul class="menu-content" style="display: block;">
+                    <ul class="menu-content">
                         @can('gestionar')
                             @can('ver')
                                 <li><a href="{{ route('recepcion.create-stock') }}">
