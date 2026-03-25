@@ -1,5 +1,19 @@
 @extends('dashboard')
 
+@section('css')
+<style>
+    .widget-timeline .timeline-items {
+        transition: background-color 0.3s ease;
+        padding: 0.8rem !important;
+        border-radius: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+    .widget-timeline .timeline-items:hover {
+        background-color: #f1f6fcff;
+    }
+</style>
+@endsection
+
 @section('contenedor')
 <div class="row">
     <div class="col-lg-12">
