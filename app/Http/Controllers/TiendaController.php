@@ -32,7 +32,6 @@ class TiendaController extends Controller
     {
         $oficinaId = auth()->user()->oficina_id;
         $stockBodegaId = Stock::where('stock', 'Bodega')->first()->id;
-
         $kits = Kit::where('activo', true)
         ->with(['productos.oficinaStock' => function ($query) use ($oficinaId, $stockBodegaId) {
             $query->where('oficina_id', $oficinaId)
@@ -427,7 +426,6 @@ class TiendaController extends Controller
         $kitId = $request->input('kit_id');
         $oficinaId = auth()->user()->oficina_id;
         $stockBodegaId = Stock::where('stock', 'Bodega')->first()->id;
-
         $kit = Kit::with(['productos.oficinaStock' => function ($query) use ($oficinaId, $stockBodegaId) {
             $query->where('oficina_id', $oficinaId)
                   ->where('stock_id', $stockBodegaId);

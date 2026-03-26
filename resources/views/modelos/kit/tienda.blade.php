@@ -35,7 +35,13 @@
         <div class="col-lg-12">
             <div class="row" id="contenedor-kits">
                 @foreach ($kits as $kit)
-                    <div class="col-md-3 kit-item" data-kit-name="{{ strtolower($kit->kit) }}">
+                    @php
+                        $searchData = strtolower($kit->kit);
+                        foreach ($kit->productos as $p) {
+                            $searchData .= ' ' . strtolower($p->producto ?? '') . ' ' . strtolower($p->codigo ?? '');
+                        }
+                    @endphp
+                    <div class="col-md-3 kit-item" data-search="{{ $searchData }}">
                         <div class="card mb-4" style="border: 0;">
                             <div class="card">
                                 <img class="card-img img-fluid" src="{{ $kit->image_path ? Storage::url($kit->image_path) : asset('app-assets/images/pages/mercaderia.png') }}" onerror="this.onerror=null; this.src='{{ asset('app-assets/images/pages/mercaderia.png') }}';">
@@ -377,8 +383,8 @@
                 filteredItems = [...allItems];
             } else {
                 filteredItems = allItems.filter(item => {
-                    const name = item.getAttribute('data-kit-name') || '';
-                    return name.includes(searchTerm);
+                    const search = item.getAttribute('data-search') || '';
+                    return search.includes(searchTerm);
                 });
             }
             currentPage = 1;
