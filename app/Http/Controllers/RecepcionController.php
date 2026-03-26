@@ -805,9 +805,6 @@ class RecepcionController extends Controller
         $transacciones = $coleccionSalidas_1->concat($coleccionSalidas_2)->concat($coleccionEntradas)
             ->sortByDesc('created_at')
             ->values();
-
-        Log::info('Log:: [Usuario: ' . auth()->user()->name . '] Historial de transacciones: ' . json_encode($transacciones));
-
         return response()->json([ //resultado temporal para depuracion
             'success' => true,
             'message' => 'Campos validados correctamente. Listo para fase 2.',

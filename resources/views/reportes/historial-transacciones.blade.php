@@ -6,7 +6,6 @@
         transition: background-color 0.3s ease;
         padding: 0.8rem !important;
         border-radius: 0.5rem;
-        margin-bottom: 1.2rem;
     }
     .widget-timeline .timeline-items:hover {
         background-color: #e9f2fcff;
@@ -155,7 +154,7 @@
                             let html = `
                                 <li class="timeline-items ${iconClass} active">
                                     <div class="timeline-time text-capitalize">${relDate}</div>
-                                    <h6 class="timeline-title"><b class="${textClass}">${unitsFormatted} unidades</b> -> Stock Resultante: ${stockFormatted}</h6>
+                                    <h6 class="timeline-title"><b class="${textClass}">${unitsFormatted}</b> unidades -> Stock Resultante: <span style="font-size:1rem; font-weight:700;">${stockFormatted}</span> unidades</h6>
                                     <p class="timeline-text text-muted">${longDate}</p>
                                     <div class="timeline-content">
                                         <span class="text-secondary">${tipoLabel} : ${item.movimiento}</span>

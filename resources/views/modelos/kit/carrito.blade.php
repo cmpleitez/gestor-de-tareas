@@ -1170,7 +1170,6 @@ $hasOrders = $currentAtencion && $currentAtencion->ordenes && $currentAtencion->
                             if ($icon.length) {
                                 $icon.attr('class', 'fas fa-clock text-muted')
                                     .attr('title', 'Pendiente de revisión');
-                                console.log(`Icono actualizado a reloj para producto ${item.producto_id} en orden ${item.orden_id}`);
                             }
                         }
                     });
@@ -1229,23 +1228,17 @@ $hasOrders = $currentAtencion && $currentAtencion->ordenes && $currentAtencion->
 
                     if (!$icon.hasClass(newClass.split(' ')[0]) || !$icon.hasClass(newClass.split(' ')[1])) {
                         $icon.attr('class', 'fas ' + newClass).attr('title', title);
-                        console.log(`Icono actualizado vía notificación: Orden ${item.orden_id}, Producto ${item.producto_id}`);
                     }
                 }
             }
         });
     }
-
     document.addEventListener('livewire:init', () => {
         Livewire.on('notification-received', (data) => {
             if (data.payload && data.payload.detalles) {
-                console.log('Recibida carga útil de stock, actualizando vista...');
                 procesarActualizacionStock(data.payload.detalles);
             }
         });
     });
-
 </script>
-
-
 @endpush
