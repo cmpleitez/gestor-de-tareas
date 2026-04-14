@@ -148,34 +148,34 @@ Route::middleware([
             Route::post('asignar/{recepcion}/{equipo}', [RecepcionController::class, 'asignar'])->name('recepcion.asignar')->middleware('can:asignar');
             Route::post('avanzar/{recepcion}', [RecepcionController::class, 'avanzarEstado'])->name('recepcion.avanzar')->middleware('can:asignar');
             Route::get('tareas/{recepcion_id}', [RecepcionController::class, 'tareas'])->name('recepcion.tareas')->middleware('can:ver-tareas');
-            Route::post('orden-compra', [RecepcionController::class, 'ordenCompra'])->name('recepcion.orden-compra')->middleware('can:ver-solicitudes');
+            Route::post('orden-compra', [RecepcionController::class, 'ordenCompra'])->name('recepcion.orden-compra')->middleware('can:ver-orden');
             Route::post('corregir-orden', [RecepcionController::class, 'corregirOrden'])->name('recepcion.corregir-orden')->middleware('can:editar');
             Route::post('revisar-orden', [RecepcionController::class, 'revisarOrden'])->name('recepcion.revisar-orden')->middleware('can:revisar');
-            Route::get('create-stock', [RecepcionController::class, 'createStock'])->name('recepcion.create-stock')->middleware('can:crear');
-            Route::post('store-stock', [RecepcionController::class, 'storeStock'])->name('recepcion.store-stock')->middleware('can:crear');
+            Route::get('create-stock', [RecepcionController::class, 'createStock'])->name('recepcion.create-stock')->middleware('can:crear-stocks');
+            Route::post('store-stock', [RecepcionController::class, 'storeStock'])->name('recepcion.store-stock')->middleware('can:crear-stocks');
             Route::post('confirmar-stock', [RecepcionController::class, 'confirmarStock'])->name('recepcion.confirmar-stock')->middleware('can:revisar');
             Route::post('carrito-editar', [RecepcionController::class, 'carritoEditar'])->name('recepcion.carrito-editar')->middleware('can:editar');
             Route::post('confirmar-pago', [RecepcionController::class, 'confirmarPago'])->name('recepcion.confirmar-pago')->middleware('can:confirmar');
             Route::post('descargar-stock', [RecepcionController::class, 'descargarStock'])->name('recepcion.descargar-stock')->middleware('can:editar');
             Route::post('efectuar-entrega', [RecepcionController::class, 'efectuarEntrega'])->name('recepcion.efectuar-entrega')->middleware('can:confirmar');
-            Route::get('tracking-stocks', [RecepcionController::class, 'historialTransacciones'])->name('recepcion.historial-transacciones')->middleware('can:ver');
-            Route::post('lectura-transacciones', [RecepcionController::class, 'lecturaTransacciones'])->name('recepcion.lectura-transacciones')->middleware('can:ver');
+            Route::get('tracking-stocks', [RecepcionController::class, 'historialTransacciones'])->name('recepcion.historial-transacciones')->middleware('can:ver-reportes');
+            Route::post('lectura-transacciones', [RecepcionController::class, 'lecturaTransacciones'])->name('recepcion.lectura-transacciones')->middleware('can:ver-reportes');
         });
     });
 
     //TIENDA
     Route::group(['middleware' => ['can:tienda']], function () {
         Route::group(['prefix' => 'tienda'], function () {
-            Route::get('/', [TiendaController::class, 'index'])->name('tienda')->middleware('can:ver');
+            Route::get('/', [TiendaController::class, 'index'])->name('tienda')->middleware('can:ver-tienda');
             Route::get('carrito', [TiendaController::class, 'carritoIndex'])->name('tienda.carrito')->middleware('can:ver');
             Route::post('carrito-enviar', [TiendaController::class, 'carritoEnviar'])->name('tienda.carrito-enviar')->middleware('can:crear');
             Route::get('solicitudes', [TiendaController::class, 'solicitudes'])->name('tienda.solicitudes')->middleware('can:ver-solicitudes');
             Route::get('get-stocks-producto/{productoId}', [TiendaController::class, 'getStocksProducto'])->name('tienda.get-stocks-producto')->middleware('can:ver');
             Route::post('get-kit-productos', [TiendaController::class, 'getKitProductos'])->name('tienda.get-kit-productos')->middleware('can:ver');
-            Route::get('agregar-orden/{orden}', [TiendaController::class, 'agregarOrden'])->name('tienda.agregar-orden')->middleware('can:crear');
-            Route::post('retirar-orden/{orden}', [TiendaController::class, 'retirarOrden'])->name('tienda.retirar-orden')->middleware('can:eliminar');
-            Route::post('retirar-item', [TiendaController::class, 'retirarItem'])->name('tienda.retirar-item')->middleware('can:eliminar');
-            Route::get('kit-cantidad', [TiendaController::class, 'kitCantidad'])->name('tienda.kit-cantidad')->middleware('can:ver');
+            Route::get('agregar-item/{orden}', [TiendaController::class, 'agregarOrden'])->name('tienda.agregar-item')->middleware('can:agregar-item');
+            Route::post('retirar-orden/{orden}', [TiendaController::class, 'retirarOrden'])->name('tienda.retirar-orden')->middleware('can:retirar-orden');
+            Route::post('retirar-item', [TiendaController::class, 'retirarItem'])->name('tienda.retirar-item')->middleware('can:retirar-item');
+            Route::get('kit-cantidad', [TiendaController::class, 'kitCantidad'])->name('tienda.kit-cantidad');
             Route::post('consultar-avance', [TiendaController::class, 'consultarAvance'])->name('tienda.consultar-avance')->middleware('can:autorefrescar');
         });
     });

@@ -255,12 +255,14 @@
                             data-i18n="Menu Levels">Servicios</span></a>
                     <ul class="menu-content">
                         @can('gestionar')
-                            @can('ver')
+                            @can('crear-stocks')
                                 <li><a href="{{ route('recepcion.create-stock') }}">
                                     <i class="bx bx-right-arrow-alt"></i>
                                     <span class="menu-item" data-i18n="Second Level">Stocks</span>
                                 </a></li>
 
+                            @endcan
+                            @can('ver-reportes')
                                 <li><a href="{{ route('recepcion.historial-transacciones') }}">
                                     <i class="bx bx-right-arrow-alt"></i>
                                     <span class="menu-item" data-i18n="Second Level">Transacciones</span>
@@ -268,7 +270,7 @@
                             @endcan
                         @endcan
                         @can('tienda')
-                            @can('ver')
+                            @can('ver-tienda')
                                 <li class="dropdown-divider"></li>
                                 <li><a href="{{ Route('tienda') }}">
                                     <i class="bx bx-right-arrow-alt"></i>

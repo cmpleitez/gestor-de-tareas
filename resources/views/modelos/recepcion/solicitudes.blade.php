@@ -344,7 +344,8 @@
                         ${usersHtml}
                     </div>
                 @endif
-            </div>`;
+            </div>
+        `;
     }
     function obtenerAtencionIdsExistentes() {
         let ids = [];

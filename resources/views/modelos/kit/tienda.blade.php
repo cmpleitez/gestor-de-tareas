@@ -50,7 +50,7 @@
                                         <li><a class="btn btn-success text-white" href="#" style="pointer-events: auto;"><i class="far fa-heart"></i></a></li>
                                         <li><a class="btn btn-success text-white mt-2 btn-ver-kit" data-bs-toggle="modal" data-bs-target="#modalPreferencias" data-kit-id="{{ $kit->id }}" data-kit-name="{{ $kit->kit }}" data-kit-image-path="{{ $kit->image_path ? Storage::url($kit->image_path) : '' }}" href="#" style="pointer-events: auto;"><i class="far fa-eye"></i></a></li>
                                         @if($kit->disponible)
-                                            <li><a class="btn btn-success text-white mt-2 btn-agregar-kit" href="{{ Route('tienda.agregar-orden', $kit->id) }}" style="pointer-events: auto;"><i class="fas fa-cart-plus"></i></a></li>
+                                            <li><a class="btn btn-success text-white mt-2 btn-agregar-kit" href="{{ Route('tienda.agregar-item', $kit->id) }}" style="pointer-events: auto;"><i class="fas fa-cart-plus"></i></a></li>
                                         @else
                                             <li><button class="btn btn-secondary text-white mt-2" disabled style="pointer-events: auto; cursor: not-allowed;"><i class="fas fa-ban"></i></button></li>
                                         @endif
@@ -59,7 +59,7 @@
                             </div>
                             <div class="card-body ">
                                 @if($kit->disponible)
-                                <a href="{{ Route('tienda.agregar-orden', $kit->id) }}" class="text-decoration-none d-flex justify-content-center btn-agregar-kit">{{ $kit->kit }}</a>
+                                <a href="{{ Route('tienda.agregar-item', $kit->id) }}" class="text-decoration-none d-flex justify-content-center btn-agregar-kit">{{ $kit->kit }}</a>
                                 @else
                                 <span class="text-decoration-none d-flex justify-content-center text-muted">{{ $kit->kit }} <span class="badge bg-danger ms-1">Agotado</span></span>
                                 @endif
@@ -189,7 +189,7 @@
                         const kitProductosContainer = document.getElementById('kit_productos');
                         const modalFooter = document.getElementById('modal-footer');
                         if (data.success) {
-                            let agregarKitUrl = "{{ Route('tienda.agregar-orden', ':id') }}";
+                            let agregarKitUrl = "{{ Route('tienda.agregar-item', ':id') }}";
                             agregarKitUrl = agregarKitUrl.replace(':id', kitId);
                             let html = '';
                             let kitDisponible = true;

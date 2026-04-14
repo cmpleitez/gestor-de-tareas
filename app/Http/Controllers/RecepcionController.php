@@ -570,10 +570,8 @@ class RecepcionController extends Controller
                 $tareaRevision = Tarea::where('tarea', 'Revisión')->first()->tarea;
                 app(GestionService::class)->reportarTarea($tareaRevision, $recepcion_id, $atencion_id);
             DB::commit();
-            if ($uso_interno == 0) { //Parametrizado: Uso interno
-                $recepcion->load('atencion.ordenes.detalle.kit', 'atencion.ordenes.detalle.producto');
-                $recepcion->usuarioOrigen->notify(new OrdenValidadaNotification($recepcion));
-            }
+            $recepcion->load('atencion.ordenes.detalle.kit', 'atencion.ordenes.detalle.producto');
+            $recepcion->usuarioOrigen->notify(new OrdenValidadaNotification($recepcion));
             return response()->json([
                 'success' => true,
                 'message' => $tareaRevision.' exitosa',
