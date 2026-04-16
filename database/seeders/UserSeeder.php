@@ -84,7 +84,7 @@ class UserSeeder extends Seeder
         $role = Role::firstOrCreate(['name' => 'admin']);
         $role->syncPermissions(['administrar', 'ver', 'crear', 'editar', 'activar', 'eliminar', 'asignar', 'autorizar']);
 
-        $role = Role::firstOrCreate(['name' => 'cliente']);
+        $role = Role::firstOrCreate(['name' => 'cliente']); //Cliente
         $role->syncPermissions(['tienda', 
         'gestionar', 
         'ver-tienda', 
@@ -93,9 +93,10 @@ class UserSeeder extends Seeder
         'agregar-item', 
         'retirar-item', 
         'ver-orden', 
-        'retirar-orden']);
+        'retirar-orden',
+        'autorefrescar']);
 
-        $role = Role::firstOrCreate(['name' => 'receptor']);
+        $role = Role::firstOrCreate(['name' => 'receptor']); //Receptor
         $role->syncPermissions(['gestionar', 
         'tienda', 
         'ver-reportes', 
