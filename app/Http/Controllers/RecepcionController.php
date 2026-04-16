@@ -31,7 +31,7 @@ use App\Models\Tarea;
 
 class RecepcionController extends Controller
 {
-    public function carritoEditar(Request $request)
+    public function editarCarrito(Request $request)
     {
         $atencion = Atencion::find($request->atencion_id);
         $oficinaId = auth()->user()->oficina_id;
@@ -64,8 +64,6 @@ class RecepcionController extends Controller
             'uso_interno' => $uso_interno
         ]);
     }
-
-
 
     public function nuevasRecibidas(Request $request, GestionService $gestionService)
     {
@@ -396,7 +394,7 @@ class RecepcionController extends Controller
         }
     }
 
-    public function corregirOrden(Request $request, StockService $stockService)
+    public function corregirCarrito(Request $request, StockService $stockService)
     {
         // LECTURA
         $atencion_id = $request->input('atencion_id');
@@ -499,7 +497,7 @@ class RecepcionController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error("Log:: [Usuario: " . auth()->user()->name . "] Error en corregirOrden: " . $e->getMessage(), ['exception' => $e]);
+            Log::error("Log:: [Usuario: " . auth()->user()->name . "] Error en corregirCarrito: " . $e->getMessage(), ['exception' => $e]);
             return response()->json([
                 'success' => false, 
                 'message' => 'Error al corregir la orden.'
@@ -507,7 +505,7 @@ class RecepcionController extends Controller
         }
     }
 
-    public function revisarOrden(Request $request, StockService $stockService)
+    public function revisarCarrito(Request $request, StockService $stockService)
     {
         // LECTURA
         $atencion_id = $request->input('atencion_id');

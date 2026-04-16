@@ -263,234 +263,231 @@ $hasOrders = $currentAtencion && $currentAtencion->ordenes && $currentAtencion->
         <h3 class="text-muted fw-light">Aún no has agregado articulos al carrito</h3>
         <p class="text-muted mb-4">Explora nuestros productos.</p>
         @if($rol_usuario_actual == 'cliente')
-        <a href="{{ route('tienda') }}" class="btn btn-primary btn-lg px-4 shadow-sm">
-            <i class="fas fa-store me-2"></i> Ir a la tienda
-        </a>
+            <a href="{{ route('tienda') }}" class="btn btn-primary btn-lg px-4 shadow-sm">
+                <i class="fas fa-store me-2"></i> Ir a la tienda
+            </a>
         @endif
     </div>
 </div>
 
 <div id="orders-container" class="{{ !$hasOrders ? 'd-none' : '' }}">
     @if($hasOrders)
-    @if($currentAtencion && $currentAtencion->ordenes)
-    <!--KITS-->
-    @foreach($currentAtencion->ordenes as $orden)
-    @php $headingId = 'heading' . $orden->id; $accordionId = 'accordion' . $orden->id; $ordenIndex = $loop->index; @endphp
-    <div class="row mb-1 py-2 align-items-center">
-        <div class="col-12 col-md-8 mb-2 {{ $loop->index % 2 == 0 ? 'marcador_fila_par' : 'marcador_fila_impar' }}">
-            <div class="accordion" id="{{ $accordionId }}" data-orden-id="{{ $orden->id }}">
-                <div class="accordion-item">
-                    <span class="accordion-header" id="{{ $headingId }}">
-                        <button class="accordion-button collapsed" style="padding: 0.5em; font-size: 0.8rem;" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ $orden->id }}" aria-expanded="false" aria-controls="collapse{{ $orden->id }}">
-                            {{ $orden->kit_id }} - {{ $orden->kit->kit }}
-                        </button>
-                    </span>
-                    <div id="collapse{{ $orden->id }}" class="accordion-collapse collapse main-kit-collapse" aria-labelledby="{{ $headingId }}" data-bs-parent="#{{ $accordionId }}">
-                        <div class="accordion-body">
-                            <!--ITEMS-->
-                            @foreach($orden->detalle as $index => $detalle)
-                            @php
-                            $detHeadingId = 'heading_det_' . $orden->id . '_' . $index;
-                            $detAccordionId = 'accordion_det_' . $orden->id . '_' . $index;
-                            $detCollapseId = 'collapse_det_' . $orden->id . '_' . $index;
-                            @endphp
-                            <div class="accordion accordion-flush" id="{{ $detAccordionId }}">
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header d-flex align-items-center" id="{{ $detHeadingId }}">
-                                        @can('tienda')
-                                            @can('eliminar')
-                                                <div class="ps-2 pe-1">
-                                                    <i id="btn_retirar_{{ $detalle->orden_id }}_{{ $detalle->kit_id }}_{{ $detalle->producto_id }}" class="fas fa-trash text-danger-dark" onclick="retirarItemAJAX(this)" data-orden-id="{{ $detalle->orden_id }}" data-kit-id="{{ $detalle->kit_id }}" data-producto-id="{{ $detalle->producto_id }}" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="Eliminar item">
-                                                    </i>
-                                                </div>
-                                            @endcan
-                                        @endcan
-                                        <div class="w-100 d-flex flex-column gap-2 p-2">
-                                            <button class="d-flex justify-content-start align-items-center text-start flex-grow-1 {{ ($rol_usuario_actual == 'cliente' || $rol_usuario_actual == 'receptor') ? 'accordion-button collapsed' : 'border-0 bg-transparent' }}" style="padding: 0.5em; font-size: 0.8rem;" type="button" data-orden-id="{{ $detalle->orden_id }}" data-kit-id="{{ $detalle->kit_id }}" @if($rol_usuario_actual=='cliente' || $rol_usuario_actual=='receptor' ) data-bs-toggle="collapse" data-bs-target="#{{ $detCollapseId }}" aria-expanded="false" aria-controls="{{ $detCollapseId }}" @endif>
-                                                <span>{{ $detalle->unidades }}</span>
-                                                @if($rol_usuario_actual == 'receptor' || $rol_usuario_actual == 'operador')
-                                                    @if(is_null($detalle->stock_fisico_existencias))
-                                                        <span class="px-1">
-                                                            <i class="fas fa-clock text-muted" title="Pendiente de revisión"></i>
-                                                        </span>
-                                                    @elseif($detalle->stock_fisico_existencias == 1)
-                                                        <span class="px-1">
-                                                            <i class="fas fa-check text-success" title="Stock verificado"></i>
-                                                        </span>
-                                                    @else
-                                                        <span class="px-1">
-                                                            <i class="fas fa-times text-danger" title="Sin stock"></i>
-                                                        </span>
-                                                    @endif
-                                                @else
-                                                    <span class="px-1"></span>
-                                                @endif
-                                                <div class="p-2">
-                                                    <p id="badgeId_{{ $detAccordionId }}" class="badge bg-secondary-dark text-white mb-1" style="font-size: 0.7rem;">{{ $detalle->producto->codigo ?? 'S/C' }}</p>
-                                                </div>
-                                                <span id="productName_{{ $detAccordionId }}">{{ $detalle->producto->producto }}</span>
-                                                <input type="hidden" id="productId_{{ $detAccordionId }}" value="{{ $detalle->producto_id }}" data-original-id="{{ $detalle->producto_id }}">
-                                            </button>
-                                            @if($rol_usuario_actual == 'operador')
-                                                <div class="btn-group-stock-status d-flex justify-content-end" role="group" aria-label="Estado de stock físico">
-                                                    <input type="radio" class="btn-check-stock" name="stock_status_{{ $detAccordionId }}" id="stock_verificado_{{ $detAccordionId }}" value="1" {{ $detalle->stock_fisico_existencias === true ? 'checked' : '' }} data-route="{{ route('recepcion.revisar-stock') }}" data-orden-id="{{ $detalle->orden_id }}" data-kit-id="{{ $detalle->kit_id }}" data-producto-id="{{ $detalle->producto_id }}">
-                                                    <label class="btn-stock-status btn-stock-verified" for="stock_verificado_{{ $detAccordionId }}">
-                                                        <i class="fas fa-check-circle me-1"></i>
-                                                        <span>Existencias verificadas</span>
-                                                    </label>
-                                                    <input type="radio" class="btn-check-stock" name="stock_status_{{ $detAccordionId }}" id="stock_sin_existencias_{{ $detAccordionId }}" value="0" {{ $detalle->stock_fisico_existencias === false ? 'checked' : '' }} data-route="{{ route('recepcion.revisar-stock') }}" data-orden-id="{{ $detalle->orden_id }}" data-kit-id="{{ $detalle->kit_id }}" data-producto-id="{{ $detalle->producto_id }}">
-                                                    <label class="btn-stock-status btn-stock-unavailable" for="stock_sin_existencias_{{ $detAccordionId }}">
-                                                        <i class="fas fa-times-circle me-1"></i>
-                                                        <span>No hay existencias</span>
-                                                    </label>
-                                                </div>
-                                            @endif
-                                        </div>
-                                    </h2>
-                                    @if($rol_usuario_actual == 'cliente' || $rol_usuario_actual == 'receptor')
-                                    <div id="{{ $detCollapseId }}" class="accordion-collapse collapse" aria-labelledby="{{ $detHeadingId }}" data-bs-parent="#{{ $detAccordionId }}">
-                                        <div class="accordion-body"> {{-- Equivalentes --}}
+        @if($currentAtencion && $currentAtencion->ordenes)
+            <!--KITS-->
+            @foreach($currentAtencion->ordenes as $orden)
+                @php $headingId = 'heading' . $orden->id; $accordionId = 'accordion' . $orden->id; $ordenIndex = $loop->index; @endphp
+                <div class="row mb-1 py-2 align-items-center">
+                    <div class="col-12 col-md-8 mb-2 {{ $loop->index % 2 == 0 ? 'marcador_fila_par' : 'marcador_fila_impar' }}">
+                        <div class="accordion" id="{{ $accordionId }}" data-orden-id="{{ $orden->id }}">
+                            <div class="accordion-item">
+                                <span class="accordion-header" id="{{ $headingId }}">
+                                    <button class="accordion-button collapsed" style="padding: 0.5em; font-size: 0.8rem;" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ $orden->id }}" aria-expanded="false" aria-controls="collapse{{ $orden->id }}">
+                                        {{ $orden->kit_id }} - {{ $orden->kit->kit }}
+                                    </button>
+                                </span>
+                                <div id="collapse{{ $orden->id }}" class="accordion-collapse collapse main-kit-collapse" aria-labelledby="{{ $headingId }}" data-bs-parent="#{{ $accordionId }}">
+                                    <div class="accordion-body">
+                                        <!--ITEMS-->
+                                        @foreach($orden->detalle as $index => $detalle)
                                             @php
-                                            $productoOriginalId = $detalle->producto_id_original ?? $detalle->producto_id;
-                                            $productoOriginal = \App\Models\Producto::find($productoOriginalId);
-                                            $kitProducto = $productoOriginal?->kitProductos->where('kit_id', $orden->kit_id)->first();
+                                            $detHeadingId = 'heading_det_' . $orden->id . '_' . $index;
+                                            $detAccordionId = 'accordion_det_' . $orden->id . '_' . $index;
+                                            $detCollapseId = 'collapse_det_' . $orden->id . '_' . $index;
                                             @endphp
-                                            @if($kitProducto)
-                                            @if ($kitProducto->equivalentes->count() > 0)
-                                            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-2">
-                                                <div class="col">
-                                                    <label class="card rounded border m-0 shadow-none h-100" style="cursor: pointer;">
-                                                        <div class="card-header text-center p-1">
-                                                            <small class="fw-bold">{{ $kitProducto->producto->codigo ?? 'S/C' }}</small>
-                                                        </div>
-                                                        <div class="card-body p-2 d-flex flex-column align-items-center">
-                                                            <div class="mb-2">
-                                                                <input type="radio" name="radio_{{ $detAccordionId }}" value="{{ $kitProducto->producto->id }}" data-name-target="#productName_{{ $detAccordionId }}" data-id-target="#productId_{{ $detAccordionId }}" data-badge-target="#badgeId_{{ $detAccordionId }}" data-product-name="{{ $kitProducto->producto->producto }}" data-product-code="{{ $kitProducto->producto->codigo ?? 'S/C' }}" data-precio="{{ $kitProducto->producto->precio }}" data-es-estandar="true" {{ $detalle->producto_id == $kitProducto->producto->id ? 'checked' : '' }} onfocus="this.setAttribute('data-prev', this.checked ? this.value : '')" onchange="updateProductName(this)">
-                                                            </div>
-                                                            <div class="text-center d-flex flex-column justify-content-center flex-grow-1">
-                                                                <span class="d-block">{{ $kitProducto->producto->producto }}</span>
-                                                                <span class="badge badge-primary badge-pill mt-1 mx-auto">Estándar</span>
-                                                            </div>
-                                                        </div>
-                                                    </label>
-                                                </div>
-                                                @foreach($kitProducto->equivalentes as $equivalente)
-                                                <div class="col">
-                                                    @php
-                                                    $stock = $equivalente->producto->oficinaStock->first()->unidades ?? 0;
-                                                    @endphp
-                                                    <label class="card rounded border m-0 shadow-none h-100 {{ $stock == 0 ? 'bg-light' : '' }}" style="cursor: {{ $stock == 0 ? 'not-allowed' : 'pointer' }}; opacity: {{ $stock == 0 ? '0.5' : '1' }};">
-                                                        <div class="card-header text-center p-1">
-                                                            <small class="fw-bold">{{ $equivalente->producto->codigo ?? 'S/C' }}</small>
-                                                        </div>
-                                                        <div class="card-body p-2 d-flex flex-column align-items-center">
-                                                            <div class="mb-2">
-                                                                <input type="radio" name="radio_{{ $detAccordionId }}" value="{{ $equivalente->producto->id }}" data-name-target="#productName_{{ $detAccordionId }}" data-id-target="#productId_{{ $detAccordionId }}" data-badge-target="#badgeId_{{ $detAccordionId }}" data-product-name="{{ $equivalente->producto->producto }}" data-product-code="{{ $equivalente->producto->codigo ?? 'S/C' }}" data-precio="{{ $equivalente->producto->precio }}" {{ $detalle->producto_id == $equivalente->producto->id ? 'checked' : '' }} {{ $stock == 0 ? 'disabled' : '' }} onfocus="this.setAttribute('data-prev', this.checked ? this.value : '')" onchange="updateProductName(this)">
-                                                            </div>
-                                                            <div class="text-center d-flex flex-column justify-content-center flex-grow-1">
-                                                                <span class="d-block">{{ $equivalente->producto->producto }}</span>
-                                                                @if($stock >= 1 && $stock <= 3) <span class="badge bg-warning badge-pill mt-1 mx-auto">Stock {{ $stock }}</span>
-                                                                    @elseif($stock == 0)
-                                                                    <span class="badge bg-secondary-light text-dark badge-pill mt-1 mx-auto">Sin stock</span>
+                                            <div class="accordion accordion-flush" id="{{ $detAccordionId }}">
+                                                <div class="accordion-item">
+                                                    <h2 class="accordion-header d-flex align-items-center" id="{{ $detHeadingId }}">
+                                                        @can('tienda')
+                                                            @can('retirar-item')
+                                                                <div class="ps-2 pe-1">
+                                                                    <i id="btn_retirar_{{ $detalle->orden_id }}_{{ $detalle->kit_id }}_{{ $detalle->producto_id }}" class="fas fa-trash text-danger-dark" onclick="retirarItemAJAX(this)" data-orden-id="{{ $detalle->orden_id }}" data-kit-id="{{ $detalle->kit_id }}" data-producto-id="{{ $detalle->producto_id }}" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="Retirar item">
+                                                                    </i>
+                                                                </div>
+                                                            @endcan
+                                                        @endcan
+                                                        <div class="w-100 d-flex flex-column gap-2 p-2">
+                                                            <button class="d-flex justify-content-start align-items-center text-start flex-grow-1 {{ ($rol_usuario_actual == 'cliente' || $rol_usuario_actual == 'receptor') ? 'accordion-button collapsed' : 'border-0 bg-transparent' }}" style="padding: 0.5em; font-size: 0.8rem;" type="button" data-orden-id="{{ $detalle->orden_id }}" data-kit-id="{{ $detalle->kit_id }}" @if($rol_usuario_actual=='cliente' || $rol_usuario_actual=='receptor' ) data-bs-toggle="collapse" data-bs-target="#{{ $detCollapseId }}" aria-expanded="false" aria-controls="{{ $detCollapseId }}" @endif>
+                                                                <span>{{ $detalle->unidades }}</span>
+                                                                @if($rol_usuario_actual == 'receptor' || $rol_usuario_actual == 'operador')
+                                                                    @if(is_null($detalle->stock_fisico_existencias))
+                                                                        <span class="px-1">
+                                                                            <i class="fas fa-clock text-muted" title="Pendiente de revisión"></i>
+                                                                        </span>
+                                                                    @elseif($detalle->stock_fisico_existencias == 1)
+                                                                        <span class="px-1">
+                                                                            <i class="fas fa-check text-success" title="Stock verificado"></i>
+                                                                        </span>
+                                                                    @else
+                                                                        <span class="px-1">
+                                                                            <i class="fas fa-times text-danger" title="Sin stock"></i>
+                                                                        </span>
                                                                     @endif
-                                                            </div>
+                                                                @else
+                                                                    <span class="px-1"></span>
+                                                                @endif
+                                                                <div class="p-2">
+                                                                    <p id="badgeId_{{ $detAccordionId }}" class="badge bg-secondary-dark text-white mb-1" style="font-size: 0.7rem;">{{ $detalle->producto->codigo ?? 'S/C' }}</p>
+                                                                </div>
+                                                                <span id="productName_{{ $detAccordionId }}">{{ $detalle->producto->producto }}</span>
+                                                                <input type="hidden" id="productId_{{ $detAccordionId }}" value="{{ $detalle->producto_id }}" data-original-id="{{ $detalle->producto_id }}">
+                                                            </button>
+                                                            @if($rol_usuario_actual == 'operador')
+                                                                <div class="btn-group-stock-status d-flex justify-content-end" role="group" aria-label="Estado de stock físico">
+                                                                    <input type="radio" class="btn-check-stock" name="stock_status_{{ $detAccordionId }}" id="stock_verificado_{{ $detAccordionId }}" value="1" {{ $detalle->stock_fisico_existencias === true ? 'checked' : '' }} data-route="{{ route('recepcion.revisar-stock') }}" data-orden-id="{{ $detalle->orden_id }}" data-kit-id="{{ $detalle->kit_id }}" data-producto-id="{{ $detalle->producto_id }}">
+                                                                    <label class="btn-stock-status btn-stock-verified" for="stock_verificado_{{ $detAccordionId }}">
+                                                                        <i class="fas fa-check-circle me-1"></i>
+                                                                        <span>Existencias verificadas</span>
+                                                                    </label>
+                                                                    <input type="radio" class="btn-check-stock" name="stock_status_{{ $detAccordionId }}" id="stock_sin_existencias_{{ $detAccordionId }}" value="0" {{ $detalle->stock_fisico_existencias === false ? 'checked' : '' }} data-route="{{ route('recepcion.revisar-stock') }}" data-orden-id="{{ $detalle->orden_id }}" data-kit-id="{{ $detalle->kit_id }}" data-producto-id="{{ $detalle->producto_id }}">
+                                                                    <label class="btn-stock-status btn-stock-unavailable" for="stock_sin_existencias_{{ $detAccordionId }}">
+                                                                        <i class="fas fa-times-circle me-1"></i>
+                                                                        <span>No hay existencias</span>
+                                                                    </label>
+                                                                </div>
+                                                            @endif
                                                         </div>
-                                                    </label>
+                                                    </h2>
+                                                    @if($rol_usuario_actual == 'cliente' || $rol_usuario_actual == 'receptor')
+                                                    <div id="{{ $detCollapseId }}" class="accordion-collapse collapse" aria-labelledby="{{ $detHeadingId }}" data-bs-parent="#{{ $detAccordionId }}">
+                                                        <div class="accordion-body"> {{-- Equivalentes --}}
+                                                            @php
+                                                            $productoOriginalId = $detalle->producto_id_original ?? $detalle->producto_id;
+                                                            $productoOriginal = \App\Models\Producto::find($productoOriginalId);
+                                                            $kitProducto = $productoOriginal?->kitProductos->where('kit_id', $orden->kit_id)->first();
+                                                            @endphp
+                                                            @if($kitProducto)
+                                                            @if ($kitProducto->equivalentes->count() > 0)
+                                                            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-2">
+                                                                <div class="col">
+                                                                    <label class="card rounded border m-0 shadow-none h-100" style="cursor: pointer;">
+                                                                        <div class="card-header text-center p-1">
+                                                                            <small class="fw-bold">{{ $kitProducto->producto->codigo ?? 'S/C' }}</small>
+                                                                        </div>
+                                                                        <div class="card-body p-2 d-flex flex-column align-items-center">
+                                                                            <div class="mb-2">
+                                                                                <input type="radio" name="radio_{{ $detAccordionId }}" value="{{ $kitProducto->producto->id }}" data-name-target="#productName_{{ $detAccordionId }}" data-id-target="#productId_{{ $detAccordionId }}" data-badge-target="#badgeId_{{ $detAccordionId }}" data-product-name="{{ $kitProducto->producto->producto }}" data-product-code="{{ $kitProducto->producto->codigo ?? 'S/C' }}" data-precio="{{ $kitProducto->producto->precio }}" data-es-estandar="true" {{ $detalle->producto_id == $kitProducto->producto->id ? 'checked' : '' }} onfocus="this.setAttribute('data-prev', this.checked ? this.value : '')" onchange="updateProductName(this)">
+                                                                            </div>
+                                                                            <div class="text-center d-flex flex-column justify-content-center flex-grow-1">
+                                                                                <span class="d-block">{{ $kitProducto->producto->producto }}</span>
+                                                                                <span class="badge badge-primary badge-pill mt-1 mx-auto">Estándar</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </label>
+                                                                </div>
+                                                                @foreach($kitProducto->equivalentes as $equivalente)
+                                                                <div class="col">
+                                                                    @php
+                                                                    $stock = $equivalente->producto->oficinaStock->first()->unidades ?? 0;
+                                                                    @endphp
+                                                                    <label class="card rounded border m-0 shadow-none h-100 {{ $stock == 0 ? 'bg-light' : '' }}" style="cursor: {{ $stock == 0 ? 'not-allowed' : 'pointer' }}; opacity: {{ $stock == 0 ? '0.5' : '1' }};">
+                                                                        <div class="card-header text-center p-1">
+                                                                            <small class="fw-bold">{{ $equivalente->producto->codigo ?? 'S/C' }}</small>
+                                                                        </div>
+                                                                        <div class="card-body p-2 d-flex flex-column align-items-center">
+                                                                            <div class="mb-2">
+                                                                                <input type="radio" name="radio_{{ $detAccordionId }}" value="{{ $equivalente->producto->id }}" data-name-target="#productName_{{ $detAccordionId }}" data-id-target="#productId_{{ $detAccordionId }}" data-badge-target="#badgeId_{{ $detAccordionId }}" data-product-name="{{ $equivalente->producto->producto }}" data-product-code="{{ $equivalente->producto->codigo ?? 'S/C' }}" data-precio="{{ $equivalente->producto->precio }}" {{ $detalle->producto_id == $equivalente->producto->id ? 'checked' : '' }} {{ $stock == 0 ? 'disabled' : '' }} onfocus="this.setAttribute('data-prev', this.checked ? this.value : '')" onchange="updateProductName(this)">
+                                                                            </div>
+                                                                            <div class="text-center d-flex flex-column justify-content-center flex-grow-1">
+                                                                                <span class="d-block">{{ $equivalente->producto->producto }}</span>
+                                                                                @if($stock >= 1 && $stock <= 3) <span class="badge bg-warning badge-pill mt-1 mx-auto">Stock {{ $stock }}</span>
+                                                                                    @elseif($stock == 0)
+                                                                                    <span class="badge bg-secondary-light text-dark badge-pill mt-1 mx-auto">Sin stock</span>
+                                                                                    @endif
+                                                                            </div>
+                                                                        </div>
+                                                                    </label>
+                                                                </div>
+                                                                @endforeach
+                                                            </div>
+                                                            @else
+                                                            <div class="w-100 text-center">
+                                                                <small class="text-secondary" style="opacity: 0.50; font-size: 1rem;">Sin equivalentes asociados</small>
+                                                            </div>
+                                                            @endif
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                    @endif
                                                 </div>
-                                                @endforeach
                                             </div>
-                                            @else
-                                            <div class="w-100 text-center">
-                                                <small class="text-secondary" style="opacity: 0.50; font-size: 1rem;">Sin equivalentes asociados</small>
-                                            </div>
-                                            @endif
-                                            @endif
-                                        </div>
+                                        @endforeach
                                     </div>
-                                    @endif
                                 </div>
                             </div>
-                            @endforeach
                         </div>
                     </div>
+                    @if($rol_usuario_actual == 'receptor' || $rol_usuario_actual == 'cliente' || $rol_usuario_actual == 'operador')
+                        @if($rol_usuario_actual != 'operador')
+                            <div class="col-6 col-md-2 d-flex align-items-center justify-content-center">
+                                <button type="button" class="btn btn-primary-light shadow-sm rounded-circle d-flex align-items-center justify-content-center p-0 btn-scale-hover btn-spinner" data-type="minus" data-target="#unidades_{{ $orden->id }}" data-step="1" style="width: 1.5rem; height: 1.5rem; cursor: pointer;">
+                                    <i class="fas fa-minus text-danger" style="font-size: 0.9rem;"></i>
+                                </button>
+                                <div class="d-flex flex-column align-items-center justify-content-center mx-2" style="width: 4.5rem;">
+                                    <input id="unidades_{{ $orden->id }}" type="number" min="1" step="1" class="form-control text-center no-spinners input-unidades {{ $errors->has('ordenes.' . $orden->id) ? 'is-invalid' : '' }}" name="unidades" data-orden-id="{{ $orden->id }}" data-precio="{{ $orden->precio }}" aria-label="unidades" value="{{ old('ordenes.' . $orden->id, $orden->unidades) }}" required style="width: 100%;">
+                                    <div class="invalid-feedback">
+                                        Solo números positivos (mínimo 1)
+                                    </div>
+                                    @error('ordenes.' . $orden->id)
+                                    <div class="badge bg-danger text-wrap" style="margin-top: 0.2rem; font-size: 0.7rem;">
+                                        {{ $message }}
+                                    </div>
+                                    @enderror
+                                </div>
+                                <button type="button" class="btn btn-primary-light shadow-sm rounded-circle d-flex align-items-center justify-content-center p-0 btn-scale-hover btn-spinner" data-type="plus" data-target="#unidades_{{ $orden->id }}" data-step="1" style="width: 1.5rem; height: 1.5rem; cursor: pointer;">
+                                    <i class="fas fa-plus text-success" style="font-size: 0.9rem;"></i>
+                                </button>
+                            </div>
+                        @else
+                            <div class="col-6 col-md-2 d-flex align-items-center justify-content-start">
+                                <span class="fw-bold" style="margin-left: 1rem;">{{ $orden->unidades }} unidad(es)</span>
+                            </div>
+                        @endif
+                        @can('retirar-item')
+                            <div class="col-3 col-md-1 text-center d-flex align-items-center justify-content-center">
+                                <span id="subtotal_{{ $orden->id }}">${{ number_format($orden->precio * old('ordenes.' . $orden->id, $orden->unidades), 2) }}</span>
+                            </div>
+                            <div class="col-3 col-md-1 text-center d-flex align-items-center justify-content-center">
+                                <i id="btn_retirar_orden_{{ $orden->id }}" class="fas fa-trash text-danger-dark" onclick="retirarOrdenAJAX(this)" data-url="{{ route('tienda.retirar-orden', $orden) }}" data-orden-id="{{ $orden->id }}" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="Retirar orden">
+                                </i>
+                            </div>
+                        @endcan
+                    @endif
                 </div>
+            @endforeach
+            <!--TABLERO DE CONTROL-->
+            <div class="d-flex justify-content-end gap-2 mt-4">
+                @if($atencion && $atencion->count() > 0 && !$atencion->first()->activo)
+                    @if($rol_usuario_actual == 'cliente' || $rol_usuario_actual == 'receptor')
+                        <button type="button" id="btnEnviarCarrito" class="btn btn-primary">
+                            <i class="fas fa-shopping-cart me-2"></i> Enviar
+                        </button>
+                    @endif
+                @else
+                    @if($rol_usuario_actual == 'receptor')
+                        <button type="button" id="corregir-carrito" class="btn btn-warning" @if($atencion && $atencion->count() > 0)
+                            data-atencion-id="{{ $atencion->first()->id }}"@endif>
+                            <i class="fas fa-pencil-alt"></i> Corregir
+                        </button>
+                    @endif
+                    @if($rol_usuario_actual == 'receptor' || $rol_usuario_actual == 'operador')
+                        <button type="button" id="revisar-carrito" class="btn btn-primary" @if($atencion && $atencion->count() > 0)
+                            data-atencion-id="{{ $atencion->first()->id }}"@endif
+                            data-recepcion-id="{{ $recepcion_id ?? '' }}"
+                            data-route="{{ route('recepcion.revisar-carrito') }}">
+                            <i class="fas fa-clipboard-check me-2"></i> Revisar
+                        </button>
+                    @endif
+                    @if($rol_usuario_actual == 'operador')
+                        <button type="button" id="confirmar-stock" class="btn btn-primary" @if($atencion && $atencion->count() > 0)
+                            data-atencion-id="{{ $atencion->first()->id }}"@endif
+                            data-recepcion-id="{{ $recepcion_id ?? '' }}"
+                            data-route="{{ route('recepcion.confirmar-stock') }}">
+                            <i class="fas fa-clipboard-check me-2"></i> Confirmar
+                        </button>
+                    @endif
+                @endif
             </div>
-        </div>
-        @if($rol_usuario_actual == 'receptor' || $rol_usuario_actual == 'cliente' || $rol_usuario_actual == 'operador')
-        @if($rol_usuario_actual != 'operador')
-        <div class="col-6 col-md-2 d-flex align-items-center justify-content-center">
-            <button type="button" class="btn btn-primary-light shadow-sm rounded-circle d-flex align-items-center justify-content-center p-0 btn-scale-hover btn-spinner" data-type="minus" data-target="#unidades_{{ $orden->id }}" data-step="1" style="width: 1.5rem; height: 1.5rem; cursor: pointer;">
-                <i class="fas fa-minus text-danger" style="font-size: 0.9rem;"></i>
-            </button>
-            <div class="d-flex flex-column align-items-center justify-content-center mx-2" style="width: 4.5rem;">
-                <input id="unidades_{{ $orden->id }}" type="number" min="1" step="1" class="form-control text-center no-spinners input-unidades {{ $errors->has('ordenes.' . $orden->id) ? 'is-invalid' : '' }}" name="unidades" data-orden-id="{{ $orden->id }}" data-precio="{{ $orden->precio }}" aria-label="unidades" value="{{ old('ordenes.' . $orden->id, $orden->unidades) }}" required style="width: 100%;">
-                <div class="invalid-feedback">
-                    Solo números positivos (mínimo 1)
-                </div>
-                @error('ordenes.' . $orden->id)
-                <div class="badge bg-danger text-wrap" style="margin-top: 0.2rem; font-size: 0.7rem;">
-                    {{ $message }}
-                </div>
-                @enderror
-            </div>
-            <button type="button" class="btn btn-primary-light shadow-sm rounded-circle d-flex align-items-center justify-content-center p-0 btn-scale-hover btn-spinner" data-type="plus" data-target="#unidades_{{ $orden->id }}" data-step="1" style="width: 1.5rem; height: 1.5rem; cursor: pointer;">
-                <i class="fas fa-plus text-success" style="font-size: 0.9rem;"></i>
-            </button>
-        </div>
-        @else
-        <div class="col-6 col-md-2 d-flex align-items-center justify-content-start">
-            <span class="fw-bold" style="margin-left: 1rem;">{{ $orden->unidades }} unidad(es)</span>
-        </div>
         @endif
-        @if($rol_usuario_actual != 'operador')
-        <div class="col-3 col-md-1 text-center d-flex align-items-center justify-content-center">
-            <span id="subtotal_{{ $orden->id }}">${{ number_format($orden->precio * old('ordenes.' . $orden->id, $orden->unidades), 2) }}</span>
-        </div>
-        <div class="col-3 col-md-1 text-center d-flex align-items-center justify-content-center">
-            <i id="btn_retirar_orden_{{ $orden->id }}" class="fas fa-trash text-danger-dark" onclick="retirarOrdenAJAX(this)" data-url="{{ route('tienda.retirar-orden', $orden) }}" data-orden-id="{{ $orden->id }}" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="Eliminar kit">
-            </i>
-        </div>
-        @endif
-        @endif
-    </div>
-    @endforeach
-    <!--TABLERO DE CONTROL-->
-    <div class="d-flex justify-content-end gap-2 mt-4">
-        @if($atencion && $atencion->count() > 0 && !$atencion->first()->activo)
-        @if($rol_usuario_actual == 'cliente' || $rol_usuario_actual == 'receptor')
-        <button type="button" id="btnEnviarCarrito" class="btn btn-primary">
-            <i class="fas fa-shopping-cart me-2"></i> Enviar
-        </button>
-        @endif
-        @else
-        @if($rol_usuario_actual == 'receptor')
-        <button type="button" id="corregir-orden" class="btn btn-warning" @if($atencion && $atencion->count() > 0)
-            data-atencion-id="{{ $atencion->first()->id }}"
-            @endif>
-            <i class="fas fa-pencil-alt"></i> Corregir
-        </button>
-        @endif
-        @if($rol_usuario_actual == 'receptor' || $rol_usuario_actual == 'operador')
-        <button type="button" id="revisar-orden" class="btn btn-primary" @if($atencion && $atencion->count() > 0)
-            data-atencion-id="{{ $atencion->first()->id }}"
-            @endif
-            data-recepcion-id="{{ $recepcion_id ?? '' }}"
-            data-route="{{ route('recepcion.revisar-orden') }}">
-            <i class="fas fa-clipboard-check me-2"></i> Revisar
-        </button>
-        @endif
-        @if($rol_usuario_actual == 'operador')
-        <button type="button" id="confirmar-stock" class="btn btn-primary" @if($atencion && $atencion->count() > 0)
-            data-atencion-id="{{ $atencion->first()->id }}"
-            @endif
-            data-recepcion-id="{{ $recepcion_id ?? '' }}"
-            data-route="{{ route('recepcion.confirmar-stock') }}">
-            <i class="fas fa-clipboard-check me-2"></i> Confirmar
-        </button>
-        @endif
-        @endif
-    </div>
-    @endif
     @endif
 </div>
 @endsection
@@ -654,7 +651,7 @@ $hasOrders = $currentAtencion && $currentAtencion->ordenes && $currentAtencion->
                     const procederRedireccion = function() {
                         setTimeout(function() {
                             if (role === 'receptor') {
-                                let form = $('<form action="{{ route('recepcion.carrito-editar') }}" method="POST">' +
+                                let form = $('<form action="{{ route('recepcion.editar-carrito') }}" method="POST">' +
                                     '<input type="hidden" name="_token" value="{{ csrf_token() }}">' +
                                     '<input type="hidden" name="atencion_id" value="' + atencionId + '">' +
                                     '<input type="hidden" name="recepcion_id" value="' + recepcionId + '">' +
@@ -1019,7 +1016,7 @@ $hasOrders = $currentAtencion && $currentAtencion->ordenes && $currentAtencion->
             }
         });
     });
-    $(document).on('click', '#revisar-orden', function() { // Revisar Orden (Receptor)
+    $(document).on('click', '#revisar-carrito', function() { // Revisar Carrito (Receptor)
         const btn = $(this);
         const atencionId = btn.data('atencion-id');
         const recepcionId = btn.data('recepcion-id');
@@ -1089,16 +1086,16 @@ $hasOrders = $currentAtencion && $currentAtencion->ordenes && $currentAtencion->
                 }, 1500);
             }
             , error: function(xhr) {
-                console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error en revisar-orden click:", xhr);
+                console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error en revisar-carrito click:", xhr);
                 btn.prop('disabled', false).html('<i class="fas fa-clipboard-check me-2"></i> Revisar');
                 toastr.error(xhr.responseJSON?.message || 'Error al revisar orden');
             }
         });
     });
-    $(document).on('click', '#corregir-orden', function() { // Corregir Orden (Receptor)
+    $(document).on('click', '#corregir-carrito', function() { // Corregir Carrito (Receptor)
         const btn = $(this);
         const atencionId = btn.data('atencion-id');
-        const recepcionId = $('#revisar-orden').data('recepcion-id'); // Obteniendo recepcionId del otro botón
+        const recepcionId = $('#revisar-carrito').data('recepcion-id'); // Obteniendo recepcionId del otro botón
         let ordenes = [];
         $('.main-kit-collapse').each(function() {
             const collapseDiv = $(this);
@@ -1147,7 +1144,7 @@ $hasOrders = $currentAtencion && $currentAtencion->ordenes && $currentAtencion->
             }
         });
         $.ajax({
-            url:'{{ route('recepcion.corregir-orden') }}'
+            url:'{{ route('recepcion.corregir-carrito') }}'
             , method: 'POST'
             , data: {
                 _token: '{{ csrf_token() }}'
@@ -1178,7 +1175,7 @@ $hasOrders = $currentAtencion && $currentAtencion->ordenes && $currentAtencion->
                 btn.prop('disabled', false).html('<i class="fas fa-pencil-alt"></i> Corregir');
             }
             , error: function(xhr) {
-                console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error en corregir-orden click:", xhr);
+                console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error en corregir-carrito click:", xhr);
                 btn.prop('disabled', false).html('<i class="fas fa-pencil-alt"></i> Corregir');
                 
                 if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON.fallos) {

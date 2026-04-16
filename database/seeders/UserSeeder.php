@@ -66,8 +66,11 @@ class UserSeeder extends Seeder
             'ver-tienda',
             'agregar-item',
             'retirar-item',
-            'crear-stocks',
-            'ver-reportes'
+            'crear-stock',
+            'descargar-stock',
+            'ver-reportes',
+            'editar-carrito',
+            'corregir-carrito',
         ];
         foreach ($permissions as $permission) {
             Permission::firstOrCreate(['name' => $permission]);
@@ -81,21 +84,49 @@ class UserSeeder extends Seeder
         $role = Role::firstOrCreate(['name' => 'admin']);
         $role->syncPermissions(['administrar', 'ver', 'crear', 'editar', 'activar', 'eliminar', 'asignar', 'autorizar']);
 
+        $role = Role::firstOrCreate(['name' => 'cliente']);
+        $role->syncPermissions(['tienda', 
+        'gestionar', 
+        'ver-tienda', 
+        'crear-solicitudes', 
+        'ver-solicitudes', 
+        'agregar-item', 
+        'retirar-item', 
+        'ver-orden', 
+        'retirar-orden']);
+
         $role = Role::firstOrCreate(['name' => 'receptor']);
-        $role->syncPermissions(['gestionar', 'tienda', 'ver-reportes', 'crear-stocks', 'revisar', 'asignar', 'autorefrescar', 'ver-tienda', 'ver-solicitudes', 'ver-tareas']);
+        $role->syncPermissions(['gestionar', 
+        'tienda', 
+        'ver-reportes', 
+        'crear-stock', 
+        'descargar-stock', 
+        'revisar', 
+        'asignar',
+        'autorefrescar',
+        'ver-orden',
+        'ver-tienda',
+        'ver-solicitudes',
+        'crear-solicitudes',
+        'agregar-item',
+        'ver-tareas',
+        'editar-carrito',
+        'corregir-carrito',
+        'retirar-item',
+        'retirar-orden']);
 
         $role = Role::firstOrCreate(['name' => 'operador']);
-        $role->syncPermissions(['gestionar', 'tienda', 'editar', 'autorefrescar', 'asignar', 'confirmar', 'ver-solicitudes', 'ver-tareas']);
+        $role->syncPermissions(['gestionar', 
+        'tienda', 
+        'editar', 
+        'autorefrescar', 
+        'asignar', 
+        'confirmar', 
+        'ver-solicitudes', 
+        'ver-tareas']);
 
-        $role = Role::firstOrCreate(['name' => 'cliente']);
-        $role->syncPermissions(['tienda', 'ver-tienda', 'crear-solicitudes' ,'ver-solicitudes', 'retirar-item', 'retirar-orden']);
-
-        $role = Role::firstOrCreate(['name' => 'supervisor']);
-        $role->syncPermissions(['ver']);
-
+        $role = Role::firstOrCreate(['name' => 'supervisor']); //Roles complementarios
         $role = Role::firstOrCreate(['name' => 'gestor']);
-        $role->syncPermissions(['ver']);
-
 
         //SUPERADMINISTRADOR
         DB::table('users')->updateOrInsert(

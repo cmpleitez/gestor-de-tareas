@@ -530,11 +530,13 @@
                     $('body').addClass('sidebar-open');
                     limpiarClasesDrag();
                 @endcan
-            @else
-                mostrarOrdenCompra($card);
             @endcan
         } else if (estadoId === ESTADOS.RECIBIDA || estadoId === ESTADOS.RESUELTA) { // Recibida o Resuelta
-            mostrarOrdenCompra($card);
+            @can('tienda')
+                @can('ver-orden')
+                    mostrarOrdenCompra($card);
+                @endcan
+            @endcan            
         }
     });
     function mostrarOrdenCompra($card) {
@@ -650,9 +652,9 @@
             let formAction = '';
             let ruta = '';
             if (tarea.tarea === TAREAS.REVISION) {
-                ruta = '{{ route("recepcion.carrito-editar") }}';
+                ruta = '{{ route("recepcion.editar-carrito") }}';
             } else if (tarea.tarea === TAREAS.CONFIRMACION) {
-                ruta = '{{ route("recepcion.carrito-editar") }}';
+                ruta = '{{ route("recepcion.editar-carrito") }}';
             } else if (tarea.tarea === TAREAS.PAGO) {
                 ruta = '{{ route("recepcion.confirmar-pago") }}';
             } else if (tarea.tarea === TAREAS.DESCARGA) {
@@ -713,7 +715,7 @@
         const atencionId = item.data('atencion-id');
         const actividadId = item.data('actividad-id');
         const csrfToken = $('meta[name="csrf-token"]').attr('content');
-        if (actionUrl.includes('carrito-editar')) { //Con navegación
+        if (actionUrl.includes('editar-carrito')) { //Con navegación
             let form = $('<form action="' + actionUrl + '" method="POST">' +
                 '<input type="hidden" name="_token" value="' + csrfToken + '">' +
                 '<input type="hidden" name="recepcion_id" value="' + recepcionId + '">' +
