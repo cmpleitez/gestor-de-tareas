@@ -255,12 +255,11 @@
                             data-i18n="Menu Levels">Servicios</span></a>
                     <ul class="menu-content">
                         @can('gestionar')
-                            @can('crear-stocks')
+                            @can('crear-stock')
                                 <li><a href="{{ route('recepcion.create-stock') }}">
                                     <i class="bx bx-right-arrow-alt"></i>
                                     <span class="menu-item" data-i18n="Second Level">Stocks</span>
                                 </a></li>
-
                             @endcan
                             @can('ver-reportes')
                                 <li><a href="{{ route('recepcion.historial-transacciones') }}">

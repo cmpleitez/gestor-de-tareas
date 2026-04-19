@@ -29,7 +29,6 @@
                                         <th>Producto</th>
                                         <th class="text-center">Modelo</th>
                                         <th class="text-center">Tipo</th>
-
                                         <th class="text-center">Tablero de control</th>
                                     </tr>
                                 </thead>
@@ -44,7 +43,7 @@
                                             <td class="text-center">{{ $producto->tipo->tipo }}</td>
                                             {{-- TABLERO DE CONTROL --}}
                                             <td class="text-center">
-                                                @can('editar')
+                                                @can('editar-stock')
                                                     {{-- AGREGAR ENTRADA --}}
                                                     <div class="btn-group" role="group" aria-label="label">
                                                         <a href="#" role="button" data-toggle="modal"

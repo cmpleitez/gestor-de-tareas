@@ -73,7 +73,7 @@ PROCEDIMIENTO: perfil cpleitez.2024@gmail.com https://miro.com/app/board/uXjVJy6
 
 🟢 SERVICIOS:
     
-    ... Cliente: Granular más los permisos y diferenciar de los permisos regulares de los cruds: ver, editar, eliminar, etc.
+    . Sin pendientes
 
 🟡 CLIENTE:
 
