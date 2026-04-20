@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers\Auth;
 
+use App\Models\Oficina;
 use App\Models\User;
 use App\Rules\ValidDui;
 use App\Services\CorrelativeIdGenerator;
@@ -23,7 +24,8 @@ class RegisterController extends Controller
         if (! auth()->check() || ! auth()->user()->hasRole('admin|superadmin')) {
             return back()->with('error', 'No tienes permisos para acceder a esta página.');
         }
-        return view('auth.register');
+        $oficinas = Oficina::where('activo', true)->get();
+        return view('auth.register', compact('oficinas'));
     }
 
     public function store(Request $request)
@@ -35,6 +37,7 @@ class RegisterController extends Controller
             'name'               => ['required', 'string', 'min:3', 'max:255', 'regex:/^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$/'],
             'email'              => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')],
             'dui'                => ['required', 'string', Rule::unique('users', 'dui'), new ValidDui],
+            'oficina_id'         => ['required', 'exists:oficinas,id'],
             'password'           => ['required', 'string', 'min:8', 'confirmed'],
             'terms'              => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
             'image_path' => ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:5120'],
@@ -55,6 +58,8 @@ class RegisterController extends Controller
             'dui.required'             => 'El DUI es requerido.',
             'dui.string'               => 'El DUI debe ser una cadena de texto.',
             'dui.unique'               => 'El DUI ya está registrado.',
+            'oficina_id.required'      => 'La oficina es requerida.',
+            'oficina_id.exists'        => 'La oficina seleccionada no es válida.',
             'password.required'        => 'La contraseña es requerida.',
             'password.string'          => 'La contraseña debe ser una cadena de texto.',
             'password.min'             => 'La contraseña debe tener al menos 8 caracteres.',

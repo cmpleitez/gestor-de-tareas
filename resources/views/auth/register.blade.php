@@ -323,6 +323,29 @@
                                         @enderror
                                     </div>
                                 </div>
+                                <div class="col-sm-12"> {{-- Oficina --}}
+                                    <div class="form-group">
+                                        <label>Oficina</label>
+                                        <div class="controls">
+                                            <select name="oficina_id" id="oficina_id"
+                                                class="form-control {{ $errors->has('oficina_id') ? 'is-invalid' : '' }}"
+                                                data-validation-required-message="La oficina es requerida."
+                                                data-clear="true" required>
+                                                <option value="">Seleccione una oficina</option>
+                                                @foreach ($oficinas as $oficina)
+                                                    <option value="{{ $oficina->id }}"
+                                                        {{ old('oficina_id') == $oficina->id ? 'selected' : '' }}>
+                                                        {{ $oficina->oficina }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        @error('oficina_id')
+                                            <div class="col-sm-12 badge bg-danger text-wrap" style="margin-top: 0.2rem;">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-sm-6"> {{-- Clave --}}

@@ -24,6 +24,7 @@ class CreateNewUser implements CreatesNewUsers
             'name'               => ['required', 'string', 'max:255', 'regex:/^(?! )[a-zA-ZáéíóúÁÉÍÓÚ]+( [a-zA-ZáéíóúÁÉÍÓÚ]+)*$/'],
             'email'              => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')],
             'dui'                => ['required', 'string', Rule::unique('users', 'dui'), new ValidDui],
+            'oficina_id'         => ['required', 'exists:oficinas,id'],
             'password'           => $this->passwordRules(),
             'terms'              => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
             'image_path' => ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:512'], // Solo JPEG/PNG, 512KB máximo
