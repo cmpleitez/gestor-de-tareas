@@ -91,6 +91,8 @@
             </div>
             <div class="card-content">
                 <div class="card-body">
+                    {{-- Tarjetas de stock por producto --}}
+                    <div id="ProductoStocks" class="row g-2 mt-2 mb-2"></div>
                     <ul class="widget-timeline mt-2" id="lista-transacciones">
                         <!-- El historial se cargará aquí dinámicamente -->
                     </ul>
@@ -107,8 +109,51 @@
         if (typeof jqBootstrapValidation === 'function') {
             $("input,select,textarea").not("[type=submit]").jqBootstrapValidation();
         }
-        $('#producto_id, #filtro-fecha').on('change', function() { // Limpiar el historial al cambiar los filtros
+        $('#filtro-fecha').on('change', function() { // Limpiar el historial al cambiar los filtros
             $('#lista-transacciones').empty();
+        });
+        $('#producto_id').on('change', function() { // Limpiar historial y cargar stocks del producto seleccionado
+            $('#lista-transacciones').empty();
+            var productoId = $(this).val();
+            var stocksWrapper = $('#ProductoStocks');
+            stocksWrapper.empty();
+            if (!productoId) return;
+            stocksWrapper.append($('<div>', { class: 'col-12 text-center text-muted' }).text('Cargando stocks...'));
+            $.ajax({
+                url: '{{ route('tienda.get-stocks-producto', ['productoId' => ':productoId']) }}'.replace(':productoId', productoId),
+                type: 'GET',
+                success: function(response) {
+                    stocksWrapper.empty();
+                    if (response && Array.isArray(response.stocks) && response.stocks.length) {
+                        response.stocks.forEach(function(stock) {
+                            var nombre   = stock.nombre || 'Stock sin nombre';
+                            var unidades = typeof stock.unidades !== 'undefined' ? stock.unidades : 0;
+                            var colClass = 'col-12 col-sm-6 col-md-4 col-lg-3 mb-2 d-flex';
+                            var col  = $('<div>', { class: colClass });
+                            var card = $('<div>', { class: 'border rounded p-2 w-100' });
+                            var headerRow = $('<div>', { class: 'mb-75' }).append(
+                                $('<div>', { class: 'text-primary mb-0 font-weight-semibold' }).text(nombre)
+                            );
+                            var unidadesRow = $('<div>', { class: 'd-flex justify-content-between align-items-center' });
+                            unidadesRow.append(
+                                $('<span>', { class: 'badge badge-pill ' + ((unidades == 0 && stock.id != 1) ? 'badge-warning' : 'badge-primary') }).append(
+                                    $('<span>', { class: 'mb-0' }).text('Stock '),
+                                    unidades
+                                )
+                            );
+                            card.append(headerRow, unidadesRow);
+                            col.append(card);
+                            stocksWrapper.append(col);
+                        });
+                    } else {
+                        stocksWrapper.append($('<div>', { class: 'col-12 text-center text-muted' }).text('Sin stocks registrados.'));
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Log:: [Usuario: {{ auth()->user()->name }}] Error al cargar stocks en historial:', error);
+                    stocksWrapper.empty().append($('<div>', { class: 'col-12 text-center text-warning' }).text('No fue posible cargar los stocks.'));
+                }
+            });
         });
         $('#form-consultar').on('submit', function(e) {
             e.preventDefault();
