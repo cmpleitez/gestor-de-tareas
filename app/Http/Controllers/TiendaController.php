@@ -575,7 +575,7 @@ class TiendaController extends Controller
             });
             $recibidas                = $tarjetas->where('estado_id', Estado::where('estado', 'Recibida')->first()->id)->sortBy('created_at')->take(5)->values()->toArray();
             $progreso                 = $tarjetas->where('estado_id', Estado::where('estado', 'En progreso')->first()->id)->sortBy('created_at')->take(5)->values()->toArray();
-            $resueltas                = $tarjetas->where('estado_id', Estado::where('estado', 'Resuelta')->first()->id)->sortBy('created_at')->take(5)->values()->toArray();
+            $resueltas                = $tarjetas->where('estado_id', Estado::where('estado', 'Resuelta')->first()->id)->sortByDesc('created_at')->take(5)->values()->toArray();
             $parametro                = Parametro::where('parametro', 'Tasa de refresco')->first();
             $frecuencia_actualizacion = $parametro ? $parametro->valor : 1; // Valor por defecto: 1 minuto
             $data                     = [

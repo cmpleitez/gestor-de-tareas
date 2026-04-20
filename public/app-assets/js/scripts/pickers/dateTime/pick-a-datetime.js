@@ -288,10 +288,11 @@
   });
 
   // To remain picker opened after date range applied
-  picker.data('daterangepicker').hide = function () {};
-
-  // show picker on load
-  picker.data('daterangepicker').show();
+  if (picker.data('daterangepicker')) {
+    picker.data('daterangepicker').hide = function () {};
+    // show picker on load
+    picker.data('daterangepicker').show();
+  }
 
 
 })(window, document, jQuery);
