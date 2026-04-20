@@ -208,6 +208,9 @@
                 new Sortable(elemento, {
                     group: 'kanban',
                     animation: 150,
+                    delay: 75,
+                    delayOnTouchOnly: true,
+                    fallbackTolerance: 5,
                     ghostClass: 'sortable-ghost',
                     chosenClass: 'sortable-chosen',
                     dragClass: 'sortable-drag',
