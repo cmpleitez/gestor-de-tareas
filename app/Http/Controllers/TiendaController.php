@@ -48,6 +48,9 @@ class TiendaController extends Controller
                 }
             }
         }
+
+        Log::info('Kits: ' . json_encode($kits));
+
         return view('modelos.kit.tienda', compact('kits'));
     }
 
@@ -502,6 +505,11 @@ class TiendaController extends Controller
             $user = auth()->user();
             if ($user->mainRole->name != 'cliente') {
                 $equipos = Equipo::where('oficina_id', $user->oficina_id)->get();
+
+
+
+
+                
                 if ($equipos->isEmpty()) {
                     return redirect()->route('tienda')->with('warning', 'No hay equipos de trabajo disponibles para asignar las solicitudes');
                 }

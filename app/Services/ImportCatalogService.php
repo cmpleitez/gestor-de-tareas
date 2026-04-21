@@ -24,17 +24,11 @@ class ImportCatalogService
         $this->idGenerator = $idGenerator;
     }
 
-    /**
-     * Procesa la importación del catálogo desde un archivo Excel.
-     *
-     * @param string $filePath Ruta absoluta o relativa al archivo Excel.
-     * @return array Resumen de la importación.
-     */
     public function import(string $filePath): array
     {
         $rowsProcessed = 0;
         $errors = [];
-        $oficina = Oficina::where('oficina', 'Mostro')->first(); //Parametrización: oficinas
+        $oficina = Oficina::where('oficina', 'Dobinsons')->first(); //Parametrización: oficinas
         if (!$oficina) {
             throw new \Exception("No se encontró ninguna oficina registrada para realizar la importación.");
         }

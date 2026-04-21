@@ -2,11 +2,9 @@
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\EquipoController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\RecepcionController;
 use App\Http\Controllers\SolicitudController;
-use App\Http\Controllers\TareaController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\MarcaController;
 use App\Http\Controllers\ModeloController;

@@ -117,7 +117,7 @@ class RecepcionController extends Controller
         }
     }
 
-    public function asignar(Request $request, Recepcion $recepcion, Equipo $equipo, GestionService $gestionService)
+    public function asignar(Recepcion $recepcion, Equipo $equipo, GestionService $gestionService)
     {
         $operadores = User::whereHas('equipos', function ($q1) use ($equipo) {
             $q1->where('equipo_id', $equipo->id);
@@ -134,7 +134,7 @@ class RecepcionController extends Controller
             $estado_en_progreso_id = Estado::where('estado', 'En progreso')->first()->id;
             $atencion              = $recepcion->atencion()->first();
             DB::beginTransaction();
-                if ($usuario->mainRole->name=='receptor') { //Creando nueva copia rol
+                if ($usuario->mainRole->name=='receptor') { //Creando copia operador
                     $new_recepcion = new Recepcion();
                     $new_recepcion->id = (new KeyMaker())->generate('Recepcion', $recepcion->solicitud_id);
                     $new_recepcion->atencion_id = $atencion->id;
@@ -144,36 +144,24 @@ class RecepcionController extends Controller
                     $new_recepcion->user_destino_role_id = Role::where('name', 'operador')->first()->id;
                     $new_recepcion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
                     $new_recepcion->save();
-                    foreach ($recepcion->solicitud->tareas as $tarea) { //Autoasignación de tareas
-                        $coincide = $usuario->tareas()->where('tareas.id', $tarea->id)->first();
+                    foreach ($recepcion->solicitud->tareas as $tarea) { //Asignación de tareas
+                        $coincide = $operador->tareas()->where('tareas.id', $tarea->id)->first();
                         if($coincide) {
                             $actividad             = new Actividad();
                             $actividad->id         = (new KeyMaker())->generate('Actividad', $recepcion->solicitud_id);
-                            $actividad->recepcion_id = $recepcion->id;
-                            $actividad->tarea_id   = $tarea->id;
-                            $actividad->estado_id  = $estado_en_progreso_id;
-                            $actividad->save();
-                        }
-                    }
-                } elseIf($usuario->mainRole->name=='operador') {
-                    foreach ($recepcion->solicitud->tareas as $tarea) { //Autoasignación de tareas
-                        $coincide = $usuario->tareas()->where('tareas.id', $tarea->id)->first();
-                        if($coincide) {
-                            $actividad             = new Actividad();
-                            $actividad->id         = (new KeyMaker())->generate('Actividad', $recepcion->solicitud_id);
-                            $actividad->recepcion_id = $recepcion->id;
+                            $actividad->recepcion_id = $new_recepcion->id;
                             $actividad->tarea_id   = $tarea->id;
                             $actividad->estado_id  = $estado_en_progreso_id;
                             $actividad->save();
                         }
                     }
                 }
-                $recepcion->estado_id = $estado_en_progreso_id; //Cambio de estado en local (Rol actual)
+                $recepcion->estado_id = $estado_en_progreso_id; //Cambio de estado en la orden
                 $recepcion->save();
-                $atencion->estado_id = $estado_en_progreso_id; //Cambiando estado en global
+                $atencion->estado_id = $estado_en_progreso_id; //Cambiando estado en la solicitud
                 $atencion->save();
-                //RESULTADO
             DB::commit();
+            //RESULTADO
             $traza = $gestionService->obtenerTraza($recepcion); // Obtener la traza actualizada
             return response()->json([
                 'success' => true,
