@@ -78,6 +78,7 @@ class UserSeeder extends Seeder
             'crear-stock',
             'editar-stock',
             'descargar-stock',
+            'confirmar-stock',
             'ver-reportes',
             'editar-carrito',
             'corregir-carrito',
@@ -113,7 +114,7 @@ class UserSeeder extends Seeder
         'crear-stock', 
         'editar-stock',
         'descargar-stock', 
-        'revisar', 
+        'revisar',
         'asignar',
         'autorefrescar',
         'ver-orden',
@@ -130,11 +131,11 @@ class UserSeeder extends Seeder
         $role = Role::firstOrCreate(['name' => 'operador']);
         $role->syncPermissions(['gestionar', 
         'tienda', 
-        'editar', 
+        'editar-carrito',
         'autorefrescar', 
         'asignar', 
-        'confirmar', 
-        'ver-solicitudes', 
+        'confirmar-stock',
+        'ver-solicitudes',
         'ver-tareas']);
 
         $role = Role::firstOrCreate(['name' => 'supervisor']); //Roles complementarios

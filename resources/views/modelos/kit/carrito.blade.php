@@ -333,12 +333,12 @@ $hasOrders = $currentAtencion && $currentAtencion->ordenes && $currentAtencion->
                                                             </button>
                                                             @if($rol_usuario_actual == 'operador')
                                                                 <div class="btn-group-stock-status d-flex justify-content-end" role="group" aria-label="Estado de stock físico">
-                                                                    <input type="radio" class="btn-check-stock" name="stock_status_{{ $detAccordionId }}" id="stock_verificado_{{ $detAccordionId }}" value="1" {{ $detalle->stock_fisico_existencias === true ? 'checked' : '' }} data-route="{{ route('recepcion.revisar-stock') }}" data-orden-id="{{ $detalle->orden_id }}" data-kit-id="{{ $detalle->kit_id }}" data-producto-id="{{ $detalle->producto_id }}">
+                                                                    <input type="radio" class="btn-check-stock" name="stock_status_{{ $detAccordionId }}" id="stock_verificado_{{ $detAccordionId }}" value="1" {{ $detalle->stock_fisico_existencias === true ? 'checked' : '' }} data-route="{{ route('recepcion.confirmar-stock') }}" data-orden-id="{{ $detalle->orden_id }}" data-kit-id="{{ $detalle->kit_id }}" data-producto-id="{{ $detalle->producto_id }}">
                                                                     <label class="btn-stock-status btn-stock-verified" for="stock_verificado_{{ $detAccordionId }}">
                                                                         <i class="fas fa-check-circle me-1"></i>
                                                                         <span>Existencias verificadas</span>
                                                                     </label>
-                                                                    <input type="radio" class="btn-check-stock" name="stock_status_{{ $detAccordionId }}" id="stock_sin_existencias_{{ $detAccordionId }}" value="0" {{ $detalle->stock_fisico_existencias === false ? 'checked' : '' }} data-route="{{ route('recepcion.revisar-stock') }}" data-orden-id="{{ $detalle->orden_id }}" data-kit-id="{{ $detalle->kit_id }}" data-producto-id="{{ $detalle->producto_id }}">
+                                                                    <input type="radio" class="btn-check-stock" name="stock_status_{{ $detAccordionId }}" id="stock_sin_existencias_{{ $detAccordionId }}" value="0" {{ $detalle->stock_fisico_existencias === false ? 'checked' : '' }} data-route="{{ route('recepcion.confirmar-stock') }}" data-orden-id="{{ $detalle->orden_id }}" data-kit-id="{{ $detalle->kit_id }}" data-producto-id="{{ $detalle->producto_id }}">
                                                                     <label class="btn-stock-status btn-stock-unavailable" for="stock_sin_existencias_{{ $detAccordionId }}">
                                                                         <i class="fas fa-times-circle me-1"></i>
                                                                         <span>No hay existencias</span>
@@ -463,28 +463,28 @@ $hasOrders = $currentAtencion && $currentAtencion->ordenes && $currentAtencion->
                         </button>
                     @endif
                 @else
-                    @if($rol_usuario_actual == 'receptor')
+                    @can('corregir-carrito')
                         <button type="button" id="corregir-carrito" class="btn btn-warning" @if($atencion && $atencion->count() > 0)
                             data-atencion-id="{{ $atencion->first()->id }}"@endif>
                             <i class="fas fa-pencil-alt"></i> Corregir
                         </button>
-                    @endif
-                    @if($rol_usuario_actual == 'receptor' || $rol_usuario_actual == 'operador')
+                    @endcan
+                    @can('revisar')
                         <button type="button" id="revisar-carrito" class="btn btn-primary" @if($atencion && $atencion->count() > 0)
                             data-atencion-id="{{ $atencion->first()->id }}"@endif
                             data-recepcion-id="{{ $recepcion_id ?? '' }}"
                             data-route="{{ route('recepcion.revisar-carrito') }}">
                             <i class="fas fa-clipboard-check me-2"></i> Revisar
                         </button>
-                    @endif
-                    @if($rol_usuario_actual == 'operador')
+                    @endcan
+                    @can('confirmar-stock')
                         <button type="button" id="confirmar-stock" class="btn btn-primary" @if($atencion && $atencion->count() > 0)
                             data-atencion-id="{{ $atencion->first()->id }}"@endif
                             data-recepcion-id="{{ $recepcion_id ?? '' }}"
                             data-route="{{ route('recepcion.confirmar-stock') }}">
                             <i class="fas fa-clipboard-check me-2"></i> Confirmar
                         </button>
-                    @endif
+                    @endcan
                 @endif
             </div>
         @endif

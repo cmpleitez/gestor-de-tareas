@@ -48,9 +48,6 @@ class TiendaController extends Controller
                 }
             }
         }
-
-        Log::info('Kits: ' . json_encode($kits));
-
         return view('modelos.kit.tienda', compact('kits'));
     }
 
@@ -182,7 +179,7 @@ class TiendaController extends Controller
                         }
                     }
                 }
-                if ($atencionId) { //Activacion de la solicitud copia del recptor
+                if ($atencionId) { //Activacion de la solicitud copia del receptor
                     $atencion = Atencion::find($atencionId);
                     if ($atencion) {
                         $atencion->activo = true;
@@ -196,11 +193,11 @@ class TiendaController extends Controller
                             $recepcion->validada_origen = true;
                             $recepcion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
                             $recepcion->save();
-                            $receptor_tmp = User::find($recepcion->destino_user_id); // Autoasignación de tareas para la copia del Receptor
-                            if ($receptor_tmp && $recepcion->solicitud) {
+                            $receptor = User::find($recepcion->destino_user_id); // Autoasignación de tareas para la copia del Receptor
+                            if ($receptor && $recepcion->solicitud) {
                                 $estado_recibida_id = Estado::where('estado', 'Recibida')->first()->id;
                                 foreach ($recepcion->solicitud->tareas as $tarea) {
-                                    $coincide = $receptor_tmp->tareas()->where('tareas.id', $tarea->id)->first();
+                                    $coincide = $receptor->tareas()->where('tareas.id', $tarea->id)->first();
                                     if ($coincide) {
                                         $actividad = new Actividad();
                                         $actividad->id = (new KeyMaker())->generate('Actividad', $recepcion->solicitud_id);

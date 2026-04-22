@@ -151,12 +151,12 @@ Route::middleware([
             Route::post('revisar-carrito', [RecepcionController::class, 'revisarCarrito'])->name('recepcion.revisar-carrito')->middleware('can:revisar');
             Route::get('create-stock', [RecepcionController::class, 'createStock'])->name('recepcion.create-stock')->middleware('can:crear-stock');
             Route::post('store-stock', [RecepcionController::class, 'storeStock'])->name('recepcion.store-stock')->middleware('can:crear-stock');
-            Route::post('confirmar-stock', [RecepcionController::class, 'confirmarStock'])->name('recepcion.confirmar-stock')->middleware('can:revisar');
+            Route::post('confirmar-stock', [RecepcionController::class, 'confirmarStock'])->name('recepcion.confirmar-stock')->middleware('can:confirmar-stock');
+            Route::post('descargar-stock', [RecepcionController::class, 'descargarStock'])->name('recepcion.descargar-stock')->middleware('can:descargar-stock');
+            Route::get('tracking-stocks', [RecepcionController::class, 'historialTransacciones'])->name('recepcion.historial-transacciones')->middleware('can:ver-reportes');
             Route::post('editar-carrito', [RecepcionController::class, 'editarCarrito'])->name('recepcion.editar-carrito')->middleware('can:editar-carrito');
             Route::post('confirmar-pago', [RecepcionController::class, 'confirmarPago'])->name('recepcion.confirmar-pago')->middleware('can:confirmar');
-            Route::post('descargar-stock', [RecepcionController::class, 'descargarStock'])->name('recepcion.descargar-stock')->middleware('can:descargar-stock');
             Route::post('efectuar-entrega', [RecepcionController::class, 'efectuarEntrega'])->name('recepcion.efectuar-entrega')->middleware('can:confirmar');
-            Route::get('tracking-stocks', [RecepcionController::class, 'historialTransacciones'])->name('recepcion.historial-transacciones')->middleware('can:ver-reportes');
             Route::post('lectura-transacciones', [RecepcionController::class, 'lecturaTransacciones'])->name('recepcion.lectura-transacciones')->middleware('can:ver-reportes');
         });
     });
