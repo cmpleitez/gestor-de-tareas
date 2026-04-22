@@ -204,8 +204,12 @@
 
     <script>
         document.addEventListener('livewire:init', () => {
-            Livewire.on('notification-received', (data) => {
-                if (typeof toastr !== 'undefined') {
+            Livewire.on('notification-received', (event) => {
+                // Livewire 3 emite eventos con parámetros dentro de un array.
+                const data = (Array.isArray(event) && event.length > 0) ? event[0] : (event.data || event);
+                console.log("Log:: Notificación recibida en servicios:", data);
+
+                if (typeof toastr !== 'undefined' && data) {
                     // Mensaje con salto de línea y botón Enterado
                     const message = `
                         ${data.mensaje}
@@ -213,7 +217,7 @@
                         <button type="button" class="btn bg-primary-light text-dark btn-sm btn-block" style="width: 100%; margin-top: 10px; font-weight: bold;" onclick="$(this).closest('.toast').find('.toast-close-button').click()">Enterado</button>
                     `;
                     
-                    toastr.info(message, data.titulo, {
+                    toastr[data.tipo || 'info'](message, data.titulo, {
                         "closeButton": true,
                         "progressBar": false,
                         "positionClass": "toast-top-right",
@@ -225,7 +229,52 @@
                     });
                 }
             });
+
+            // Consulta inmediata al cargar la página
+            Livewire.dispatch('trigger-check-notifications');
         });
+    </script>
+
+    <script>
+        // Polling inteligente: solo ejecuta cuando la pestaña es visible
+        (function () {
+            const INTERVALO_MS = 15000; // 15 segundos
+            let intervalo = null;
+
+            function consultarNotificaciones() {
+                if (document.visibilityState === 'visible') {
+                    Livewire.dispatch('trigger-check-notifications');
+                }
+            }
+
+            function iniciarPolling() {
+                if (!intervalo) {
+                    intervalo = setInterval(consultarNotificaciones, INTERVALO_MS);
+                }
+            }
+
+            function detenerPolling() {
+                if (intervalo) {
+                    clearInterval(intervalo);
+                    intervalo = null;
+                }
+            }
+
+            // Pausar/reanudar según visibilidad de la pestaña
+            document.addEventListener('visibilitychange', function () {
+                if (document.visibilityState === 'visible') {
+                    consultarNotificaciones(); // Inmediatamente
+                    iniciarPolling();
+                } else {
+                    detenerPolling();
+                }
+            });
+
+            // Arrancar al cargar la página
+            document.addEventListener('DOMContentLoaded', function () {
+                iniciarPolling();
+            });
+        })();
     </script>
     @stack('scripts')
 </body>

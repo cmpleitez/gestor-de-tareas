@@ -1,3 +1,3 @@
-<div wire:poll.60000ms="checkNotifications">
-    {{-- Este componente no renderiza nada visible, solo maneja el polling --}}
+<div>
+    {{-- Polling controlado desde JS en dashboard.blade.php con visibilidad de pestaña --}}
 </div>

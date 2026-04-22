@@ -451,6 +451,31 @@
                 });
             }
         });
+        // Lógica personalizada para expandir todos los submenús al hacer hover en el menú lateral (cuando está colapsado)
+        $('.main-menu').on('mouseenter', function() {
+            if ($('body').hasClass('menu-collapsed')) {
+                $(this).find('li.has-sub').not('.open').addClass('open').children('ul').hide().slideDown(200);
+            }
+        }).on('mouseleave', function() {
+            if ($('body').hasClass('menu-collapsed')) {
+                $(this).find('li.has-sub.open').each(function() {
+                    var $this = $(this);
+                    $this.children('ul').slideUp(200, function() {
+                        $this.removeClass('open');
+                    });
+                });
+            }
+        });
+        // Expansión masiva para modo celular al abrir el menú desde la hamburguesa
+        $(document).on('click', '.menu-toggle', function() {
+            if (window.innerWidth < 1200) {
+                setTimeout(function() {
+                    if ($('body').hasClass('menu-open')) {
+                        $('.main-menu').find('li.has-sub').not('.open').addClass('open').children('ul').hide().slideDown(200);
+                    }
+                }, 300);
+            }
+        });
     </script>
 
     <!-- Custom js for this page -->
@@ -459,30 +484,71 @@
     <!-- End custom js for this page -->
 
     <livewire:check-notifications />
-
     <script>
         document.addEventListener('livewire:init', () => {
-            Livewire.on('notification-received', (data) => {
-                if (typeof toastr !== 'undefined') {
-                    // Mensaje con salto de línea y botón Enterado
+            Livewire.on('notification-received', (event) => {
+                // Livewire 3 emite eventos con parámetros dentro de un array.
+                const data = (Array.isArray(event) && event.length > 0) ? event[0] : (event.data || event);
+                console.log("Log:: Notificación recibida en dashboard:", data);
+
+                if (typeof toastr !== 'undefined' && data) {
                     const message = `
                         ${data.mensaje}
                         <br><br>
                         <button type="button" class="btn bg-primary-light text-dark btn-sm btn-block" style="width: 100%; margin-top: 10px; font-weight: bold;" onclick="$(this).closest('.toast').find('.toast-close-button').click()">Enterado</button>
                     `;
-                    toastr.info(message, data.titulo, {
+                    toastr[data.tipo || 'info'](message, data.titulo, {
                         "closeButton": true,
                         "progressBar": false,
                         "positionClass": "toast-top-right",
-                        "timeOut": "0",          // Persistente
-                        "extendedTimeOut": "0",  // Persistente al hover
-                        "tapToDismiss": false,   // Evita cerrar al clickear el cuerpo
-                        "preventDuplicates": false, // Permitir múltiples
-                        "enableHtml": true,      // HTML habilitado
+                        "timeOut": "0",
+                        "extendedTimeOut": "0",
+                        "tapToDismiss": false,
+                        "preventDuplicates": false,
+                        "enableHtml": true,
                     });
                 }
             });
+            // Consulta inmediata al cargar la página para notificaciones pendientes sin esperar el primer ciclo de 15s
+            Livewire.dispatch('trigger-check-notifications');
         });
+    </script>
+
+    <script>
+        // Polling inteligente: solo ejecuta cuando la pestaña es visible
+        (function () {
+            const INTERVALO_MS = 15000; // 15 segundos
+            let intervalo = null;
+            function consultarNotificaciones() {
+                if (document.visibilityState === 'visible') {
+                    Livewire.dispatch('trigger-check-notifications');
+                }
+            }
+            function iniciarPolling() {
+                if (!intervalo) {
+                    intervalo = setInterval(consultarNotificaciones, INTERVALO_MS);
+                }
+            }
+            function detenerPolling() {
+                if (intervalo) {
+                    clearInterval(intervalo);
+                    intervalo = null;
+                }
+            }
+            // Pausar/reanudar según visibilidad de la pestaña
+            document.addEventListener('visibilitychange', function () {
+                if (document.visibilityState === 'visible') {
+                    consultarNotificaciones(); // Consultar inmediatamente al volver
+                    iniciarPolling();
+                } else {
+                    detenerPolling();
+                }
+            });
+            // Arrancar al cargar la página
+            document.addEventListener('DOMContentLoaded', function () {
+                iniciarPolling();
+            });
+        })();
     </script>
 
 </body>

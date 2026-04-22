@@ -1231,8 +1231,9 @@ $hasOrders = $currentAtencion && $currentAtencion->ordenes && $currentAtencion->
         });
     }
     document.addEventListener('livewire:init', () => {
-        Livewire.on('notification-received', (data) => {
-            if (data.payload && data.payload.detalles) {
+        Livewire.on('notification-received', (event) => {
+            const data = (Array.isArray(event) && event.length > 0) ? event[0] : (event.data || event);
+            if (data && data.payload && data.payload.detalles) {
                 procesarActualizacionStock(data.payload.detalles);
             }
         });

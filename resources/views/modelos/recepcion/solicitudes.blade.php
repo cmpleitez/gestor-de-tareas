@@ -1108,8 +1108,9 @@
         } else {
             let isUpdating = false;
             let updateInterval = ({{ $frecuencia_actualizacion }} * 1000);
+            let kanbanIntervalId = null;
             function safeUpdate() {
-                if (isUpdating) {
+                if (isUpdating || document.visibilityState !== 'visible') {
                     return;
                 }
                 isUpdating = true;
@@ -1125,8 +1126,28 @@
                     }
                 });
             }
+            function iniciarKanbanPolling() {
+                if (!kanbanIntervalId) {
+                    kanbanIntervalId = setInterval(safeUpdate, updateInterval);
+                }
+            }
+            function detenerKanbanPolling() {
+                if (kanbanIntervalId) {
+                    clearInterval(kanbanIntervalId);
+                    kanbanIntervalId = null;
+                }
+            }
+            // Pausar/reanudar el Kanban según visibilidad de la pestaña
+            document.addEventListener('visibilitychange', function () {
+                if (document.visibilityState === 'visible') {
+                    safeUpdate(); // Actualizar inmediatamente al volver
+                    iniciarKanbanPolling();
+                } else {
+                    detenerKanbanPolling();
+                }
+            });
             safeUpdate();
-            setInterval(safeUpdate, updateInterval);
+            iniciarKanbanPolling();
         }
         const recepcionIdGuardado = sessionStorage.getItem('recepcion_id_activa'); // Apertura automática del sidebar si viene de una validación de orden
         if (recepcionIdGuardado && recepcionIdGuardado !== "undefined" && recepcionIdGuardado !== "null") {

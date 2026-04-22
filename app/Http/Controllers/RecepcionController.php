@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\StockRevisadoNotification;
 use App\Notifications\OrdenValidadaNotification;
+use App\Notifications\CarritoRevisadoNotification;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Actividad;
 use App\Models\Equipo;
@@ -476,6 +477,24 @@ class RecepcionController extends Controller
                     }
                 }
             DB::commit();
+            // Notificar a los operadores de la misma oficina para re-confirmar el stock
+            try {
+                $recepcionObj = Recepcion::find($recepcion_id);
+                if ($recepcionObj) {
+                    $oficina_id = auth()->user()->oficina_id;
+                    $operadores = User::where('oficina_id', $oficina_id)
+                        ->whereHas('mainRole', function ($q) {
+                            $q->where('name', 'operador');
+                        })
+                        ->where('activo', true)
+                        ->get();
+                    if ($operadores->isNotEmpty()) {
+                        Notification::send($operadores, new CarritoRevisadoNotification($recepcionObj));
+                    }
+                }
+            } catch (\Exception $e) {
+                Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Error al notificar operadores en corregirCarrito: ' . $e->getMessage(), ['exception' => $e]);
+            }
             //RESULTADO
             return response()->json([
                 'success' => true,
