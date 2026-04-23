@@ -14,7 +14,7 @@ return $orden->precio * $orden->unidades;
 <div class="row align-items-center flex-nowrap">
     <div class="col-auto d-flex justify-content-start">
         @if($rol_usuario_actual == 'receptor')
-        <a href="{{ route('tienda') }}" onclick="sessionStorage.removeItem('recepcion_id_activa');" class="btn btn-primary-light">
+        <a href="{{ route('tienda.solicitudes') }}" onclick="sessionStorage.removeItem('recepcion_id_activa');" class="btn btn-primary-light">
             <i class="fas fa-arrow-left"></i>
         </a>
         @endif

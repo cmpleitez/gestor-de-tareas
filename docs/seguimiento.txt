@@ -75,8 +75,7 @@ PROCEDIMIENTO: perfil cpleitez.2024@gmail.com https://miro.com/app/board/uXjVJy6
 
 🟢 SERVICIOS:
     
-    ... Rol operador en /recepcion/editar-carrito: cuando el usuario da clic en el control regresar lo trata de enviar a la tienda
-    pero este usuario no tiene permiso para dicha ruta.
+    ... Sin pendientes
     
 🟡 CLIENTE:
 
