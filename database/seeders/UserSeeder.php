@@ -18,6 +18,7 @@ class UserSeeder extends Seeder
             ['id' => 1],
             [
                 'oficina'    => 'Mostro',
+                'activo'    => 0,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]
@@ -27,6 +28,7 @@ class UserSeeder extends Seeder
             ['id' => 2],
             [
                 'oficina'    => 'Dodinsons',
+                'activo'    => 1,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]
