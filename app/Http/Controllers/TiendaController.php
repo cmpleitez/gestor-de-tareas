@@ -40,7 +40,7 @@ class TiendaController extends Controller
         foreach ($kits as $kit) {
             $kit->disponible = true;
             foreach ($kit->productos as $producto) {
-                $stock = $producto->oficinaStock->first();
+                $stock = $producto->oficinaStock->where('oficina_id', $oficinaId)->first();
                 if (!$stock || $stock->unidades <= 0) {
                     $kit->disponible = false;
                     break;
@@ -432,8 +432,8 @@ class TiendaController extends Controller
         if (!$kit) {
             return response()->json(['error' => 'Kit no encontrado'], 404);
         }
-        $kit->productos->each(function($producto) {
-            $stock = $producto->oficinaStock->first();
+        $kit->productos->each(function($producto) use ($oficinaId) {
+            $stock = $producto->oficinaStock->where('oficina_id', $oficinaId)->first();
             $producto->stock_actual = $stock ? $stock->unidades : 0;
             unset($producto->oficinaStock); // Evitamos enviar la estructura interna de la relación
         });
