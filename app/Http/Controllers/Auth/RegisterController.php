@@ -91,7 +91,7 @@ class RegisterController extends Controller
             }
             $user->sendEmailVerificationNotification(); // Enviar correo de verificación - Comentado temporalmente para evitar timeout
             DB::commit();
-            return redirect('user')->with('success', 'Nuevo usuario registrado con éxito.');
+            return redirect()->route('user')->with('success', 'Nuevo usuario registrado con éxito.');
         } catch (\Exception $e) {
             DB::rollback();
             Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Error en registro de usuario: ' . $e->getMessage(), ['exception' => $e]);

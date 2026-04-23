@@ -64,7 +64,7 @@ class FortifyServiceProvider extends ServiceProvider
 
         // Configurar redirecciones personalizadas
         Fortify::redirects('register', function () {
-            return redirect('/email/verify')->with('success', 'Usuario registrado exitosamente. Por favor verifica tu email.');
+            return redirect()->route('verification.notice')->with('success', 'Usuario registrado exitosamente. Por favor verifica tu email.');
         });
 
         // Permitir que usuarios autenticados accedan al formulario de registro

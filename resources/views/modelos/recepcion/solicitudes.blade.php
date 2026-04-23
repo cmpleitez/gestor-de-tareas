@@ -720,7 +720,7 @@
         const atencionId = item.data('atencion-id');
         const actividadId = item.data('actividad-id');
         const csrfToken = $('meta[name="csrf-token"]').attr('content');
-        if (actionUrl.includes('editar-carrito')) { //Con navegación
+        if (actionUrl.includes('edit-request')) { //Con navegación
             let form = $('<form action="' + actionUrl + '" method="POST">' +
                 '<input type="hidden" name="_token" value="' + csrfToken + '">' +
                 '<input type="hidden" name="recepcion_id" value="' + recepcionId + '">' +
