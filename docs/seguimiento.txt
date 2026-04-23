@@ -69,13 +69,15 @@ PROCEDIMIENTO: perfil cpleitez.2024@gmail.com https://miro.com/app/board/uXjVJy6
 
 🟠 SEGURIDAD:
 
-    . Antes de activar el servicio externo, se deben asegurar los nombres de las rutas, y colocarlo bajo un esquema de seguridad tipo cloudFlare
+    . Antes de activar el servicio externo, se deben asegurar los nombres de las rutas
     . El uso de los permisos muta a usan can aplicando un solo permiso ya no dos anidados y ya no usar el rol, cada permiso es específico y único
+    . Enmascarar las rutas
 
 🟢 SERVICIOS:
     
-    . La oficina predeterminada debe ser Donbinsons
-
+    ... Rol operador en /recepcion/editar-carrito: cuando el usuario da clic en el control regresar lo trata de enviar a la tienda
+    pero este usuario no tiene permiso para dicha ruta.
+    
 🟡 CLIENTE:
 
     . Que el cliente brinde la información del dominio

@@ -257,7 +257,9 @@
         const items = $col.children('.solicitud-card').get();
         if (items.length > 0) {
             items.sort(function(a, b) {
-                return parseInt(a.dataset.atencionId || '0', 10) - parseInt(b.dataset.atencionId || '0', 10);
+                const valA = parseInt(a.dataset.atencionId || '0', 10);
+                const valB = parseInt(b.dataset.atencionId || '0', 10);
+                return columnaId === 'columna-resueltas' ? valB - valA : valA - valB;
             });
             items.forEach(function(el) {
                 $col.append(el);

@@ -561,7 +561,7 @@ class RecepcionController extends Controller
                 if ($detalle->stock_fisico_existencias == "0") {
                     return response()->json([
                         'success' => false,
-                        'message' => "El producto {$detalle->producto_id} - {$detalle->producto->producto} no tiene existencias físicas. No se puede revisar la orden.",
+                        'message' => "No hay existencias del producto [ {$detalle->producto_id} - {$detalle->producto->producto} ], No se puede confirmar el despacho de la solicitud.",
                         'type'    => 'error'
                     ], 422);
                 }
