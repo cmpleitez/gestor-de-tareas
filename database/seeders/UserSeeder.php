@@ -27,7 +27,7 @@ class UserSeeder extends Seeder
         DB::table('oficinas')->updateOrInsert(
             ['id' => 2],
             [
-                'oficina'    => 'Dodinsons',
+                'oficina'    => 'Dobinsons',
                 'activo'    => 1,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
