@@ -150,7 +150,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         //MOSTRAR KIT Y SUS PRODUCTOS
-        const modalPreferencias = document.getElementById('modalPreferencias'); 
+        const modalPreferencias = document.getElementById('modalPreferencias');
         const kitImageContainer = document.getElementById('kit-image-container');
         const kitImage = document.getElementById('kit-image');
         const kitImagePlaceholder = document.getElementById('kit-image-placeholder');

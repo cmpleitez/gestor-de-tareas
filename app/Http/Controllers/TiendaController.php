@@ -37,11 +37,22 @@ class TiendaController extends Controller
             $query->where('oficina_id', $oficinaId)
                   ->where('stock_id', $stockBodegaId);
         }])->get();
+        
+        Log::info('Log:: [Tienda Index] Consultando stock para Oficina ID: ' . $oficinaId . ' con Stock Bodega ID: ' . $stockBodegaId);
+        Log::info('Log:: [Tienda Index] Cantidad de kits encontrados: ' . $kits->count());
+
         foreach ($kits as $kit) {
             $kit->disponible = true;
+            Log::info('Log:: [Tienda Index] Procesando Kit: ' . $kit->kit . ' (ID: ' . $kit->id . ')');
+
             foreach ($kit->productos as $producto) {
                 $stock = $producto->oficinaStock->where('oficina_id', $oficinaId)->first();
-                if (!$stock || $stock->unidades <= 0) {
+                $unidades = $stock ? $stock->unidades : 0;
+
+                Log::info('Log:: [Tienda Index] --> Producto: ' . $producto->producto . ' | Oficina: ' . $oficinaId . ' | Unidades: ' . $unidades);
+
+                if (!$stock || $unidades <= 0) {
+                    Log::warning('Log:: [Tienda Index] !!! Kit "' . $kit->kit . '" no disponible por producto: ' . $producto->producto . ' (ID: ' . $producto->id . ') en Oficina ID: ' . $oficinaId . '. Unidades encontradas: ' . $unidades);
                     $kit->disponible = false;
                     break;
                 }
@@ -432,10 +443,15 @@ class TiendaController extends Controller
         if (!$kit) {
             return response()->json(['error' => 'Kit no encontrado'], 404);
         }
+        Log::info('Log:: [Tienda Modal] Consultando stock del Kit ID: ' . $kitId . ' para Oficina ID: ' . $oficinaId);
         $kit->productos->each(function($producto) use ($oficinaId) {
             $stock = $producto->oficinaStock->where('oficina_id', $oficinaId)->first();
-            $producto->stock_actual = $stock ? $stock->unidades : 0;
-            unset($producto->oficinaStock); // Evitamos enviar la estructura interna de la relación
+            $unidades = $stock ? $stock->unidades : 0;
+            
+            $producto->stock_actual = $unidades;
+            Log::info('Log:: [Tienda Modal] Producto: ' . $producto->producto . ' | Oficina ID: ' . $oficinaId . ' | Stock: ' . $unidades);
+            
+            unset($producto->oficinaStock);
         });
         return response()->json([
             'success' => true,
