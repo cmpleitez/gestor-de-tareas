@@ -1,5 +1,5 @@
 🟠 Comando para importar de manera masiva los datos del usuario
-    php artisan app:importar-full
+    php artisan db:importar "NombreOficina"
 
 🟠 Resolviendo el bloqueo de github con ssh
     1. Habilitar e iniciar ssh-agent	✅

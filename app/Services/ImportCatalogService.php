@@ -24,15 +24,18 @@ class ImportCatalogService
         $this->idGenerator = $idGenerator;
     }
 
-    public function import(string $filePath): array
+    public function import(string $filePath, string $oficinaNombre): array
     {
         $rowsProcessed = 0;
         $errors = [];
-        $oficina = Oficina::where('oficina', 'Dobinsons')->first(); //Parametrización: oficinas
+
+        $oficina = Oficina::where('oficina', $oficinaNombre)->first();
         if (!$oficina) {
-            throw new \Exception("No se encontró ninguna oficina registrada para realizar la importación.");
+            throw new \Exception("No se encontró ninguna oficina registrada con el nombre: '{$oficinaNombre}'");
         }
         $this->oficinaId = $oficina->id;
+
+        Log::info("Log:: [Importación] Iniciando proceso para la oficina: '{$oficinaNombre}' (ID: {$this->oficinaId})");
 
         try {
             $reader = SimpleExcelReader::create($filePath);

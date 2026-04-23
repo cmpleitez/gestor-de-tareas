@@ -6,18 +6,19 @@ use Illuminate\Support\Facades\File;
 
 class ImportCatalogCommand extends Command
 {
-    protected $signature = 'db:importar {file=docs/formato-importacion-full.xlsx}';
-    protected $description = 'Importa el catálogo de productos y kits desde un archivo Excel';
+    protected $signature = 'db:importar {oficina : Nombre de la oficina para la importación}';
+    protected $description = 'Importa el catálogo de productos y kits desde un excel';
     public function handle(ImportCatalogService $importService)
     {
-        $file = $this->argument('file');
+        $file = 'docs/formato-importacion-full.xlsx';
+        $oficinaNombre = $this->argument('oficina');
         if (!File::exists(base_path($file))) {
             $this->error("El archivo no existe: " . $file);
             return 1;
         }
-        $this->info("Iniciando importación desde: " . $file);
+        $this->info("Iniciando importación para la oficina: " . $oficinaNombre);
         try {
-            $result = $importService->import(base_path($file));
+            $result = $importService->import(base_path($file), $oficinaNombre);
             $this->info("Importación completada.");
             $this->line("- Filas procesadas con éxito: " . $result['total']);
             if (count($result['errors']) > 0) {

@@ -75,7 +75,7 @@ PROCEDIMIENTO: perfil cpleitez.2024@gmail.com https://miro.com/app/board/uXjVJy6
 
 🟢 SERVICIOS:
     
-    ... Sin pendientes
+    ... Adaprtando el comando de importacion de datos, especificamente el id de la oficina
     
 🟡 CLIENTE:
 
