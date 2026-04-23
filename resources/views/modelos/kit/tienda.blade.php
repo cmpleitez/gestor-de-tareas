@@ -59,9 +59,9 @@
                             </div>
                             <div class="card-body ">
                                 @if($kit->disponible)
-                                <a href="{{ Route('tienda.agregar-item', $kit->id) }}" class="text-decoration-none d-flex justify-content-center btn-agregar-kit">{{ $kit->kit }}</a>
+                                    <a href="{{ Route('tienda.agregar-item', $kit->id) }}" class="text-decoration-none d-flex justify-content-center btn-agregar-kit">{{ $kit->kit }}</a>
                                 @else
-                                <span class="text-decoration-none d-flex justify-content-center text-muted">{{ $kit->kit }} <span class="badge bg-danger ms-1">Agotado</span></span>
+                                    <span class="text-decoration-none d-flex justify-content-center text-muted">{{ $kit->kit }} <span class="badge bg-danger ms-1">Agotado</span></span>
                                 @endif
                                 <ul class="w-100 list-unstyled d-flex justify-content-between mb-0">
                                     <li class="pt-2">
@@ -194,7 +194,7 @@
                             let html = '';
                             let kitDisponible = true;
                             data.kit.productos.forEach(producto => {
-                                const stock = producto.oficina_stock.length > 0 ? producto.oficina_stock[0].unidades : 0;
+                                const stock = producto.stock_actual || 0;
                                 const sinStock = stock <= 0;
                                 const textClass = sinStock ? 'text-danger fw-bold' : '';
                                 const badgeClass = sinStock ? 'bg-danger' : 'bg-success';
