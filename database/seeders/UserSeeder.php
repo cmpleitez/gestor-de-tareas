@@ -148,6 +148,7 @@ class UserSeeder extends Seeder
             ['id' => 1],
             [
                 'role_id'           => 1,
+                'oficina_id'        => 2,
                 'name'              => 'superadmin',
                 'dui'               => '012345678',
                 'email'             => 'superadmin@servidor.com',
@@ -171,6 +172,7 @@ class UserSeeder extends Seeder
                 ['id' => 2],
                 [
                     'role_id'           => 2,
+                    'oficina_id'        => 2,
                     'name'              => 'admin',
                     'dui'               => '023456783',
                     'email'             => 'admin@servidor.com',

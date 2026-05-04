@@ -119,7 +119,6 @@ class UserController extends Controller
                 'role_id' => 'required|numeric|exists:roles,id',
             ]);
             $submittedRoles = $validated['roles'];
-                                             // Validación para rol de cliente
             if ($user->hasRole('Cliente')) { // Usuario que ya es cliente
                 if (in_array('Cliente', $submittedRoles) && count($submittedRoles) > 1) {
                     throw new Exception('No esta disponible la funcionalidad de ser cliente y otro rol a la vez');
@@ -129,13 +128,10 @@ class UserController extends Controller
                     throw new Exception('No esta disponible la funcionalidad de ser cliente y otro rol a la vez');
                 }
             }
-            if ($user->hasRole('admin')) {
-                if (! in_array('admin', $submittedRoles)) {
-                    $submittedRoles[] = 'admin';
+            if ($user->mainRole->name === 'admin') {
+                if (! in_array('admin', $submittedRoles) || $validated['role_id'] != $user->role_id) {
+                    throw new Exception('No es posible degradar o cambiar el rol principal de un administrador.');
                 }
-            }
-            if (in_array($user->mainRole->name, ['admin']) && $validated['role_id'] != $user->role_id) {
-                throw new Exception('No se puede cambiar el rol principal de un usuario ' . $user->mainRole->name);
             }
             //PROCESO
             DB::beginTransaction();
@@ -148,8 +144,8 @@ class UserController extends Controller
             DB::commit();
         } catch (Exception $e) {
             DB::rollback();
-            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Ocurrió un error cuando se intentaba guardar los cambios de roles: ' . $e->getMessage(), ['exception' => $e]);
-            return back()->with('error', 'Ocurrió un error cuando se intentaba actualizar los roles del usuario.');
+            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Ocurrió un error cuando se intentaba cambiar los roles de un usuario: ' . $e->getMessage(), ['exception' => $e]);
+            return back()->with('error', $e->getMessage());
         }
         return redirect()->route("user")->with('success', 'Los roles para el usuario ' . $user->name . ' han sido actualizados efectivamente.');
     }
