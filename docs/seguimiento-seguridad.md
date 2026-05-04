@@ -16,7 +16,7 @@ Documento de continuidad entre sesiones. Marcar cada punto como `- [x]` al compl
 
 ## Sobrantes / fuera del estándar a eliminar o normalizar
 
-- [ ] Eliminar el recurso `app/Http/Middleware/PerformanceOptimization.php` y sus dependencias y asociados (exceptuando alguna cosa que afecte el funcionamiento del proyecto web app actual: validar primero que ningún `ini_set()` ni `Cache-Control` que aplica esté siendo requerido; si lo está, moverlo a su ubicación correcta — `php.ini`, `config/`, o nginx).
+- [x] Eliminar el recurso `app/Http/Middleware/PerformanceOptimization.php` y sus dependencias y asociados (exceptuando alguna cosa que afecte el funcionamiento del proyecto web app actual: validar primero que ningún `ini_set()` ni `Cache-Control` que aplica esté siendo requerido; si lo está, moverlo a su ubicación correcta — `php.ini`, `config/`, o nginx). _Eliminados: `app/Http/Middleware/PerformanceOptimization.php` y `config/performance.php` (ambos huérfanos, sin lectores)._
 - [ ] Eliminar el bypass global del rol `superadmin` en `app/Providers/AuthServiceProvider.php:25-27` (`Gate::before`). Contradice la pauta de no usar el rol como criterio.
 - [ ] Eliminar el doble `can` anidado en `routes/web.php` (grupo `can:administrar|gestionar|tienda` + `can:atómico` por ruta); dejar un único `can` específico por ruta.
 - [ ] Eliminar los permisos macro `administrar`, `gestionar`, `tienda` del seeder (`database/seeders/UserSeeder.php`) y de los grupos de rutas, una vez resuelto el punto anterior.
