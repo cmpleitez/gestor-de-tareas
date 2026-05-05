@@ -160,12 +160,10 @@
                                 </div>
                             </a>
                             <div class="dropdown-menu dropdown-menu-right pb-0">
-                                @can('tienda')                                
-                                    @can('ver-solicitudes')                                
-                                        <a class="dropdown-item" href="{{ route('tienda.solicitudes') }}">
-                                            <i class="bx bx-check-square mr-50"></i>Solicitudes
-                                        </a>
-                                    @endcan
+                                @can('ver-solicitudes')
+                                    <a class="dropdown-item" href="{{ route('tienda.solicitudes') }}">
+                                        <i class="bx bx-check-square mr-50"></i>Solicitudes
+                                    </a>
                                 @endcan
                                 <div class="dropdown-divider mb-0"></div>
                                 <form method="POST" action="{{ route('logout') }}" style="display: inline;">
@@ -206,76 +204,70 @@
         <div class="main-menu-content mt-3">
             <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation"
                 data-icon-style="">
-                @can('administrar')
-                    @can('ver')
-                        <li class="nav-item has-sub nav-item-administracion"><a href="#"><i class="bx bxs-cog"></i><span class="menu-title"
-                                    data-i18n="Menu Levels">Administración</span></a>
-                            <ul class="menu-content">
-                                <li><a href="{{ Route('parametro') }}">
-                                        <i class="bx bx-right-arrow-alt"></i>
-                                        <span class="menu-item" data-i18n="Second Level">Configuración</span>
-                                    </a></li>
-                                <li><a href="{{ Route('user') }}">
-                                        <i class="bx bx-right-arrow-alt"></i>
-                                        <span class="menu-item" data-i18n="Second Level">Usuarios</span>
-                                    </a></li>
-                                <li><a href="{{ Route('solicitud') }}">
-                                        <i class="bx bx-right-arrow-alt"></i>
-                                        <span class="menu-item" data-i18n="Second Level">Solicitudes</span>
-                                    </a></li>
-                                <li><a href="{{ Route('kit') }}">
-                                        <i class="bx bx-right-arrow-alt"></i>
-                                        <span class="menu-item" data-i18n="Second Level">Kits</span>
-                                    </a></li>
+                @can('ver-catalogo')
+                    <li class="nav-item has-sub nav-item-administracion"><a href="#"><i class="bx bxs-cog"></i><span class="menu-title"
+                                data-i18n="Menu Levels">Administración</span></a>
+                        <ul class="menu-content">
+                            <li><a href="{{ Route('parametro') }}">
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Configuración</span>
+                                </a></li>
+                            <li><a href="{{ Route('user') }}">
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Usuarios</span>
+                                </a></li>
+                            <li><a href="{{ Route('solicitud') }}">
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Solicitudes</span>
+                                </a></li>
+                            <li><a href="{{ Route('kit') }}">
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Kits</span>
+                                </a></li>
 
-                                <li class="dropdown-divider"></li>
+                            <li class="dropdown-divider"></li>
 
-                                <li><a href="{{ Route('marca') }}">
-                                        <i class="bx bx-right-arrow-alt"></i>
-                                        <span class="menu-item" data-i18n="Second Level">Marcas</span>
-                                    </a></li>
-                                <li><a href="{{ Route('modelo') }}">
-                                        <i class="bx bx-right-arrow-alt"></i>
-                                        <span class="menu-item" data-i18n="Second Level">Modelos</span>
-                                    </a></li>
-                                <li><a href="{{ Route('tipo') }}">
-                                        <i class="bx bx-right-arrow-alt"></i>
-                                        <span class="menu-item" data-i18n="Second Level">Tipos</span>
-                                    </a></li>
-                                <li><a href="{{ Route('producto') }}">
-                                        <i class="bx bx-right-arrow-alt"></i>
-                                        <span class="menu-item" data-i18n="Second Level">Productos</span>
-                                    </a></li>
-                            </ul>
-                        </li>
-                    @endcan
+                            <li><a href="{{ Route('marca') }}">
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Marcas</span>
+                                </a></li>
+                            <li><a href="{{ Route('modelo') }}">
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Modelos</span>
+                                </a></li>
+                            <li><a href="{{ Route('tipo') }}">
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Tipos</span>
+                                </a></li>
+                            <li><a href="{{ Route('producto') }}">
+                                    <i class="bx bx-right-arrow-alt"></i>
+                                    <span class="menu-item" data-i18n="Second Level">Productos</span>
+                                </a></li>
+                        </ul>
+                    </li>
                 @endcan
 
                 <li class="nav-item has-sub nav-item-servicios mt-1"><a href="#"><i class="bx bx-list-ul"></i><span class="menu-title"
                             data-i18n="Menu Levels">Servicios</span></a>
                     <ul class="menu-content">
-                        @can('gestionar')
-                            @can('crear-stock')
-                                <li><a href="{{ route('recepcion.create-stock') }}">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Stocks</span>
-                                </a></li>
-                            @endcan
-                            @can('ver-reportes')
-                                <li><a href="{{ route('recepcion.historial-transacciones') }}">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Transacciones</span>
-                                </a></li>
-                            @endcan
+                        @can('crear-stock')
+                            <li><a href="{{ route('recepcion.create-stock') }}">
+                                <i class="bx bx-right-arrow-alt"></i>
+                                <span class="menu-item" data-i18n="Second Level">Stocks</span>
+                            </a></li>
                         @endcan
-                        @can('tienda')
-                            @can('ver-tienda')
-                                <li class="dropdown-divider"></li>
-                                <li><a href="{{ Route('tienda') }}">
-                                    <i class="bx bx-right-arrow-alt"></i>
-                                    <span class="menu-item" data-i18n="Second Level">Tienda</span>
-                                </a></li>
-                            @endcan
+                        @can('ver-reportes')
+                            <li><a href="{{ route('recepcion.historial-transacciones') }}">
+                                <i class="bx bx-right-arrow-alt"></i>
+                                <span class="menu-item" data-i18n="Second Level">Transacciones</span>
+                            </a></li>
+                        @endcan
+                        @can('ver-tienda')
+                            <li class="dropdown-divider"></li>
+                            <li><a href="{{ Route('tienda') }}">
+                                <i class="bx bx-right-arrow-alt"></i>
+                                <span class="menu-item" data-i18n="Second Level">Tienda</span>
+                            </a></li>
                         @endcan
                     </ul>
                 </li>

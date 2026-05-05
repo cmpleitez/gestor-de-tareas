@@ -9,7 +9,7 @@
 
 @section('contenedor')
 {{-- EQUIPOS DE TRABAJO DESTINO --}}
-@can('asignar')
+@can('asignar-recepcion')
 <div class="row">
     <div class="col-12">
         @if($equipos && $equipos->count() != 1)
@@ -201,7 +201,7 @@
     //INICIALIZAR KANBAN
     function initKanban() {
         const columnas = ['columna-recibidas', 'columna-progreso', 'columna-resueltas'];
-        @can('asignar') // Solo usuarios con permiso de asignar pueden mover tarjetas
+        @can('asignar-recepcion') // Solo usuarios con permiso de asignar pueden mover tarjetas
             columnas.forEach(function(columnaId) {
                 const elemento = document.getElementById(columnaId);
                 if (!elemento) return;
@@ -521,26 +521,22 @@
         const $card = $(this);
         const estadoId = parseInt($card.attr('data-recepcion-estado-id'));
         if (estadoId === ESTADOS.EN_PROGRESO) { // En progreso
-            @can('gestionar')
-                @can('ver-tareas')
-                    const titulo = $card.find('.solicitud-titulo').text().trim();
-                    const atencionId = $card.data('atencion-id');
-                    const recepcionId = $card.data('recepcion-id');
-                    const atencionIdRipped = $card.find('.text-right div[style*="font-weight: 600"]').text().trim();
-                    $('#sidebar-card-title').text(atencionIdRipped + ' - ' + titulo).css('font-size', '1rem');
-                    $('#sidebar-card-body').empty();
-                    cargarTareas(recepcionId, atencionId);
-                    $('.kanban-overlay').addClass('show');
-                    $('.kanban-sidebar').addClass('show');
-                    $('body').addClass('sidebar-open');
-                    limpiarClasesDrag();
-                @endcan
+            @can('ver-tareas')
+                const titulo = $card.find('.solicitud-titulo').text().trim();
+                const atencionId = $card.data('atencion-id');
+                const recepcionId = $card.data('recepcion-id');
+                const atencionIdRipped = $card.find('.text-right div[style*="font-weight: 600"]').text().trim();
+                $('#sidebar-card-title').text(atencionIdRipped + ' - ' + titulo).css('font-size', '1rem');
+                $('#sidebar-card-body').empty();
+                cargarTareas(recepcionId, atencionId);
+                $('.kanban-overlay').addClass('show');
+                $('.kanban-sidebar').addClass('show');
+                $('body').addClass('sidebar-open');
+                limpiarClasesDrag();
             @endcan
         } else if (estadoId === ESTADOS.RECIBIDA || estadoId === ESTADOS.RESUELTA) { // Recibida o Resuelta
-            @can('tienda')
-                @can('ver-orden')
-                    mostrarOrdenCompra($card);
-                @endcan
+            @can('ver-orden')
+                mostrarOrdenCompra($card);
             @endcan            
         }
     });
@@ -1047,43 +1043,41 @@
         });
     }
     {{-- CARGAR NUEVAS RECIBIDAS (Solo para personal de gestión) --}}
-    @can('gestionar')
-        @can('autorefrescar')
-            function cargarNuevasRecibidas() {
-                let atencionIdsExistentes = obtenerAtencionIdsExistentes();
-                $.post({
-                    url: '{{ route('recepcion.nuevas-recibidas') }}',
-                    data: {
-                        _token: $('meta[name="csrf-token"]').attr('content'),
-                        atencion_ids: atencionIdsExistentes
-                    },
-                    success: function(nuevas) {
-                        if (!Array.isArray(nuevas)) nuevas = Object.values(nuevas);
-                        if (nuevas && nuevas.length > 0) {
-                            let tarjetasAgregadas = 0;
-                            nuevas.forEach(function(tarjeta) {
-                                let html = generarTarjetaSolicitud(tarjeta, true, 'recibidas');
-                                let $nueva = $(html);
-                                $('#columna-recibidas').prepend($nueva);
-                                updateProgressByPercentage(tarjeta.atencion_id, tarjeta.porcentaje_progreso);
-                                setTimeout(() => $nueva.removeClass('animar-llegada'), 500);
-                                tarjetasAgregadas++;
-                            });
-                            if (tarjetasAgregadas > 0) {
-                                ordenarColumna('columna-recibidas');
-                                actualizarContadores();
-                                inicializarPopovers();
-                            }
-                        }
-                    },
-                    error: function(xhr) {
-                        if (xhr.status !== 0) {
-                            console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error cargando nuevas recibidas:", xhr);
+    @can('autorefrescar')
+        function cargarNuevasRecibidas() {
+            let atencionIdsExistentes = obtenerAtencionIdsExistentes();
+            $.post({
+                url: '{{ route('recepcion.nuevas-recibidas') }}',
+                data: {
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                    atencion_ids: atencionIdsExistentes
+                },
+                success: function(nuevas) {
+                    if (!Array.isArray(nuevas)) nuevas = Object.values(nuevas);
+                    if (nuevas && nuevas.length > 0) {
+                        let tarjetasAgregadas = 0;
+                        nuevas.forEach(function(tarjeta) {
+                            let html = generarTarjetaSolicitud(tarjeta, true, 'recibidas');
+                            let $nueva = $(html);
+                            $('#columna-recibidas').prepend($nueva);
+                            updateProgressByPercentage(tarjeta.atencion_id, tarjeta.porcentaje_progreso);
+                            setTimeout(() => $nueva.removeClass('animar-llegada'), 500);
+                            tarjetasAgregadas++;
+                        });
+                        if (tarjetasAgregadas > 0) {
+                            ordenarColumna('columna-recibidas');
+                            actualizarContadores();
+                            inicializarPopovers();
                         }
                     }
-                });
-            }
-        @endcan
+                },
+                error: function(xhr) {
+                    if (xhr.status !== 0) {
+                        console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error cargando nuevas recibidas:", xhr);
+                    }
+                }
+            });
+        }
     @endcan
     //CONTROL PRINCIPAL
     $(document).ready(function() {
