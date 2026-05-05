@@ -50,10 +50,10 @@ class CreateNewUser implements CreatesNewUsers
                     $user->id
                 );
             }
-            $user->assignRole('Cliente'); //Asignar el rol de Cliente
+            $user->assignRole('cliente'); //Asignar el rol de Cliente
 
             // También asignar el role_id para la relación mainRole
-            $clienteRole = \Spatie\Permission\Models\Role::where('name', 'Cliente')->first();
+            $clienteRole = \Spatie\Permission\Models\Role::where('name', 'cliente')->first();
             if ($clienteRole) {
                 $user->role_id = $clienteRole->id;
                 $user->save();

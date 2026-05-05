@@ -48,7 +48,7 @@ Route::middleware([
     })->name('dashboard');
 
     //ADMINISTRACIÓN
-    Route::group(['prefix' => 'user'], function () { //Usuarios
+    Route::group(['prefix' => 'accounts'], function () { //Usuarios
         Route::get('/', [userController::class, 'index'])->name('user')->middleware('can:ver-catalogo');
         Route::get('edit/{user}', [userController::class, 'edit'])->name('user.edit')->middleware('can:editar');
         Route::put('update/{user}', [userController::class, 'update'])->name('user.update')->middleware('can:editar');
@@ -62,7 +62,7 @@ Route::middleware([
         Route::post('activate/{user}', [userController::class, 'activate'])->name('user.activate')->middleware('can:activar');
     });
 
-    Route::group(['prefix' => 'marca'], function () { //Marcas
+    Route::group(['prefix' => 'brands'], function () { //Marcas
         Route::get('/', [marcaController::class, 'index'])->name('marca')->middleware('can:ver-catalogo');
         Route::get('create', [marcaController::class, 'create'])->name('marca.create')->middleware('can:crear');
         Route::post('store', [marcaController::class, 'store'])->name('marca.store')->middleware('can:crear');
@@ -72,7 +72,7 @@ Route::middleware([
         Route::post('activate/{marca}', [marcaController::class, 'activate'])->name('marca.activate')->middleware('can:activar');
     });
 
-    Route::group(['prefix' => 'modelo'], function () { //Modelos
+    Route::group(['prefix' => 'items'], function () { //Modelos
         Route::get('/', [modeloController::class, 'index'])->name('modelo')->middleware('can:ver-catalogo');
         Route::get('create', [modeloController::class, 'create'])->name('modelo.create')->middleware('can:crear');
         Route::post('store', [modeloController::class, 'store'])->name('modelo.store')->middleware('can:crear');
@@ -82,7 +82,7 @@ Route::middleware([
         Route::post('activate/{modelo}', [modeloController::class, 'activate'])->name('modelo.activate')->middleware('can:activar');
     });
 
-    Route::group(['prefix' => 'tipo'], function () { //Tipos
+    Route::group(['prefix' => 'categories'], function () { //Tipos
         Route::get('/', [TipoController::class, 'index'])->name('tipo')->middleware('can:ver-catalogo');
         Route::get('create', [TipoController::class, 'create'])->name('tipo.create')->middleware('can:crear');
         Route::post('store', [TipoController::class, 'store'])->name('tipo.store')->middleware('can:crear');
@@ -92,7 +92,7 @@ Route::middleware([
         Route::post('activate/{tipo}', [TipoController::class, 'activate'])->name('tipo.activate')->middleware('can:activar');
     });
 
-    Route::group(['prefix' => 'producto'], function () { //Productos
+    Route::group(['prefix' => 'products'], function () { //Productos
         Route::get('/', [ProductoController::class, 'index'])->name('producto')->middleware('can:ver-catalogo');
         Route::get('create', [ProductoController::class, 'create'])->name('producto.create')->middleware('can:crear');
         Route::post('store', [ProductoController::class, 'store'])->name('producto.store')->middleware('can:crear');
@@ -102,7 +102,7 @@ Route::middleware([
         Route::post('activate/{producto}', [ProductoController::class, 'activate'])->name('producto.activate')->middleware('can:activar');
     });
 
-    Route::group(['prefix' => 'kit'], function () { //Kits
+    Route::group(['prefix' => 'bundles'], function () { //Kits
         Route::get('/', [KitController::class, 'index'])->name('kit')->middleware('can:ver-catalogo');
         Route::get('create', [KitController::class, 'create'])->name('kit.create')->middleware('can:crear');
         Route::post('store', [KitController::class, 'store'])->name('kit.store')->middleware('can:crear');
@@ -116,7 +116,7 @@ Route::middleware([
         Route::post('activate/{kit}', [KitController::class, 'activate'])->name('kit.activate')->middleware('can:activar');
     });
 
-    Route::group(['prefix' => 'solicitud'], function () { //Solicitudes
+    Route::group(['prefix' => 'request'], function () { //Solicitudes
         Route::get('/', [solicitudController::class, 'index'])->name('solicitud')->middleware('can:ver-catalogo');
         Route::get('create', [solicitudController::class, 'create'])->name('solicitud.create')->middleware('can:crear');
         Route::post('store', [solicitudController::class, 'store'])->name('solicitud.store')->middleware('can:crear');
@@ -128,7 +128,7 @@ Route::middleware([
         Route::post('activate/{solicitud}', [solicitudController::class, 'activate'])->name('solicitud.activate')->middleware('can:activar');
     });
 
-    Route::group(['prefix' => 'parametro'], function () { //Parametros
+    Route::group(['prefix' => 'settings'], function () { //Parametros
         Route::get('/', [ParametroController::class, 'index'])->name('parametro')->middleware('can:ver-catalogo');
         Route::get('edit/{parametro}', [ParametroController::class, 'edit'])->name('parametro.edit')->middleware('can:editar');
         Route::put('update/{parametro}', [ParametroController::class, 'update'])->name('parametro.update')->middleware('can:editar');

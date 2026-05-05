@@ -39,7 +39,7 @@
                                     <th>correo</th>
                                     <th class="text-center">Creado</th>
                                     <th class="text-center">Actualizado</th>
-                                    @can('autorizar')
+                                    @can('activar')
                                     <th class="text-center">Estado</th>
                                     @endcan
                                     <th class="text-center">Tablero de control</th>
@@ -63,7 +63,7 @@
                                     <td class="text-center">{{ $user->created_at->format('d/m/Y h:i a') }}</td>
                                     <td class="text-center">{{ $user->updated_at->format('d/m/Y h:i a') }}</td>
                                     {{-- ACTIVAR --}}
-                                    @can('autorizar')
+                                    @can('activar')
                                         <td class="text-center">
                                             <form action="{{ route('user.activate', $user->id) }}" method="POST" style="display: inline;">
                                                 @csrf
@@ -80,7 +80,7 @@
                                     <td class="text-center">
                                         <div class="btn-group" role="group" aria-label="label">
                                             {{-- Actualizar habilidades --}}
-                                            @can('autorizar')
+                                            @can('activar')
                                                 <a href="{{ route('user.tareas-edit', $user->id) }}" role="button" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bx-slider-alt'></i> Actualizar habilidades de {{ $user->name }}" class="button_edit border border-secondary-dark text-secondary-dark bg-secondary-light">
                                                     <i class="bx bx-slider-alt"></i>
                                                 </a>
@@ -126,7 +126,7 @@
                                     <th>Correo</th>
                                     <th class="text-center">Creado</th>
                                     <th class="text-center">Actualizado</th>
-                                    @can('autorizar')
+                                    @can('activar')
                                     <th class="text-center">Estado</th>
                                     @endcan
                                     <th class="text-center">Tablero de control</th>

@@ -26,7 +26,7 @@
                                     <th>Unidad de medida</th>
                                     <th class="text-center">Creado</th>
                                     <th class="text-center">Actualizado</th>
-                                    @can('autorizar')
+                                    @can('activar')
                                         <th class="text-center">Estado</th>
                                     @endcan
                                     <th class="text-center">Tablero de control</th>
@@ -43,7 +43,7 @@
                                     <td class="text-center">{{ $parametro->created_at->format('d/m/Y h:i a') }}</td>
                                     <td class="text-center">{{ $parametro->updated_at->format('d/m/Y h:i a') }}</td>
                                     {{-- ACTIVAR --}}
-                                    @can('autorizar')
+                                    @can('activar')
                                     <td class="text-center">
                                         <form action="{{ route('parametro.activate', $parametro->id) }}" method="POST"
                                             style="display: inline;">
@@ -87,7 +87,7 @@
                                     <th>Unidad de medida</th>
                                     <th class="text-center">Creado</th>
                                     <th class="text-center">Actualizado</th>
-                                    @can('autorizar')
+                                    @can('activar')
                                     <th class="text-center">Estado</th>
                                     @endcan
                                     <th class="text-center">Tablero de control</th>

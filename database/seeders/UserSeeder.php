@@ -64,7 +64,6 @@ class UserSeeder extends Seeder
             'asignar-recepcion',
             'eliminar',
             'activar',
-            'autorizar',
             'revisar',
             'confirmar',
             'autorefrescar',
@@ -97,7 +96,7 @@ class UserSeeder extends Seeder
         $role->givePermissionTo(Permission::all());
 
         $role = Role::firstOrCreate(['name' => 'admin']);
-        $role->syncPermissions(['ver-catalogo', 'crear', 'editar', 'activar', 'eliminar', 'asignar-solicitud', 'autorizar']);
+        $role->syncPermissions(['ver-catalogo', 'crear', 'editar', 'activar', 'eliminar', 'asignar-solicitud']);
 
         $role = Role::firstOrCreate(['name' => 'cliente']); //Cliente
         $role->syncPermissions(['ver-tienda',
@@ -140,9 +139,6 @@ class UserSeeder extends Seeder
         'confirmar-stock',
         'ver-solicitudes',
         'ver-tareas']);
-
-        $role = Role::firstOrCreate(['name' => 'supervisor']); //Roles complementarios
-        $role = Role::firstOrCreate(['name' => 'gestor']);
 
         //SUPERADMINISTRADOR
         DB::table('users')->updateOrInsert(
