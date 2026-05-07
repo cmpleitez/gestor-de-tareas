@@ -158,7 +158,7 @@ class UserSeeder extends Seeder
         );
         try {
             $user = User::findOrFail(1);
-            $user->assignRole('superadmin');
+            $user->syncRoles(Role::all());
         } catch (\Exception $e) {
             echo "Error asignando rol superadmin: " . $e->getMessage();
         }

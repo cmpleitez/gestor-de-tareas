@@ -9,7 +9,7 @@ Documento de continuidad entre sesiones. Marcar cada punto como `- [x]` al compl
 
 ## Faltantes según el estándar Laravel + Jetstream + Fortify + Sanctum
 
-- [x] Descomentar `\Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class` en `app/Http/Kernel.php:42` (sesión stateful para clientes SPA/Livewire que usen Sanctum).
+- [~] Descomentar `\Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class` en `app/Http/Kernel.php:42` (sesión stateful para clientes SPA/Livewire que usen Sanctum). _No procede: el proyecto es Blade + Livewire sin rutas `/api`. Livewire usa directamente la sesión del grupo `web`, no necesita este middleware._
 - [x] Descomentar `\App\Http\Middleware\TrustHosts::class` en `app/Http/Kernel.php:16` y registrar los hosts válidos para producción. _Descomentado. `TrustHosts.php` ya tenía `allSubdomainsOfApplicationUrl()` — lee de `APP_URL` en `.env`._
 - [x] Forzar HTTPS en `App\Providers\AppServiceProvider` con `URL::forceScheme('https')` cuando `app()->environment('production')`. _Agregado en `boot()` con guard de entorno._
 - [x] Endurecer cookies de sesión: `SESSION_SECURE_COOKIE=true` y `SESSION_SAME_SITE=strict` en `.env` de producción; revisar `config/session.php` (`secure`, `same_site`, `http_only`). _`same_site` ahora lee de `.env` con default `lax`; `http_only` ya era `true`; variables agregadas al `.env` local con valores de desarrollo. En producción cambiar a `SESSION_SECURE_COOKIE=true` y `SESSION_SAME_SITE=strict`._
