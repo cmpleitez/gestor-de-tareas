@@ -1,6 +1,7 @@
 <?php
 namespace App\Providers;
 
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -18,6 +19,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (app()->environment('production')) {
+            URL::forceScheme('https');
+        }
+
         // Configurar timeouts más largos para evitar 504 Gateway Timeout
         config([
             'mail.mailers.smtp.timeout'            => 60,

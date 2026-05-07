@@ -20,7 +20,7 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::with('oficina', 'equipos', 'roles')->whereNotIn('id', ['1'])->get();
+        $users = User::with('oficina', 'equipos', 'roles')->whereDoesntHave('roles', fn($q) => $q->where('name', 'superadmin'))->get();
         return view('modelos.user.index', compact('users'));
     }
 
