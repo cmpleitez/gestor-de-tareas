@@ -69,11 +69,7 @@ PROCEDIMIENTO: perfil cpleitez.2024@gmail.com https://miro.com/app/board/uXjVJy6
 
 🟠 SEGURIDAD:
 
-    . Antes de activar el servicio externo, se deben asegurar los nombres de las rutas
-    . El uso de los permisos muta a usan can aplicando un solo permiso ya no dos anidados y ya no usar el rol, cada permiso es específico y único
-    . Funcionar con un unico admin y no permitir que el mismo se retire su rol admin, eliminar super-admin y hacer que el 
-    el usuario funcione con su cuenta propia y el rol admin asignado, hacer inaccesible el usuario admin en todo el sistema 
-    hacerlo accesible solo para el propio usuario admin. de esta manera el usuario no podrà usar una cuenta generica para fortalecer la auditoria. Otorgar todos los roles al usuario admin en el seeder.
+    - sin pendientes.
 
 
 🟢 SERVICIOS:

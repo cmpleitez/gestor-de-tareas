@@ -23,7 +23,6 @@ class UserSeeder extends Seeder
                 'updated_at' => Carbon::now(),
             ]
         );
-
         DB::table('oficinas')->updateOrInsert(
             ['id' => 2],
             [
@@ -92,11 +91,8 @@ class UserSeeder extends Seeder
         //ROLES Y ASIGNACIÓN DE PERMISOS
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
         
-        $role = Role::firstOrCreate(['name' => 'superadmin']);
-        $role->givePermissionTo(Permission::all());
-
         $role = Role::firstOrCreate(['name' => 'admin']);
-        $role->syncPermissions(['ver-catalogo', 'crear', 'editar', 'activar', 'eliminar', 'asignar-solicitud']);
+        $role->givePermissionTo(Permission::all());
 
         $role = Role::firstOrCreate(['name' => 'cliente']); //Cliente
         $role->syncPermissions(['ver-tienda',
@@ -140,35 +136,12 @@ class UserSeeder extends Seeder
         'ver-solicitudes',
         'ver-tareas']);
 
-        //SUPERADMINISTRADOR
-        DB::table('users')->updateOrInsert(
-            ['id' => 1],
-            [
-                'role_id'           => 1,
-                'oficina_id'        => 2,
-                'name'              => 'superadmin',
-                'dui'               => '012345678',
-                'email'             => 'superadmin@servidor.com',
-                'email_verified_at' => Carbon::now(),
-                'password'          => bcrypt('p@5t15al5abana'),
-                'remember_token'    => Str::random(10),
-                'created_at'        => Carbon::now(),
-                'updated_at'        => Carbon::now(),
-            ]
-        );
-        try {
-            $user = User::findOrFail(1);
-            $user->syncRoles(Role::all());
-        } catch (\Exception $e) {
-            echo "Error asignando rol superadmin: " . $e->getMessage();
-        }
-
         //ADMINISTRADOR
         try {
             DB::table('users')->updateOrInsert(
-                ['id' => 2],
+                ['id' => 1],
                 [
-                    'role_id'           => 2,
+                    'role_id'           => 1,
                     'oficina_id'        => 2,
                     'name'              => 'admin',
                     'dui'               => '023456783',
@@ -181,7 +154,7 @@ class UserSeeder extends Seeder
                 ]
             );
             $user = User::findOrFail(2);
-            $user->assignRole('admin');
+            $user->syncRoles('admin');
         } catch (\Exception $e) {
             echo "Error asignando rol admin: " . $e->getMessage();
         }

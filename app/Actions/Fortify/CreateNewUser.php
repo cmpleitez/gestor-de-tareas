@@ -37,8 +37,10 @@ class CreateNewUser implements CreatesNewUsers
         //GUARDANDO
         try {
             DB::beginTransaction();
+            $clienteRole = \Spatie\Permission\Models\Role::where('name', 'cliente')->firstOrFail();
             $validated['password'] = Hash::make($validated['password']);
-            $user                  = User::create($validated); //Crear el registro en la base de datos
+            $validated['role_id']  = $clienteRole->id;
+            $user                  = User::create($validated);
             ini_set('max_execution_time', 60);
             ini_set('memory_limit', '256M');
             if (isset($input['image_path']) && $input['image_path']->isValid()) {
@@ -50,15 +52,7 @@ class CreateNewUser implements CreatesNewUsers
                     $user->id
                 );
             }
-            $user->assignRole('cliente'); //Asignar el rol de Cliente
-
-            // También asignar el role_id para la relación mainRole
-            $clienteRole = \Spatie\Permission\Models\Role::where('name', 'cliente')->first();
-            if ($clienteRole) {
-                $user->role_id = $clienteRole->id;
-                $user->save();
-            }
-
+            $user->assignRole('cliente');
             $user->sendEmailVerificationNotification();
             DB::commit();
             return $user;

@@ -67,14 +67,16 @@ class RegisterController extends Controller
         ])->validate();
         try {
             DB::beginTransaction();
-            $validated['password'] = Hash::make($validated['password']); // Crear usuario
+            $clienteRole           = \Spatie\Permission\Models\Role::where('name', 'cliente')->firstOrFail();
+            $validated['password'] = Hash::make($validated['password']);
+            $validated['role_id']  = $clienteRole->id;
             $generator             = new CorrelativeIdGenerator();
             $id                    = $generator->generate('User');
             $user                  = new User();
             $user->fill($validated);
             $user->id = $id;
             $user->save();
-            if (isset($request->image_path) && $request->image_path->isValid()) { // Procesar imagen de perfil si existe
+            if (isset($request->image_path) && $request->image_path->isValid()) {
                 $imageStabilizer = new ImageWeightStabilizer();
                 $imageStabilizer->stabilize(
                     $request->image_path,
@@ -83,12 +85,7 @@ class RegisterController extends Controller
                     $user->id
                 );
             }
-            $user->assignRole('cliente'); // Asignar rol de Cliente
-            $clienteRole = \Spatie\Permission\Models\Role::where('name', 'cliente')->first();
-            if ($clienteRole) {
-                $user->role_id = $clienteRole->id;
-                $user->save();
-            }
+            $user->assignRole('cliente');
             $user->sendEmailVerificationNotification(); // Enviar correo de verificación - Comentado temporalmente para evitar timeout
             DB::commit();
             return redirect()->route('user')->with('success', 'Nuevo usuario registrado con éxito.');

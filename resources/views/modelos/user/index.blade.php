@@ -47,6 +47,7 @@
                             </thead>
                             <tbody>
                                 @foreach ($users as $user)
+                                @php($isAdminUser = $user->mainRole?->name === 'admin')
                                 <tr>
                                     {{-- CAMPOS --}}
                                     <td class="text-center">{{ $user->id }}</td>
@@ -81,6 +82,7 @@
                                         <div class="btn-group" role="group" aria-label="label">
                                             {{-- Actualizar habilidades --}}
                                             @can('activar')
+                                                @unless ($isAdminUser)
                                                 <a href="{{ route('user.tareas-edit', $user->id) }}" role="button" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bx-slider-alt'></i> Actualizar habilidades de {{ $user->name }}" class="button_edit border border-secondary-dark text-secondary-dark bg-secondary-light">
                                                     <i class="bx bx-slider-alt"></i>
                                                 </a>
@@ -90,6 +92,7 @@
                                                 <a href="{{ route('user.roles-edit', $user->id) }}" role="button" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-key'></i> Roles de {{ $user->name }}" class="button_keys border border-secondary-dark text-secondary-dark bg-secondary-light">
                                                     <i class="bx bxs-key"></i>
                                                 </a>
+                                                @endunless
                                             @endcan
                                             {{-- Editar --}}
                                             @can('editar')
@@ -99,6 +102,7 @@
                                             @endcan
                                             {{-- Eliminar --}}
                                             @can('eliminar')
+                                                @unless ($isAdminUser)
                                                 @if ($user->id !== auth()->id())
                                                 <a href="{{ route('user.destroy', $user->id) }}" role="button" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-eraser'></i> Eliminar {{ $user->name }}" class="button_delete align-center border border-danger-dark text-danger-dark bg-danger-light">
                                                     <i class="bx bxs-eraser"></i>
@@ -108,6 +112,7 @@
                                                     <i class="bx bxs-trash"></i>
                                                 </span>
                                                 @endif
+                                                @endunless
                                             @endcan
                                         </div>
                                     </td>

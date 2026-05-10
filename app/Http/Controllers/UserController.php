@@ -20,7 +20,12 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::with('oficina', 'equipos', 'roles')->whereDoesntHave('roles', fn($q) => $q->where('name', 'superadmin'))->get();
+        $adminRoleId = Role::where('name', 'admin')->value('id');
+        $query = User::with('oficina', 'equipos', 'roles');
+        if (auth()->user()->role_id !== $adminRoleId) {
+            $query->where('role_id', '!=', $adminRoleId);
+        }
+        $users = $query->get();
         return view('modelos.user.index', compact('users'));
     }
 
@@ -106,7 +111,11 @@ class UserController extends Controller
 
     public function rolesEdit(User $user)
     {
-        $roles = Role::where('name', '!=', 'superadmin')->get();
+        $excludedRoles = ['superadmin'];
+        if ($user->mainRole->name === 'admin') {
+            $excludedRoles[] = 'admin';
+        }
+        $roles = Role::whereNotIn('name', $excludedRoles)->get();
         return view('modelos.user.roles-edit', ['user' => $user, 'roles' => $roles]);
     }
 
@@ -114,6 +123,9 @@ class UserController extends Controller
     {
         try {
             //VALIDACIÓN
+            if ($user->mainRole->name === 'admin') {
+                return back()->with('error', 'Resulta innecesario asignar roles al administrador pues ya tiene todos los permisos');
+            }
             $validated = $request->validate([
                 'roles'   => 'required|array',
                 'role_id' => 'required|numeric|exists:roles,id',
@@ -126,11 +138,6 @@ class UserController extends Controller
             } elseif (in_array('Cliente', $submittedRoles)) { // Usuario que se está convirtiendo en cliente
                 if (count($submittedRoles) > 1) {
                     throw new Exception('No esta disponible la funcionalidad de ser cliente y otro rol a la vez');
-                }
-            }
-            if ($user->mainRole->name === 'admin') {
-                if (! in_array('admin', $submittedRoles) || $validated['role_id'] != $user->role_id) {
-                    throw new Exception('No es posible degradar o cambiar el rol principal de un administrador.');
                 }
             }
             //PROCESO
@@ -158,6 +165,9 @@ class UserController extends Controller
 
     public function equiposUpdate(Request $request, User $user)
     {
+        if ($user->mainRole->name === 'admin') {
+            return back()->with('error', 'El usuario admin no participa en las operaciones del kanban y no puede tener equipos asignados.');
+        }
         $equipos = $request->input('equipos', []);
         $user->equipos()->sync($equipos);
         return redirect()->route('user')->with('success', 'Los equipos para el usuario ' . $user->name . ' han sido actualizados efectivamente.');
@@ -171,6 +181,9 @@ class UserController extends Controller
 
     public function tareasUpdate(Request $request, User $user)
     {
+        if ($user->mainRole->name === 'admin') {
+            return back()->with('error', 'El usuario admin no participa en las operaciones del kanban y no puede tener tareas asignadas.');
+        }
         $tareas = $request->input('tareas', []);
         $user->tareas()->sync($tareas);
         return redirect()->route('user')->with('success', 'Las habilidades de ' . $user->name . ' han sido actualizadas efectivamente.');
@@ -208,6 +221,9 @@ class UserController extends Controller
 
     public function activate(User $user)
     {
+        if ($user->mainRole->name === 'admin' && $user->activo) {
+            return back()->with('error', 'No es posible desactivar el usuario administrador.');
+        }
         $user->activo = ! $user->activo;
         $user->save();
         return redirect()->route('user')->with('success', 'El usuario "' . $user->name . '" ha sido ' . ($user->activo ? 'activado' : 'desactivado') . ' correctamente');
