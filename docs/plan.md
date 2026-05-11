@@ -74,7 +74,7 @@ PROCEDIMIENTO: perfil cpleitez.2024@gmail.com https://miro.com/app/board/uXjVJy6
 
 🟢 SERVICIOS:
     
-    ... Adaprtando el comando de importacion de datos, especificamente el id de la oficina
+    ... Reparando la priorización de solicitudes desde el rol receptor: cuando este arrastra una solicitud al tablero "En Progreso" tiene tareas compartidas con el operador pues debe confirmar stock, y el receptor debe supervisar al operador que haya confirmado correctamente el stock, por tanto: cuando el receptor arrastra una solicitud al tablero "En Progreso" debe enviar una copia de la solicitud al operador hacia la bandeja de recibidas, para que el operado haga lo mismo priorice la solicitud y la arrastre al tablero de En progreso y de esta manera se cumpla con el protocolo de priorización de solicitudes. Luego el operador podrá procesar las tareas asignadas, en cuanto finalice el receptor podrá continuar con las suyas ya que ha quedado en standby hasta que el operador confirma el stock, en este momento procederá a "Revisar" la solicitud. Cuando el Receptor revisa la solicitud se envía un correo al cliente para que sepa que la orden de compra ha sido revisada y esta en su poder. Luego cuando el cliente la valide procede el pago respectivo, y luego la respectiva descarga del inventario.
     
 🟡 CLIENTE:
 

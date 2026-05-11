@@ -153,7 +153,7 @@ class UserSeeder extends Seeder
                     'updated_at'        => Carbon::now(),
                 ]
             );
-            $user = User::findOrFail(2);
+            $user = User::findOrFail(1);
             $user->syncRoles('admin');
         } catch (\Exception $e) {
             echo "Error asignando rol admin: " . $e->getMessage();
