@@ -79,7 +79,10 @@ class UserController extends Controller
         //GUARDANDO
         try {
             DB::beginTransaction();
-            $user->update($validated); //Crear el registro en la base de datos
+            if ($correo_actualizado) {
+                $user->forceFill(['email_verified_at' => null])->save();
+            }
+            $user->update($validated);
             ini_set('max_execution_time', 60);
             ini_set('memory_limit', '256M');
             if (isset($request['image_path']) && $request['image_path']->isValid()) {
@@ -90,6 +93,9 @@ class UserController extends Controller
                     'User',
                     $user->id
                 );
+            }
+            if ($correo_actualizado) {
+                $user->sendEmailVerificationNotification();
             }
             DB::commit();
             return redirect()->route('user')->with('success', $mensaje);
