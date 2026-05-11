@@ -9,7 +9,6 @@
         Nuevas recibidas: 60 segundos
         Actualizar avance: 60 segundos
         Notificaciones limewire: 60 segundos
-    . Uso interno en primera fase y uso externo en seguda fase para ambos Mostro y Dobinsons, se cumple que se usa el mismo procedimiento
 
 PROCEDIMIENTO: perfil cpleitez.2024@gmail.com https://miro.com/app/board/uXjVJy6iRzE=/
         ✨. Cliente: Entra a la <Tienda>, selecciona en el catálogo el kit y da clic en <agregar al carrito>
