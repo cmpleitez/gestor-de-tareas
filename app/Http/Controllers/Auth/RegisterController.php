@@ -21,7 +21,7 @@ class RegisterController extends Controller
     public function create()
     {
         // Verificar que el usuario esté autenticado y tenga rol Admin
-        if (! auth()->check() || ! auth()->user()->hasRole('admin|superadmin')) {
+        if (! auth()->check() || ! auth()->user()->hasRole('admin')) {
             return back()->with('error', 'No tienes permisos para acceder a esta página.');
         }
         $oficinas = Oficina::where('activo', true)->get();
@@ -30,11 +30,12 @@ class RegisterController extends Controller
 
     public function store(Request $request)
     {
-        if (! auth()->check() || ! auth()->user()->hasRole('admin|superadmin')) { // Verificar que el usuario esté autenticado y tenga rol Admin
+        if (! auth()->check() || ! auth()->user()->hasRole('admin')) { // Verificar que el usuario esté autenticado y tenga rol Admin
             return back()->with('error', 'No tienes permisos para realizar esta acción.');
         }
         $validated = Validator::make($request->all(), [ // Validación
             'name'               => ['required', 'string', 'min:3', 'max:255', 'regex:/^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$/'],
+            'username'           => ['required', 'string', 'min:3', 'max:255', 'regex:/^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$/', Rule::unique('users', 'username')],
             'email'              => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')],
             'dui'                => ['required', 'string', Rule::unique('users', 'dui'), new ValidDui],
             'oficina_id'         => ['required', 'exists:oficinas,id'],
@@ -50,6 +51,12 @@ class RegisterController extends Controller
             'name.string'              => 'El nombre debe ser una cadena de texto.',
             'name.min'                 => 'El nombre debe tener al menos 3 caracteres.',
             'name.max'                 => 'El nombre no debe exceder de 255 caracteres.',
+            'username.required'        => 'El nombre de usuario es obligatorio.',
+            'username.string'          => 'El nombre de usuario debe ser una cadena de texto.',
+            'username.min'             => 'El nombre de usuario debe tener al menos 3 caracteres.',
+            'username.max'             => 'El nombre de usuario no debe exceder de 255 caracteres.',
+            'username.regex'           => 'Solo se permiten letras, sin espacios al inicio/final ni dobles espacios.',
+            'username.unique'          => 'El nombre de usuario ya está registrado.',
             'email.required'           => 'El email es requerido.',
             'email.string'             => 'El email debe ser una cadena de texto.',
             'email.email'              => 'Debe ser un correo electrónico válido.',

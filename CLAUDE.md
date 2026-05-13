@@ -26,6 +26,7 @@ Estas reglas tienen `trigger: always_on` y son obligatorias. Resumen operativo:
 17. No realices pruebas proactivas: Nunca ejecutes herramientas de navegación o pruebas automáticas por cuenta propia. Entra en fase de VERIFICACIÓN únicamente para documentar el trabajo realizado o cuando yo utilice explícitamente las frases clave de las reglas 1.
 18. Usa el console.log en lugar de ensuciar el frontend con funcionalidades de debuggin y usal el "Log::" en el caso de controladores, aparte puede recomendar otras formas de debugging que no ensucien el proyecto
 19. No agregues cosas que no te he pedido en su lugar hasme la sugerencia para yo decidir
+20. Cuando diga "operacion manual" pideme la ruta donde se va realizar una operación manual, luego que te entrega la ruta dirigeme al controlador y a la vista de esa ruta.
     
 💡CONCEPIOS:
     ✅Solicitud: está definida por la tabla "atenciones" y se dispersa atravez de sus tablas hijas: recepciones, actividades, ordenes de compra y detalles, visualmente aparecen en el kanban como tarjetas dinámicas que van cambiando entre tableros
@@ -122,6 +123,24 @@ Los nombres de tablas y modelos están en español (`Atencion`, `Recepcion`, `So
 - `docs/Estandares del proyecto.md` — convenciones (paleta de colores `text-*` / `bg-*` / `btn-*`, helper de moneda `formatCurrency()` en `public/app-assets/js/helpers.js`, inicialización de validación `jqBootstrapValidation` cuando una vista define su propia sección `js`, técnica para volcar arrays con `Log::info` desde Blade).
 - `docs/componentes-seguridad.md` — catálogo de componentes Blade en `resources/views/components/security/` (metric-card, chart-card, recent-events, suspicious-ips, dashboard-header, empty-state, risk-badge, notification-system, js-utilities, security-styles) y utilidades JS bajo `SecurityUtils`. Trabajo activo en la rama `seguridad`.
 - `docs/seguimiento.md` — bitácora de avance del proyecto.
+
+## Contexto de sesiones anteriores
+
+### Rama `seguridad` — protección del usuario admin
+
+**Completado:**
+- Eliminadas todas las referencias a `superadmin` en `UserController`, `RegisterController` y `routes/web.php` — reemplazadas por `admin`.
+- `destroy()` en `UserController`: bloquea eliminación del usuario con rol `admin` antes de cualquier otra validación.
+- `resources/views/modelos/user/index.blade.php`: botones del tablero de control del admin ahora se muestran **deshabilitados** (no ocultos) — `pointer-events:none`, borde e ícono en tonos grises/tenues.
+
+**Colores acordados para botones deshabilitados del admin (`index.blade.php` L86-102):**
+- Borde botones azules (habilidades/equipos/roles): `border-color:#395e86` inline (5% más claro que `#2c5179`)
+- Borde botón eliminar: `border-color:#e44b4b` inline (5% más claro que `#d73e3e`)
+- Ícono interior todos: `color:#adb5bd` en el `<i>` (no en el span)
+
+**Pendiente:**
+- Switch de activación: deshabilitar visualmente el toggle del admin en la vista
+- Respaldo backend: verificar que endpoints `tareas-update`, `equipos-update`, `roles-update` bloqueen acceso al admin vía inyección directa
 
 ## Convenciones a respetar
 

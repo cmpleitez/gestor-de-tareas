@@ -143,7 +143,8 @@ class UserSeeder extends Seeder
                 [
                     'role_id'           => 1,
                     'oficina_id'        => 2,
-                    'name'              => 'admin',
+                    'name'              => 'Administrador',
+                    'username'          => 'admin',
                     'dui'               => '023456783',
                     'email'             => 'admin@servidor.com',
                     'email_verified_at' => Carbon::now(),

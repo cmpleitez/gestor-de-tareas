@@ -67,9 +67,13 @@ PROCEDIMIENTO: perfil cpleitez.2024@gmail.com https://miro.com/app/board/uXjVJy6
                 y a su solicitud principal <Atencion>, en consecuencia la solicitud se coloca en el tablero de resueltas.
 
 🟠 SEGURIDAD:
-
-    - sin pendientes.
-
+    - Protegiendo a admin
+        - Proteccion frontend: tablero de control.
+        - Proteccion backend: Validaciones en controladores.
+            **hecho**- campo activo
+            - tareas
+            - equipos
+            - roles
 
 🟢 SERVICIOS:
     

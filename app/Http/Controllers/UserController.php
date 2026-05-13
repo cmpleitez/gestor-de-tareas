@@ -117,7 +117,7 @@ class UserController extends Controller
 
     public function rolesEdit(User $user)
     {
-        $excludedRoles = ['superadmin'];
+        $excludedRoles = ['admin'];
         if ($user->mainRole->name === 'admin') {
             $excludedRoles[] = 'admin';
         }
@@ -129,8 +129,9 @@ class UserController extends Controller
     {
         try {
             //VALIDACIÓN
-            if ($user->mainRole->name === 'admin') {
-                return back()->with('error', 'Resulta innecesario asignar roles al administrador pues ya tiene todos los permisos');
+            if ($user->username === 'admin' && auth()->user()->username === 'admin') {
+                Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Intento de inyectar código en el sistema, alterando los roles asignados al admin.');
+                return back()->with('error', 'Se intentó manipular el sistema.');
             }
             $validated = $request->validate([
                 'roles'   => 'required|array',
@@ -171,8 +172,9 @@ class UserController extends Controller
 
     public function equiposUpdate(Request $request, User $user)
     {
-        if ($user->mainRole->name === 'admin') {
-            return back()->with('error', 'El usuario admin no participa en las operaciones del kanban y no puede tener equipos asignados.');
+        if ($user->username === 'admin' && auth()->user()->username === 'admin') {
+            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Intento de inyectar código en el sistema, alterando los equipos asignados al admin.');
+            return back()->with('error', 'Se intentó manipular el sistema.');
         }
         $equipos = $request->input('equipos', []);
         $user->equipos()->sync($equipos);
@@ -187,8 +189,9 @@ class UserController extends Controller
 
     public function tareasUpdate(Request $request, User $user)
     {
-        if ($user->mainRole->name === 'admin') {
-            return back()->with('error', 'El usuario admin no participa en las operaciones del kanban y no puede tener tareas asignadas.');
+        if ($user->username === 'admin' && auth()->user()->username === 'admin') {
+            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Intento de inyectar código en el sistema, alterando las tareas asignadas al admin.');
+            return back()->with('error', 'Se intentó manipular el sistema.');
         }
         $tareas = $request->input('tareas', []);
         $user->tareas()->sync($tareas);
@@ -197,6 +200,10 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
+        if ($user->username === 'admin') {
+            return back()->with('error', 'No es posible eliminar el usuario administrador.');
+        }
+
         if ($user->id === auth()->id()) {
             return back()->with('error', 'No puedes eliminarte a ti mismo por seguridad.');
         }
@@ -227,8 +234,8 @@ class UserController extends Controller
 
     public function activate(User $user)
     {
-        if ($user->mainRole->name === 'admin' && $user->activo) {
-            return back()->with('error', 'No es posible desactivar el usuario administrador.');
+        if ($user->username === 'admin' && auth()->user()->username === 'admin') {
+            return back()->with('error', 'No es posible modificar el estado de admin.');
         }
         $user->activo = ! $user->activo;
         $user->save();

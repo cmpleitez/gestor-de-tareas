@@ -66,57 +66,58 @@
                                     {{-- ACTIVAR --}}
                                     @can('activar')
                                         <td class="text-center">
-                                            <form action="{{ route('user.activate', $user->id) }}" method="POST" style="display: inline;">
-                                                @csrf
-                                                <div class="custom-control custom-switch" style="transform: scale(0.6); margin: 0;" data-toggle="tooltip" data-html="true" data-placement="bottom" title="<i class='bx bxs-error-circle'></i> {{ $user->activo ? 'Desactivar' : 'Activar' }} {{ $user->name }}">
-                                                    <input id="activate_{{ $user->id }}" type="checkbox" class="custom-control-input" @if ($user->activo) checked @endif
-                                                    onchange="this.form.submit();">
+                                            @if ($isAdminUser)
+                                                <div class="custom-control custom-switch" style="transform: scale(0.6); margin: 0; pointer-events:none; cursor:not-allowed; opacity:0.45;">
+                                                    <input id="activate_{{ $user->id }}" type="checkbox" class="custom-control-input" checked disabled>
                                                     <label class="custom-control-label" for="activate_{{ $user->id }}"></label>
                                                 </div>
-                                            </form>
+                                            @else
+                                                <form action="{{ route('user.activate', $user->id) }}" method="POST" style="display: inline;">
+                                                    @csrf
+                                                    <div class="custom-control custom-switch" style="transform: scale(0.6); margin: 0;" data-toggle="tooltip" data-html="true" data-placement="bottom" title="<i class='bx bxs-error-circle'></i> {{ $user->activo ? 'Desactivar' : 'Activar' }} {{ $user->name }}">
+                                                        <input id="activate_{{ $user->id }}" type="checkbox" class="custom-control-input" @if ($user->activo) checked @endif
+                                                        onchange="this.form.submit();">
+                                                        <label class="custom-control-label" for="activate_{{ $user->id }}"></label>
+                                                    </div>
+                                                </form>
+                                            @endif
                                         </td>
                                     @endcan
                                     {{-- TABLERO DE CONTROL --}}
-                                    @if ($user->activo)
                                     <td class="text-center">
+                                        @if ($user->activo)
                                         <div class="btn-group" role="group" aria-label="label">
-                                            {{-- Actualizar habilidades --}}
+                                            {{-- Habilidades / Equipos / Roles --}}
                                             @can('activar')
-                                                @unless ($isAdminUser)
-                                                <a href="{{ route('user.tareas-edit', $user->id) }}" role="button" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bx-slider-alt'></i> Actualizar habilidades de {{ $user->name }}" class="button_edit border border-secondary-dark text-secondary-dark bg-secondary-light">
-                                                    <i class="bx bx-slider-alt"></i>
-                                                </a>
-                                                <a href="{{ route('user.equipos-edit', $user->id) }}" role="button" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-group'></i> Equipos de {{ $user->name }}" class="button_show border border-secondary-dark text-secondary-dark bg-secondary-light">
-                                                    <i class="bx bxs-group"></i>
-                                                </a>
-                                                <a href="{{ route('user.roles-edit', $user->id) }}" role="button" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-key'></i> Roles de {{ $user->name }}" class="button_keys border border-secondary-dark text-secondary-dark bg-secondary-light">
-                                                    <i class="bx bxs-key"></i>
-                                                </a>
-                                                @endunless
+                                                @if ($isAdminUser)
+                                                    <span class="button_edit border bg-secondary-light" style="border-color:#395e86;cursor:not-allowed;pointer-events:none;" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-lock'></i> Control reservado para el sistema"><i class="bx bx-slider-alt" style="color:#adb5bd;"></i></span>
+                                                    <span class="button_show border bg-secondary-light" style="border-color:#395e86;cursor:not-allowed;pointer-events:none;" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-lock'></i> Control reservado para el sistema"><i class="bx bxs-group" style="color:#adb5bd;"></i></span>
+                                                    <span class="button_keys border bg-secondary-light" style="border-color:#395e86;cursor:not-allowed;pointer-events:none;" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-lock'></i> Control reservado para el sistema"><i class="bx bxs-key" style="color:#adb5bd;"></i></span>
+                                                @else
+                                                    <a href="{{ route('user.tareas-edit', $user->id) }}" role="button" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bx-slider-alt'></i> Actualizar habilidades de {{ $user->name }}" class="button_edit border border-secondary-dark text-secondary-dark bg-secondary-light"><i class="bx bx-slider-alt"></i></a>
+                                                    <a href="{{ route('user.equipos-edit', $user->id) }}" role="button" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-group'></i> Equipos de {{ $user->name }}" class="button_show border border-secondary-dark text-secondary-dark bg-secondary-light"><i class="bx bxs-group"></i></a>
+                                                    <a href="{{ route('user.roles-edit', $user->id) }}" role="button" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-key'></i> Roles de {{ $user->name }}" class="button_keys border border-secondary-dark text-secondary-dark bg-secondary-light"><i class="bx bxs-key"></i></a>
+                                                @endif
                                             @endcan
                                             {{-- Editar --}}
                                             @can('editar')
-                                                <a href="{{ route('user.edit', $user->id) }}" role="button" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-edit-alt'></i> Editar datos de {{ $user->name }}" class="button_edit align-center border border-warning-dark text-warning-dark bg-warning-light">
-                                                    <i class="bx bxs-edit-alt"></i>
-                                                </a>
+                                                <a href="{{ route('user.edit', $user->id) }}" role="button" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-edit-alt'></i> Editar datos de {{ $user->name }}" class="button_edit align-center border border-warning-dark text-warning-dark bg-warning-light"><i class="bx bxs-edit-alt"></i></a>
                                             @endcan
                                             {{-- Eliminar --}}
                                             @can('eliminar')
-                                                @unless ($isAdminUser)
-                                                @if ($user->id !== auth()->id())
-                                                <a href="{{ route('user.destroy', $user->id) }}" role="button" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-eraser'></i> Eliminar {{ $user->name }}" class="button_delete align-center border border-danger-dark text-danger-dark bg-danger-light">
-                                                    <i class="bx bxs-eraser"></i>
-                                                </a>
+                                                @if ($isAdminUser)
+                                                    <span class="button_delete align-center border bg-danger-light" style="border-color:#e44b4b;cursor:not-allowed;pointer-events:none;" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-lock'></i> Control reservado para el sistema"><i class="bx bxs-eraser" style="color:#adb5bd;"></i></span>
+                                                @elseif ($user->id !== auth()->id())
+                                                    <a href="{{ route('user.destroy', $user->id) }}" role="button" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-eraser'></i> Eliminar {{ $user->name }}" class="button_delete align-center border border-danger-dark text-danger-dark bg-danger-light"><i class="bx bxs-eraser"></i></a>
                                                 @else
-                                                <span class="button_delete align-center border border-danger-dark text-danger-dark bg-danger-light" style="opacity: 0.5; cursor: not-allowed;" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-lock'></i> Acción reservada para el sistema">
-                                                    <i class="bx bxs-trash"></i>
-                                                </span>
+                                                    <span class="button_delete align-center border border-danger-dark text-danger-dark bg-danger-light" style="opacity:0.5;cursor:not-allowed;" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-lock'></i> Acción reservada para el sistema"><i class="bx bxs-trash"></i></span>
                                                 @endif
-                                                @endunless
                                             @endcan
                                         </div>
+                                        @else
+                                            <span class="text-muted">—</span>
+                                        @endif
                                     </td>
-                                    @endif
                                 </tr>
                                 @endforeach
                             </tbody>

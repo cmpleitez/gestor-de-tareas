@@ -48,7 +48,7 @@ Route::middleware([
     })->name('dashboard');
 
     //ADMINISTRACIÓN
-    Route::middleware(['role:admin|superadmin'])->group(function () {
+    Route::middleware(['role:admin'])->group(function () {
         Route::group(['prefix' => 'accounts'], function () { //Usuarios
             Route::get('/', [userController::class, 'index'])->name('user')->middleware('can:ver-catalogo');
             Route::get('edit/{user}', [userController::class, 'edit'])->name('user.edit')->middleware('can:editar');

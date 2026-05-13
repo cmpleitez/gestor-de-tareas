@@ -14,6 +14,7 @@ return new class extends Migration
             $table->foreignId('oficina_id')->default(1);
             $table->string('dui', 9)->unique();
             $table->string('name');
+            $table->string('username')->unique();
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');

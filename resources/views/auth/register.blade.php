@@ -256,12 +256,33 @@
                                                 data-validation-containsnumber-regex="^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$"
                                                 data-validation-containsnumber-message="Solo se permiten letras, sin espacios al inicio/final ni dobles espacios"
                                                 data-validation-minlength-message="El nombre debe tener al menos 3 caracteres"
-                                                data-clear="true" minlength="3" placeholder="Nombre del nuevo usuario"
+                                                data-clear="true" minlength="3" placeholder="Nombre"
                                                 value="{{ old('name') }}" required>
                                             @error('name')
                                                 <div class="col-sm-12 badge bg-danger text-wrap"
                                                     style="margin-top: 0.2rem;">
                                                     {{ $errors->first('name') }}
+                                                </div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4"> {{-- Usuario --}}
+                                    <div class="form-group">
+                                        <label>Usuario</label>
+                                        <div class="controls">
+                                            <input type="text" name="username" id="username"
+                                                class="form-control {{ $errors->has('username') ? 'is-invalid' : '' }}"
+                                                data-validation-required-message="Este campo es obligatorio"
+                                                data-validation-containsnumber-regex="^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$"
+                                                data-validation-containsnumber-message="Solo se permiten letras, sin espacios al inicio/final ni dobles espacios"
+                                                data-validation-minlength-message="El nombre de usuario debe tener al menos 3 caracteres"
+                                                data-clear="true" minlength="3" placeholder="usuario"
+                                                value="{{ old('username') }}" required>
+                                            @error('username')
+                                                <div class="col-sm-12 badge bg-danger text-wrap"
+                                                    style="margin-top: 0.2rem;">
+                                                    {{ $errors->first('username') }}
                                                 </div>
                                             @enderror
                                         </div>
