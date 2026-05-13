@@ -71,9 +71,9 @@ PROCEDIMIENTO: perfil cpleitez.2024@gmail.com https://miro.com/app/board/uXjVJy6
         - Proteccion frontend: tablero de control.
         - Proteccion backend: Validaciones en controladores.
             **hecho**- campo activo
-            - tareas
-            - equipos
-            - roles
+            **hecho**- tareas
+            **hecho**- equipos
+            **hecho**- roles
 
 🟢 SERVICIOS:
     
