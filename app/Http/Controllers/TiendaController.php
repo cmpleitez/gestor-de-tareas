@@ -311,11 +311,11 @@ class TiendaController extends Controller
                     $query->where('origen_user_id', auth()->user()->id);
                 })->first();
                 if (!$atencion) {
-                    $receptores = User::whereHas('roles', function ($query) { //Seleccionando el receptor
-                        $query->where('name', 'receptor');
-                    })->whereHas('oficina', function ($query) use ($user) {
-                        $query->where('id', $user->oficina_id);
-                    })->get();
+                    $receptorRoleId = Role::where('name', 'receptor')->value('id');
+                    $receptores = User::where('role_id', $receptorRoleId)
+                        ->whereHas('oficina', function ($query) use ($user) {
+                            $query->where('id', $user->oficina_id);
+                        })->get();
                     if ($receptores->isEmpty()) {
                         Log::warning('No hay receptores disponibles', ['oficina_id' => $user->oficina_id, 'user_id' => $user->id]);
                         DB::rollBack();

@@ -26,7 +26,7 @@ Estas reglas tienen `trigger: always_on` y son obligatorias. Resumen operativo:
 17. No realices pruebas proactivas: Nunca ejecutes herramientas de navegación o pruebas automáticas por cuenta propia. Entra en fase de VERIFICACIÓN únicamente para documentar el trabajo realizado o cuando yo utilice explícitamente las frases clave de las reglas 1.
 18. Usa el console.log en lugar de ensuciar el frontend con funcionalidades de debuggin y usal el "Log::" en el caso de controladores, aparte puede recomendar otras formas de debugging que no ensucien el proyecto
 19. No agregues cosas que no te he pedido en su lugar hasme la sugerencia para yo decidir
-20. Cuando diga "operacion manual" pideme la ruta donde se va realizar una operación manual, luego que te entrega la ruta dirigeme al controlador y a la vista de esa ruta.
+20. Cuando diga "cm" pideme la ruta donde se va realizar una operación manual, luego que te entrega la ruta dirigeme al controlador y a la vista de esa ruta.
     
 💡CONCEPIOS:
     ✅Solicitud: está definida por la tabla "atenciones" y se dispersa atravez de sus tablas hijas: recepciones, actividades, ordenes de compra y detalles, visualmente aparecen en el kanban como tarjetas dinámicas que van cambiando entre tableros
