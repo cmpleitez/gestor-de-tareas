@@ -87,15 +87,21 @@
                                     <td class="text-center">
                                         @if ($user->activo)
                                         <div class="btn-group" role="group" aria-label="label">
-                                            {{-- Habilidades / Equipos / Roles --}}
+                                            {{-- Habilidades / Equipos --}}
                                             @can('activar')
                                                 @if ($isAdminUser)
                                                     <span class="button_edit border bg-secondary-light" style="border-color:#395e86;cursor:not-allowed;pointer-events:none;" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-lock'></i> Control reservado para el sistema"><i class="bx bx-slider-alt" style="color:#adb5bd;"></i></span>
                                                     <span class="button_show border bg-secondary-light" style="border-color:#395e86;cursor:not-allowed;pointer-events:none;" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-lock'></i> Control reservado para el sistema"><i class="bx bxs-group" style="color:#adb5bd;"></i></span>
-                                                    <span class="button_keys border bg-secondary-light" style="border-color:#395e86;cursor:not-allowed;pointer-events:none;" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-lock'></i> Control reservado para el sistema"><i class="bx bxs-key" style="color:#adb5bd;"></i></span>
                                                 @else
                                                     <a href="{{ route('user.tareas-edit', $user->id) }}" role="button" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bx-slider-alt'></i> Actualizar habilidades de {{ $user->name }}" class="button_edit border border-secondary-dark text-secondary-dark bg-secondary-light"><i class="bx bx-slider-alt"></i></a>
                                                     <a href="{{ route('user.equipos-edit', $user->id) }}" role="button" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-group'></i> Equipos de {{ $user->name }}" class="button_show border border-secondary-dark text-secondary-dark bg-secondary-light"><i class="bx bxs-group"></i></a>
+                                                @endif
+                                            @endcan
+                                            {{-- Roles --}}
+                                            @can('editar')
+                                                @if ($user->id == auth()->id())
+                                                    <span class="button_keys border bg-secondary-light" style="border-color:#395e86;cursor:not-allowed;pointer-events:none;" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-lock'></i> Control reservado para el sistema"><i class="bx bxs-key" style="color:#adb5bd;"></i></span>
+                                                @else
                                                     <a href="{{ route('user.roles-edit', $user->id) }}" role="button" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-key'></i> Roles de {{ $user->name }}" class="button_keys border border-secondary-dark text-secondary-dark bg-secondary-light"><i class="bx bxs-key"></i></a>
                                                 @endif
                                             @endcan

@@ -110,18 +110,13 @@ class UserController extends Controller
         }
     }
 
-    public function show(string $id)
-    {
-        //
-    }
-
     public function rolesEdit(User $user)
     {
-        $excludedRoles = ['admin'];
-        if ($user->mainRole->name === 'admin') {
-            $excludedRoles[] = 'admin';
+        if (auth()->user()->username == 'admin' && $user->username == 'admin') {
+            $roles = Role::whereNotIn('name', ['admin'])->get();
+        } else {
+            $roles = Role::all();
         }
-        $roles = Role::whereNotIn('name', $excludedRoles)->get();
         return view('modelos.user.roles-edit', ['user' => $user, 'roles' => $roles]);
     }
 

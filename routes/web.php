@@ -146,7 +146,6 @@ Route::middleware([
             Route::post('delegating/{recepcion}/{equipo}', [RecepcionController::class, 'asignar'])->name('recepcion.asignar')->middleware('can:asignar-recepcion');
             Route::post('next-step/{recepcion}', [RecepcionController::class, 'avanzarEstado'])->name('recepcion.avanzar')->middleware('can:asignar-recepcion');
             Route::get('tasks/{recepcion_id}', [RecepcionController::class, 'tareas'])->name('recepcion.tareas')->middleware('can:ver-tareas');
-            Route::post('purchase-order', [RecepcionController::class, 'ordenCompra'])->name('recepcion.orden-compra')->middleware('can:ver-orden');
             Route::post('fix-request', [RecepcionController::class, 'corregirCarrito'])->name('recepcion.corregir-carrito')->middleware('can:corregir-carrito');
             Route::post('supervise-request', [RecepcionController::class, 'revisarCarrito'])->name('recepcion.revisar-carrito')->middleware('can:revisar');
             Route::get('create-stock', [RecepcionController::class, 'createStock'])->name('recepcion.create-stock')->middleware('can:crear-stock');
@@ -168,6 +167,7 @@ Route::middleware([
             Route::get('shop.request', [TiendaController::class, 'carritoIndex'])->name('tienda.carrito')->middleware('can:ver-carrito');
             Route::post('request-send', [TiendaController::class, 'carritoEnviar'])->name('tienda.carrito-enviar')->middleware('can:enviar-carrito');
             Route::get('requests', [TiendaController::class, 'solicitudes'])->name('tienda.solicitudes')->middleware('can:ver-solicitudes');
+            Route::post('purchase-order', [RecepcionController::class, 'ordenCompra'])->name('recepcion.orden-compra')->middleware('can:ver-orden');
             Route::get('read-item-stock/{productoId}', [TiendaController::class, 'getStocksProducto'])->name('tienda.get-stocks-producto')->middleware('can:ver-tienda');
             Route::post('read-kit-products', [TiendaController::class, 'getKitProductos'])->name('tienda.get-kit-productos')->middleware('can:ver-tienda');
             Route::get('add-item/{orden}', [TiendaController::class, 'agregarOrden'])->name('tienda.agregar-item')->middleware('can:agregar-item');

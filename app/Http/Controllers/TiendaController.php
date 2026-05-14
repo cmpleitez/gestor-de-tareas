@@ -37,22 +37,12 @@ class TiendaController extends Controller
             $query->where('oficina_id', $oficinaId)
                   ->where('stock_id', $stockBodegaId);
         }])->get();
-        
-        Log::info('Log:: [Tienda Index] Consultando stock para Oficina ID: ' . $oficinaId . ' con Stock Bodega ID: ' . $stockBodegaId);
-        Log::info('Log:: [Tienda Index] Cantidad de kits encontrados: ' . $kits->count());
-
         foreach ($kits as $kit) {
             $kit->disponible = true;
-            Log::info('Log:: [Tienda Index] Procesando Kit: ' . $kit->kit . ' (ID: ' . $kit->id . ')');
-
             foreach ($kit->productos as $producto) {
                 $stock = $producto->oficinaStock->where('oficina_id', $oficinaId)->first();
                 $unidades = $stock ? $stock->unidades : 0;
-
-                Log::info('Log:: [Tienda Index] --> Producto: ' . $producto->producto . ' | Oficina: ' . $oficinaId . ' | Unidades: ' . $unidades);
-
                 if (!$stock || $unidades <= 0) {
-                    Log::warning('Log:: [Tienda Index] !!! Kit "' . $kit->kit . '" no disponible por producto: ' . $producto->producto . ' (ID: ' . $producto->id . ') en Oficina ID: ' . $oficinaId . '. Unidades encontradas: ' . $unidades);
                     $kit->disponible = false;
                     break;
                 }
@@ -329,7 +319,7 @@ class TiendaController extends Controller
                     if ($receptores->isEmpty()) {
                         Log::warning('No hay receptores disponibles', ['oficina_id' => $user->oficina_id, 'user_id' => $user->id]);
                         DB::rollBack();
-                        $message = 'El sistema está fuera de servicio';
+                        $message = 'No hay receptores asignados a su oficina';
                         return $request->ajax() ? response()->json(['success' => false, 'message' => $message, 'type' => 'error']) : back()->with('error', $message);
                     }
                     $receptor = $receptores->random();
@@ -443,14 +433,10 @@ class TiendaController extends Controller
         if (!$kit) {
             return response()->json(['error' => 'Kit no encontrado'], 404);
         }
-        Log::info('Log:: [Tienda Modal] Consultando stock del Kit ID: ' . $kitId . ' para Oficina ID: ' . $oficinaId);
         $kit->productos->each(function($producto) use ($oficinaId) {
             $stock = $producto->oficinaStock->where('oficina_id', $oficinaId)->first();
             $unidades = $stock ? $stock->unidades : 0;
-            
             $producto->stock_actual = $unidades;
-            Log::info('Log:: [Tienda Modal] Producto: ' . $producto->producto . ' | Oficina ID: ' . $oficinaId . ' | Stock: ' . $unidades);
-            
             unset($producto->oficinaStock);
         });
         return response()->json([
@@ -522,11 +508,6 @@ class TiendaController extends Controller
             $user = auth()->user();
             if ($user->mainRole->name != 'cliente') {
                 $equipos = Equipo::where('oficina_id', $user->oficina_id)->get();
-
-
-
-
-                
                 if ($equipos->isEmpty()) {
                     return redirect()->route('tienda')->with('warning', 'No hay equipos de trabajo disponibles para asignar las solicitudes');
                 }
