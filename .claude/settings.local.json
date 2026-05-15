@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mysql -u root -p\"p@5t15al5abana\" gestor-de-tareas -e \"SELECT id, name, email, created_at FROM users ORDER BY id;\")"
+    ]
+  }
+}
