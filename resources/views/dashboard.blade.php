@@ -138,8 +138,7 @@
                                     </script>
                                     <span class="user-status" style="color: #0056b3; font-weight: 600;">
                                         @if (auth()->check())
-                                            Conectado como
-                                            {{ auth()->user()->mainRole->name }}
+                                            {{ strtoupper(auth()->user()->mainRole->name) }}
                                         @else
                                             <span style="color: #d90429; font-weight: 600;">Desconectado</span>
                                         @endif

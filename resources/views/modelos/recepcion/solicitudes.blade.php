@@ -533,6 +533,8 @@
                 $('.kanban-sidebar').addClass('show');
                 $('body').addClass('sidebar-open');
                 limpiarClasesDrag();
+            @elsecan('ver-orden')
+                mostrarOrdenCompra($card);
             @endcan
         } else if (estadoId === ESTADOS.RECIBIDA || estadoId === ESTADOS.RESUELTA) { // Recibida o Resuelta
             @can('ver-orden')
@@ -1043,7 +1045,7 @@
         });
     }
     {{-- CARGAR NUEVAS RECIBIDAS (Solo para personal de gestión) --}}
-    @can('autorefrescar')
+    @hasrole('receptor|operador')
         function cargarNuevasRecibidas() {
             let atencionIdsExistentes = obtenerAtencionIdsExistentes();
             $.post({
@@ -1078,7 +1080,7 @@
                 }
             });
         }
-    @endcan
+    @endrole
     //CONTROL PRINCIPAL
     $(document).ready(function() {
         inicializarPopovers(); // Datos iniciales de las tarjetas

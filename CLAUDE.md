@@ -5,6 +5,21 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Reglas del proyecto (`.agent/rules/reglas.md`)
 
 Estas reglas tienen `trigger: always_on` y son obligatorias. Resumen operativo:
+<<<<<<< HEAD
+=======
+    
+💡CONCEPIOS:
+    ✅Solicitud: está definida por la tabla "atenciones" y se dispersa atravez de sus tablas hijas: recepciones, actividades, ordenes de compra y detalles, visualmente aparecen en el kanban como tarjetas dinámicas que van cambiando entre tableros
+    ✅Los tableros representan los tres estados de la solicitud: Recibida, En progreso y Resuelta
+    ✅Las trazas o tracking son representadas por los nombres de las distintas tareas registradas: Solicitud, Revisión, Verificación física, Descarga del Stock y  
+    Entrega del producto
+    ✅Usuario propietario: es quien esta referenciado desde el campo "recepciones.user_id_destino" hacia la tabla padre "users"; 
+    ✅Copia de la solicitud: esta definida por la tabla "recepcion" y su llave primaria
+    ✅Flujo de trabajo: los usuarios con distintos perfiles van remitiendo copias de la solicitud en el orden: 
+      cliente -> receptor -> operador
+    ✅Impulsos: son los avances que realizan las solicitudes moviendose entre los tableros del kanban
+    ✅Tareas: son partes integrales de la solicitud las cuales son procesadas por las personas participantes
+>>>>>>> seguridad
 
 ## Comandos
 
@@ -89,24 +104,6 @@ Los nombres de tablas y modelos están en español (`Atencion`, `Recepcion`, `So
 - `docs/Estandares del proyecto.md` — convenciones (paleta de colores `text-*` / `bg-*` / `btn-*`, helper de moneda `formatCurrency()` en `public/app-assets/js/helpers.js`, inicialización de validación `jqBootstrapValidation` cuando una vista define su propia sección `js`, técnica para volcar arrays con `Log::info` desde Blade).
 - `docs/componentes-seguridad.md` — catálogo de componentes Blade en `resources/views/components/security/` (metric-card, chart-card, recent-events, suspicious-ips, dashboard-header, empty-state, risk-badge, notification-system, js-utilities, security-styles) y utilidades JS bajo `SecurityUtils`. Trabajo activo en la rama `seguridad`.
 - `docs/seguimiento.md` — bitácora de avance del proyecto.
-
-## Contexto de sesiones anteriores
-
-### Rama `seguridad` — protección del usuario admin
-
-**Completado:**
-- Eliminadas todas las referencias a `superadmin` en `UserController`, `RegisterController` y `routes/web.php` — reemplazadas por `admin`.
-- `destroy()` en `UserController`: bloquea eliminación del usuario con rol `admin` antes de cualquier otra validación.
-- `resources/views/modelos/user/index.blade.php`: botones del tablero de control del admin ahora se muestran **deshabilitados** (no ocultos) — `pointer-events:none`, borde e ícono en tonos grises/tenues.
-
-**Colores acordados para botones deshabilitados del admin (`index.blade.php` L86-102):**
-- Borde botones azules (habilidades/equipos/roles): `border-color:#395e86` inline (5% más claro que `#2c5179`)
-- Borde botón eliminar: `border-color:#e44b4b` inline (5% más claro que `#d73e3e`)
-- Ícono interior todos: `color:#adb5bd` en el `<i>` (no en el span)
-
-**Pendiente:**
-- Switch de activación: deshabilitar visualmente el toggle del admin en la vista
-- Respaldo backend: verificar que endpoints `tareas-update`, `equipos-update`, `roles-update` bloqueen acceso al admin vía inyección directa
 
 ## Convenciones a respetar
 

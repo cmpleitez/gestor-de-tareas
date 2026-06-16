@@ -9,7 +9,7 @@
             <div class="card-header">
                 <div class="col-md-12 d-flex justify-content-between" style="padding: 0;">
                     <div class="col-11 p-1">
-                        <h4 class="card-title">USUARIOS DEL SISTEMA</h4>
+                        <h4 class="card-title">USUARIOS</h4>
                         <p class="card-text">Las personas autorizadas para operar el sistema desempeñando roles
                             específicos</p>
                     </div>

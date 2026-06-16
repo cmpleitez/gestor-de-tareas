@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Rename-Item -Path \"c:\\\\laragon\\\\www\\\\gestor-de-tareas\\\\claude\" -NewName \".claude\")"
+    ]
+  }
+}
