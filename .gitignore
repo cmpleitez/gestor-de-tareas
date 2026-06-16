@@ -69,3 +69,6 @@ bootstrap/cache/
 # Archivos de Vite
 public/hot
 public/storage
+
+#Documentación del sistema
+docs/
