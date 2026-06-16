@@ -1,3 +1,8 @@
+🟠 Stack:
+    PHP 8.1
+    MySQL 8.0
+    Laravel Framework 10.50.2
+
 🟠 Comando para importar de manera masiva los datos del usuario
     php artisan db:importar "NombreOficina"
 
@@ -25,35 +30,14 @@ Además se revisó: preferences/editor settings/tab user/text editor/suggestions
 
 🟠 https://chat.z.ai/ nueva IA
 
-🟠 Antigravity Quota (AGQ)
-    Monitoreo de Uso (No es el oficial pero no existe el oficial actualmente) : Utilizar las extensiones disponibles (como Antigravity Usage Plugin) para tener visibilidad sobre el porcentaje de cuota restante y el tiempo hasta el próximo refresco, eliminando la incertidumbre operativa durante jornadas de trabajo intensas.
-    Mi pregunta: ok confirmame en una respuesta cerrada si el "Google AI Pro" se aplica el "entorno de desarrollo integrado (IDE) basado en agentes, opera bajo un sistema de cuotas de uso de alta frecuencia que se reinician cada cinco horas" o solo se aplica para el "Google AI Ultra" ?
-        Sí, te confirmo que el sistema de cuotas de uso que se reinician cada cinco horas se aplica tanto al plan Google AI Pro como al plan Google AI Ultra dentro de Antigravity.
-        La diferencia principal no es el tiempo de reinicio, sino la capacidad:
-        Google AI Pro: Tiene cuotas elevadas y prioritarias que se refrescan cada 5 horas.
-        Google AI Ultra: Tiene las cuotas más altas posibles (superiores a las de Pro) y la máxima prioridad, pero bajo el mismo ciclo de refresco de 5 horas.
-        Los usuarios del plan gratuito, por el contrario, han sido movidos a un sistema de cuota semanal, lo que hace que los planes Pro y Ultra sean los únicos que ofrecen este ciclo de renovación frecuente para sesiones de trabajo intensas.
-    Confirmación del reinicio de la cuota cada 5 horas: https://support.google.com/googleone/answer/14534406?hl=en
-        Increased AI Agent Quotas: AI Pro members receive higher usage limits that refresh every 5 hours
-        for Gemini 3 Pro and other Vertex AI Model Garden models (e.g. Claude 4.5 Sonnet, gpt-oss-120b) 
-        within the Antigravity platform. AI Pro members also receive priority access to new, 
-        experimental models as capacity permits.
-
 🟠 La librería que domina el tamaño de letra en el modulo de ventas es:
 app-assets/css/custom-zay.css (Línea 38)
-
-🟠 Para ver en una vista el contendo de arrays, o cualquier otro valor
-@php
-\Illuminate\Support\Facades\Log::info($equivalente);
-@endphp
 
 🟠 Inicializar la validación frontend en las vistas
 @section('js')
 <script>
-$("input,select,textarea").not("[type=submit]").jqBootstrapValidation(); //Cuando la seccion js no está vacía se requiere pues cuando está vacía toma la inicialización global en dashboard
-
-... (resto del contenido js)...
-
+    $("input,select,textarea").not("[type=submit]").jqBootstrapValidation(); //Cuando la seccion js no está vacía se requiere pues cuando está vacía toma la inicialización global en dashboard
+    ... (resto del contenido js)...
 <script>
 
 🟠 Uso de formato de moneda: public/app-assets/js/helpers.js
@@ -113,3 +97,5 @@ Bordes: border border-*-light
 
 🟠 Convirtiendo imágenes png -> svg
     https://convertio.co/es/download/380b8906ab23e01e9af660b5c737a288eb7029/
+
+
