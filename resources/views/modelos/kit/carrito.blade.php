@@ -250,6 +250,21 @@ return $orden->precio * $orden->unidades;
         }
     }
 
+    .btn-trash-container {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-color: rgba(79, 87, 81, 0.15); /* Verde tenue success */
+        transition: background-color 0.2s ease;
+    }
+
+    .btn-trash-container:hover {
+        background-color: rgba(182, 112, 98, 0.25);
+    }
+
 </style>
 @endpush
 
@@ -304,8 +319,10 @@ $hasOrders = $currentAtencion && $currentAtencion->ordenes && $currentAtencion->
                                                     <h2 class="accordion-header d-flex align-items-center" id="{{ $detHeadingId }}">
                                                         @can('retirar-item')
                                                             <div class="ps-2 pe-1">
-                                                                <i id="btn_retirar_{{ $detalle->orden_id }}_{{ $detalle->kit_id }}_{{ $detalle->producto_id }}" class="fas fa-trash text-danger-dark" onclick="retirarItemAJAX(this)" data-orden-id="{{ $detalle->orden_id }}" data-kit-id="{{ $detalle->kit_id }}" data-producto-id="{{ $detalle->producto_id }}" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="Retirar item">
-                                                                </i>
+                                                                <span class="btn-trash-container">
+                                                                    <i id="btn_retirar_{{ $detalle->orden_id }}_{{ $detalle->kit_id }}_{{ $detalle->producto_id }}" class="fas fa-trash text-danger-dark" onclick="retirarItemAJAX(this)" data-orden-id="{{ $detalle->orden_id }}" data-kit-id="{{ $detalle->kit_id }}" data-producto-id="{{ $detalle->producto_id }}" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="Retirar item">
+                                                                    </i>
+                                                                </span>
                                                             </div>
                                                         @endcan
                                                         <div class="w-100 d-flex flex-column gap-2 p-2">
@@ -450,8 +467,10 @@ $hasOrders = $currentAtencion && $currentAtencion->ordenes && $currentAtencion->
                                 <span id="subtotal_{{ $orden->id }}">${{ number_format($orden->precio * old('ordenes.' . $orden->id, $orden->unidades), 2) }}</span>
                             </div>
                             <div class="col-3 col-md-1 text-center d-flex align-items-center justify-content-center">
-                                <i id="btn_retirar_orden_{{ $orden->id }}" class="fas fa-trash text-danger-dark" onclick="retirarOrdenAJAX(this)" data-url="{{ route('tienda.retirar-orden', $orden) }}" data-orden-id="{{ $orden->id }}" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="Retirar orden">
-                                </i>
+                                <span class="btn-trash-container" style="cursor: pointer;">
+                                    <i id="btn_retirar_orden_{{ $orden->id }}" class="fas fa-trash text-danger-dark" onclick="retirarOrdenAJAX(this)" data-url="{{ route('tienda.retirar-orden', $orden) }}" data-orden-id="{{ $orden->id }}" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="Retirar orden">
+                                    </i>
+                                </span>
                             </div>
                         @endcan
                     @endif
