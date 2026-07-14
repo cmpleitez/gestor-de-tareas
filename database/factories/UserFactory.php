@@ -2,11 +2,11 @@
 
 namespace Database\Factories;
 
-use App\Models\Team;
+use App\Models\Oficina;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
-use Laravel\Jetstream\Features;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
@@ -21,15 +21,19 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->name(),
-            'email' => $this->faker->unique()->safeEmail(),
-            'email_verified_at' => now(),
-            'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
-            'two_factor_secret' => null,
+            'id'                        => $this->faker->unique()->numberBetween(100000, 999999), // PK manual: users.id no es autoincremental
+            'name'                      => $this->faker->name(),
+            'username'                  => $this->faker->unique()->userName(),
+            'dui'                       => $this->faker->unique()->numerify('#########'),
+            'email'                     => $this->faker->unique()->safeEmail(),
+            'email_verified_at'         => now(),
+            'password'                  => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
+            'role_id'                   => fn () => Role::findOrCreate('cliente', 'web')->id,
+            'oficina_id'                => fn () => Oficina::first()?->id ?? Oficina::forceCreate(['id' => 1, 'oficina' => 'Oficina de pruebas', 'activo' => true])->id,
+            'two_factor_secret'         => null,
             'two_factor_recovery_codes' => null,
-            'remember_token' => Str::random(10),
-            'profile_photo_path' => null,
-            'current_team_id' => null,
+            'remember_token'            => Str::random(10),
+            'current_team_id'           => null,
         ];
     }
 
@@ -38,31 +42,39 @@ class UserFactory extends Factory
      */
     public function unverified(): static
     {
-        return $this->state(function (array $attributes) {
-            return [
-                'email_verified_at' => null,
-            ];
-        });
+        return $this->state(fn (array $attributes) => [
+            'email_verified_at' => null,
+        ]);
     }
 
     /**
-     * Indicate that the user should have a personal team.
+     * Usuario desactivado (users.activo = false).
+     */
+    public function inactivo(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'activo' => false,
+        ]);
+    }
+
+    /**
+     * Compatibilidad con tests de Jetstream: la feature de teams está
+     * deshabilitada en config/jetstream.php, por lo que no crea nada.
      */
     public function withPersonalTeam(callable $callback = null): static
     {
-        if (! Features::hasTeamFeatures()) {
-            return $this->state([]);
-        }
+        return $this->state([]);
+    }
 
-        return $this->has(
-            Team::factory()
-                ->state(fn (array $attributes, User $user) => [
-                    'name' => $user->name.'\'s Team',
-                    'user_id' => $user->id,
-                    'personal_team' => true,
-                ])
-                ->when(is_callable($callback), $callback),
-            'ownedTeams'
-        );
+    /**
+     * Usuario con 2FA habilitado y confirmado.
+     */
+    public function conDosFactores(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'two_factor_secret'         => encrypt('test-secret'),
+            'two_factor_recovery_codes' => encrypt(json_encode(['recovery-code-uno'])),
+            'two_factor_confirmed_at'   => now(),
+        ]);
     }
 }

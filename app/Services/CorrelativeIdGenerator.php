@@ -9,10 +9,7 @@ class CorrelativeIdGenerator
         if (! class_exists($modelClass)) {
             throw new \Exception("Modelo {$model} no existe");
         }
-        $maxId = $modelClass::max('id'); // Buscar el máximo ID existente
-        if ($maxId) {                    // Generar nuevo ID correlativo
-            return $maxId + 1;
-        }
-        return 1; // Primer ID
+        $maxId = $modelClass::query()->lockForUpdate()->max('id'); // Lectura con bloqueo: dentro de una transacción serializa generadores concurrentes y evita IDs duplicados
+        return ($maxId ?? 0) + 1;
     }
 }

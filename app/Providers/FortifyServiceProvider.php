@@ -1,12 +1,13 @@
 <?php
 namespace App\Providers;
 
-use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
 use App\Actions\Fortify\UpdateUserPassword;
 use App\Actions\Fortify\UpdateUserProfileInformation;
+use App\Models\User;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
@@ -17,15 +18,26 @@ class FortifyServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        //
+        // Debe llamarse en register(): el provider de vendor registra sus rutas
+        // en boot() y se ejecuta antes que este provider, por lo que hacerlo
+        // en boot() no evita las rutas duplicadas de Fortify.
+        Fortify::ignoreRoutes();
     }
 
     public function boot(): void
     {
-        Fortify::createUsersUsing(CreateNewUser::class);
         Fortify::updateUserProfileInformationUsing(UpdateUserProfileInformation::class);
         Fortify::updateUserPasswordsUsing(UpdateUserPassword::class);
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
+
+        // Solo usuarios activos pueden iniciar sesión (users.activo)
+        Fortify::authenticateUsing(function (Request $request) {
+            $user = User::where('email', Str::lower($request->input(Fortify::username())))->first();
+
+            if ($user && $user->activo && Hash::check($request->password, $user->password)) {
+                return $user;
+            }
+        });
 
         RateLimiter::for('login', function (Request $request) {
             $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())) . '|' . $request->ip());
@@ -41,15 +53,6 @@ class FortifyServiceProvider extends ServiceProvider
             return view('auth.login');
         });
 
-        Fortify::registerView(function () {
-            // Permitir acceso al formulario de registro incluso si el usuario está autenticado
-            return view('auth.register');
-        });
-
-        Fortify::verifyEmailView(function () {
-            return view('auth.verify-email');
-        });
-
         Fortify::requestPasswordResetLinkView(function () {
             return view('auth.forgot-password');
         });
@@ -58,17 +61,9 @@ class FortifyServiceProvider extends ServiceProvider
             return view('auth.reset-password', ['request' => $request]);
         });
 
-        Fortify::confirmPasswordView(function () {
-            return view('auth.confirm-password');
+        Fortify::twoFactorChallengeView(function () {
+            return view('auth.two-factor-challenge');
         });
-
-        // Configurar redirecciones personalizadas
-        Fortify::redirects('register', function () {
-            return redirect()->route('verification.notice')->with('success', 'Usuario registrado exitosamente. Por favor verifica tu email.');
-        });
-
-        // Permitir que usuarios autenticados accedan al formulario de registro
-        Fortify::ignoreRoutes();
 
         // Registrar rutas de Fortify manualmente
         $this->registerFortifyRoutes();
@@ -86,12 +81,24 @@ class FortifyServiceProvider extends ServiceProvider
                 ->middleware(['guest'])
                 ->name('login');
 
+            // throttle:login es obligatorio: al haber un limiter configurado,
+            // Fortify omite EnsureLoginIsNotThrottled de su pipeline y delega
+            // el rate limiting a este middleware de ruta.
             Route::post('/login', [\Laravel\Fortify\Http\Controllers\AuthenticatedSessionController::class, 'store'])
-                ->middleware(['guest']);
+                ->middleware(['guest', 'throttle:login']);
 
             // Logout
             Route::post('/logout', [\Laravel\Fortify\Http\Controllers\AuthenticatedSessionController::class, 'destroy'])
                 ->name('logout');
+
+            // Desafío de dos factores (usuarios con 2FA activado)
+            Route::get('/two-factor-challenge', [\Laravel\Fortify\Http\Controllers\TwoFactorAuthenticatedSessionController::class, 'create'])
+                ->middleware(['guest'])
+                ->name('two-factor.login');
+
+            Route::post('/two-factor-challenge', [\Laravel\Fortify\Http\Controllers\TwoFactorAuthenticatedSessionController::class, 'store'])
+                ->middleware(['guest', 'throttle:two-factor'])
+                ->name('two-factor.login.store');
 
             // Password Reset
             Route::get('/forgot-password', [\Laravel\Fortify\Http\Controllers\PasswordResetLinkController::class, 'create'])
@@ -110,22 +117,11 @@ class FortifyServiceProvider extends ServiceProvider
                 ->middleware(['guest'])
                 ->name('password.update');
 
-            // Email Verification
-            Route::get('/email/verify', [\Laravel\Fortify\Http\Controllers\EmailVerificationPromptController::class, '__invoke'])
-                ->middleware(['auth'])
-                ->name('verification.notice');
-
-            Route::get('/email/verify/{id}/{hash}', [\Laravel\Fortify\Http\Controllers\VerifyEmailController::class, '__invoke'])
-                ->middleware(['auth', 'signed', 'throttle:6,1'])
-                ->name('verification.verify');
-
-            Route::post('/email/verification-notification', [\Laravel\Fortify\Http\Controllers\EmailVerificationNotificationController::class, 'store'])
-                ->middleware(['auth', 'throttle:6,1'])
-                ->name('verification.send');
+            // Email Verification: las rutas viven en routes/web.php (verification.notice/verify/send)
         });
 
-        // Rutas de registro (accesibles para usuarios autenticados con rol Admin o no autenticados)
-        Route::group(['middleware' => ['web']], function () {
+        // Rutas de registro: solo usuarios autenticados con rol admin
+        Route::group(['middleware' => ['web', 'auth', 'role:admin']], function () {
             Route::get('/register', [\App\Http\Controllers\Auth\RegisterController::class, 'create'])
                 ->name('register');
 

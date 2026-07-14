@@ -27,7 +27,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
         $request->fulfill();
         return redirect()->route('dashboard')->with('success', '¡Correo electrónico verificado exitosamente!');
-    })->middleware(['signed'])->name('verification.verify');
+    })->middleware(['signed', 'throttle:6,1'])->name('verification.verify'); // throttle heredado de la ruta duplicada que se eliminó del FortifyServiceProvider
 
     Route::post('/email/verification-notification', function (Request $request) {
         $request->user()->sendEmailVerificationNotification();

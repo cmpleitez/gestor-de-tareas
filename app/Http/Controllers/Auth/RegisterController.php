@@ -20,19 +20,12 @@ class RegisterController extends Controller
 {
     public function create()
     {
-        // Verificar que el usuario esté autenticado y tenga rol Admin
-        if (! auth()->check() || ! auth()->user()->hasRole('admin')) {
-            return back()->with('error', 'No tienes permisos para acceder a esta página.');
-        }
         $oficinas = Oficina::where('activo', true)->get();
         return view('auth.register', compact('oficinas'));
     }
 
     public function store(Request $request)
     {
-        if (! auth()->check() || ! auth()->user()->hasRole('admin')) { // Verificar que el usuario esté autenticado y tenga rol Admin
-            return back()->with('error', 'No tienes permisos para realizar esta acción.');
-        }
         $validated = Validator::make($request->all(), [ // Validación
             'name'               => ['required', 'string', 'min:3', 'max:255', 'regex:/^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$/'],
             'username'           => ['required', 'string', 'min:3', 'max:255', 'regex:/^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$/', Rule::unique('users', 'username')],

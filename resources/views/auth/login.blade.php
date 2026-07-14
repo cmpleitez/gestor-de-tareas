@@ -133,7 +133,7 @@
 
     @if ($errors->has('email') || $errors->has('password'))
         <script>
-            toastr.error("Las credenciales ingresadas son incorrectas", '', {
+            toastr.error(@json($errors->first('email') ?: $errors->first('password')), '', {{-- Muestra el error real: credenciales inválidas o bloqueo por rate limit (auth.failed / auth.throttle) --}}
                 timeOut: 0,
                 extendedTimeOut: 0,
                 closeButton: true

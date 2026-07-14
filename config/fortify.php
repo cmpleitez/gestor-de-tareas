@@ -146,7 +146,7 @@ return [
     'features'            => [
         Features::registration(), // Habilitado - pero protegido por middleware
         Features::resetPasswords(),
-        // Features::emailVerification(),
+        Features::emailVerification(), // La verificación ya es obligatoria de facto (middleware verified + MustVerifyEmail); el flag alinea config y habilita el aviso de correo sin verificar en el perfil
         Features::updateProfileInformation(),
         Features::updatePasswords(),
         Features::twoFactorAuthentication([
