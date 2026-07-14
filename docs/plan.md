@@ -79,7 +79,7 @@ PROCEDIMIENTO: perfil cpleitez.2024@gmail.com https://miro.com/app/board/uXjVJy6
     
     ... Fixes de seguridad con fable
     . autenticacion de doble paso para las cuentas que tengan como rol principal "administrador"
-    . Continuar revisando con 
+    . Continuar revisando con el nuevo skill para revision
 
     
 🟡 CLIENTE:
