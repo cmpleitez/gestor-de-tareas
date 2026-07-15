@@ -76,10 +76,8 @@ PROCEDIMIENTO: perfil cpleitez.2024@gmail.com https://miro.com/app/board/uXjVJy6
             **hecho**- roles
 
 🟢 SERVICIOS:
-    
-    ... Fixes de seguridad con fable
     . autenticacion de doble paso para las cuentas que tengan como rol principal "administrador"
-    . Continuar revisando con el nuevo skill para revision
+    . no hay maquetación para celular al menos en la asignacion de productos al kit
 
     
 🟡 CLIENTE:
