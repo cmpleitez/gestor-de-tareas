@@ -55,7 +55,13 @@ Reglas comunes a todos mis proyectos. Se sincronizan desde el repo `estandares` 
 <!-- Reglas específicas de ESTE proyecto. El sync nunca toca esta sección. -->
 <!-- Ej.: stack usado, comandos propios, decisiones de arquitectura, convenciones locales. -->
 
-- 
+- **Stack:** Laravel 10 + Jetstream (Livewire) + Fortify + Sanctum + Spatie Permission. PHP estricto, entorno Windows/Laragon (MySQL).
+- **Assets manuales, sin Vite:** los assets viven en `public/app-assets/` (Bootstrap/jQuery/DataTables/FontAwesome, autónomos, cargados por `<script>`/`<link>`). NO hay Vite/npm/Tailwind-build: no existen `package.json`, `vite.config.js`, `node_modules` ni `@vite` en vistas. No reintroducir el toolchain de Vite.
+- **Dos layouts maestros:** `resources/views/dashboard.blade.php` (plantilla admin Vuexy/Bootstrap 4; CRUDs y Kanban vía `@extends('dashboard')`) y `resources/views/servicios.blade.php` (Bootstrap 5 beta + templatemo-zay; tienda/carrito vía `@extends('servicios')`). El layout `layouts/guest.blade.php` es solo para auth.
+- **Versionado:** `php artisan version:update {major|minor|patch}` actualiza `config/app.php` clave `version` (SemVer). Correr `config:clear` después si la config está cacheada.
+- **`uso_interno` = siempre `0`** (clientes externos que se registran solos; el modo `1` fue desactivado por mala práctica). El código activa el paso del operador con `if ($uso_interno == 0)`. Ver detalle en Memoria.
+- **Datos de dominio sembrados:** roles (admin/cliente/receptor/operador), estados (Recibida/En progreso/Resuelta), tareas (Revisión/Confirmación/Pago/Descarga/Entrega), solicitud "Orden de compra" y parámetros → `UserSeeder`. PK string (Atencion/Recepcion/Actividad) generadas por `KeyMaker`.
+- **BD de test aislada:** `gestor-de-tareas-testing` (MySQL, en `phpunit.xml`). `php artisan test` es seguro, no toca la BD de desarrollo.
 
 ## Memoria
 

@@ -11,6 +11,13 @@
         margin-top: 1rem;
     }
 
+    #datatable tbody {
+        display: grid;
+        grid-template-columns: 1fr; /* Por defecto (celular vertical): una tarjeta por fila */
+        gap: 1rem;
+        align-items: stretch;       /* Todas las tarjetas de una fila al alto de la más alta */
+    }
+
     #datatable tbody tr {
         display: flex;
         width: 100%;
@@ -18,11 +25,13 @@
 
     #datatable tbody tr td {
         flex: 1;
-        width: 50%;
+        width: 100%;
+        display: flex;              /* La celda transmite su altura a la tarjeta */
     }
 
-    #datatable tbody tr td:empty {
-        min-height: 1px;
+    #datatable .product-card {
+        flex: 1;                    /* La tarjeta llena el ancho y alto de su celda */
+        margin-bottom: 0;          /* El espacio entre tarjetas lo da el gap del grid */
     }
 
     /* ELIMINAR LINEAS DE DIVISION ENTRE FILAS */
@@ -45,6 +54,34 @@
     #datatable.table th {
         border-top: none !important;
         border-bottom: none !important;
+    }
+
+    /* Tablet vertical: dos tarjetas por fila */
+    @media (orientation: portrait) and (min-width: 600px) {
+        #datatable tbody {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    /* Celular en horizontal: dos tarjetas por fila */
+    @media (orientation: landscape) and (max-width: 1000px) {
+        #datatable tbody {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    /* Tablet en horizontal: tres tarjetas por fila */
+    @media (orientation: landscape) and (min-width: 1001px) and (max-width: 1366px) {
+        #datatable tbody {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    /* Escritorio: cuatro tarjetas por fila */
+    @media (min-width: 1367px) {
+        #datatable tbody {
+            grid-template-columns: repeat(4, 1fr);
+        }
     }
 
 </style>
@@ -75,9 +112,8 @@
                         <table id="datatable" class="table zero-configuration">
                             <thead style="display: none;"></thead>
                             <tbody>
-                                @foreach ($productosChunks as $chunk)
+                                @foreach ($productos as $producto)
                                     <tr>
-                                        @foreach ($chunk as $producto)
                                         <td class="product-card-container">
                                             <div class="product-card {{ in_array($producto->id, $kitProductosIds) ? 'border-primary-dark text-warning-dark bg-warning-light' : '' }}" data-producto-id="{{ $producto->id }}">
                                                 @if(in_array($producto->id, $kitProductosIds))
@@ -95,7 +131,7 @@
                                                             <div class="product-card-info">
                                                                 <span class="product-card-label">Código</span>
                                                                 <span class="badge secondary-dark"
-                                                                style="font-size: 0.60rem; font-weight: 700; background-color: var(--color-secondary-dark); color: white; margin-right: 0.5rem; display: inline-flex; align-items: center; justify-content: center; min-height: 1.5rem;">
+                                                                style="font-size: 0.75rem; font-weight: 700; background-color: var(--color-secondary-dark); color: white; margin-right: 0.5rem; display: inline-flex; align-items: center; justify-content: center; min-height: 1.5rem;">
                                                                     {{ $producto->codigo ?? 'S/C' }}
                                                                 </span>
                                                             </div>
@@ -110,10 +146,6 @@
                                                         </div>
                                                     </div>
                                                 </td>
-                                            @endforeach
-                                            @if($chunk->count() == 1)
-                                            <td class="product-card-container"></td>
-                                            @endif
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -211,7 +243,7 @@ toastr.error('{{ session('error ') }}', 'Error');
                 , "order": []
                 , "info": true
                 , "columnDefs": [{
-                    "targets": [0, 1]
+                    "targets": [0]
                     , "orderable": false
                     , "searchable": true
                 }]

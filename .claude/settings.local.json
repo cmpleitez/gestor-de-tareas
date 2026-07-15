@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "PowerShell(Rename-Item -Path \"c:\\\\laragon\\\\www\\\\gestor-de-tareas\\\\claude\" -NewName \".claude\")"
+      "PowerShell(Rename-Item -Path \"c:\\\\laragon\\\\www\\\\gestor-de-tareas\\\\claude\" -NewName \".claude\")",
+      "Bash(php artisan *)",
+      "Bash(grep -n '$productos\\\\b' resources/views/modelos/kit/asignar-productos.blade.php)",
+      "Bash(grep -rn 'chunk\\\\|$chunk' resources/views/modelos/kit/asignar-productos.blade.php app/Http/Controllers/KitController.php)",
+      "Bash(php -r 'require '\\\\''vendor/autoload.php'\\\\''; $app=require '\\\\''bootstrap/app.php'\\\\''; $app->make\\(Illuminate\\\\Contracts\\\\Console\\\\Kernel::class\\)->bootstrap\\(\\); try { Illuminate\\\\Support\\\\Facades\\\\Blade::compileString\\(file_get_contents\\('\\\\''resources/views/modelos/kit/asignar-productos.blade.php'\\\\''\\)\\); echo '\\\\''BLADE OK'\\\\''; } catch \\(\\\\Throwable $e\\) { echo '\\\\''ERROR: '\\\\''.$e->getMessage\\(\\); }')"
     ]
   }
 }

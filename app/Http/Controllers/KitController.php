@@ -124,8 +124,7 @@ class KitController extends Controller
             ->orderByRaw('EXISTS(SELECT 1 FROM kit_producto WHERE kit_producto.kit_id = ? AND kit_producto.producto_id = productos.id) DESC', [$kit->id])
             ->get();
         $kitProductosIds = $kit->productos->pluck('id')->toArray();
-        $productosChunks = $productos->chunk(2);
-        return view('modelos.kit.asignar-productos', compact('kit', 'productos', 'kitProductosIds', 'productosChunks'));
+        return view('modelos.kit.asignar-productos', compact('kit', 'productos', 'kitProductosIds'));
     }
 
     public function sincronizarProductos(Kit $kit, Request $request)

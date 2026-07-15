@@ -148,10 +148,9 @@
               this.hide();
             }
             else {
-              if (defMenu === 'collapsed')
-                this.collapse(defMenu);
-              else
-                this.expand();
+              // No auto-expandir el sidebar al detectar 'xl'; se mantiene colapsado.
+              // La apertura manual (menu-toggle / hover) sigue funcionando.
+              this.collapse(defMenu);
             }
             break;
           case 'lg':
