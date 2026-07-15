@@ -77,8 +77,6 @@ PROCEDIMIENTO: perfil cpleitez.2024@gmail.com https://miro.com/app/board/uXjVJy6
 
 🟢 SERVICIOS:
     . autenticacion de doble paso para las cuentas que tengan como rol principal "administrador"
-    . no hay maquetación para celular al menos en la asignacion de productos al kit
-
     
 🟡 CLIENTE:
 
