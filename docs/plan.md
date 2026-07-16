@@ -76,8 +76,12 @@ PROCEDIMIENTO: perfil cpleitez.2024@gmail.com https://miro.com/app/board/uXjVJy6
             **hecho**- roles
 
 🟢 SERVICIOS:
+    . tarjetas para celular horizontal y tablet
     . autenticacion de doble paso para las cuentas que tengan como rol principal "administrador"
-    
+    . Hay un problema con el sidebar, cuando lo anclo para que se expanda, cuando eligo otra vista del menu, se vuelve a contraer, aunque ya lo he anclado, debe permanecer anclado o desanclado segun mi ultima orden.
+        . Tablets: activación automatica del despliegue del sidebar anular
+        . sidebar: la expansion del sidebar de forma manual tiene un hiperlink demasiado reducido se debe ampliar que cubra el elemento li completo
+
 🟡 CLIENTE:
 
     . Que el cliente brinde la información del dominio

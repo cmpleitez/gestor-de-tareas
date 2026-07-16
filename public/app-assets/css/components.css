@@ -98,11 +98,6 @@ html body .content.app-content .content-area-wrapper .content-wrapper {
   height: calc(100vh - 9rem);
 }
 
-html body .content .content-wrapper {
-  padding: calc(2.2rem - 0.4rem) 2.2rem 0;
-  margin-top: 0;
-}
-
 html body .content .content-wrapper .content-header-title {
   color: #475F7B;
   margin-right: 1rem;
@@ -163,8 +158,7 @@ html body.navbar-sticky .app-content .navbar-container .search-input .search-lis
 }
 
 html body.navbar-sticky .app-content .content-wrapper {
-  padding: 1.8rem 2.2rem 0;
-  margin-top: 3rem;
+  margin-top: 6rem;
 }
 
 html body.navbar-static .navbar-container,
@@ -764,7 +758,6 @@ body.footer-hidden footer {
 }
 
 .main-menu .navbar-header .navbar-brand {
-  margin-top: 0.75rem;
   display: flex;
   align-items: center;
 }

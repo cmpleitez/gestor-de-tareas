@@ -55,6 +55,17 @@
 <!-- BEGIN: Body-->
 <body class="vertical-layout vertical-menu-modern boxicon-layout no-card-shadow 2-columns navbar-sticky footer-static menu-collapsed"
     data-open="click" data-menu="vertical-menu-modern" data-col="2-columns">
+    {{-- Pre-paint: si el sidebar está anclado, pinta la vista ya en el espacio desplegado (sin flash) --}}
+    <script>
+        (function () {
+            try {
+                if (window.innerWidth >= 1200 && localStorage.getItem('sidebarEstado') === 'expanded') {
+                    document.body.classList.remove('menu-collapsed');
+                    document.body.classList.add('menu-expanded');
+                }
+            } catch (e) {}
+        })();
+    </script>
     <!-- BEGIN: Header-->
     <div class="header-navbar-shadow"></div>
     <nav class="header-navbar main-header-navbar navbar-expand-lg navbar navbar-with-menu fixed-top">
@@ -182,23 +193,29 @@
 
     <!-- BEGIN: Main Menu-->
     <div class="main-menu menu-fixed menu-light menu-accordion menu-shadow" data-scroll-to-active="true">
+        
         <div class="navbar-header" style="padding: 10px;">
             <ul class="nav navbar-nav flex-row">
-                <li class="nav-item mr-auto open">
-                    <a class="navbar-brand d-flex justify-content-center align-items-center"
-                        href="{{ route('dashboard') }}">
+                
+                <li class="nav-item mr-auto open menu-toggle">
+                    <a class="navbar-brand d-flex justify-content-center align-items-center">
                         <div class="brand-logo d-flex justify-content-center">
                             <img src="{{ asset('app-assets/images/logo/logo.svg') }}" alt="Logo" style="width: 85%; height: auto; max-width: 200px;">
                         </div>
                         <p class="brand-text mb-0" style="font-size: 1rem;">Gestor de Tareas</p>
                     </a>
                 </li>
-                <li class="nav-item nav-toggle"><a class="nav-link modern-nav-toggle pr-0" data-toggle="collapse"><i
-                class="bx bx-x d-block d-xl-none font-medium-4 primary toggle-icon"></i><i
-                            class="toggle-icon bx bx-circle font-medium-4 d-none d-xl-block collapse-toggle-icon primary"
-                            data-ticon="bx-circle"></i></a></li>
+
+                <li class="nav-item nav-toggle menu-toggle">
+                    <a class="nav-link pr-0" data-toggle="collapse">
+                        <i class="bx bx-x d-block d-xl-none font-medium-4 primary toggle-icon"></i>
+                        <i class="toggle-icon bx bx-circle font-medium-4 d-none d-xl-block collapse-toggle-icon primary" data-ticon="bx-circle"></i>
+                    </a>
+                </li>
+
             </ul>
         </div>
+
         <div class="shadow-bottom"></div>
         <div class="main-menu-content mt-3">
             <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation"
@@ -279,12 +296,10 @@
     <!-- END: Main Menu-->
 
     <!-- BEGIN: Content-->
-    <div class="app-content content">
+    <div class="app-content content mt-0 ml-15 mr-0">
         <div class="content-overlay"></div>
         <div class="content-wrapper">
-            <div class="content-header row">
-            </div>
-            <div class="content-body mt-2 mr-1 ml-1">
+            <div class="content-body">
                 @section('contenedor')
                 @show
             </div>
@@ -467,6 +482,48 @@
                 }, 300);
             }
         });
+        // ANCLAJE SIN VAIVÉN: si está anclado, neutraliza el force-collapse del init de la plantilla (se restaura tras la carga)
+        (function () {
+            if (window.innerWidth >= 1200 &&
+                localStorage.getItem('sidebarEstado') === 'expanded' &&
+                window.jQuery && $.app && $.app.menu && typeof $.app.menu.collapse === 'function') {
+                var _collapseOriginal = $.app.menu.collapse; // Guarda el colapso real
+                $.app.menu.collapse = function () { // Durante la carga: no colapsa, mantiene desplegado
+                    $('body').removeClass('menu-collapsed').addClass('menu-expanded');
+                    this.collapsed = false;
+                    this.expanded = true;
+                };
+                $(window).on('load', function () { // Restaura el colapso normal para que el toggle manual funcione
+                    setTimeout(function () { $.app.menu.collapse = _collapseOriginal; }, 50);
+                });
+            }
+        })();
+        // ANCLAJE DEL SIDEBAR EN DESKTOP: recuerda el estado desplegado/replegado y lo reaplica al cargar cada vista
+        $(document).on('click', '.menu-toggle, .modern-nav-toggle', function() { // Guarda la elección manual del usuario
+            if (window.innerWidth >= 1200) {
+                setTimeout(function() {
+                    localStorage.setItem('sidebarEstado', $('body').hasClass('menu-expanded') ? 'expanded' : 'collapsed');
+                }, 50);
+            }
+        });
+        $(window).on('load', function() { // Se ejecuta tras el init de la plantilla (que fuerza replegado) y reaplica el anclado
+            if (window.innerWidth >= 1200 && localStorage.getItem('sidebarEstado') === 'expanded') {
+                if ($.app && $.app.menu && typeof $.app.menu.expand === 'function') {
+                    $.app.menu.expand();
+                }
+            }
+        });
+        // SWITCH DE ÍCONO DEL TOGGLE (repuesto): bx-circle (replegado) ↔ bx-disc (desplegado)
+        function actualizarIconoToggle() { // Alterna el ícono según el estado del sidebar
+            var expandido = document.body.classList.contains('menu-expanded');
+            $('.main-menu .navbar-header .collapse-toggle-icon')
+                .toggleClass('bx-disc', expandido)
+                .toggleClass('bx-circle', !expandido);
+        }
+        $(document).on('click', '.menu-toggle', function() { // Actualiza el ícono tras el toggle
+            if (window.innerWidth >= 1200) setTimeout(actualizarIconoToggle, 60);
+        });
+        $(window).on('load', actualizarIconoToggle); // Estado inicial del ícono al cargar la vista
     </script>
 
     <!-- Custom js for this page -->
