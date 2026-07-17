@@ -1,11 +1,13 @@
 # gestor-de-tareas
 
 <!-- BEGIN REGLAS GLOBALES -->
-<!-- version: 13bd67d - 2026-07-14 15:10 - generado por sync-reglas.ps1 - NO editar a mano -->
+<!-- version: 4564ef1 - 2026-07-17 11:00 - generado por sync-reglas.ps1 - NO editar a mano -->
 
 ## Reglas globales
 
 Reglas comunes a todos mis proyectos. Se sincronizan desde el repo `estandares` (carpeta `ia/`). No las edites dentro de un proyecto: se sobrescriben en cada sync. Para cambiarlas, edita `estandares/ia/CLAUDE.global.md`.
+
+🔥 Cuando diga pruebalo: has las pruebas respectivas usando la automatización de navegador (browser automation / pruebas E2E). mediante el uso de Playwright, una librería de Node que controla navegadores mediante el CDP (Chrome DevTools Protocol).
 
 🔥 Tu memoria va estar siempre en la sección ## Memoria del archivo CLAUDE.md local del proyecto que se esté trabajando en ese momento.
 
@@ -126,5 +128,9 @@ Tres fixes aplicados al layout `dashboard.blade.php`, todos condicionados a **an
 3. **Sin parpadeo (UX):** script inline vanilla **justo después del markup del menú** (antes de jQuery) aplica `open` a las categorías guardadas antes del primer paint; la restauración en DOMContentLoaded se eliminó (era la causa del repliegue→despliegue visible). Queda una guardia silenciosa a load+120ms que no muta el DOM si nada cambió.
 
 Verificado con Playwright-core (Chrome del sistema, scratchpad, nada instalado en el proyecto) + `php artisan serve :8123`: anclaje sobrevive navegaciones, categorías exactas, y frame-a-frame el primer frame ya nace desplegado. Credenciales de prueba del seeder: admin@servidor.com.
+
+**Tablet/móvil (<1200px), mismo día:** (a) agregado `<div class="sidenav-overlay"></div>` al layout (faltaba el markup estándar Vuexy; el JS ya lo soportaba) → backdrop oscuro + cierre al tocar fuera del menú; (b) el pre-paint del `<body>` ahora también cubre <1200: aplica `vertical-overlay-menu fixed-navbar menu-hide` (y quita `vertical-menu-modern`) antes del primer render — antes esas clases las ponía el init JS en `window.load`, lo que pintaba el sidebar en modo desktop y luego lo replegaba/ocultaba (parpadeo). Verificado frame a frame en 768×1024: nace oculto, hamburguesa abre, opción navega sin repliegue visible, backdrop cierra.
+
+**Comando de versión (2026-07-17):** `version:update patch` ya no incrementa: genera `YYYY.DDD.HHMM` (año, día del año, hora+minutos). `major`/`minor` siguen incrementando clásico.
 
 **Decisión sobre tests de dominio (2026-07-15):** POSPUESTOS por decisión del usuario. Razón: el costo de montar tests fieles del Kanban es alto (PK string vía KeyMaker, sin factories de dominio, pivotes runtime, todo interdependiente) y esa complejidad va contra la limpieza ganada ("nivel de entropía demasiado alto"). Se mantiene la suite de **auth** (29 verde) como red de seguridad y el Kanban se valida manualmente en el navegador. Si se retoma: empezar por el génesis (cliente crea solicitud) con un helper aislado 100% dentro de `tests/` (sin tocar `app/`, `database/seeders/` ni `database/factories/`), usando la BD aislada `gestor-de-tareas-testing` + `RefreshDatabase`.

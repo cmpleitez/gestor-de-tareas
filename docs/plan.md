@@ -76,11 +76,10 @@ PROCEDIMIENTO: perfil cpleitez.2024@gmail.com https://miro.com/app/board/uXjVJy6
             **hecho**- roles
 
 🟢 SERVICIOS:
-    . tarjetas para celular horizontal y tablet
+    
     . autenticacion de doble paso para las cuentas que tengan como rol principal "administrador"
-    . Hay un problema con el sidebar, cuando lo anclo para que se expanda, cuando eligo otra vista del menu, se vuelve a contraer, aunque ya lo he anclado, debe permanecer anclado o desanclado segun mi ultima orden.
+    . tarjetas para celular y tablets
         . Tablets: activación automatica del despliegue del sidebar anular
-        . Al cargar una vista el sidebar anclado sus categorias se repliegan sin solicitarlo.
 
 🟡 CLIENTE:
 

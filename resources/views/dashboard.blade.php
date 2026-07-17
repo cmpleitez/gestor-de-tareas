@@ -55,13 +55,16 @@
 <!-- BEGIN: Body-->
 <body class="vertical-layout vertical-menu-modern boxicon-layout no-card-shadow 2-columns navbar-sticky footer-static menu-collapsed"
     data-open="click" data-menu="vertical-menu-modern" data-col="2-columns">
-    {{-- Pre-paint: si el sidebar está anclado, pinta la vista ya en el espacio desplegado (sin flash) --}}
+    {{-- Pre-paint: en desktop anclado pinta la vista ya desplegada; en tablet/móvil nace como overlay oculto (sin repliegue visible del init) --}}
     <script>
         (function () {
             try {
                 if (window.innerWidth >= 1200 && localStorage.getItem('sidebarEstado') === 'expanded') {
                     document.body.classList.remove('menu-collapsed');
                     document.body.classList.add('menu-expanded');
+                } else if (window.innerWidth < 1200) {
+                    document.body.classList.remove('vertical-menu-modern');
+                    document.body.classList.add('vertical-overlay-menu', 'fixed-navbar', 'menu-hide');
                 }
             } catch (e) {}
         })();
@@ -324,6 +327,8 @@
     </div>
     <!-- END: Content-->
 
+    <div class="sidenav-overlay"></div>                                 <!-- Backdrop estándar Vuexy: en overlay-menu (tablet/móvil) oscurece el contenido y cierra el menú al tocar fuera -->
+
     <!-- BEGIN: Footer-->
     <footer class="footer footer-static footer-light">
         <p class="clearfix mb-0"><span class="float-left d-inline-block"><i
@@ -474,21 +479,6 @@
                 });
             }
         });
-        // Lógica personalizada para expandir todos los submenús al hacer hover en el menú lateral (cuando está colapsado)
-        $('.main-menu').on('mouseenter', function() {
-            if ($('body').hasClass('menu-collapsed')) {
-                $(this).find('li.has-sub').not('.open').addClass('open').children('ul').hide().slideDown(200);
-            }
-        }).on('mouseleave', function() {
-            if ($('body').hasClass('menu-collapsed')) {
-                $(this).find('li.has-sub.open').each(function() {
-                    var $this = $(this);
-                    $this.children('ul').slideUp(200, function() {
-                        $this.removeClass('open');
-                    });
-                });
-            }
-        });
         // Expansión masiva para modo celular al abrir el menú desde la hamburguesa
         $(document).on('click', '.menu-toggle', function() {
             if (window.innerWidth < 1200) {
@@ -499,6 +489,30 @@
                 }, 300);
             }
         });
+        // MODO TÁCTIL TABLET HORIZONTAL (sidebar replegado): un toque en el ícono de una categoría despliega el sidebar y abre exactamente esa categoría; un toque fuera del sidebar repliega el sidebar y todas las categorías
+        (function () {
+            var activo = function () { // Solo dispositivo táctil, en ancho desktop (>=1200) y con el sidebar replegado (sin anclar)
+                return window.matchMedia('(pointer: coarse)').matches && window.innerWidth >= 1200 && $('body').hasClass('menu-collapsed');
+            };
+            $(document).on('touchend', '.main-menu li.has-sub > a', function (e) {
+                if (!activo()) return;
+                e.preventDefault(); e.stopPropagation(); // Suprime el click y el hover emulados del toque: el estado deja de depender del mouse
+                var $li = $(this).parent();
+                $('.main-menu, .navbar-header').addClass('expanded'); // Despliega el sidebar y lo deja anclado hasta el toque fuera
+                $('.main-menu li.has-sub.open').not($li).removeClass('open menu-collapsed-open').children('ul').slideUp(200, function () { $(this).css('display', ''); });
+                if ($li.hasClass('open')) { // Segundo toque en la misma categoría: solo la repliega (el sidebar queda desplegado)
+                    $li.removeClass('open menu-collapsed-open').children('ul').slideUp(200, function () { $(this).css('display', ''); });
+                } else {
+                    $li.addClass('open').children('ul').hide().slideDown(200, function () { $(this).css('display', ''); });
+                }
+            });
+            $(document).on('touchstart', function (e) {
+                if (!activo()) return;
+                if ($(e.target).closest('.main-menu').length) return; // Toques dentro del sidebar no repliegan
+                $('.main-menu, .navbar-header').removeClass('expanded'); // Repliega el sidebar
+                $('.main-menu li.has-sub').removeClass('open menu-collapsed-open').children('ul').css('display', ''); // Y todas las categorías (sin memoria de reapertura)
+            });
+        })();
         // ANCLAJE PERSISTENTE: mientras el sidebar esté anclado, ignora todo repliegue automático de la plantilla (init, breakpoints, resize); solo el toggle manual del usuario puede replegar
         (function () {
             if (!(window.jQuery && $.app && $.app.menu && typeof $.app.menu.collapse === 'function')) return;

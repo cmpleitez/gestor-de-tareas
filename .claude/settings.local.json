@@ -5,7 +5,19 @@
       "Bash(php artisan *)",
       "Bash(grep -n '$productos\\\\b' resources/views/modelos/kit/asignar-productos.blade.php)",
       "Bash(grep -rn 'chunk\\\\|$chunk' resources/views/modelos/kit/asignar-productos.blade.php app/Http/Controllers/KitController.php)",
-      "Bash(php -r 'require '\\\\''vendor/autoload.php'\\\\''; $app=require '\\\\''bootstrap/app.php'\\\\''; $app->make\\(Illuminate\\\\Contracts\\\\Console\\\\Kernel::class\\)->bootstrap\\(\\); try { Illuminate\\\\Support\\\\Facades\\\\Blade::compileString\\(file_get_contents\\('\\\\''resources/views/modelos/kit/asignar-productos.blade.php'\\\\''\\)\\); echo '\\\\''BLADE OK'\\\\''; } catch \\(\\\\Throwable $e\\) { echo '\\\\''ERROR: '\\\\''.$e->getMessage\\(\\); }')"
+      "Bash(php -r 'require '\\\\''vendor/autoload.php'\\\\''; $app=require '\\\\''bootstrap/app.php'\\\\''; $app->make\\(Illuminate\\\\Contracts\\\\Console\\\\Kernel::class\\)->bootstrap\\(\\); try { Illuminate\\\\Support\\\\Facades\\\\Blade::compileString\\(file_get_contents\\('\\\\''resources/views/modelos/kit/asignar-productos.blade.php'\\\\''\\)\\); echo '\\\\''BLADE OK'\\\\''; } catch \\(\\\\Throwable $e\\) { echo '\\\\''ERROR: '\\\\''.$e->getMessage\\(\\); }')",
+      "WebSearch",
+      "mcp__claude-in-chrome__navigate",
+      "mcp__claude-in-chrome__computer",
+      "Bash(mkdir -p /c/Users/cpleitez/AppData/Local/Temp/claude/C--laragon-www-gestor-de-tareas/c00860e0-5be5-4739-a2af-c97098dc71a5/scratchpad)",
+      "Read(//c/Users/cpleitez/AppData/Local/Temp/claude/C--laragon-www-gestor-de-tareas/c00860e0-5be5-4739-a2af-c97098dc71a5/scratchpad/**)",
+      "Read(//c/Users/cpleitez/AppData/Local/Temp/claude/C--laragon-www-gestor-de-tareas//**)",
+      "Bash(npm init *)",
+      "mcp__claude-in-chrome__read_page",
+      "mcp__claude-in-chrome__javascript_tool",
+      "mcp__claude-in-chrome__tabs_close_mcp",
+      "Bash(node test-sidebar-revert.js)",
+      "Bash(node test-sidebar-revert2.js)"
     ]
   }
 }
