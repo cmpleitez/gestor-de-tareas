@@ -294,6 +294,23 @@
         </div>
     </div>
     <!-- END: Main Menu-->
+    {{-- Pre-paint: aplica el estado guardado de las categorías antes del primer render (sin jQuery, aún no está cargado) --}}
+    <script>
+        (function () {
+            try {
+                if (!(window.innerWidth >= 1200 && localStorage.getItem('sidebarEstado') === 'expanded')) return;
+                var guardado = localStorage.getItem('categoriasAbiertas');
+                if (guardado === null) return;                          // Sin estado guardado: se respeta el markup por defecto
+                var abiertas = JSON.parse(guardado) || [];
+                var lis = document.querySelectorAll('#main-menu-navigation li.has-sub');
+                for (var i = 0; i < lis.length; i++) {
+                    var titulo = lis[i].querySelector(':scope > a .menu-title');
+                    var abierta = titulo && abiertas.indexOf(titulo.textContent.trim()) !== -1;
+                    lis[i].classList[abierta ? 'add' : 'remove']('open');
+                }
+            } catch (e) {}
+        })();
+    </script>
 
     <!-- BEGIN: Content-->
     <div class="app-content content mt-0 ml-15 mr-0">
@@ -482,21 +499,46 @@
                 }, 300);
             }
         });
-        // ANCLAJE SIN VAIVÉN: si está anclado, neutraliza el force-collapse del init de la plantilla (se restaura tras la carga)
+        // ANCLAJE PERSISTENTE: mientras el sidebar esté anclado, ignora todo repliegue automático de la plantilla (init, breakpoints, resize); solo el toggle manual del usuario puede replegar
         (function () {
-            if (window.innerWidth >= 1200 &&
-                localStorage.getItem('sidebarEstado') === 'expanded' &&
-                window.jQuery && $.app && $.app.menu && typeof $.app.menu.collapse === 'function') {
-                var _collapseOriginal = $.app.menu.collapse; // Guarda el colapso real
-                $.app.menu.collapse = function () { // Durante la carga: no colapsa, mantiene desplegado
+            if (!(window.jQuery && $.app && $.app.menu && typeof $.app.menu.collapse === 'function')) return;
+            var _collapseOriginal = $.app.menu.collapse; // Colapso real de la plantilla
+            var _toggleManual = false; // true solo en el instante en que el usuario pulsa el toggle
+            $(document).on('mousedown touchstart', '.menu-toggle, .modern-nav-toggle', function () { // Se dispara antes del click que ejecuta toggle()
+                _toggleManual = true;
+                setTimeout(function () { _toggleManual = false; }, 400);
+            });
+            $.app.menu.collapse = function (defMenu) {
+                var anclado = window.innerWidth >= 1200 && localStorage.getItem('sidebarEstado') === 'expanded';
+                if (anclado && !_toggleManual) { // Repliegue automático estando anclado: se ignora y se mantiene desplegado
                     $('body').removeClass('menu-collapsed').addClass('menu-expanded');
                     this.collapsed = false;
                     this.expanded = true;
-                };
-                $(window).on('load', function () { // Restaura el colapso normal para que el toggle manual funcione
-                    setTimeout(function () { $.app.menu.collapse = _collapseOriginal; }, 50);
+                    return;
+                }
+                _collapseOriginal.call(this, defMenu);
+            };
+        })();
+        // MEMORIA DE CATEGORÍAS (solo anclado): al navegar, cada categoría del menú queda exactamente como la dejó el usuario (abierta o cerrada)
+        (function () {
+            var anclado = function () { return window.innerWidth >= 1200 && localStorage.getItem('sidebarEstado') === 'expanded'; };
+            var clave = function (li) { return $(li).children('a').find('.menu-title').text().trim(); }; // Identifica la categoría por su título
+            window.addEventListener('pagehide', function () { // Al salir de la vista guarda el estado exacto de los submenús
+                if (!anclado()) return;
+                var abiertas = $('#main-menu-navigation li.has-sub.open').map(function () { return clave(this); }).get();
+                localStorage.setItem('categoriasAbiertas', JSON.stringify(abiertas));
+            });
+            var restaurar = function () {
+                if (!anclado()) return;
+                var guardado = localStorage.getItem('categoriasAbiertas');
+                if (guardado === null) return; // Primera carga sin estado guardado: se respeta el comportamiento por defecto
+                var abiertas = [];
+                try { abiertas = JSON.parse(guardado) || []; } catch (e) {}
+                $('#main-menu-navigation li.has-sub').each(function () {
+                    $(this).toggleClass('open', abiertas.indexOf(clave(this)) !== -1);
                 });
-            }
+            };
+            $(window).on('load', function () { setTimeout(restaurar, 120); }); // Guardia silenciosa: si el init de la plantilla movió algo, repone el estado (si nada cambió, no toca el DOM)
         })();
         // ANCLAJE DEL SIDEBAR EN DESKTOP: recuerda el estado desplegado/replegado y lo reaplica al cargar cada vista
         $(document).on('click', '.menu-toggle, .modern-nav-toggle', function() { // Guarda la elección manual del usuario

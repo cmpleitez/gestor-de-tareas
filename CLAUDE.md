@@ -118,4 +118,13 @@ Reglas comunes a todos mis proyectos. Se sincronizan desde el repo `estandares` 
 
 **✅ RESUELTO 2026-07-15.** `UserSeeder.php:184` ahora siembra `'Uso interno' => valor '0'` (modo real: clientes externos con paso del operador). Como usa `updateOrInsert(['id' => 3], ...)`, re-ejecutar el seeder (`php artisan db:seed --class=UserSeeder`) actualiza el valor en BD existentes sin recrearlas.
 
+### 2026-07-17 — Sidebar anclado: persistencia total sin parpadeo (dashboard.blade.php)
+
+Tres fixes aplicados al layout `dashboard.blade.php`, todos condicionados a **anclado + desktop** (`localStorage.sidebarEstado === 'expanded'` && `innerWidth >= 1200`); sin anclar (hover) y en móvil no se toca nada:
+1. **Anclaje persistente:** la guarda sobre `$.app.menu.collapse` ahora es permanente (antes se restauraba 50ms tras el load y cualquier re-init de Vuexy replegaba). El repliegue manual sigue vivo vía flag en `mousedown/touchstart` del toggle.
+2. **Memoria de categorías:** al salir de cada vista (`pagehide`) se guarda en `localStorage.categoriasAbiertas` qué `li.has-sub` estaban abiertas (clave = texto de `.menu-title`); quedan tal cual las dejó el usuario.
+3. **Sin parpadeo (UX):** script inline vanilla **justo después del markup del menú** (antes de jQuery) aplica `open` a las categorías guardadas antes del primer paint; la restauración en DOMContentLoaded se eliminó (era la causa del repliegue→despliegue visible). Queda una guardia silenciosa a load+120ms que no muta el DOM si nada cambió.
+
+Verificado con Playwright-core (Chrome del sistema, scratchpad, nada instalado en el proyecto) + `php artisan serve :8123`: anclaje sobrevive navegaciones, categorías exactas, y frame-a-frame el primer frame ya nace desplegado. Credenciales de prueba del seeder: admin@servidor.com.
+
 **Decisión sobre tests de dominio (2026-07-15):** POSPUESTOS por decisión del usuario. Razón: el costo de montar tests fieles del Kanban es alto (PK string vía KeyMaker, sin factories de dominio, pivotes runtime, todo interdependiente) y esa complejidad va contra la limpieza ganada ("nivel de entropía demasiado alto"). Se mantiene la suite de **auth** (29 verde) como red de seguridad y el Kanban se valida manualmente en el navegador. Si se retoma: empezar por el génesis (cliente crea solicitud) con un helper aislado 100% dentro de `tests/` (sin tocar `app/`, `database/seeders/` ni `database/factories/`), usando la BD aislada `gestor-de-tareas-testing` + `RefreshDatabase`.
