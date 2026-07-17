@@ -33,7 +33,9 @@ class UpdateVersion extends Command
                 $patch = 0;
                 break;
             case 'patch':
-                $patch++;
+                $major = date('Y');                                     // Año en curso
+                $minor = date('z') + 1;                                 // Día del año (1-366; 'z' es base 0)
+                $patch = date('Hi');                                    // Hora y minutos (hhmm)
                 break;
         }
         
