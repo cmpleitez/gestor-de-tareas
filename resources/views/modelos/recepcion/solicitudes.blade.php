@@ -724,7 +724,6 @@
                 '<input type="hidden" name="recepcion_id" value="' + recepcionId + '">' +
                 '<input type="hidden" name="atencion_id" value="' + atencionId + '">' +
                 '<input type="hidden" name="tarea_completada" value="' + actividadId + '">' +
-                '<input type="hidden" name="uso_interno" value="{{ $uso_interno }}">' +
                 '</form>');
             $('body').append(form);
             form.submit();

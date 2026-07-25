@@ -50,7 +50,7 @@ class RecepcionController extends Controller
             }
         ]);
         $atencion_id_ripped = KeyRipper::rip($atencion->id);
-        $uso_interno = (int) $request->input('uso_interno', Parametro::where('parametro', 'Uso interno')->first()->valor);
+        $uso_interno = (int) Parametro::where('parametro', 'Uso interno')->value('valor'); // Origen único: tabla parametros
         $recepcion_id = $request->recepcion_id; // Recuperación de recepción (Seguridad para el auto-abierto del sidebar)
         if (!$recepcion_id) {
             $recepcion_id = Recepcion::where('atencion_id', $atencion->id)
