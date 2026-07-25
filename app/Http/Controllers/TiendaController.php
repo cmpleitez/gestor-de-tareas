@@ -75,12 +75,10 @@ class TiendaController extends Controller
                 ->where('activo', true)
                 ->value('id');
         }
-        $uso_interno = (int) (Parametro::where('parametro', 'Uso interno')->first()->valor);
         return view('modelos.kit.carrito', [
             'atencion' => $atencion,
             'atencion_id_ripped' => $atencion_id_ripped,
             'recepcion_id' => $recepcion_id ?? null,
-            'uso_interno' => $uso_interno
         ]);
     }
 
@@ -501,8 +499,6 @@ class TiendaController extends Controller
     {
         try {
             //VALIDACIÓN
-            $uso_interno = Parametro::where('parametro', 'Uso interno')->first();
-            $uso_interno = $uso_interno ? (int) $uso_interno->valor : 1;
             $equipos = collect();
             $operadores = collect();
             $user = auth()->user();
@@ -511,15 +507,13 @@ class TiendaController extends Controller
                 if ($equipos->isEmpty()) {
                     return redirect()->route('tienda')->with('warning', 'No hay equipos de trabajo disponibles para asignar las solicitudes');
                 }
-                if ($uso_interno == 0) { //Parametrizado: Uso interno
-                    $operadores = User::whereHas('mainRole', function ($query) { // El papel en el flujo lo define users.role_id
-                        $query->where('name', 'operador');
-                    })->whereHas('oficina', function ($query) use ($user) {
-                        $query->where('id', $user->oficina_id);
-                    })->where('activo', true)->get();
-                    if ($operadores->isEmpty()) {
-                        return redirect()->route('tienda')->with('warning', 'No hay operadores disponibles para asignar las solicitudes');
-                    }
+                $operadores = User::whereHas('mainRole', function ($query) { // El papel en el flujo lo define users.role_id
+                    $query->where('name', 'operador');
+                })->whereHas('oficina', function ($query) use ($user) {
+                    $query->where('id', $user->oficina_id);
+                })->where('activo', true)->get();
+                if ($operadores->isEmpty()) {
+                    return redirect()->route('tienda')->with('warning', 'No hay operadores disponibles para asignar las solicitudes');
                 }
             }
             $solicitudes = Solicitud::has('tareas')->get();
@@ -591,7 +585,6 @@ class TiendaController extends Controller
                 'equipos'                  => $equipos,
                 'operadores'               => $operadores,
                 'frecuencia_actualizacion' => $frecuencia_actualizacion,
-                'uso_interno'              => $uso_interno,
             ];
             return view('modelos.recepcion.solicitudes', $data);
         } catch (\Exception $e) {

@@ -686,10 +686,7 @@ $hasOrders = $currentAtencion && $currentAtencion->ordenes && $currentAtencion->
                         }, 2000);
                     };
                     let realizarAsignacion = false;
-                    @if($uso_interno == 0)
                     realizarAsignacion = canVer && role === 'receptor' && recepcionId && equipoId;
-                    @endif
-
                     if (realizarAsignacion) {
                         const asignarUrl = "{{ route('recepcion.asignar', [':recepcion', ':equipo']) }}"
                             .replace(':recepcion', recepcionId)
@@ -986,8 +983,7 @@ $hasOrders = $currentAtencion && $currentAtencion->ordenes && $currentAtencion->
                 _token: '{{ csrf_token() }}',
                 atencion_id: atencionId,
                 recepcion_id: recepcionId,
-                lote_stock: stockData,
-                uso_interno: {{ $uso_interno }}
+                lote_stock: stockData
             }
             , beforeSend: function() {
                 btn.prop('disabled', true).html('<i class="fas fa-clock me-2"></i> Confirmando...');
@@ -1084,8 +1080,7 @@ $hasOrders = $currentAtencion && $currentAtencion->ordenes && $currentAtencion->
                 _token: '{{ csrf_token() }}',
                 atencion_id: atencionId,
                 recepcion_id: recepcionId,
-                ordenes: ordenes,
-                uso_interno: {{ $uso_interno }}
+                ordenes: ordenes
             }
             , beforeSend: function() {
                 btn.prop('disabled', true).html('<i class="fas fa-clock me-2"></i> Revisando...');

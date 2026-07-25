@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\Actividad;
 use App\Models\Equipo;
 use App\Models\Estado;
-use App\Models\Parametro;
 use App\Models\Recepcion;
 use App\Models\Solicitud;
 use App\Models\User;
@@ -50,7 +49,6 @@ class RecepcionController extends Controller
             }
         ]);
         $atencion_id_ripped = KeyRipper::rip($atencion->id);
-        $uso_interno = (int) Parametro::where('parametro', 'Uso interno')->value('valor'); // Origen único: tabla parametros
         $recepcion_id = $request->recepcion_id; // Recuperación de recepción (Seguridad para el auto-abierto del sidebar)
         if (!$recepcion_id) {
             $recepcion_id = Recepcion::where('atencion_id', $atencion->id)
@@ -62,7 +60,6 @@ class RecepcionController extends Controller
             'atencion' => collect([$atencion]),
             'atencion_id_ripped' => $atencion_id_ripped,
             'recepcion_id' => $recepcion_id,
-            'uso_interno' => $uso_interno
         ]);
     }
 
@@ -349,18 +346,14 @@ class RecepcionController extends Controller
             DB::commit();
             try {
                 if ($recepcion) {
-                    $uso_interno = Parametro::where('parametro', 'Uso interno')->first();
-                    $uso_interno = $uso_interno ? $uso_interno->valor : 1;
-                    if ($uso_interno == 0) { //Parametrizado: Uso interno
-                        $oficina_id = auth()->user()->oficina_id;
-                        $receptores = User::where('oficina_id', $oficina_id)
-                            ->whereHas('roles', function($q) {
-                                $q->where('name', 'receptor');
-                            })
-                            ->get();
-                        if ($receptores->isNotEmpty()) {
-                            Notification::send($receptores, new StockRevisadoNotification($recepcion, $itemsValidados));
-                        }
+                    $oficina_id = auth()->user()->oficina_id;
+                    $receptores = User::where('oficina_id', $oficina_id)
+                        ->whereHas('mainRole', function($q) { // El papel en el flujo lo define users.role_id
+                            $q->where('name', 'receptor');
+                        })
+                        ->get();
+                    if ($receptores->isNotEmpty()) {
+                        Notification::send($receptores, new StockRevisadoNotification($recepcion, $itemsValidados));
                     }
                 }
             } catch (\Exception $e) {
@@ -389,7 +382,6 @@ class RecepcionController extends Controller
         $atencion_id = $request->input('atencion_id');
         $recepcion_id = $request->input('recepcion_id');
         $ordenes_recibidas = $request->input('ordenes', []);
-        $uso_interno = (int) $request->input('uso_interno', Parametro::where('parametro', 'Uso interno')->first()->valor);
         // VALIDACIÓN
         if (empty($atencion_id) || empty($recepcion_id) || empty($ordenes_recibidas)) { //Intento de inyección
             return response()->json([
@@ -415,65 +407,61 @@ class RecepcionController extends Controller
                     $unidades = $ordenData['unidades'];
                     $detalles = $ordenData['detalles'] ?? [];
                     Orden::where('id', $orden_id)->update(['unidades' => $unidades]);
-                    if ($uso_interno == 0) { //Parametrizado: Reiniciar la tarea "Confirmación" de la cual se encarga el
-                        foreach ($detalles as $detalleData) {
-                            $kit_id = $detalleData['kit_id'];
-                            $producto_id_original = $detalleData['producto_id_original'];
-                            $producto_id_nuevo = $detalleData['producto_id_nuevo'];
-                            if ($producto_id_original != $producto_id_nuevo) {
-                                Detalle::where('orden_id', $orden_id)
-                                ->where('kit_id', $kit_id)
-                                ->where('producto_id', $producto_id_original)
-                                ->update([
-                                    'producto_id' => $producto_id_nuevo,
-                                    'stock_fisico_existencias' => null
-                                ]);
-                                $productos_cambiados[] = [ //Registrando productos que cambiaron de la orden
-                                    'orden_id' => $orden_id,
-                                    'kit_id' => $kit_id,
-                                    'producto_id' => $producto_id_nuevo
-                                ];
-                            } else {
-                                Detalle::where('orden_id', $orden_id) // Si no cambió el producto, igual reseteamos stock_fisico_existencias para que se vuelva a validar el stock
-                                ->where('kit_id', $kit_id)
-                                ->where('producto_id', $producto_id_original)
-                                ->update([
-                                    'stock_fisico_existencias' => null
-                                ]);
-                            }
+                    foreach ($detalles as $detalleData) {
+                        $kit_id = $detalleData['kit_id'];
+                        $producto_id_original = $detalleData['producto_id_original'];
+                        $producto_id_nuevo = $detalleData['producto_id_nuevo'];
+                        if ($producto_id_original != $producto_id_nuevo) {
+                            Detalle::where('orden_id', $orden_id)
+                            ->where('kit_id', $kit_id)
+                            ->where('producto_id', $producto_id_original)
+                            ->update([
+                                'producto_id' => $producto_id_nuevo,
+                                'stock_fisico_existencias' => null
+                            ]);
+                            $productos_cambiados[] = [ //Registrando productos que cambiaron de la orden
+                                'orden_id' => $orden_id,
+                                'kit_id' => $kit_id,
+                                'producto_id' => $producto_id_nuevo
+                            ];
+                        } else {
+                            Detalle::where('orden_id', $orden_id) // Si no cambió el producto, igual reseteamos stock_fisico_existencias para que se vuelva a validar el stock
+                            ->where('kit_id', $kit_id)
+                            ->where('producto_id', $producto_id_original)
+                            ->update([
+                                'stock_fisico_existencias' => null
+                            ]);
                         }
                     }
                 }
-                if ($uso_interno == 0) { //Parametrizado: Uso interno
-                    $estado_en_progreso_id = Estado::where('estado', 'En progreso')->first()->id; //Revertir estado de la tarea
-                    $actividadStock = Actividad::whereHas('recepcion', function($q) use ($atencion_id) {
-                        $q->where('atencion_id', $atencion_id);
-                    })->whereHas('tarea', function($q) {
-                        $q->where('tarea', 'Confirmación');
-                    })->first();
-                    if ($actividadStock) {
-                        $actividadStock->estado_id = $estado_en_progreso_id;
-                        $actividadStock->save();
-                        $total_actividades = Actividad::whereHas('recepcion', function($query) use ($atencion_id) { // Forzar actualización de progreso de la atención (restando esta tarea)
-                            $query->where('atencion_id', $atencion_id);
-                        })->count();
-                        $actividades_resueltas = Actividad::whereHas('recepcion', function($query) use ($atencion_id) {
-                            $query->where('atencion_id', $atencion_id);
-                        })
-                        ->where('estado_id', Estado::where('estado', 'Resuelta')->first()->id)
-                        ->count();
-                        $porcentaje_avance = $total_actividades > 0 
-                            ? round(($actividades_resueltas / $total_actividades) * 100, 2) 
-                            : 0;
-                        $atencion = Atencion::find($atencion_id);
-                        if ($atencion) {
-                            $atencion->avance = $porcentaje_avance;
-                            if ($porcentaje_avance < 100) { // Si retrocede del 100%, bajamos el estado a "En progreso" si estaba resuelta
-                                $atencion->estado_id = $estado_en_progreso_id;
-                                Recepcion::where('atencion_id', $atencion_id)->update(['estado_id' => $estado_en_progreso_id]);
-                            }
-                            $atencion->save();
+                $estado_en_progreso_id = Estado::where('estado', 'En progreso')->first()->id; //Revertir estado de la tarea
+                $actividadStock = Actividad::whereHas('recepcion', function($q) use ($atencion_id) {
+                    $q->where('atencion_id', $atencion_id);
+                })->whereHas('tarea', function($q) {
+                    $q->where('tarea', 'Confirmación');
+                })->first();
+                if ($actividadStock) {
+                    $actividadStock->estado_id = $estado_en_progreso_id;
+                    $actividadStock->save();
+                    $total_actividades = Actividad::whereHas('recepcion', function($query) use ($atencion_id) { // Forzar actualización de progreso de la atención (restando esta tarea)
+                        $query->where('atencion_id', $atencion_id);
+                    })->count();
+                    $actividades_resueltas = Actividad::whereHas('recepcion', function($query) use ($atencion_id) {
+                        $query->where('atencion_id', $atencion_id);
+                    })
+                    ->where('estado_id', Estado::where('estado', 'Resuelta')->first()->id)
+                    ->count();
+                    $porcentaje_avance = $total_actividades > 0 
+                        ? round(($actividades_resueltas / $total_actividades) * 100, 2) 
+                        : 0;
+                    $atencion = Atencion::find($atencion_id);
+                    if ($atencion) {
+                        $atencion->avance = $porcentaje_avance;
+                        if ($porcentaje_avance < 100) { // Si retrocede del 100%, bajamos el estado a "En progreso" si estaba resuelta
+                            $atencion->estado_id = $estado_en_progreso_id;
+                            Recepcion::where('atencion_id', $atencion_id)->update(['estado_id' => $estado_en_progreso_id]);
                         }
+                        $atencion->save();
                     }
                 }
             DB::commit();
@@ -518,7 +506,6 @@ class RecepcionController extends Controller
         $atencion_id = $request->input('atencion_id');
         $recepcion_id = $request->input('recepcion_id');
         $ordenes_recibidas = $request->input('ordenes', []);
-        $uso_interno = $request->input('uso_interno', Parametro::where('parametro', 'Uso interno')->first()->valor);
         // VALIDACIÓN
         if (empty($atencion_id) || empty($ordenes_recibidas)) {
             return response()->json([
@@ -549,14 +536,12 @@ class RecepcionController extends Controller
                 ], 422);
             }
             foreach ($detalles as $detalle) {
-                if ($uso_interno == 0) { //Parametrizado: Uso interno
-                    if ($detalle->stock_fisico_existencias === null) {
-                        return response()->json([
-                            'success' => false,
-                            'message' => 'Hay stocks pendientes de confirmación.',
-                            'type'    => 'warning'
-                        ], 422);
-                    }
+                if ($detalle->stock_fisico_existencias === null) { // Requisito: el operador debe haber confirmado la existencia física
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Hay stocks pendientes de confirmación.',
+                        'type'    => 'warning'
+                    ], 422);
                 }
                 if ($detalle->stock_fisico_existencias == "0") {
                     return response()->json([

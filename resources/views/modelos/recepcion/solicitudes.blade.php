@@ -408,25 +408,20 @@
         }
         let url = null;
         let selectedValue = null;
-        @if($uso_interno == 0)
-            if (userRole === 'receptor' || userRole === 'operador') { 
-                selectedValue = $('input[name="equipo_destino"]:checked').val();
-                if (!selectedValue && equipos && equipos.length === 1) {
-                    selectedValue = equipos[0].id; 
-                }
-                if (!selectedValue) {
-                    toastr.warning('Debes seleccionar un equipo destino', null, { "progressBar": true });
-                    $(evt.from).append(evt.item);
-                    return;
-                }
-                url = '{{ route('recepcion.asignar', ['recepcion' => ':recepcion_id', 'equipo' => ':equipo_id']) }}'
-                    .replace(':recepcion_id', solicitudId)
-                    .replace(':equipo_id', selectedValue);
+        if (userRole === 'receptor' || userRole === 'operador') { 
+            selectedValue = $('input[name="equipo_destino"]:checked').val();
+            if (!selectedValue && equipos && equipos.length === 1) {
+                selectedValue = equipos[0].id; 
             }
-        @else
-            url = '{{ route('recepcion.avanzar', ['recepcion' => ':recepcion_id']) }}'
-                .replace(':recepcion_id', solicitudId);
-        @endif
+            if (!selectedValue) {
+                toastr.warning('Debes seleccionar un equipo destino', null, { "progressBar": true });
+                $(evt.from).append(evt.item);
+                return;
+            }
+            url = '{{ route('recepcion.asignar', ['recepcion' => ':recepcion_id', 'equipo' => ':equipo_id']) }}'
+                .replace(':recepcion_id', solicitudId)
+                .replace(':equipo_id', selectedValue);
+        }
         if (!url) {
             $(evt.from).append(evt.item);
             return;
@@ -436,8 +431,7 @@
             method: 'POST',
             cache: false,
             data: {
-                _token: $('meta[name="csrf-token"]').attr('content'),
-                uso_interno: {{ $uso_interno }}
+                _token: $('meta[name="csrf-token"]').attr('content')
             },
             success: function(response) {
                 if (response.success) {
@@ -737,8 +731,7 @@
                 _token: csrfToken,
                 recepcion_id: recepcionId,
                 atencion_id: atencionId,
-                tarea_completada: actividadId,
-                uso_interno: {{ $uso_interno }}
+                tarea_completada: actividadId
             },
             success: function(response) {
                 if (response && response.success) {
@@ -1100,52 +1093,48 @@
         }
         setTimeout(initializeProgressBars, 100); // Inicializar barras de progreso inmediatamente no es timer
         initKanban();
-        if ({{ $uso_interno }}) { // Sistema inteligente de polling para evitar saturación
-            //No se necesita polling
-        } else {
-            let isUpdating = false;
-            let updateInterval = ({{ $frecuencia_actualizacion }} * 1000);
-            let kanbanIntervalId = null;
-            function safeUpdate() {
-                if (isUpdating || document.visibilityState !== 'visible') {
-                    return;
-                }
-                isUpdating = true;
-                actualizarAvance(function() {
-                    try {
-                        if (typeof cargarNuevasRecibidas === "function") {
-                            cargarNuevasRecibidas();
-                        }
-                    } catch (e) {
-                        console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error en polling:", e);
-                    } finally {
-                        isUpdating = false;
+        let isUpdating = false;
+        let updateInterval = ({{ $frecuencia_actualizacion }} * 1000);
+        let kanbanIntervalId = null;
+        function safeUpdate() {
+            if (isUpdating || document.visibilityState !== 'visible') {
+                return;
+            }
+            isUpdating = true;
+            actualizarAvance(function() {
+                try {
+                    if (typeof cargarNuevasRecibidas === "function") {
+                        cargarNuevasRecibidas();
                     }
-                });
-            }
-            function iniciarKanbanPolling() {
-                if (!kanbanIntervalId) {
-                    kanbanIntervalId = setInterval(safeUpdate, updateInterval);
-                }
-            }
-            function detenerKanbanPolling() {
-                if (kanbanIntervalId) {
-                    clearInterval(kanbanIntervalId);
-                    kanbanIntervalId = null;
-                }
-            }
-            // Pausar/reanudar el Kanban según visibilidad de la pestaña
-            document.addEventListener('visibilitychange', function () {
-                if (document.visibilityState === 'visible') {
-                    safeUpdate(); // Actualizar inmediatamente al volver
-                    iniciarKanbanPolling();
-                } else {
-                    detenerKanbanPolling();
+                } catch (e) {
+                    console.error("Log:: [Usuario: {{ auth()->user()->name }}] Error en polling:", e);
+                } finally {
+                    isUpdating = false;
                 }
             });
-            safeUpdate();
-            iniciarKanbanPolling();
         }
+        function iniciarKanbanPolling() {
+            if (!kanbanIntervalId) {
+                kanbanIntervalId = setInterval(safeUpdate, updateInterval);
+            }
+        }
+        function detenerKanbanPolling() {
+            if (kanbanIntervalId) {
+                clearInterval(kanbanIntervalId);
+                kanbanIntervalId = null;
+            }
+        }
+        // Pausar/reanudar el Kanban según visibilidad de la pestaña
+        document.addEventListener('visibilitychange', function () {
+            if (document.visibilityState === 'visible') {
+                safeUpdate(); // Actualizar inmediatamente al volver
+                iniciarKanbanPolling();
+            } else {
+                detenerKanbanPolling();
+            }
+        });
+        safeUpdate();
+        iniciarKanbanPolling();
         const recepcionIdGuardado = sessionStorage.getItem('recepcion_id_activa'); // Apertura automática del sidebar si viene de una validación de orden
         if (recepcionIdGuardado && recepcionIdGuardado !== "undefined" && recepcionIdGuardado !== "null") {
             setTimeout(function() {
