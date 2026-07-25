@@ -227,6 +227,12 @@
                     <li class="nav-item has-sub nav-item-administracion"><a href="#"><i class="bx bxs-cog"></i><span class="menu-title"
                                 data-i18n="Menu Levels">Administración</span></a>
                         <ul class="menu-content">
+                            @can('ver-reportes')
+                                <li><a href="{{ Route('reporte.indicadores-seguridad') }}">
+                                        <i class="bx bx-right-arrow-alt"></i>
+                                        <span class="menu-item" data-i18n="Second Level">Indicadores de seguridad</span>
+                                    </a></li>
+                            @endcan
                             <li><a href="{{ Route('parametro') }}">
                                     <i class="bx bx-right-arrow-alt"></i>
                                     <span class="menu-item" data-i18n="Second Level">Configuración</span>

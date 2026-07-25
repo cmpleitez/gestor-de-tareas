@@ -57,7 +57,7 @@
                                     <td>{{ $user->name }}</td>
                                     <td class="text-center">
                                         <span class="badge badge-pill bg-secondary-dark">
-                                            {{ $user->main_role ?? $user->roles->pluck('name')->first() }}
+                                            {{ $user->mainRole?->name }}
                                         </span>
                                     </td>
                                     <td>{{ $user->email }}</td>

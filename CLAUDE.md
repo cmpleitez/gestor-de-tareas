@@ -146,3 +146,15 @@ Verificado con Playwright-core (Chrome del sistema, scratchpad, nada instalado e
 **Comando de versión (2026-07-17):** `version:update patch` ya no incrementa: genera `YYYY.DDD.HHMM` (año, día del año, hora+minutos). `major`/`minor` siguen incrementando clásico.
 
 **Decisión sobre tests de dominio (2026-07-15):** POSPUESTOS por decisión del usuario. Razón: el costo de montar tests fieles del Kanban es alto (PK string vía KeyMaker, sin factories de dominio, pivotes runtime, todo interdependiente) y esa complejidad va contra la limpieza ganada ("nivel de entropía demasiado alto"). Se mantiene la suite de **auth** (29 verde) como red de seguridad y el Kanban se valida manualmente en el navegador. Si se retoma: empezar por el génesis (cliente crea solicitud) con un helper aislado 100% dentro de `tests/` (sin tocar `app/`, `database/seeders/` ni `database/factories/`), usando la BD aislada `gestor-de-tareas-testing` + `RefreshDatabase`.
+
+### 2026-07-25 — Separación de responsabilidades: `users.role_id` vs roles Spatie
+
+**Decisión de arquitectura (en proceso de aterrizaje por el usuario):**
+- **`users.role_id` (rol principal, relación `User::mainRole()` → `App\Models\Role`) = TRAZABILIDAD del dominio.** Define el papel del usuario en la gestión de tareas (cliente/receptor/operador en el flujo Kanban). Es 1 a 1.
+- **Roles múltiples de Spatie (`model_has_roles`) = ACCESO a los servicios de la web app.** Autorización/permisos (`role:`, `can:`). Es N a N.
+
+**Consecuencia:** un usuario puede tener `role_id = receptor` (su papel en el flujo) y a la vez el rol Spatie `admin` (acceso administrativo). Caso real en BD: `cpleitez` (id 3) → `role_id=3` receptor, Spatie `[admin, receptor]`. No es una inconsistencia: son dos ejes distintos.
+
+**Fix aplicado ese día:** la columna "Rol" de `/accounts` mostraba `$user->main_role ?? $user->roles->pluck('name')->first()`. `main_role` **nunca resuelve** (no es columna, no hay accessor, y Eloquent no mapea `main_role` → método `mainRole()` porque `method_exists` es case-insensitive pero el guión bajo sí cuenta) → siempre caía al fallback de Spatie, mostrando un rol arbitrario (a `cpleitez` le mostraba "admin"). Corregido a `{{ $user->mainRole?->name }}` en `resources/views/modelos/user/index.blade.php:60` + `mainRole` agregado al `with()` de `UserController::index()` para evitar N+1 (la línea 50 de la vista ya lo usaba fila por fila).
+
+**Desalineamiento conocido, DEJADO A PROPÓSITO (no tocar sin autorización):** `UserController::index()` filtra con `role_id` (líneas 23-27: oculta usuarios admin a quien no es admin) mientras la ruta protege con middleware Spatie `role:admin` (`routes/web.php:52`). Bajo el modelo nuevo ese filtro debería migrar a Spatie (`hasRole('admin')`), pero el usuario pidió dejarlo tal cual mientras termina el análisis.

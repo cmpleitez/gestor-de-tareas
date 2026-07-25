@@ -12,6 +12,7 @@ use App\Http\Controllers\TipoController;
 use App\Http\Controllers\TiendaController;
 use App\Http\Controllers\KitController;
 use App\Http\Controllers\ParametroController;
+use App\Http\Controllers\ReporteController;
 
 // DASHBOARD
 Route::get('/', function () {
@@ -134,6 +135,10 @@ Route::middleware([
             Route::get('edit/{parametro}', [ParametroController::class, 'edit'])->name('parametro.edit')->middleware('can:editar');
             Route::put('update/{parametro}', [ParametroController::class, 'update'])->name('parametro.update')->middleware('can:editar');
             Route::post('activate/{parametro}', [ParametroController::class, 'activate'])->name('parametro.activate')->middleware('can:activar');
+        });
+
+        Route::group(['prefix' => 'reports'], function () { //Reportes
+            Route::get('security', [ReporteController::class, 'indicadoresSeguridad'])->name('reporte.indicadores-seguridad')->middleware('can:ver-reportes');
         });
     });
 

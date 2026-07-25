@@ -20,10 +20,11 @@ class UserController extends Controller
 {
     public function index()
     {
-        $adminRoleId = Role::where('name', 'admin')->value('id');
-        $query = User::with('oficina', 'equipos', 'roles');
-        if (auth()->user()->role_id !== $adminRoleId) {
-            $query->where('role_id', '!=', $adminRoleId);
+        $query = User::with('oficina', 'equipos', 'roles', 'mainRole');
+        if (! auth()->user()->hasRole('admin')) { // Los roles Spatie gobiernan el acceso: sin el rol admin no se listan las cuentas administrativas
+            $query->whereDoesntHave('roles', function ($rol) {
+                $rol->where('name', 'admin');
+            });
         }
         $users = $query->get();
         return view('modelos.user.index', compact('users'));
