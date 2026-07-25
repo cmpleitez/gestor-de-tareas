@@ -512,7 +512,7 @@ class TiendaController extends Controller
                     return redirect()->route('tienda')->with('warning', 'No hay equipos de trabajo disponibles para asignar las solicitudes');
                 }
                 if ($uso_interno == 0) { //Parametrizado: Uso interno
-                    $operadores = User::whereHas('roles', function ($query) {
+                    $operadores = User::whereHas('mainRole', function ($query) { // El papel en el flujo lo define users.role_id
                         $query->where('name', 'operador');
                     })->whereHas('oficina', function ($query) use ($user) {
                         $query->where('id', $user->oficina_id);

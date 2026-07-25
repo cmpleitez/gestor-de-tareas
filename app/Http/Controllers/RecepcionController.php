@@ -231,7 +231,7 @@ class RecepcionController extends Controller
     public function operadores(Solicitud $solicitud)
     {
         try {
-            $operadores = User::whereHas('roles', function ($query) {
+            $operadores = User::whereHas('mainRole', function ($query) { // El papel en el flujo lo define users.role_id
                 $query->where('name', 'operador');
             })->whereHas('oficina', function ($query) {
                 $query->where('id', auth()->user()->oficina_id);
@@ -239,7 +239,7 @@ class RecepcionController extends Controller
                 $query->where('solicitudes.id', $solicitud->id);
             })->get();
 
-            $operadores_activos = User::whereHas('roles', function ($query) {
+            $operadores_activos = User::whereHas('mainRole', function ($query) { // El papel en el flujo lo define users.role_id
                 $query->where('name', 'operador');
             })->where('activo', true)->get();
 

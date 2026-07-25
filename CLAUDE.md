@@ -173,3 +173,25 @@ $users = User::with('oficina', 'equipos', 'roles', 'mainRole')
 - `role_id` **no interviene** en la visibilidad — solo trazabilidad. El acceso a la vista lo sigue gobernando el middleware Spatie `role:admin` (`routes/web.php:52`).
 - El `where` agrupado en closure es obligatorio (sin él, el `orWhere` escaparía al `WHERE` completo). El literal `'admin'` como identificador de la cuenta de sistema sigue la convención ya usada en el mismo controlador (`rolesEdit`, `rolesUpdate`, `equiposUpdate`, `tareasUpdate`, `destroy`, `activate`).
 - Verificado por usuario autenticado: `admin` → los 4; `maragon`/`cpleitez`/`hseldom` → los 3 sin `admin`. Mostrar la propia fila es seguro: la vista ya bloquea auto-eliminación y auto-edición de roles (`index.blade.php:102,116`).
+
+### 2026-07-25 — Saneamiento del estándar de dos ejes (auditoría por pares)
+
+**Regla de arquitectura (patrón de medida para toda la app):**
+- **Decisiones de FLUJO** (quién es cliente/receptor/operador en la gestión de tareas: elegir participantes, filtrar tarjetas del Kanban, mostrar el rol) → **`users.role_id` / `User::mainRole()`**.
+- **Decisiones de ACCESO** (a qué información y servicios entra el usuario) → **roles Spatie** (`hasRole()`, middleware `role:`, `@can`).
+
+Método de auditoría: por cada punto que toque roles se clasifica primero la decisión (flujo o acceso) y se verifica que esté resuelta con el eje que le corresponde. Lo que cumple no se toca. Se repara de dos en dos, por impacto.
+
+**Clasificaciones ya resueltas (cumplen, NO tocar):**
+- Filtrar qué recepciones/tarjetas ve cada usuario en el Kanban = **flujo** (`RecepcionController:76`, `TiendaController:509/531/532`, `carrito.blade.php`, `solicitudes.blade.php` — usan `mainRole`).
+- Capa de acceso completa: `routes/web.php` y `FortifyServiceProvider:124` con `role:admin` + `can:*` (Spatie puro). No hay middleware propio que use `role_id`.
+- `RecepcionController::asignar():125` (elige operador por `mainRole`) y `TiendaController:315` (elige receptores por `role_id`) = flujo bien resuelto; son el patrón de referencia.
+
+**✅ Par 1 reparado (flujo que se resolvía con Spatie → migrado a `role_id`):** `RecepcionController::operadores()` líneas 234 y 242, y `TiendaController::solicitudes()` línea 515 — los tres armaban el universo de operadores con `whereHas('roles')` mientras `asignar()` lo arma con `whereHas('mainRole')`; la validación de disponibilidad y la asignación real podían consultar conjuntos distintos ("No hay operadores disponibles" tras haber pasado el chequeo). Cambio mínimo: `roles` → `mainRole` en el `whereHas`, resto de cada consulta intacto. Verificado: ambos ejes coinciden hoy en BD (`hseldom`), sin divergencia → cero cambio de comportamiento actual, defecto latente cerrado.
+
+**Colaterales detectados, registrados y NO reparados (decidir en pares siguientes):**
+- `RecepcionController:234-244`: consultas asimétricas — `$operadores` filtra por oficina pero no por `activo`; `$operadores_activos` filtra por `activo` pero **no por oficina** (fuga multi-tenant).
+- `TiendaController:315`: receptores del génesis sin filtrar `activo`, mientras `asignar()` sí lo exige.
+- `UserController:135-143` (`rolesUpdate`): la regla "cliente no puede tener otro rol a la vez" compara `'Cliente'` con mayúscula contra roles sembrados en minúscula → nunca se cumple. Confirmar empíricamente antes de tocar.
+
+**En cola para el par 2:** `RecepcionController:357` (`confirmarStock` elige los receptores a notificar con `whereHas('roles')` → debe ser `mainRole`; impacto menor: notifica, no bloquea) + barrido pendiente de `database/seeders/`, `GestionService` y resto de vistas.
