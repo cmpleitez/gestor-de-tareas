@@ -54,10 +54,10 @@
                         </div>
                     </div>
                     <div class="card-footer d-flex justify-content-between align-items-center">
-                        <!-- Rol Principal -->
+                        <!-- Rol para la gestión de tareas -->
                         <div class="form-group mb-0" style="min-width: 250px;">
                             <label class="form-label" for="role_id" style="margin-bottom: 0.5rem; font-size: 0.8rem;">Rol
-                                Principal</label>
+                                para la gestión de tareas</label>
                             <select class="form-control form-control-sm" id="role_id" name="role_id" required>
                                 <option value="">Seleccione el rol principal</option>
                                 @foreach ($roles as $role)

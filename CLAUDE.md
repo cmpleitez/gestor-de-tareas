@@ -157,4 +157,19 @@ Verificado con Playwright-core (Chrome del sistema, scratchpad, nada instalado e
 
 **Fix aplicado ese día:** la columna "Rol" de `/accounts` mostraba `$user->main_role ?? $user->roles->pluck('name')->first()`. `main_role` **nunca resuelve** (no es columna, no hay accessor, y Eloquent no mapea `main_role` → método `mainRole()` porque `method_exists` es case-insensitive pero el guión bajo sí cuenta) → siempre caía al fallback de Spatie, mostrando un rol arbitrario (a `cpleitez` le mostraba "admin"). Corregido a `{{ $user->mainRole?->name }}` en `resources/views/modelos/user/index.blade.php:60` + `mainRole` agregado al `with()` de `UserController::index()` para evitar N+1 (la línea 50 de la vista ya lo usaba fila por fila).
 
-**Desalineamiento conocido, DEJADO A PROPÓSITO (no tocar sin autorización):** `UserController::index()` filtra con `role_id` (líneas 23-27: oculta usuarios admin a quien no es admin) mientras la ruta protege con middleware Spatie `role:admin` (`routes/web.php:52`). Bajo el modelo nuevo ese filtro debería migrar a Spatie (`hasRole('admin')`), pero el usuario pidió dejarlo tal cual mientras termina el análisis.
+**✅ RESUELTO el mismo día — regla de visibilidad definitiva de `/accounts` (`UserController::index()`):** el filtro pasó por dos iteraciones y quedó así:
+
+```php
+$users = User::with('oficina', 'equipos', 'roles', 'mainRole')
+    ->where(function ($cuenta) { // La cuenta de sistema 'admin' solo es visible para sí misma; el resto de cuentas son visibles para todos
+        $cuenta->where('username', '!=', 'admin')
+            ->orWhere('id', auth()->id());
+    })
+    ->get();
+```
+
+- **Regla única, sin ramas:** se listan todos los usuarios; la única cuenta oculta es la de sistema `username = 'admin'`, y se oculta para todos **salvo para sí misma** (todo usuario ve siempre su propia fila, en cualquier nivel).
+- Tener el rol Spatie `admin` ya **no** oculta a nadie: es un dato de acceso normal (caso `cpleitez`, visible para todos).
+- `role_id` **no interviene** en la visibilidad — solo trazabilidad. El acceso a la vista lo sigue gobernando el middleware Spatie `role:admin` (`routes/web.php:52`).
+- El `where` agrupado en closure es obligatorio (sin él, el `orWhere` escaparía al `WHERE` completo). El literal `'admin'` como identificador de la cuenta de sistema sigue la convención ya usada en el mismo controlador (`rolesEdit`, `rolesUpdate`, `equiposUpdate`, `tareasUpdate`, `destroy`, `activate`).
+- Verificado por usuario autenticado: `admin` → los 4; `maragon`/`cpleitez`/`hseldom` → los 3 sin `admin`. Mostrar la propia fila es seguro: la vista ya bloquea auto-eliminación y auto-edición de roles (`index.blade.php:102,116`).
