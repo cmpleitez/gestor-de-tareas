@@ -197,7 +197,7 @@
                                                                 </div>
                                                             </div>
                                                             <div class="card-footer" style="background-color: #ffffffff !important; border-top: 0.5px solid rgb(233, 236, 240) !important; padding: 0 !important; text-align: center;">
-                                                                <a href="{{ Route('kit.destroy-equivalente', ['kit_producto_id' => $equivalente->kit_producto_id, 'producto_id' => $equivalente->producto_id, 'kit_id' => $equivalente->kit_id]) }}" class="btn btn-icon btn-sm">
+                                                                <a href="#" data-url="{{ Route('kit.destroy-equivalente', ['kit_producto_id' => $equivalente->kit_producto_id, 'producto_id' => $equivalente->producto_id, 'kit_id' => $equivalente->kit_id]) }}" class="btn-eliminar btn btn-icon btn-sm">
                                                                     <i class="fa fa-trash text-warning-dark"></i>
                                                                 </a>
                                                             </div>
@@ -280,6 +280,7 @@
 @stop
 
 @section('js')
+@include('components.delete-handler') {{-- Eliminaciones por DELETE con CSRF --}}
 <script>
     $(document).ready(function() {
         $('#precio').on('input blur', function() { // Validación en tiempo real para el campo precio

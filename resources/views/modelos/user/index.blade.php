@@ -114,7 +114,7 @@
                                                 @if ($isAdminUser)
                                                     <span class="button_delete align-center border bg-danger-light" style="border-color:#e44b4b;cursor:not-allowed;pointer-events:none;" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-lock'></i> Control reservado para el sistema"><i class="bx bxs-eraser" style="color:#adb5bd;"></i></span>
                                                 @elseif ($user->id !== auth()->id())
-                                                    <a href="{{ route('user.destroy', $user->id) }}" role="button" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-eraser'></i> Eliminar {{ $user->name }}" class="button_delete align-center border border-danger-dark text-danger-dark bg-danger-light"><i class="bx bxs-eraser"></i></a>
+                                                    <a href="#" data-url="{{ route('user.destroy', $user->id) }}" role="button" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-eraser'></i> Eliminar {{ $user->name }}" class="btn-eliminar button_delete align-center border border-danger-dark text-danger-dark bg-danger-light"><i class="bx bxs-eraser"></i></a>
                                                 @else
                                                     <span class="button_delete align-center border border-danger-dark text-danger-dark bg-danger-light" style="opacity:0.5;cursor:not-allowed;" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-lock'></i> Acción reservada para el sistema"><i class="bx bxs-trash"></i></span>
                                                 @endif
@@ -155,6 +155,7 @@
 
 @section('js')
 @include('components.orientation-manager') {{-- Componente de orientación para tablas --}}
+@include('components.delete-handler') {{-- Eliminaciones por DELETE con CSRF --}}
 <script>
     $(document).ready(function() {
         if ($.fn.DataTable) {

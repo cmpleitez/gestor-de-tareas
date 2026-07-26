@@ -87,11 +87,11 @@
                                             @endcan
                                             {{-- ELIMINAR --}}
                                             @can('eliminar')
-                                                <a href="{{ route('kit.destroy', $kit->id) }}" role="button"
+                                                <a href="#" data-url="{{ route('kit.destroy', $kit->id) }}" role="button"
                                                     data-toggle="tooltip" data-popup="tooltip-custom" data-html="true"
                                                     data-placement="bottom"
                                                     title="<i class='bx bxs-eraser'></i> Eliminar {{ $kit->kit }}"
-                                                    class="button_delete align-center border border-danger-dark text-danger-dark bg-danger-light">
+                                                    class="btn-eliminar button_delete align-center border border-danger-dark text-danger-dark bg-danger-light">
                                                     <i class="bx bxs-eraser"></i>
                                                 </a>
                                             @endcan
@@ -125,6 +125,7 @@
 
 @section('js')
     @include('components.orientation-manager') {{-- Componente de orientación para tablas --}}
+    @include('components.delete-handler') {{-- Eliminaciones por DELETE con CSRF --}}
     <script>
             $(document).ready(function() {
                 //INICIALIZACION DE DATATABLES

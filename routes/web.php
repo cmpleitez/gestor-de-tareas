@@ -60,7 +60,7 @@ Route::middleware([
             Route::post('equipos-update/{user}', [userController::class, 'equiposUpdate'])->name('user.equipos-update')->middleware('can:editar');
             Route::get('tareas-edit/{user}', [userController::class, 'tareasEdit'])->name('user.tareas-edit')->middleware('can:editar');
             Route::post('tareas-update/{user}', [userController::class, 'tareasUpdate'])->name('user.tareas-update')->middleware('can:editar');
-            Route::get('destroy/{user}', [userController::class, 'destroy'])->name('user.destroy')->middleware('can:eliminar');
+            Route::delete('destroy/{user}', [userController::class, 'destroy'])->name('user.destroy')->middleware('can:eliminar');
             Route::post('activate/{user}', [userController::class, 'activate'])->name('user.activate')->middleware('can:activar');
         });
 
@@ -70,7 +70,7 @@ Route::middleware([
             Route::post('store', [marcaController::class, 'store'])->name('marca.store')->middleware('can:crear');
             Route::get('edit/{marca}', [marcaController::class, 'edit'])->name('marca.edit')->middleware('can:editar');
             Route::put('update/{marca}', [marcaController::class, 'update'])->name('marca.update')->middleware('can:editar');
-            Route::get('destroy/{marca}', [marcaController::class, 'destroy'])->name('marca.destroy')->middleware('can:eliminar');
+            Route::delete('destroy/{marca}', [marcaController::class, 'destroy'])->name('marca.destroy')->middleware('can:eliminar');
             Route::post('activate/{marca}', [marcaController::class, 'activate'])->name('marca.activate')->middleware('can:activar');
         });
 
@@ -80,7 +80,7 @@ Route::middleware([
             Route::post('store', [modeloController::class, 'store'])->name('modelo.store')->middleware('can:crear');
             Route::get('edit/{modelo}', [modeloController::class, 'edit'])->name('modelo.edit')->middleware('can:editar');
             Route::put('update/{modelo}', [modeloController::class, 'update'])->name('modelo.update')->middleware('can:editar');
-            Route::get('destroy/{modelo}', [modeloController::class, 'destroy'])->name('modelo.destroy')->middleware('can:eliminar');
+            Route::delete('destroy/{modelo}', [modeloController::class, 'destroy'])->name('modelo.destroy')->middleware('can:eliminar');
             Route::post('activate/{modelo}', [modeloController::class, 'activate'])->name('modelo.activate')->middleware('can:activar');
         });
 
@@ -90,7 +90,7 @@ Route::middleware([
             Route::post('store', [TipoController::class, 'store'])->name('tipo.store')->middleware('can:crear');
             Route::get('edit/{tipo}', [TipoController::class, 'edit'])->name('tipo.edit')->middleware('can:editar');
             Route::put('update/{tipo}', [TipoController::class, 'update'])->name('tipo.update')->middleware('can:editar');
-            Route::get('destroy/{tipo}', [TipoController::class, 'destroy'])->name('tipo.destroy')->middleware('can:eliminar');
+            Route::delete('destroy/{tipo}', [TipoController::class, 'destroy'])->name('tipo.destroy')->middleware('can:eliminar');
             Route::post('activate/{tipo}', [TipoController::class, 'activate'])->name('tipo.activate')->middleware('can:activar');
         });
 
@@ -100,7 +100,7 @@ Route::middleware([
             Route::post('store', [ProductoController::class, 'store'])->name('producto.store')->middleware('can:crear');
             Route::get('edit/{producto}', [ProductoController::class, 'edit'])->name('producto.edit')->middleware('can:editar');
             Route::put('update/{producto}', [ProductoController::class, 'update'])->name('producto.update')->middleware('can:editar');
-            Route::get('destroy/{producto}', [ProductoController::class, 'destroy'])->name('producto.destroy')->middleware('can:eliminar');
+            Route::delete('destroy/{producto}', [ProductoController::class, 'destroy'])->name('producto.destroy')->middleware('can:eliminar');
             Route::post('activate/{producto}', [ProductoController::class, 'activate'])->name('producto.activate')->middleware('can:activar');
         });
 
@@ -113,8 +113,8 @@ Route::middleware([
             Route::get('asignar-productos/{kit}', [KitController::class, 'asignarProductos'])->name('kit.asignar-productos')->middleware('can:editar');
             Route::put('sincronizar-productos/{kit}', [KitController::class, 'sincronizarProductos'])->name('kit.sincronizar-productos')->middleware('can:editar');
             Route::put('store-equivalente/{kit}', [KitController::class, 'storeEquivalente'])->name('kit.store-equivalente')->middleware('can:editar');
-            Route::get('destroy-equivalente/{kit_producto_id}/{producto_id}/{kit_id}', [KitController::class, 'destroyEquivalente'])->name('kit.destroy-equivalente')->middleware('can:eliminar');
-            Route::get('destroy/{kit}', [KitController::class, 'destroy'])->name('kit.destroy')->middleware('can:eliminar');
+            Route::delete('destroy-equivalente/{kit_producto_id}/{producto_id}/{kit_id}', [KitController::class, 'destroyEquivalente'])->name('kit.destroy-equivalente')->middleware('can:eliminar');
+            Route::delete('destroy/{kit}', [KitController::class, 'destroy'])->name('kit.destroy')->middleware('can:eliminar');
             Route::post('activate/{kit}', [KitController::class, 'activate'])->name('kit.activate')->middleware('can:activar');
         });
 
@@ -126,7 +126,7 @@ Route::middleware([
             Route::put('update/{solicitud}', [solicitudController::class, 'update'])->name('solicitud.update')->middleware('can:editar');
             Route::get('asignar-tareas/{solicitud}', [solicitudController::class, 'asignarTareas'])->name('solicitud.asignar-tareas')->middleware('can:asignar-solicitud');
             Route::put('actualizar-tareas/{solicitud}', [solicitudController::class, 'actualizarTareas'])->name('solicitud.actualizar-tareas')->middleware('can:editar');
-            Route::get('destroy/{solicitud}', [solicitudController::class, 'destroy'])->name('solicitud.destroy')->middleware('can:eliminar');
+            Route::delete('destroy/{solicitud}', [solicitudController::class, 'destroy'])->name('solicitud.destroy')->middleware('can:eliminar');
             Route::post('activate/{solicitud}', [solicitudController::class, 'activate'])->name('solicitud.activate')->middleware('can:activar');
         });
 
@@ -144,7 +144,7 @@ Route::middleware([
 
     //GESTIÓN
     Route::middleware(['role:receptor|operador|admin'])->group(function () {
-        Route::group(['prefix' => 'recepcion'], function () {
+        Route::group(['prefix' => 'recepcion', 'middleware' => 'recepcion.propia'], function () { //Autorización por objeto: solo los participantes de la recepción pueden operarla
             Route::get('teams/{solicitud}', [RecepcionController::class, 'equipos'])->name('recepcion.teams')->middleware('can:ver-recepcion');
             Route::get('operators/{solicitud}', [RecepcionController::class, 'operadores'])->name('recepcion.operators')->middleware('can:ver-recepcion');
             Route::post('outstanding', [RecepcionController::class, 'nuevasRecibidas'])->name('recepcion.nuevas-recibidas')->middleware('can:autorefrescar');
@@ -172,10 +172,10 @@ Route::middleware([
             Route::get('shop.request', [TiendaController::class, 'carritoIndex'])->name('tienda.carrito')->middleware('can:ver-carrito');
             Route::post('request-send', [TiendaController::class, 'carritoEnviar'])->name('tienda.carrito-enviar')->middleware('can:enviar-carrito');
             Route::get('requests', [TiendaController::class, 'solicitudes'])->name('tienda.solicitudes')->middleware('can:ver-solicitudes');
-            Route::post('purchase-order', [RecepcionController::class, 'ordenCompra'])->name('recepcion.orden-compra')->middleware('can:ver-orden');
+            Route::post('purchase-order', [RecepcionController::class, 'ordenCompra'])->name('recepcion.orden-compra')->middleware(['can:ver-orden', 'recepcion.propia']);
             Route::get('read-item-stock/{productoId}', [TiendaController::class, 'getStocksProducto'])->name('tienda.get-stocks-producto')->middleware('can:ver-tienda');
             Route::post('read-kit-products', [TiendaController::class, 'getKitProductos'])->name('tienda.get-kit-productos')->middleware('can:ver-tienda');
-            Route::get('add-item/{orden}', [TiendaController::class, 'agregarOrden'])->name('tienda.agregar-item')->middleware('can:agregar-item');
+            Route::post('add-item/{orden}', [TiendaController::class, 'agregarOrden'])->name('tienda.agregar-item')->middleware('can:agregar-item'); //POST: crea Atencion+Recepcion (génesis del flujo), no puede ser un GET disparable por URL
             Route::post('remove-kit/{orden}', [TiendaController::class, 'retirarOrden'])->name('tienda.retirar-orden')->middleware('can:retirar-orden');
             Route::post('remove-item', [TiendaController::class, 'retirarItem'])->name('tienda.retirar-item')->middleware('can:retirar-item');
             Route::get('kit-quantity', [TiendaController::class, 'kitCantidad'])->name('tienda.kit-cantidad')->middleware('can:ver-tienda');

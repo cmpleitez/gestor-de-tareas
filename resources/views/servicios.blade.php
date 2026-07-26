@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ auth()->user()->mainRole->name }} - ALFA.{{ config('app.version') }}</title>
     <link rel="apple-touch-icon" href="{{ asset('app-assets/images/logo/logo.svg') }}">
     <link rel="shortcut icon" type="image/svg+xml" href="{{ asset('app-assets/images/logo/logo.svg') }}">

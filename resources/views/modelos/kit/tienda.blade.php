@@ -50,7 +50,7 @@
                                         <li><a class="btn btn-success text-white" href="#" style="pointer-events: auto;"><i class="far fa-heart"></i></a></li>
                                         <li><a class="btn btn-success text-white mt-2 btn-ver-kit" data-bs-toggle="modal" data-bs-target="#modalPreferencias" data-kit-id="{{ $kit->id }}" data-kit-name="{{ $kit->kit }}" data-kit-image-path="{{ $kit->image_path ? Storage::url($kit->image_path) : '' }}" href="#" style="pointer-events: auto;"><i class="far fa-eye"></i></a></li>
                                         @if($kit->disponible)
-                                            <li><a class="btn btn-success text-white mt-2 btn-agregar-kit" href="{{ Route('tienda.agregar-item', $kit->id) }}" style="pointer-events: auto;"><i class="fas fa-cart-plus"></i></a></li>
+                                            <li><a class="btn btn-success text-white mt-2 btn-agregar-kit" href="#" data-url="{{ Route('tienda.agregar-item', $kit->id) }}" style="pointer-events: auto;"><i class="fas fa-cart-plus"></i></a></li>
                                         @else
                                             <li><button class="btn btn-secondary text-white mt-2" disabled style="pointer-events: auto; cursor: not-allowed;"><i class="fas fa-ban"></i></button></li>
                                         @endif
@@ -59,7 +59,7 @@
                             </div>
                             <div class="card-body ">
                                 @if($kit->disponible)
-                                    <a href="{{ Route('tienda.agregar-item', $kit->id) }}" class="text-decoration-none d-flex justify-content-center btn-agregar-kit">{{ $kit->kit }}</a>
+                                    <a href="#" data-url="{{ Route('tienda.agregar-item', $kit->id) }}" class="text-decoration-none d-flex justify-content-center btn-agregar-kit">{{ $kit->kit }}</a>
                                 @else
                                     <span class="text-decoration-none d-flex justify-content-center text-muted">{{ $kit->kit }} <span class="badge bg-danger ms-1">Agotado</span></span>
                                 @endif
@@ -211,7 +211,7 @@
                             let botonAgregar = '';
                             if (kitDisponible) {
                                 botonAgregar = `
-                                <a class="btn btn-secondary btn-agregar-kit" style="font-size: 1rem;" href="${agregarKitUrl}">
+                                <a class="btn btn-secondary btn-agregar-kit" style="font-size: 1rem;" href="#" data-url="${agregarKitUrl}">
                                     Agregar <i class="fas fa-cart-plus"></i>
                                 </a>`;
                             } else {
@@ -260,11 +260,15 @@
         };
         updateCartBadge();
         const handleAgregarKit = (e) => {
-            const href = e.currentTarget.getAttribute('href');
-            if (href && href !== '#') {
+            const url = e.currentTarget.getAttribute('data-url'); //POST: agregar al carrito crea la solicitud, no puede viajar en la URL
+            if (url) {
                 e.preventDefault();
-                fetch(href, {
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    }
                 })
                 .then(response => response.json())
                 .then(data => {

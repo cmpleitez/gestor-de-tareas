@@ -318,7 +318,7 @@ class TiendaController extends Controller
                         Log::warning('No hay receptores disponibles', ['oficina_id' => $user->oficina_id, 'user_id' => $user->id]);
                         DB::rollBack();
                         $message = 'No hay receptores asignados a su oficina';
-                        return $request->ajax() ? response()->json(['success' => false, 'message' => $message, 'type' => 'error']) : back()->with('error', $message);
+                        return $request->ajax() ? response()->json(['success' => false, 'message' => $message, 'type' => 'error'], 422) : back()->with('error', $message);
                     }
                     $receptor = $receptores->random();
                     $atencion             = new Atencion(); //Creando número de atención
@@ -345,7 +345,7 @@ class TiendaController extends Controller
                     if ($ordenExistente) {
                         DB::rollBack();
                         $message = 'El kit ya se encuentra en el carrito';
-                        return $request->ajax() ? response()->json(['success' => false, 'message' => $message, 'type' => 'info']) : back()->with('info', $message);
+                        return $request->ajax() ? response()->json(['success' => false, 'message' => $message, 'type' => 'info'], 409) : back()->with('info', $message); //409: el recurso ya existe, no es un dato inválido
                     }
                 }
                 $nuevaOrden = new Orden(); //Agregando Kit (Orden de compra)
@@ -372,7 +372,7 @@ class TiendaController extends Controller
             DB::rollBack();
             Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Ocurrió un error cuando se intentaba agregar el kit a la tienda: ' . $e->getMessage(), ['exception' => $e]);
             $message = 'Ocurrió un error cuando se intentaba agregar el kit a la tienda.';
-            return $request->ajax() ? response()->json(['success' => false, 'message' => $message, 'type' => 'error']) : back()->with('error', $message);
+            return $request->ajax() ? response()->json(['success' => false, 'message' => $message, 'type' => 'error'], 500) : back()->with('error', $message);
         }
     }
 

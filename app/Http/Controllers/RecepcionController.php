@@ -33,34 +33,39 @@ class RecepcionController extends Controller
 {
     public function editarCarrito(Request $request)
     {
-        $atencion = Atencion::find($request->atencion_id);
-        $oficinaId = auth()->user()->oficina_id;
-        $stockBodegaId = Stock::where('stock', 'Bodega')->first()->id;
-        $atencion->load([
-            'ordenes.kit',
-            'ordenes.detalle' => function ($query1) {
-                $query1->orderBy('created_at');
-            },
-            'ordenes.detalle.producto.oficinaStock' => function($query2) use ($oficinaId, $stockBodegaId){
-                $query2->where('stock_id', $stockBodegaId)->where('oficina_id', $oficinaId);
-            },
-            'ordenes.detalle.producto.kitProductos.equivalentes.producto.oficinaStock'=> function($query3) use ($oficinaId, $stockBodegaId){
-                $query3->where('stock_id', $stockBodegaId)->where('oficina_id', $oficinaId);
+        try {
+            $atencion = Atencion::findOrFail($request->atencion_id);
+            $oficinaId = auth()->user()->oficina_id;
+            $stockBodegaId = Stock::where('stock', 'Bodega')->first()->id;
+            $atencion->load([
+                'ordenes.kit',
+                'ordenes.detalle' => function ($query1) {
+                    $query1->orderBy('created_at');
+                },
+                'ordenes.detalle.producto.oficinaStock' => function($query2) use ($oficinaId, $stockBodegaId){
+                    $query2->where('stock_id', $stockBodegaId)->where('oficina_id', $oficinaId);
+                },
+                'ordenes.detalle.producto.kitProductos.equivalentes.producto.oficinaStock'=> function($query3) use ($oficinaId, $stockBodegaId){
+                    $query3->where('stock_id', $stockBodegaId)->where('oficina_id', $oficinaId);
+                }
+            ]);
+            $atencion_id_ripped = KeyRipper::rip($atencion->id);
+            $recepcion_id = $request->recepcion_id; // Recuperación de recepción (Seguridad para el auto-abierto del sidebar)
+            if (!$recepcion_id) {
+                $recepcion_id = Recepcion::where('atencion_id', $atencion->id)
+                    ->where('destino_user_id', auth()->id())
+                    ->where('activo', true)
+                    ->value('id');
             }
-        ]);
-        $atencion_id_ripped = KeyRipper::rip($atencion->id);
-        $recepcion_id = $request->recepcion_id; // Recuperación de recepción (Seguridad para el auto-abierto del sidebar)
-        if (!$recepcion_id) {
-            $recepcion_id = Recepcion::where('atencion_id', $atencion->id)
-                ->where('destino_user_id', auth()->id())
-                ->where('activo', true)
-                ->value('id');
+            return view('modelos.kit.carrito', [
+                'atencion' => collect([$atencion]),
+                'atencion_id_ripped' => $atencion_id_ripped,
+                'recepcion_id' => $recepcion_id,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Error al abrir la solicitud [' . $request->atencion_id . ']: ' . $e->getMessage(), ['exception' => $e]);
+            return back()->with('error', 'Ocurrió un error al intentar abrir la solicitud.');
         }
-        return view('modelos.kit.carrito', [
-            'atencion' => collect([$atencion]),
-            'atencion_id_ripped' => $atencion_id_ripped,
-            'recepcion_id' => $recepcion_id,
-        ]);
     }
 
     public function nuevasRecibidas(Request $request, GestionService $gestionService)
@@ -582,13 +587,25 @@ class RecepcionController extends Controller
     {
         $recepcion_id = $request->input('recepcion_id');
         $atencion_id = $request->input('atencion_id');
-        $tareaPago = \App\Models\Tarea::where('tarea', 'Pago')->first()->tarea ?? 'Pago';
-        app(GestionService::class)->reportarTarea($tareaPago, $recepcion_id, $atencion_id);
-        return response()->json([
-            'success' => true,
-            'message' => ($tareaPago ?? 'Pago') . ' exitoso',
-            'type'    => 'success'
-        ]);
+        try {
+            $tareaPago = \App\Models\Tarea::where('tarea', 'Pago')->first()->tarea ?? 'Pago';
+            DB::beginTransaction();
+                app(GestionService::class)->reportarTarea($tareaPago, $recepcion_id, $atencion_id);
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => ($tareaPago ?? 'Pago') . ' exitoso',
+                'type'    => 'success'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Error al confirmar el pago de la solicitud [' . $atencion_id . ']: ' . $e->getMessage(), ['exception' => $e]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Ocurrió un error al intentar confirmar el pago.',
+                'type'    => 'error'
+            ], 500);
+        }
     }
 
     public function descargarStock(Request $request, StockService $stockService)
@@ -663,13 +680,25 @@ class RecepcionController extends Controller
     {
         $recepcion_id = $request->input('recepcion_id');
         $atencion_id = $request->input('atencion_id');
-        $tareaEntrega = \App\Models\Tarea::where('tarea', 'Entrega')->first()->tarea ?? 'Entrega';
-        app(GestionService::class)->reportarTarea($tareaEntrega, $recepcion_id, $atencion_id);
-        return response()->json([
-            'success' => true,
-            'message' => ($tareaEntrega ?? 'Entrega') . ' exitosa',
-            'type'    => 'success'
-        ]);
+        try {
+            $tareaEntrega = \App\Models\Tarea::where('tarea', 'Entrega')->first()->tarea ?? 'Entrega';
+            DB::beginTransaction();
+                app(GestionService::class)->reportarTarea($tareaEntrega, $recepcion_id, $atencion_id);
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => ($tareaEntrega ?? 'Entrega') . ' exitosa',
+                'type'    => 'success'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Error al efectuar la entrega de la solicitud [' . $atencion_id . ']: ' . $e->getMessage(), ['exception' => $e]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Ocurrió un error al intentar efectuar la entrega.',
+                'type'    => 'error'
+            ], 500);
+        }
     }
 
     public function ordenCompra(Request $request)
@@ -734,74 +763,83 @@ class RecepcionController extends Controller
             return back()->withErrors($validator)->withInput();
         }
         //PROCESO
-        $stockBodegaId = Stock::where('stock', 'Bodega')->value('id');
-        $entradas = Movimiento::select(['unidades', 'movimiento', 'stock_destino_resultante', 'created_at'])
-            ->where('activo', true)
-            ->whereDate('created_at', '>=', $request->fecha)
-            ->where('oficina_id', auth()->user()->oficina_id)
-            ->where('producto_id', $request->producto_id)
-            ->where('destino_stock_id', $stockBodegaId)
-            ->get();
-
-        $salidas_1 = Movimiento::select(['unidades', 'movimiento', 'stock_origen_resultante', 'created_at'])
-            ->where('activo', true)
-            ->whereDate('created_at', '>=', $request->fecha)
-            ->where('oficina_id', auth()->user()->oficina_id)
-            ->where('producto_id', $request->producto_id)
-            ->where('origen_stock_id', $stockBodegaId)
-            ->get();
-
-        $salidas_2 = Detalle::select(['orden_id', 'unidades', 'stock_resultante', 'created_at'])
-        ->with(['orden.atencion', 'orden'])
-        ->whereHas('orden.atencion', function ($query) {
-            $query->where('activo', true)
+        try {
+            $stockBodegaId = Stock::where('stock', 'Bodega')->value('id');
+            $entradas = Movimiento::select(['unidades', 'movimiento', 'stock_destino_resultante', 'created_at'])
+                ->where('activo', true)
+                ->whereDate('created_at', '>=', $request->fecha)
                 ->where('oficina_id', auth()->user()->oficina_id)
-                ->whereHas('estado', function ($q) {
-                    $q->where('estado', 'Resuelta');
-                });
-        })
-        ->where('producto_id', $request->producto_id)
-        ->whereDate('created_at', '>=', $request->fecha)
-        ->get();
-        $coleccionEntradas = $entradas->map(function ($item) {
-            return (object) [
-                'tipo'             => 'entrada',
-                'movimiento'       => $item->movimiento,
-                'unidades'         => $item->unidades,
-                'stock_resultante' => $item->stock_destino_resultante,
-                'created_at'       => $item->created_at,
-            ];
-        });
-        $coleccionSalidas_1 = $salidas_1->map(function ($item) {
-            return (object) [
-                'tipo'              => 'salida',
-                'movimiento'        => $item->movimiento,
-                'unidades'          => $item->unidades,
-                'stock_resultante' => $item->stock_origen_resultante,
-                'created_at'        => $item->created_at,
-            ];
-        });
-        $coleccionSalidas_2 = $salidas_2->map(function ($item) {
-            return (object) [
-                'tipo'              => 'salida',
-                'movimiento'        => 'Sala de ventas -> Cliente',
-                'unidades'          => $item->unidades * $item->orden->unidades,
-                'stock_resultante' => $item->stock_resultante,
-                'created_at'        => $item->created_at,
-            ];
-        });
-        $transacciones = $coleccionSalidas_1->concat($coleccionSalidas_2)->concat($coleccionEntradas)
-            ->sortByDesc('created_at')
-            ->values();
-        return response()->json([ //resultado temporal para depuracion
-            'success' => true,
-            'message' => 'Campos validados correctamente. Listo para fase 2.',
-            'data_recibida' => [
-                'producto_id' => $request->producto_id,
-                'fecha' => $request->fecha,
-                'transacciones' => $transacciones
-            ]
-        ]);
+                ->where('producto_id', $request->producto_id)
+                ->where('destino_stock_id', $stockBodegaId)
+                ->get();
+
+            $salidas_1 = Movimiento::select(['unidades', 'movimiento', 'stock_origen_resultante', 'created_at'])
+                ->where('activo', true)
+                ->whereDate('created_at', '>=', $request->fecha)
+                ->where('oficina_id', auth()->user()->oficina_id)
+                ->where('producto_id', $request->producto_id)
+                ->where('origen_stock_id', $stockBodegaId)
+                ->get();
+
+            $salidas_2 = Detalle::select(['orden_id', 'unidades', 'stock_resultante', 'created_at'])
+            ->with(['orden.atencion', 'orden'])
+            ->whereHas('orden.atencion', function ($query) {
+                $query->where('activo', true)
+                    ->where('oficina_id', auth()->user()->oficina_id)
+                    ->whereHas('estado', function ($q) {
+                        $q->where('estado', 'Resuelta');
+                    });
+            })
+            ->where('producto_id', $request->producto_id)
+            ->whereDate('created_at', '>=', $request->fecha)
+            ->get();
+            $coleccionEntradas = $entradas->map(function ($item) {
+                return (object) [
+                    'tipo'             => 'entrada',
+                    'movimiento'       => $item->movimiento,
+                    'unidades'         => $item->unidades,
+                    'stock_resultante' => $item->stock_destino_resultante,
+                    'created_at'       => $item->created_at,
+                ];
+            });
+            $coleccionSalidas_1 = $salidas_1->map(function ($item) {
+                return (object) [
+                    'tipo'              => 'salida',
+                    'movimiento'        => $item->movimiento,
+                    'unidades'          => $item->unidades,
+                    'stock_resultante' => $item->stock_origen_resultante,
+                    'created_at'        => $item->created_at,
+                ];
+            });
+            $coleccionSalidas_2 = $salidas_2->map(function ($item) {
+                return (object) [
+                    'tipo'              => 'salida',
+                    'movimiento'        => 'Sala de ventas -> Cliente',
+                    'unidades'          => $item->unidades * $item->orden->unidades,
+                    'stock_resultante' => $item->stock_resultante,
+                    'created_at'        => $item->created_at,
+                ];
+            });
+            $transacciones = $coleccionSalidas_1->concat($coleccionSalidas_2)->concat($coleccionEntradas)
+                ->sortByDesc('created_at')
+                ->values();
+            return response()->json([ //resultado temporal para depuracion
+                'success' => true,
+                'message' => 'Campos validados correctamente. Listo para fase 2.',
+                'data_recibida' => [
+                    'producto_id' => $request->producto_id,
+                    'fecha' => $request->fecha,
+                    'transacciones' => $transacciones
+                ]
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Error al leer las transacciones del producto [' . $request->producto_id . ']: ' . $e->getMessage(), ['exception' => $e]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Ocurrió un error al intentar consultar el historial de transacciones.',
+                'type'    => 'error'
+            ], 500);
+        }
     }
 
     public function createStock()
