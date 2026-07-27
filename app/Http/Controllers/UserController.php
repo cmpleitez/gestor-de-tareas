@@ -36,6 +36,10 @@ class UserController extends Controller
 
     public function update(Request $request, User $user)
     {
+        if ($user->username === 'admin') { //La cuenta de rescate no admite cambios de datos desde ningún actor: su correo es el canal de recuperación
+            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Intento de alterar los datos de la cuenta de sistema admin.');
+            return back()->with('error', 'Se intentó manipular el sistema.');
+        }
         //VALIDANDO
         $validated = $request->validate([
             'name'               => ['sometimes', 'required', 'string', 'min:3', 'max:255', 'regex:/^(?! )[a-zA-ZáéíóúÁÉÍÓÚñÑ]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$/'],
@@ -111,27 +115,32 @@ class UserController extends Controller
 
     public function rolesEdit(User $user)
     {
-        if (auth()->user()->username == 'admin' && $user->username == 'admin') {
-            $roles = Role::whereNotIn('name', ['admin'])->get();
-        } else {
-            $roles = Role::all();
-        }
-        return view('modelos.user.roles-edit', ['user' => $user, 'roles' => $roles]);
+        $roles = Role::all(); //ACCESO: cualquier cuenta puede ser admin (auditoría), pero admin no se combina con otro rol
+        $rolesGestion = Role::whereNotIn('name', ['admin'])->get(); //GESTIÓN: role_id solo admite papeles del flujo (cliente, receptor, operador)
+        return view('modelos.user.roles-edit', ['user' => $user, 'roles' => $roles, 'rolesGestion' => $rolesGestion]);
     }
 
     public function rolesUpdate(Request $request, User $user)
     {
         try {
             //VALIDACIÓN
-            if ($user->username === 'admin' && auth()->user()->username === 'admin') {
+            if ($user->username === 'admin') { //La cuenta de sistema no admite cambios de rol desde ningún actor
                 Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Intento de inyectar código en el sistema, alterando los roles asignados al admin.');
                 return back()->with('error', 'Se intentó manipular el sistema.');
             }
+            $rolAdminId = Role::where('name', 'admin')->value('id');
+            $esAdministrador = in_array('admin', $request->input('roles', []), true); //El administrador no participa en el flujo: su role_id no se elige, se impone
             $validated = $request->validate([
                 'roles'   => 'required|array',
-                'role_id' => 'required|numeric|exists:roles,id',
+                'role_id' => [Rule::requiredIf(! $esAdministrador), 'nullable', 'numeric', 'exists:roles,id'],
             ]);
             $submittedRoles = $validated['roles'];
+            if ($esAdministrador && count($submittedRoles) > 1) { //ACCESO: admin no se combina con otro rol para que Spatie no mezcle los accesos del gestor
+                throw new Exception('El rol administrador no puede combinarse con otros roles');
+            }
+            if (! $esAdministrador && (int) $validated['role_id'] === (int) $rolAdminId) { //GESTIÓN: el rol admin no es un papel del flujo
+                throw new Exception('El rol administrador no es un papel de la gestión de tareas');
+            }
             if ($user->hasRole('Cliente')) { // Usuario que ya es cliente
                 if (in_array('Cliente', $submittedRoles) && count($submittedRoles) > 1) {
                     throw new Exception('No esta disponible la funcionalidad de ser cliente y otro rol a la vez');
@@ -144,7 +153,7 @@ class UserController extends Controller
             //PROCESO
             DB::beginTransaction();
             $user->syncRoles($submittedRoles);
-            $roleId = $validated['role_id'];
+            $roleId = $esAdministrador ? $rolAdminId : $validated['role_id']; //role_id=1 es el marcador de "no participa en el flujo"
             if ($roleId) {
                 $user->role_id = $roleId;
                 $user->save();
@@ -166,7 +175,7 @@ class UserController extends Controller
 
     public function equiposUpdate(Request $request, User $user)
     {
-        if ($user->username === 'admin' && auth()->user()->username === 'admin') {
+        if ($user->username === 'admin') { //La cuenta de sistema no admite cambios desde ningún actor
             Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Intento de inyectar código en el sistema, alterando los equipos asignados al admin.');
             return back()->with('error', 'Se intentó manipular el sistema.');
         }
@@ -183,7 +192,7 @@ class UserController extends Controller
 
     public function tareasUpdate(Request $request, User $user)
     {
-        if ($user->username === 'admin' && auth()->user()->username === 'admin') {
+        if ($user->username === 'admin') { //La cuenta de sistema no admite cambios desde ningún actor
             Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Intento de inyectar código en el sistema, alterando las tareas asignadas al admin.');
             return back()->with('error', 'Se intentó manipular el sistema.');
         }
@@ -228,7 +237,8 @@ class UserController extends Controller
 
     public function activate(User $user)
     {
-        if ($user->username === 'admin' && auth()->user()->username === 'admin') {
+        if ($user->username === 'admin') { //La cuenta de rescate no admite cambios de estado desde ningún actor: desactivarla dejaría la app sin vía de entrada
+            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Intento de modificar el estado de la cuenta de sistema admin.');
             return back()->with('error', 'No es posible modificar el estado de admin.');
         }
         $user->activo = ! $user->activo;

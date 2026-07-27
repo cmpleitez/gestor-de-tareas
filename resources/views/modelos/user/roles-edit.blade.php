@@ -58,11 +58,12 @@
                         <div class="form-group mb-0" style="min-width: 250px;">
                             <label class="form-label" for="role_id" style="margin-bottom: 0.5rem; font-size: 0.8rem;">Rol
                                 para la gestión de tareas</label>
-                            <select class="form-control form-control-sm" id="role_id" name="role_id" required>
-                                <option value="">Seleccione el rol principal</option>
-                                @foreach ($roles as $role)
+                            <select class="form-control form-control-sm" id="role_id" name="role_id" required
+                                {{ $user->hasRole('admin') ? 'disabled' : '' }}> {{-- El administrador no participa en el flujo: su role_id lo impone el servidor --}}
+                                <option value="">Seleccione el rol de gestión</option>
+                                @foreach ($rolesGestion as $role) {{-- Solo papeles del flujo: el rol admin no se gestiona por este eje --}}
                                     <option value="{{ $role->id }}"
-                                        {{ $user->mainRole->name == $role->name ? 'selected' : '' }}>
+                                        {{ $user->mainRole?->name == $role->name ? 'selected' : '' }}>
                                         {{ $role->name }}
                                     </option>
                                 @endforeach
@@ -78,6 +79,28 @@
 
 @section('js')
     <script>
+        // Quita la selección de un rol sin volver a disparar la sincronización
+        function desmarcarRol(checkbox) {
+            if (!checkbox.checked) return;
+            checkbox.checked = false;
+            const item = checkbox.closest('.selectable-item');
+            item.classList.remove('selected');
+            item.querySelector('.checkbox-indicator').classList.remove('checked');
+        }
+
+        // El rol admin es excluyente: al marcarlo se desmarcan los demás, y al marcar otro se desmarca admin
+        function excluirAdministrador(marcado) {
+            const esAdmin = marcado.value === 'admin';
+            const roleSelect = document.getElementById('role_id');
+            document.querySelectorAll('input[name="roles[]"]').forEach(function(otro) {
+                if (otro !== marcado && (esAdmin || otro.value === 'admin')) {
+                    desmarcarRol(otro);
+                }
+            });
+            roleSelect.disabled = esAdmin; //El administrador no elige papel del flujo
+            if (esAdmin) roleSelect.value = '';
+        }
+
         // Función para alternar la selección de roles múltiples
         function toggleRole(checkboxId) {
             const checkbox = document.getElementById(checkboxId);
@@ -94,6 +117,8 @@
 
                 // Sincronizar con el rol principal
                 const roleName = checkbox.value;
+                excluirAdministrador(checkbox); //ACCESO: admin no se combina con otro rol, para que Spatie no mezcle los accesos del gestor
+                if (roleName === 'admin') return; //El administrador no participa en el flujo: su role_id lo impone el servidor
                 const roleSelect = document.getElementById('role_id');
 
                 // Buscar la opción que coincida con el nombre del rol
@@ -109,6 +134,10 @@
 
                 // Si se deselecciona, verificar si era el rol principal
                 const roleName = checkbox.value;
+                if (roleName === 'admin') { //Al dejar de ser administrador vuelve a elegirse el papel del flujo
+                    document.getElementById('role_id').disabled = false;
+                    return;
+                }
                 const roleSelect = document.getElementById('role_id');
 
                 // Si el rol deseleccionado era el principal, limpiar el select

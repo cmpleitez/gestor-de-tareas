@@ -91,7 +91,7 @@ class UserSeeder extends Seeder
         //ROLES Y ASIGNACIÓN DE PERMISOS
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
         
-        $puertas_gestor = ['ver-solicitudes']; //Puerta de entrada al Kanban: el admin es un participante demasiado distante del flujo para operarlo
+        $puertas_gestor = ['ver-solicitudes']; //Admin
         $role = Role::firstOrCreate(['name' => 'admin']);
         $role->syncPermissions(Permission::whereNotIn('name', $puertas_gestor)->get());
 
@@ -129,7 +129,7 @@ class UserSeeder extends Seeder
         'retirar-item',
         'retirar-orden']);
 
-        $role = Role::firstOrCreate(['name' => 'operador']);
+        $role = Role::firstOrCreate(['name' => 'operador']); //Operador
         $role->syncPermissions(['editar-carrito',
         'autorefrescar',
         'asignar-recepcion',

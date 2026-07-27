@@ -1,7 +1,7 @@
 # gestor-de-tareas
 
 <!-- BEGIN REGLAS GLOBALES -->
-<!-- version: 4564ef1 - 2026-07-17 11:00 - generado por sync-reglas.ps1 - NO editar a mano -->
+<!-- version: 5a92816 - 2026-07-27 09:03 - generado por sync-reglas.ps1 - NO editar a mano -->
 
 ## Reglas globales
 
@@ -45,7 +45,7 @@ Reglas comunes a todos mis proyectos. Se sincronizan desde el repo `estandares` 
 
 🔥Cuando uses tu código fuente para realizar pruebas y depuración haslo en un solo lugar para que no te cueste luego limpiarlo.
 
-🔥Cuando diga "cm" + ruta (O referencia semántica) muestrame los links dependientes para elegir el que necesite en ese momento.
+🔥Cuando diga "cm" + ruta (O referencia semántica) muestrame máximo dos links que tengan referencia a lo solicitado
 
 🔥**PROHIBIDO** escribir tu memoria en directorios externos al proyecto, escribe tu memoria en el archivo que ya estableciste dentro del folder de este proyecto.
 
@@ -63,6 +63,15 @@ Reglas comunes a todos mis proyectos. Se sincronizan desde el repo `estandares` 
 - **Versionado:** `php artisan version:update {major|minor|patch}` actualiza `config/app.php` clave `version` (SemVer). Correr `config:clear` después si la config está cacheada.
 - **`uso_interno`: ELIMINADO del código** (2026-07-25, commit `79f659cd`). Era el switch interno(`1`)/externo(`0`); el modo interno se descartó por mala práctica. Hoy el flujo externo con paso del operador es el **único** y no hay condicional: el paso de confirmación física del operador es incondicional. No reintroducir el parámetro. Ver detalle en Memoria.
 - **El `admin` no participa en el gestor de tareas** (Kanban). Se le excluye el permiso `ver-solicitudes` vía `$puertas_gestor` en `UserSeeder`; su `users.role_id` sigue siendo `1` (rol `admin`), que no es un papel del flujo. Razón: es un participante demasiado distante del proceso y nadie sabría cuándo se le asignan solicitudes.
+- **Tres controles independientes (decisión firme: NO fusionarlos).** Cada uno responde una pregunta distinta y tiene distinta volatilidad; unirlos obligaría a redeployar el seeder cada vez que cambia una persona:
+  | Control | Almacenamiento | Responde |
+  |---|---|---|
+  | **Acceso** | Spatie (`model_has_roles`, `role_has_permissions`) | ¿Entra a la ruta/pantalla? |
+  | **Gestión / trazabilidad** | `users.role_id` → `User::mainRole()` | ¿Qué papel juega en el flujo? |
+  | **Reparto** | pivote `tarea_user` (`/accounts/tareas-edit/{user}`) | ¿Qué tareas se le instancian? |
+
+  **Invariante que sostiene la convivencia:** *la ruta autoriza con Spatie · la vista decide con `role_id` · el reparto lo decide `tarea_user`*. En el Kanban acceso y gestión conviven mezclados a propósito (hay rutas protegidas); no invertir los ejes.
+- **El rol `admin` es excluyente, no exclusivo.** Puede haber **varios administradores** (lo exige la auditoría), pero: (a) *Acceso:* quien es `admin` **no puede tener ningún otro rol Spatie** — así Spatie no mezcla los accesos que viven dentro del gestor de tareas; (b) *Gestión:* `role_id` solo admite papeles del flujo (cliente, receptor, operador), y al marcar `admin` el servidor **impone `role_id = 1`**, que es el marcador de "no participa en el flujo". Sin esa imposición un administrador entraría a los sorteos de participantes (`TiendaController:313`, `RecepcionController:125`) sin tener `ver-solicitudes`, y la solicitud nacería muerta. Blindado en `UserController::rolesEdit/rolesUpdate` y en `roles-edit.blade.php` (checkboxes excluyentes + `<select>` inhabilitado). - **La cuenta `admin` (`username = 'admin'`) es la cuenta de rescate (break-glass)** por si los administradores titular y suplente pierden su acceso. Es **inmutable desde `/accounts` para cualquier actor**: los 6 métodos que la tocan (`update`, `rolesUpdate`, `equiposUpdate`, `tareasUpdate`, `activate`, `destroy`) la rechazan con el guard de una sola condición `$user->username === 'admin'`. Solo se modifica por seeder o BD. Ocultar su fila en `index()` es aislamiento de navegación, no autorización por objeto: la protección real está en el endpoint.
 - **Datos de dominio sembrados:** roles (admin/cliente/receptor/operador), estados (Recibida/En progreso/Resuelta), tareas (Revisión/Confirmación/Pago/Descarga/Entrega), solicitud "Orden de compra" y parámetros → `UserSeeder`. PK string (Atencion/Recepcion/Actividad) generadas por `KeyMaker`.
 - **BD de test aislada:** `gestor-de-tareas-testing` (MySQL, en `phpunit.xml`). `php artisan test` es seguro, no toca la BD de desarrollo.
 
@@ -239,3 +248,51 @@ Método de auditoría: por cada punto que toque roles se clasifica primero la de
 
 Quedan **sin** log a propósito `historialTransacciones` y `createStock`: dos `select` triviales que devuelven vista; un fallo ahí es de infraestructura y Laravel ya lo registra con stack trace. Cobertura actual: 16 de 18 métodos.
 - Los demás endpoints del flujo son POST + CSRF: escribir la URL da 405, no son alcanzables por accidente. El CSRF, eso sí, **no** protege del IDOR: un usuario legítimo ya tiene token válido (y el `recepcion_id` viaja en `data-recepcion-id` del DOM, editable con el inspector) — por eso hacía falta 4(a).
+
+### 2026-07-27 — Los tres controles: inventario del Kanban y blindaje de `role_id`
+
+**Decisión:** se mantienen los tres ejes (acceso Spatie / gestión `role_id` / reparto `tarea_user`) y **se conserva la mezcla acceso+gestión dentro del Kanban**. Desarmarla exigiría primero bajar las verificaciones a los controladores (hoy confían en los ids del request) y tocar 14 rutas para *no* cambiar comportamiento: mal negocio. Regla escrita en Reglas del proyecto.
+
+**Inventario: 15 permisos Spatie en la superficie del Kanban** (tablero `tienda/requests`, detalle `shop.request`/`edit-request`, grupo `recepcion/*`), más el middleware `role:receptor|operador|admin` de `web.php:146`:
+
+| Permiso | Roles que lo tienen |
+|---|---|
+| `ver-solicitudes` (puerta del tablero) | cliente, receptor, operador |
+| `autorefrescar` | cliente, receptor, operador, admin |
+| `asignar-recepcion` (mover tarjeta) | receptor, operador, admin |
+| `ver-recepcion` · `crear-stock` · `descargar-stock` · `ver-reportes` · `corregir-carrito` · `revisar` | receptor, admin |
+| `ver-tareas` · `editar-carrito` | receptor, operador, admin |
+| `ver-orden` · `retirar-item` | cliente, receptor, admin |
+| `confirmar-stock` | operador, admin |
+| `confirmar` (Pago/Entrega) | **solo admin** |
+
+**Hallazgo estructural:** los 15 permisos son **función pura del rol** — `givePermissionTo`/`syncPermissions` solo existen en `UserSeeder`, no hay pantalla que asigne permisos por usuario. Preguntar `can('revisar')` es preguntar "¿es receptor?" con dos saltos de tabla. La duplicación es la deuda aceptada conscientemente al mantener los tres ejes.
+
+**Riesgo latente que vigila la regla:** `cpleitez` (flujo=receptor, Spatie=[admin,receptor]) hereda de `admin` permisos que su papel no tiene (`confirmar`, `confirmar-stock`). Hoy no los ve porque el `@if($rol_usuario_actual …)` de `carrito.blade.php:482` los tapa — el eje correcto tapa al incorrecto **por accidente, no por diseño**. Si alguien invierte los ejes (poner `@can` donde va `mainRole`), el bug aflora.
+
+**Incidente que originó el blindaje:** la cuenta `admin` apareció con `role_id = 3` (receptor). `TiendaController:313` elige el receptor del génesis con `where('role_id', …)->random()`, así que en la oficina 2 el sorteo era entre `admin` y `cpleitez`: ~50% de las solicitudes nuevas caían en una cuenta que no puede abrir el Kanban (`ver-solicitudes` revocado) y con 0 habilidades en `tarea_user` → 0 `Actividad`es, avance congelado en 0. **Vía de entrada:** el guard de `UserController` era `$user->username === 'admin' && auth()->user()->username === 'admin'` — bloqueaba al admin editándose a sí mismo pero **permitía que otro usuario editara la cuenta admin**.
+
+**✅ APLICADO (4 cambios):**
+1. `rolesEdit()`: dos colecciones separadas — `$roles` (todos, para los checkboxes Spatie) y `$rolesGestion` (`whereNotIn('name', ['admin'])`, para el `<select>` de `role_id`). Antes filtraba solo cuando el admin se editaba a sí mismo.
+2. `rolesUpdate()`: validación de servidor (el `<select>` filtrado no impide un POST manipulado) — `role_id` = id del rol `admin` lanza `Exception` y cae en el `catch` existente con su `Log::error`.
+3. Guard de la cuenta de sistema en `rolesUpdate`, `equiposUpdate` y `tareasUpdate`: se eliminó la segunda condición; ahora bloquea a **cualquier** actor sobre `username === 'admin'`.
+4. `roles-edit.blade.php`: el `<select>` itera `$rolesGestion`; `mainRole->name` → `mainRole?->name`; `toggleRole()` ya no propaga al `role_id` cuando el rol marcado es `admin` (ese JS era el puente que fusionaba los dos ejes en la UI).
+
+5. **Segunda vuelta (mismo día): el rol `admin` pasa a ser EXCLUYENTE.** Por auditoría deben poder existir al menos dos administradores, así que no se reserva a la cuenta de sistema; lo que se impone es que `admin` no coexista con otro rol Spatie. `rolesUpdate()`: rechaza `roles[]` con `admin` + otros; `role_id` deja de ser `required` cuando se marca `admin` (`Rule::requiredIf`) y el servidor **impone `role_id = 1`** en ese caso. `roles-edit.blade.php`: `excluirAdministrador()` desmarca los demás roles al marcar `admin` (y viceversa) e inhabilita el `<select>`; en el render el `<select>` nace `disabled` si el usuario ya es `admin`.
+
+Verificado con los 4 casos de `rolesUpdate` (dentro de transacción revertida): `admin+receptor` → rechaza "no puede combinarse"; `receptor` con `role_id=1` → rechaza "no es un papel de la gestión"; `solo admin` sin `role_id` → acepta e impone `role_id=1`; `solo receptor` con `role_id=3` → acepta. Render: `<select>` `disabled` para `admin`, habilitado para `cpleitez`, checkboxes con los 4 roles en ambos. `php artisan test` 29 passed / 3 skipped.
+
+⚠️ **Gotcha del harness de prueba:** al invocar el controlador en bucle desde tinker, el flash `error` de `back()->with()` sobrevive entre iteraciones y hace parecer que un caso válido fue rechazado. Hay que `session()->forget(['error','success'])` antes de cada caso.
+
+6. **La cuenta `admin` es la cuenta de rescate (break-glass): irrompible desde `/accounts`.** Su razón de existir es que si los administradores titular y suplente pierden su acceso —por error de sistema o de usuario— quede una vía de entrada. Para eso tiene que ser inmutable desde la app, y no lo era: `activate()` traía la condición invertida (`$user->username === 'admin' && auth()->user()->username === 'admin'`), que bloqueaba solo el caso inofensivo —el admin desactivándose a sí mismo— y dejaba abierto el peligroso: **otro administrador podía desactivarla**, y `Fortify::authenticateUsing` rechaza el login con `activo = false` → los tres accesos perdidos a la vez. `update()` no tenía guard alguno: cualquier administrador podía cambiarle `name`, `email` y `oficina_id`, y el correo es el canal de recuperación de contraseña.
+
+Ambos métodos reciben ahora el guard de una sola condición (`$user->username === 'admin'`) + `Log::error`, igual que `rolesUpdate`, `equiposUpdate` y `tareasUpdate`. Cobertura completa de la cuenta de sistema: `update`, `rolesUpdate`, `equiposUpdate`, `tareasUpdate`, `activate` y `destroy`. Verificado actuando como un segundo administrador (`cpleitez`) contra la cuenta `admin`, en transacción revertida: ambos BLOQUEAN, `activo` y `email` intactos.
+
+**Distinción que motivó el cierre** (la misma del 2026-07-26 con el IDOR): el filtro de `index()` que oculta la fila `admin` es una cláusula SQL, pero protege la **navegación**, no el objeto. `update` y `activate` son rutas propias con model binding (`accounts/update/{user}`, `accounts/activate/{user}`): se alcanzan por id sin pasar por la lista. La protección tiene que estar en el endpoint.
+
+**Estado de los ejes tras la corrección del usuario** (`admin.role_id` devuelto a `1`, rol Spatie `admin` retirado a `cpleitez`): alineación 1:1 entre acceso y gestión — `admin`(1/[admin]), `maragon`(2/[cliente]), `cpleitez`(3/[receptor]), `hseldom`(4/[operador]). El sorteo del génesis en la oficina 2 devuelve solo `cpleitez`. Hoy solo la cuenta `admin` tiene acceso `role:admin`; se pueden crear más administradores desde `/accounts`, y cada uno quedará con `role_id = 1` (fuera del flujo) y sin ningún otro rol Spatie.
+
+**Pendientes registrados, NO reparados:**
+- `confirmar` es un permiso **inalcanzable**: solo lo tiene el rol Spatie `admin`, a quien `recepcion.propia` bloquea. Hoy latente porque `solicitud_tarea` de "Orden de compra" contiene solo Revisión, Confirmación y Descarga. Si entran Pago o Entrega, nadie podrá ejecutarlas. Salida probable: dar `confirmar` al receptor.
+- `dibujarTareas` (`solicitudes.blade.php:637-700`) pinta los checkboxes sin `@can` → la UI ofrece acciones que el backend responde con 403.
+- **Habilidades sembradas hoy** (`tarea_user`): `cpleitez` → Revisión, Descarga; `hseldom` → Confirmación; `maragon` y `admin` → ninguna. Recordar que la `Actividad` nace solo si la tarea está en `solicitud_tarea` **Y** en `tarea_user`.
