@@ -178,6 +178,9 @@
                                         <i class="bx bx-check-square mr-50"></i>Solicitudes
                                     </a>
                                 @endcan
+                                <a class="dropdown-item" href="{{ route('profile.show') }}">
+                                    <i class="bx bx-user mr-50"></i>Mi perfil
+                                </a>
                                 <div class="dropdown-divider mb-0"></div>
                                 <form method="POST" action="{{ route('logout') }}" style="display: inline;">
                                     @csrf

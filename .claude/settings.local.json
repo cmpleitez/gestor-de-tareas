@@ -17,7 +17,11 @@
       "mcp__claude-in-chrome__javascript_tool",
       "mcp__claude-in-chrome__tabs_close_mcp",
       "Bash(node test-sidebar-revert.js)",
-      "Bash(node test-sidebar-revert2.js)"
+      "Bash(node test-sidebar-revert2.js)",
+      "PowerShell(\"---\")",
+      "PowerShell($j = Get-Content C:\\\\laragon\\\\www\\\\gestor-de-tareas\\\\lang\\\\es.json -Raw | ConvertFrom-Json; \"Claves totales: \" + \\($j.PSObject.Properties | Measure-Object\\).Count; \"---\"; $j.PSObject.Properties | Where-Object { $_.Name -match 'two factor|Two Factor|recovery|Recovery|Password|Browser Sessions' } | ForEach-Object { $_.Name + '  =>  ' + $_.Value })",
+      "PowerShell(php artisan route:list -v --path=user/profile)",
+      "Bash(taskkill //PID 13568 //F)"
     ]
   }
 }

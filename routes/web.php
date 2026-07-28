@@ -48,6 +48,11 @@ Route::middleware([
         return view('dashboard');
     })->name('dashboard');
 
+    //PERFIL DEL USUARIO
+    Route::get('user/profile', function () { //Ruta de Jetstream reubicada aquí para que herede el grupo autenticado; el vendor la registraba sin 'verified'
+        return view('profile.show');
+    })->name('profile.show');
+
     //ADMINISTRACIÓN
     Route::middleware(['role:admin'])->group(function () {
         Route::group(['prefix' => 'accounts'], function () { //Usuarios
@@ -62,6 +67,7 @@ Route::middleware([
             Route::post('tareas-update/{user}', [userController::class, 'tareasUpdate'])->name('user.tareas-update')->middleware('can:editar');
             Route::delete('destroy/{user}', [userController::class, 'destroy'])->name('user.destroy')->middleware('can:eliminar');
             Route::post('activate/{user}', [userController::class, 'activate'])->name('user.activate')->middleware('can:activar');
+            Route::post('reset-2fa/{user}', [userController::class, 'resetDosFactores'])->name('user.reset-2fa')->middleware('can:editar');
         });
 
         Route::group(['prefix' => 'brands'], function () { //Marcas

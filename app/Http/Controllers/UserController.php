@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
+use Laravel\Fortify\Actions\DisableTwoFactorAuthentication;
 
 use Spatie\Permission\Models\Role;
 use App\Models\Equipo;
@@ -20,11 +22,7 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::with('oficina', 'equipos', 'roles', 'mainRole')
-            ->where(function ($cuenta) { // La cuenta de sistema 'admin' solo es visible para sí misma; el resto de cuentas son visibles para todos
-                $cuenta->where('username', '!=', 'admin')
-                    ->orWhere('id', auth()->id());
-            })->get();
+        $users = User::with('oficina', 'equipos', 'roles', 'mainRole')->get(); // Todas las cuentas son visibles: la ruta ya exige role:admin y cada control de la cuenta de sistema conserva su guard en el endpoint
         return view('modelos.user.index', compact('users'));
     }
 
@@ -36,7 +34,7 @@ class UserController extends Controller
 
     public function update(Request $request, User $user)
     {
-        if ($user->username === 'admin') { //La cuenta de rescate no admite cambios de datos desde ningún actor: su correo es el canal de recuperación
+        if ($user->username === 'admin' && auth()->user()->username !== 'admin') { //Su correo es el canal de recuperación: solo la propia cuenta de rescate puede cambiar sus datos
             Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Intento de alterar los datos de la cuenta de sistema admin.');
             return back()->with('error', 'Se intentó manipular el sistema.');
         }
@@ -133,6 +131,10 @@ class UserController extends Controller
             $validated = $request->validate([
                 'roles'   => 'required|array',
                 'role_id' => [Rule::requiredIf(! $esAdministrador), 'nullable', 'numeric', 'exists:roles,id'],
+            ], [
+                'roles.required'   => 'Debe seleccionar al menos un rol.',
+                'role_id.required' => 'Debe seleccionar el rol para la gestión de tareas.',
+                'role_id.exists'   => 'El rol de gestión seleccionado no existe.',
             ]);
             $submittedRoles = $validated['roles'];
             if ($esAdministrador && count($submittedRoles) > 1) { //ACCESO: admin no se combina con otro rol para que Spatie no mezcle los accesos del gestor
@@ -159,6 +161,9 @@ class UserController extends Controller
                 $user->save();
             }
             DB::commit();
+        } catch (ValidationException $e) { //Antes del catch genérico: si no, el mensaje que llega al usuario es el opaco "The given data was invalid"
+            DB::rollback();
+            return back()->withInput()->with('error', $e->validator->errors()->first());
         } catch (Exception $e) {
             DB::rollback();
             Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Ocurrió un error cuando se intentaba cambiar los roles de un usuario: ' . $e->getMessage(), ['exception' => $e]);
@@ -244,6 +249,23 @@ class UserController extends Controller
         $user->activo = ! $user->activo;
         $user->save();
         return redirect()->route('user')->with('success', 'El usuario "' . $user->name . '" ha sido ' . ($user->activo ? 'activado' : 'desactivado') . ' correctamente');
+    }
+
+    public function resetDosFactores(User $user, DisableTwoFactorAuthentication $deshabilitar)
+    {
+        if (empty($user->two_factor_secret)) { //Sin guard de cuenta de sistema: los administradores se rescatan entre sí, incluida la cuenta admin (la ruta ya exige role:admin)
+            return back()->with('error', 'El usuario "' . $user->name . '" no tiene habilitado el doble factor.');
+        }
+
+        try {
+            $deshabilitar($user); //Acción de Fortify: limpia secreto, códigos de recuperación y fecha de confirmación
+        } catch (Exception $e) {
+            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Ocurrió un error cuando se intentaba restablecer el doble factor: ' . $e->getMessage(), ['exception' => $e]);
+            return back()->with('error', 'Ocurrió un error cuando se intentaba restablecer el doble factor.');
+        }
+
+        Log::warning('Log:: [Usuario: ' . auth()->user()->name . '] Restableció el doble factor de "' . $user->name . '".'); //Traza de auditoría: la acción retira un factor de seguridad de otra cuenta
+        return redirect()->route('user')->with('success', 'El doble factor de "' . $user->name . '" ha sido restablecido. El usuario deberá habilitarlo de nuevo desde su perfil.');
     }
 
 }

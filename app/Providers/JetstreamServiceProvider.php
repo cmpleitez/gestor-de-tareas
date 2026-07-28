@@ -13,7 +13,11 @@ class JetstreamServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Debe llamarse en register(): el provider de vendor registra sus rutas
+        // en boot(), por lo que hacerlo aquí es lo único que llega a tiempo.
+        // Las rutas de Jetstream se declaran en routes/web.php para que hereden
+        // el grupo autenticado (auth + auth_session + verified), igual que Fortify.
+        Jetstream::ignoreRoutes();
     }
 
     /**

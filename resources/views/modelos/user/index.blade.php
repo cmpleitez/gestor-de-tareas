@@ -47,7 +47,7 @@
                             </thead>
                             <tbody>
                                 @foreach ($users as $user)
-                                @php($isAdminUser = $user->mainRole?->name === 'admin')
+                                @php($esCuentaSistema = $user->username === 'admin') {{-- Mismo eje que los guards del controlador: la cuenta de rescate se identifica por username, no por rol --}}
                                 <tr>
                                     {{-- CAMPOS --}}
                                     <td class="text-center">{{ $user->id }}</td>
@@ -66,9 +66,9 @@
                                     {{-- ACTIVAR --}}
                                     @can('activar')
                                         <td class="text-center">
-                                            @if ($isAdminUser)
+                                            @if ($esCuentaSistema)
                                                 <div class="custom-control custom-switch" style="transform: scale(0.6); margin: 0; pointer-events:none; cursor:not-allowed; opacity:0.45;">
-                                                    <input id="activate_{{ $user->id }}" type="checkbox" class="custom-control-input" checked disabled>
+                                                    <input id="activate_{{ $user->id }}" type="checkbox" class="custom-control-input" @if ($user->activo) checked @endif disabled>
                                                     <label class="custom-control-label" for="activate_{{ $user->id }}"></label>
                                                 </div>
                                             @else
@@ -89,7 +89,7 @@
                                         <div class="btn-group" role="group" aria-label="label">
                                             {{-- Habilidades / Equipos --}}
                                             @can('activar')
-                                                @if ($isAdminUser)
+                                                @if ($esCuentaSistema)
                                                     <span class="button_edit border bg-secondary-light" style="border-color:#395e86;cursor:not-allowed;pointer-events:none;" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-lock'></i> Control reservado para el sistema"><i class="bx bx-slider-alt" style="color:#adb5bd;"></i></span>
                                                     <span class="button_show border bg-secondary-light" style="border-color:#395e86;cursor:not-allowed;pointer-events:none;" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-lock'></i> Control reservado para el sistema"><i class="bx bxs-group" style="color:#adb5bd;"></i></span>
                                                 @else
@@ -99,19 +99,34 @@
                                             @endcan
                                             {{-- Roles --}}
                                             @can('editar')
-                                                @if ($user->id == auth()->id())
+                                                @if ($esCuentaSistema || $user->id == auth()->id()) {{-- rolesUpdate rechaza la cuenta de sistema desde cualquier actor --}}
                                                     <span class="button_keys border bg-secondary-light" style="border-color:#395e86;cursor:not-allowed;pointer-events:none;" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-lock'></i> Control reservado para el sistema"><i class="bx bxs-key" style="color:#adb5bd;"></i></span>
                                                 @else
                                                     <a href="{{ route('user.roles-edit', $user->id) }}" role="button" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-key'></i> Roles de {{ $user->name }}" class="button_keys border border-secondary-dark text-secondary-dark bg-secondary-light"><i class="bx bxs-key"></i></a>
                                                 @endif
                                             @endcan
+                                            {{-- Restablecer doble factor --}}
+                                            @can('editar')
+                                                @if (empty($user->two_factor_secret))
+                                                    <span class="button_edit border bg-secondary-light" style="border-color:#395e86;cursor:not-allowed;pointer-events:none;" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bx-shield'></i> {{ $user->name }} no tiene doble factor habilitado"><i class="bx bx-shield" style="color:#adb5bd;"></i></span> {{-- Escudo de contorno: cuenta sin doble factor --}}
+                                                @else
+                                                    <form action="{{ route('user.reset-2fa', $user->id) }}" method="POST" style="display: inline;">
+                                                        @csrf
+                                                        <button type="submit" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-shield'></i> Restablecer el doble factor de {{ $user->name }}" class="button_edit align-center border border-danger-dark text-danger-dark bg-danger-light"><i class="bx bxs-shield"></i></button> {{-- Escudo sólido: doble factor puesto, el control lo retira --}}
+                                                    </form>
+                                                @endif
+                                            @endcan
                                             {{-- Editar --}}
                                             @can('editar')
-                                                <a href="{{ route('user.edit', $user->id) }}" role="button" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-edit-alt'></i> Editar datos de {{ $user->name }}" class="button_edit align-center border border-warning-dark text-warning-dark bg-warning-light"><i class="bx bxs-edit-alt"></i></a>
+                                                @if ($esCuentaSistema && auth()->user()->username !== 'admin') {{-- Solo la propia cuenta de rescate edita sus datos; para el resto de actores el control queda inhabilitado como sus compañeros --}}
+                                                    <span class="button_edit align-center border bg-secondary-light" style="border-color:#395e86;cursor:not-allowed;pointer-events:none;" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-lock'></i> Control reservado para el sistema"><i class="bx bxs-edit-alt" style="color:#adb5bd;"></i></span>
+                                                @else
+                                                    <a href="{{ route('user.edit', $user->id) }}" role="button" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-edit-alt'></i> Editar datos de {{ $user->name }}" class="button_edit align-center border border-warning-dark text-warning-dark bg-warning-light"><i class="bx bxs-edit-alt"></i></a>
+                                                @endif
                                             @endcan
                                             {{-- Eliminar --}}
                                             @can('eliminar')
-                                                @if ($isAdminUser)
+                                                @if ($esCuentaSistema)
                                                     <span class="button_delete align-center border bg-danger-light" style="border-color:#e44b4b;cursor:not-allowed;pointer-events:none;" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-lock'></i> Control reservado para el sistema"><i class="bx bxs-eraser" style="color:#adb5bd;"></i></span>
                                                 @elseif ($user->id !== auth()->id())
                                                     <a href="#" data-url="{{ route('user.destroy', $user->id) }}" role="button" data-toggle="tooltip" data-popup="tooltip-custom" data-html="true" data-placement="bottom" title="<i class='bx bxs-eraser'></i> Eliminar {{ $user->name }}" class="btn-eliminar button_delete align-center border border-danger-dark text-danger-dark bg-danger-light"><i class="bx bxs-eraser"></i></a>

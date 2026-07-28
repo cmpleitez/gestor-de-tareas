@@ -58,7 +58,8 @@
                         <div class="form-group mb-0" style="min-width: 250px;">
                             <label class="form-label" for="role_id" style="margin-bottom: 0.5rem; font-size: 0.8rem;">Rol
                                 para la gestión de tareas</label>
-                            <select class="form-control form-control-sm" id="role_id" name="role_id" required
+                            {{-- Sin 'required': al marcar admin el select se vacía, y un select requerido y vacío veta el envío en silencio (el navegador no puede señalar un control deshabilitado). La obligatoriedad la resuelve el servidor con Rule::requiredIf --}}
+                            <select class="form-control form-control-sm" id="role_id" name="role_id"
                                 {{ $user->hasRole('admin') ? 'disabled' : '' }}> {{-- El administrador no participa en el flujo: su role_id lo impone el servidor --}}
                                 <option value="">Seleccione el rol de gestión</option>
                                 @foreach ($rolesGestion as $role) {{-- Solo papeles del flujo: el rol admin no se gestiona por este eje --}}
