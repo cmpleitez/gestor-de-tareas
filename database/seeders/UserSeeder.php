@@ -27,7 +27,7 @@ class UserSeeder extends Seeder
         DB::table('equipos')->updateOrInsert(
             ['id' => 1],
             [
-                'oficina_id' => 2,
+                'oficina_id' => 1,
                 'equipo'     => 'Personal de atención al cliente Dobinsons',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
@@ -117,7 +117,7 @@ class UserSeeder extends Seeder
                 ['id' => 1],
                 [
                     'role_id'           => 1,
-                    'oficina_id'        => 2,
+                    'oficina_id'        => 1,
                     'name'              => 'Administrador',
                     'username'          => 'admin',
                     'dui'               => '023456783',

@@ -10,7 +10,7 @@ class ImportCatalogCommand extends Command
     protected $description = 'Importa el catálogo de productos y kits desde un excel';
     public function handle(ImportCatalogService $importService)
     {
-        $file = 'docs/formato-importacion-full.xlsx';
+        $file = 'resources/formato-importacion-full.xlsx';
         $oficinaNombre = $this->argument('oficina');
         if (!File::exists(base_path($file))) {
             $this->error("El archivo no existe: " . $file);
