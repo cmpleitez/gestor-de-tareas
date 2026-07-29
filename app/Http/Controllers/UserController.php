@@ -22,8 +22,9 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::with('oficina', 'equipos', 'roles', 'mainRole')->get(); // Todas las cuentas son visibles: la ruta ya exige role:admin y cada control de la cuenta de sistema conserva su guard en el endpoint
-        return view('modelos.user.index', compact('users'));
+        $users = User::with('oficina', 'equipos', 'roles', 'mainRole')->get();
+        $watcherGotAdminRole = auth()->user()->hasRole('admin');
+        return view('modelos.user.index', compact('users', 'watcherGotAdminRole'));
     }
 
     public function edit(User $user)

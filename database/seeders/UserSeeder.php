@@ -17,34 +17,15 @@ class UserSeeder extends Seeder
         DB::table('oficinas')->updateOrInsert(
             ['id' => 1],
             [
-                'oficina'    => 'Mostro',
-                'activo'    => 0,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ]
-        );
-        DB::table('oficinas')->updateOrInsert(
-            ['id' => 2],
-            [
-                'oficina'    => 'Dobinsons',
+                'oficina'    => 'Dobinsons Central',
                 'activo'    => 1,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]
         );
-
         //EQUIPOS
         DB::table('equipos')->updateOrInsert(
             ['id' => 1],
-            [
-                'oficina_id' => 1,
-                'equipo'     => 'Personal de atención al cliente Mostro',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ]
-        );
-        DB::table('equipos')->updateOrInsert(
-            ['id' => 2],
             [
                 'oficina_id' => 2,
                 'equipo'     => 'Personal de atención al cliente Dobinsons',
@@ -52,7 +33,6 @@ class UserSeeder extends Seeder
                 'updated_at' => Carbon::now(),
             ]
         );
-
         //CREACION DE PERMISOS
         $permissions = [
             'ver-catalogo',
@@ -87,14 +67,11 @@ class UserSeeder extends Seeder
         foreach ($permissions as $permission) {
             Permission::firstOrCreate(['name' => $permission]);
         }
-
         //ROLES Y ASIGNACIÓN DE PERMISOS
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
-        
         $puertas_gestor = ['ver-solicitudes']; //Admin
         $role = Role::firstOrCreate(['name' => 'admin']);
         $role->syncPermissions(Permission::whereNotIn('name', $puertas_gestor)->get());
-
         $role = Role::firstOrCreate(['name' => 'cliente']); //Cliente
         $role->syncPermissions(['ver-tienda',
         'ver-carrito',
@@ -106,7 +83,6 @@ class UserSeeder extends Seeder
         'ver-orden',
         'retirar-orden',
         'autorefrescar']);
-
         $role = Role::firstOrCreate(['name' => 'receptor']); //Receptor
         $role->syncPermissions(['ver-reportes',
         'crear-stock',
@@ -128,7 +104,6 @@ class UserSeeder extends Seeder
         'corregir-carrito',
         'retirar-item',
         'retirar-orden']);
-
         $role = Role::firstOrCreate(['name' => 'operador']); //Operador
         $role->syncPermissions(['editar-carrito',
         'autorefrescar',
@@ -136,7 +111,6 @@ class UserSeeder extends Seeder
         'confirmar-stock',
         'ver-solicitudes',
         'ver-tareas']);
-
         //ADMINISTRADOR
         try {
             DB::table('users')->updateOrInsert(
@@ -160,25 +134,21 @@ class UserSeeder extends Seeder
         } catch (\Exception $e) {
             echo "Error asignando rol admin: " . $e->getMessage();
         }
-
         //CREACION DE TAREAS
         DB::table('tareas')->updateOrInsert(['id' => 1], ['tarea' => 'Revisión', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
         DB::table('tareas')->updateOrInsert(['id' => 2], ['tarea' => 'Confirmación', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
         DB::table('tareas')->updateOrInsert(['id' => 3], ['tarea' => 'Pago', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
         DB::table('tareas')->updateOrInsert(['id' => 4], ['tarea' => 'Descarga', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
         DB::table('tareas')->updateOrInsert(['id' => 5], ['tarea' => 'Entrega', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
-
         //CREACION DE SOLICITUDES
         DB::table('solicitudes')->updateOrInsert(
             ['id' => 1],
             ['solicitud' => 'Orden de compra', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]
         );
-
         //CREACION DE ESTADOS
         DB::table('estados')->updateOrInsert(['id' => 1], ['estado' => 'Recibida', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
         DB::table('estados')->updateOrInsert(['id' => 2], ['estado' => 'En progreso', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
         DB::table('estados')->updateOrInsert(['id' => 3], ['estado' => 'Resuelta', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
-
         //CREACION DE PARAMETROS
         DB::table('parametros')->updateOrInsert(['id' => 1], ['parametro' => 'Tasa de refresco', 'valor' => '60', 'unidad_medida' => 'segundos', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
         DB::table('parametros')->updateOrInsert(['id' => 2], ['parametro' => 'Nombres de kits automáticos', 'valor' => '1', 'unidad_medida' => 'boolean', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
