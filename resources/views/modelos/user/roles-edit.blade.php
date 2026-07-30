@@ -11,7 +11,7 @@
                     <div class="row">
                         <div class="col-md-12 d-flex justify-content-between" style="padding: 0;">
                             <div class="col-md-10 align-items-center" style="padding: 0 0 0 0;">
-                                <p>ROLES DE {{ strtoupper($user->name) }}</p>
+                                <p>ROL DE {{ strtoupper($user->name) }}</p>
                             </div>
                             <div class="col-md-2 d-flex justify-content-end" style="padding: 0.1rem;">
                                 <a href="{!! route('user') !!}">
@@ -27,128 +27,68 @@
                     @csrf
                     <div class="card-content">
                         <div class="card-body">
-                            <!-- Roles Múltiples -->
-                            <div class="form-group">
-                                <label class="form-label">Roles Adicionales</label>
-                                <div class="selectable-items-container">
-                                    @foreach ($roles as $role)
-                                        <div class="selectable-item {{ $user->hasRole($role->name) ? 'selected' : '' }}"
-                                            onclick="toggleRole('role_{{ $loop->index }}')">
-                                            <div class="checkbox-indicator {{ $user->hasRole($role->name) ? 'checked' : '' }}"
-                                                id="checkbox_role_{{ $loop->index }}"></div>
-                                            <div class="item-body">
-                                                <div class="item-info">
-                                                    <div class="item-name">{{ $role->name }}</div>
-                                                    <div class="item-desc">
-                                                        Rol
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <input type="checkbox" name="roles[]" id="role_{{ $loop->index }}"
-                                                value="{{ $role->name }}"
-                                                {{ $user->hasRole($role->name) ? 'checked' : '' }} style="display: none;">
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-footer d-flex justify-content-between align-items-center">
-                        <!-- Rol para la gestión de tareas -->
-                        <div class="form-group mb-0" style="min-width: 250px;">
-                            <label class="form-label" for="role_id" style="margin-bottom: 0.5rem; font-size: 0.8rem;">Rol
-                                para la gestión de tareas</label>
-                            {{-- Sin 'required': al marcar admin el select se vacía, y un select requerido y vacío veta el envío en silencio (el navegador no puede señalar un control deshabilitado). La obligatoriedad la resuelve el servidor con Rule::requiredIf --}}
-                            <select class="form-control form-control-sm" id="role_id" name="role_id"
-                                {{ $user->hasRole('admin') ? 'disabled' : '' }}> {{-- El administrador no participa en el flujo: su role_id lo impone el servidor --}}
-                                <option value="">Seleccione el rol de gestión</option>
-                                @foreach ($rolesGestion as $role) {{-- Solo papeles del flujo: el rol admin no se gestiona por este eje --}}
-                                    <option value="{{ $role->id }}"
-                                        {{ $user->mainRole?->name == $role->name ? 'selected' : '' }}>
-                                        {{ $role->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <button type="submit" class="btn btn-secondary-dark">Otorgar</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+                             <!-- Roles Selección Única -->
+                             <div class="form-group">
+                                 <div class="selectable-items-container">
+                                     @foreach ($roles as $role)
+                                         <div class="selectable-item {{ $user->hasRole($role->name) ? 'selected' : '' }}"
+                                             onclick="selectRole('role_{{ $loop->index }}')">
+                                             <div class="radio-indicator {{ $user->hasRole($role->name) ? 'checked' : '' }}"
+                                                 id="checkbox_role_{{ $loop->index }}"></div>
+                                             <div class="item-body">
+                                                 <div class="item-info">
+                                                     <div class="item-name">{{ $role->name }}</div>
+                                                     <div class="item-desc">
+                                                         Rol
+                                                     </div>
+                                                 </div>
+                                             </div>
+                                             <input type="radio" name="roles[]" id="role_{{ $loop->index }}"
+                                                 value="{{ $role->name }}"
+                                                 {{ $user->hasRole($role->name) ? 'checked' : '' }} style="display: none;">
+                                         </div>
+                                     @endforeach
+                                 </div>
+                             </div>
+                         </div>
+                     </div>
+                     <div class="card-footer d-flex justify-content-end align-items-center">
+                         <button type="submit" class="btn btn-secondary-dark">Otorgar</button>
+                     </div>
+                 </form>
+             </div>
+         </div>
+     </div>
 @stop
 
 @section('js')
     <script>
-        // Quita la selección de un rol sin volver a disparar la sincronización
-        function desmarcarRol(checkbox) {
-            if (!checkbox.checked) return;
-            checkbox.checked = false;
-            const item = checkbox.closest('.selectable-item');
+        // Quita la selección de un rol
+        function desmarcarRol(radio) {
+            if (!radio.checked) return;
+            radio.checked = false;
+            const item = radio.closest('.selectable-item');
             item.classList.remove('selected');
-            item.querySelector('.checkbox-indicator').classList.remove('checked');
+            item.querySelector('.radio-indicator').classList.remove('checked');
         }
 
-        // El rol admin es excluyente: al marcarlo se desmarcan los demás, y al marcar otro se desmarca admin
-        function excluirAdministrador(marcado) {
-            const esAdmin = marcado.value === 'admin';
-            const roleSelect = document.getElementById('role_id');
+        // Selección única de rol
+        function selectRole(radioId) {
+            const radio = document.getElementById(radioId);
+            const selectableItem = radio.closest('.selectable-item');
+            const radioIndicator = selectableItem.querySelector('.radio-indicator');
+
+            // Desmarcar los demás roles
             document.querySelectorAll('input[name="roles[]"]').forEach(function(otro) {
-                if (otro !== marcado && (esAdmin || otro.value === 'admin')) {
+                if (otro !== radio) {
                     desmarcarRol(otro);
                 }
             });
-            roleSelect.disabled = esAdmin; //El administrador no elige papel del flujo
-            if (esAdmin) roleSelect.value = '';
-        }
 
-        // Función para alternar la selección de roles múltiples
-        function toggleRole(checkboxId) {
-            const checkbox = document.getElementById(checkboxId);
-            const selectableItem = checkbox.closest('.selectable-item');
-            const checkboxIndicator = selectableItem.querySelector('.checkbox-indicator');
-
-            // Alternar el estado del checkbox
-            checkbox.checked = !checkbox.checked;
-
-            // Actualizar la apariencia visual
-            if (checkbox.checked) {
-                selectableItem.classList.add('selected');
-                checkboxIndicator.classList.add('checked');
-
-                // Sincronizar con el rol principal
-                const roleName = checkbox.value;
-                excluirAdministrador(checkbox); //ACCESO: admin no se combina con otro rol, para que Spatie no mezcle los accesos del gestor
-                if (roleName === 'admin') return; //El administrador no participa en el flujo: su role_id lo impone el servidor
-                const roleSelect = document.getElementById('role_id');
-
-                // Buscar la opción que coincida con el nombre del rol
-                for (let option of roleSelect.options) {
-                    if (option.text === roleName) {
-                        roleSelect.value = option.value;
-                        break;
-                    }
-                }
-            } else {
-                selectableItem.classList.remove('selected');
-                checkboxIndicator.classList.remove('checked');
-
-                // Si se deselecciona, verificar si era el rol principal
-                const roleName = checkbox.value;
-                if (roleName === 'admin') { //Al dejar de ser administrador vuelve a elegirse el papel del flujo
-                    document.getElementById('role_id').disabled = false;
-                    return;
-                }
-                const roleSelect = document.getElementById('role_id');
-
-                // Si el rol deseleccionado era el principal, limpiar el select
-                for (let option of roleSelect.options) {
-                    if (option.text === roleName && option.value === roleSelect.value) {
-                        roleSelect.value = '';
-                        break;
-                    }
-                }
-            }
+            // Marcar el seleccionado
+            radio.checked = true;
+            selectableItem.classList.add('selected');
+            radioIndicator.classList.add('checked');
         }
     </script>
 @stop

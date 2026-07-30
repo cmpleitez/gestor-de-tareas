@@ -10,7 +10,7 @@
         content="Gestor de tareas te apoya en la administración de las tareas diarias de tu organización manteniendo una fluidez excepcional y eleva la calidad de la atención al cliente.">
     <meta name="keywords" content="gestión, tareas, calidad, control, fluidez, atención al cliente">
     <meta name="author" content=".">
-    <title>Gestor de Tareas {{ config('app.version') }}</title>
+    <title>Gestor de Tareas</title>
     <link rel="apple-touch-icon" href="{{ asset('app-assets/images/logo/logo.svg') }}">
     <link rel="shortcut icon" type="image/svg+xml" href="{{ asset('app-assets/images/logo/logo.svg') }}">
     <link href="https://fonts.googleapis.com/css?family=Rubik:300,400,500,600%7CIBM+Plex+Sans:300,400,500,600,700"
