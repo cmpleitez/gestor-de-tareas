@@ -157,7 +157,7 @@ class SecurityReport
             ],
             [
                 'clave' => 'cors',
-                'etiqueta' => 'CORS sin comodín',
+                'etiqueta' => 'Uso de comodín en CORS',
                 'actual' => $corsOrigins === null ? 'no configurado' : ($corsComodin ? 'comodín (*)' : 'orígenes explícitos'),
                 'esperado' => 'orígenes explícitos',
                 'estado' => $corsComodin ? 'danger' : 'ok',

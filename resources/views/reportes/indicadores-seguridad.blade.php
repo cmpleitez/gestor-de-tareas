@@ -107,9 +107,9 @@
 
 {{-- Secciones por categoría --}}
 <div class="row">
-    <div class="col-12">
-        @foreach($grupos as $grupo)
-            <div class="card">
+    @foreach($grupos as $grupo)
+        <div class="{{ $grupo['titulo'] === 'Protegidos' ? 'col-12 mt-3' : 'col-12 col-md-6' }}">
+            <div class="card h-100">
                 <div class="card-header d-flex align-items-center">
                     <span class="indicador-punto mr-1 {{ $nivel[$grupo['clave']]['punto'] }}"></span>
                     <div class="card-title mb-0">{{ $grupo['titulo'] }}</div>
@@ -147,7 +147,7 @@
                     @endif
                 </div>
             </div>
-        @endforeach
-    </div>
+        </div>
+    @endforeach
 </div>
 @endsection
