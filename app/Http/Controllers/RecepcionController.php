@@ -145,7 +145,7 @@ class RecepcionController extends Controller
                     $new_recepcion->origen_user_id = $usuario->id;
                     $new_recepcion->destino_user_id = $operador->id;
                     $new_recepcion->user_destino_role_id = Role::where('name', 'operador')->first()->id;
-                    $new_recepcion->estado_id = Estado::where('estado', 'Recibida')->first()->id;
+                    $new_recepcion->estado_id = Estado::where('estado', 'En progreso')->first()->id;
                     $new_recepcion->save();
                     foreach ($recepcion->solicitud->tareas as $tarea) { //Asignación de tareas
                         $coincide = $operador->tareas()->where('tareas.id', $tarea->id)->first();
