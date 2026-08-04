@@ -232,8 +232,8 @@ class UserController extends Controller
     public function activate(User $user)
     {
         if ($user->username === 'admin') { //La cuenta de rescate no admite cambios de estado desde ningún actor: desactivarla dejaría la app sin vía de entrada
-            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Intento de modificar el estado de la cuenta de sistema admin.');
-            return back()->with('error', 'No es posible modificar el estado de admin.');
+            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Intento de desactivar la cuenta de sistema admin.');
+            return back()->with('error', 'No es posible desactivar la cuenta admin.');
         }
         $user->activo = ! $user->activo;
         $user->save();
