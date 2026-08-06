@@ -117,7 +117,7 @@ class SecurityReport
         return [
             [
                 'clave' => 'app_debug',
-                'etiqueta' => 'Modo depuración desactivado',
+                'etiqueta' => 'Modo de depuración',
                 'actual' => config('app.debug') ? 'activado' : 'desactivado',
                 'esperado' => 'desactivado',
                 'estado' => $segunEntorno(! config('app.debug')),

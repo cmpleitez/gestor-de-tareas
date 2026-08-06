@@ -198,7 +198,8 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         if ($user->username === 'admin') {
-            return back()->with('error', 'No es posible eliminar el usuario administrador.');
+            Log::error('Log:: [Usuario: ' . auth()->user()->name . '] Intento de inyectar código en el sistema, eliminando al admin.');
+            return back()->with('error', 'Se intentó manipular el sistema.');
         }
 
         if ($user->id === auth()->id()) {

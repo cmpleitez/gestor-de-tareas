@@ -599,11 +599,35 @@ div.dataTables_wrapper div.dataTables_length {
 /* ===== CONTENEDOR PARA ELEMENTOS SELECCIONABLES ===== */
 
 .selectable-items-container {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    gap: 20px;
-    justify-content: center;
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(2, 1fr);
+    width: 100%;
+}
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+    .selectable-items-container {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .selectable-items-container {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (min-width: 992px) {
+    .selectable-items-container {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.selectable-items-container .selectable-item {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    margin-bottom: 0 !important;
 }
 
 /* ===== CLASES ESPECÍFICAS PARA TAREAS ===== */
