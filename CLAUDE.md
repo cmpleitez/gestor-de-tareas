@@ -1,7 +1,7 @@
 # gestor-de-tareas
 
 <!-- BEGIN REGLAS GLOBALES -->
-<!-- version: 5a92816 - 2026-07-27 09:03 - generado por sync-reglas.ps1 - NO editar a mano -->
+<!-- version: 012427c - 2026-08-06 17:32 - generado por sync-reglas.ps1 - NO editar a mano -->
 
 ## Reglas globales
 
@@ -50,6 +50,8 @@ Reglas comunes a todos mis proyectos. Se sincronizan desde el repo `estandares` 
 🔥**PROHIBIDO** escribir tu memoria en directorios externos al proyecto, escribe tu memoria en el archivo que ya estableciste dentro del folder de este proyecto.
 
 🔥**PROHIBIDO** crear ramas de git adicionales a las que ya existen.
+
+🔥 Al iniciar cada chat, verifica que este bloque esté al día: el hash del sello `<!-- version: ... -->` debe coincidir con `git -C ..\estandares hash-object ia/CLAUDE.global.md` (repo hermano del proyecto bajo `www/`; si no existe, omite la verificación). Si difiere, avísame una vez, sugiere correr `sync-rules.cmd` y continúa con lo pedido.
 <!-- END REGLAS GLOBALES -->
 
 ## Reglas del proyecto
@@ -368,3 +370,16 @@ Corrección en dos partes, ambas necesarias: (a) `roles-edit.blade.php` — elim
 - `confirmar` es un permiso **inalcanzable**: solo lo tiene el rol Spatie `admin`, a quien `recepcion.propia` bloquea. Hoy latente porque `solicitud_tarea` de "Orden de compra" contiene solo Revisión, Confirmación y Descarga. Si entran Pago o Entrega, nadie podrá ejecutarlas. Salida probable: dar `confirmar` al receptor.
 - `dibujarTareas` (`solicitudes.blade.php:637-700`) pinta los checkboxes sin `@can` → la UI ofrece acciones que el backend responde con 403.
 - **Habilidades sembradas hoy** (`tarea_user`): `cpleitez` → Revisión, Descarga; `hseldom` → Confirmación; `maragon` y `admin` → ninguna. Recordar que la `Actividad` nace solo si la tarea está en `solicitud_tarea` **Y** en `tarea_user`.
+
+### 2026-08-06 — Estándar de uso de las reglas globales (repo `estandares`)
+
+**Cómo llegan las reglas a la IA:** en cada chat solo se inyecta automáticamente el `CLAUDE.md` del directorio de trabajo; el maestro `estandares/ia/CLAUDE.global.md` **no** se lee solo. El sync (`sync-reglas.ps1` / `sync-rules.cmd`) es el puente obligatorio.
+
+**Cambios aplicados en `estandares/ia/` (3):**
+1. `sync-reglas.ps1`: el sello `<!-- version: ... -->` ahora usa el **hash del contenido** del maestro (`git hash-object ia/CLAUDE.global.md`, 7 chars) en vez del HEAD del repo. Razón: el HEAD daba falsos positivos por commits ajenos en `estandares` y no detectaba ediciones del maestro sin commit.
+2. `CLAUDE.global.md`: regla nueva — al iniciar cada chat, la IA compara el hash del sello local contra `git -C ..\estandares hash-object ia/CLAUDE.global.md`; si difiere, avisa una vez y sugiere correr `sync-rules.cmd`. La sync sigue siendo manual.
+3. `README.md`: flujo diario con `-Todos` como paso estándar tras editar el maestro, sección *Verificación automática* y `sync-rules.cmd` listado en Archivos.
+
+**Propagado con `sync-reglas.ps1 -Todos` (v:`012427c`)** a los 10 proyectos con git bajo `www/`. ⚠️ Efecto colateral: el sync **creó `CLAUDE.md` desde plantilla** en 8 proyectos que no lo tenían (alerta-bus, asiste, binder, espacios-municipales, nextcapital, py-base, py-react-base, react-base) — son archivos nuevos sin commitear en esos repos; en `py-base` el bloque se antepuso a un `CLAUDE.md` preexistente sin marcadores (revisar). Verificado: sello `012427c` coincide con el hash del maestro en los 5 proyectos muestreados.
+
+**Pendiente (del usuario):** commit + push en `estandares` y en cada proyecto con `CLAUDE.md` nuevo/actualizado.
